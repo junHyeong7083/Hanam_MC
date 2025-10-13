@@ -1,19 +1,11 @@
-// SceneNavigator.cs
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
 public enum ScreenId { REGISTER, HOME, PROBLEM, RESULT }
 
-public interface IScreenNavigator
-{
-    void GoTo(ScreenId id);
-    void GoBack();
-}
-
-
-public class SceneNavigator : MonoBehaviour, IScreenNavigator
+public class SceneNavigator : MonoBehaviour
 {
     [Header("Scene Names")]
     [SerializeField] string registerScene = "RegisterScene";
@@ -22,11 +14,8 @@ public class SceneNavigator : MonoBehaviour, IScreenNavigator
     [SerializeField] string resultScene = "ResultScene";
 
     [Header("Optional Fade")]
-    [SerializeField] CanvasGroup fade;   // BootstrapÀÇ CanvasGroup
+    [SerializeField] CanvasGroup fade;   // ì „í™˜ìš© í˜ì´ë“œ (ì—†ìœ¼ë©´ ë¹„ì›Œë„ ë¨)
     [SerializeField] float fadeSpeed = 7f;
-
-    // (¼±ÅÃ) ÀÎÁõ °¡µå
-    public bool IsAuthenticated { get; set; }
 
     readonly Stack<ScreenId> history = new();
     ScreenId current;
@@ -36,35 +25,40 @@ public class SceneNavigator : MonoBehaviour, IScreenNavigator
     public void GoBack()
     {
         if (history.Count == 0) return;
-        var prev = history.Pop();
-        StartCoroutine(CoGoTo(prev, pushHistory: false));
+        GoTo(history.Pop());
     }
 
-    IEnumerator CoGoTo(ScreenId id, bool pushHistory = true)
+    IEnumerator CoGoTo(ScreenId id)
     {
-        // ¶ó¿ìÆÃ °¡µå: ÀÎÁõ ÇÊ¿ä È­¸é º¸È£
-        if (!IsAuthenticated && (id == ScreenId.HOME || id == ScreenId.PROBLEM || id == ScreenId.RESULT))
+        if (!IsAllowed(id))
             id = ScreenId.REGISTER;
 
         yield return Fade(1f);
 
-        string scene = id switch
-        {
-            ScreenId.REGISTER => registerScene,
-            ScreenId.HOME => homeScene,
-            ScreenId.PROBLEM => problemScene,
-            ScreenId.RESULT => resultScene,
-            _ => registerScene
-        };
-
-        var op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+        var name = SceneNameOf(id);
+        var op = SceneManager.LoadSceneAsync(name, LoadSceneMode.Single);
         while (!op.isDone) yield return null;
 
-        if (pushHistory) history.Push(current);
+        history.Push(current);
         current = id;
 
         yield return Fade(0f);
     }
+
+    bool IsAllowed(ScreenId target)
+    {
+        bool needAuth = (target == ScreenId.HOME || target == ScreenId.PROBLEM || target == ScreenId.RESULT);
+        return !needAuth || (SessionManager.Instance != null && SessionManager.Instance.IsSignedIn);
+    }
+
+    string SceneNameOf(ScreenId id) => id switch
+    {
+        ScreenId.REGISTER => registerScene,
+        ScreenId.HOME => homeScene,
+        ScreenId.PROBLEM => problemScene,
+        ScreenId.RESULT => resultScene,
+        _ => registerScene
+    };
 
     IEnumerator Fade(float target)
     {
@@ -75,7 +69,7 @@ public class SceneNavigator : MonoBehaviour, IScreenNavigator
             fade.alpha = Mathf.MoveTowards(fade.alpha, target, Time.unscaledDeltaTime * fadeSpeed);
             yield return null;
         }
-        fade.blocksRaycasts = target > 0.01f;   // ÀüÈ¯ Áß Å¬¸¯ ¹æÁö
+        fade.blocksRaycasts = target > 0.01f;   // ì „í™˜ ì¤‘ í´ë¦­ ë°©ì§€
         if (target == 0f) fade.gameObject.SetActive(false);
     }
 }

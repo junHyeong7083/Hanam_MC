@@ -20,13 +20,12 @@ public class SignupController : MonoBehaviour
     void Awake()
     {
         view = GetComponent<SignupFormUI>();
-        auth = new AuthService();
+        auth = new AuthService(); // 나중에 RemoteAuthService로 교체 가능
 
         view.OnCheckEmailRequested += HandleCheckEmail;
         view.OnSignupRequested += HandleSignup;
-        view.OnCancelRequested += () => tabs?.ShowLogin();
+        view.OnCancelRequested += HandleCancel;
 
-        // 실시간 힌트(UX)
         view.OnPasswordChanged += HandlePasswordChanged;
         view.OnConfirmChanged += HandleConfirmChanged;
 
@@ -39,10 +38,13 @@ public class SignupController : MonoBehaviour
         if (!view) return;
         view.OnCheckEmailRequested -= HandleCheckEmail;
         view.OnSignupRequested -= HandleSignup;
-        view.OnCancelRequested -= () => tabs?.ShowLogin();
+        view.OnCancelRequested -= HandleCancel;
         view.OnPasswordChanged -= HandlePasswordChanged;
         view.OnConfirmChanged -= HandleConfirmChanged;
     }
+
+    // ── 탭 전환 ───────────────────────────────────────────────
+    void HandleCancel() => tabs?.ShowLogin();
 
     // ── 이메일 중복 확인(디바운스) ────────────────────────────
     void HandleCheckEmail(string email)
@@ -116,13 +118,25 @@ public class SignupController : MonoBehaviour
             return;
         }
 
-        // 성공
+        // 성공 메시지
         view.Show(texts ? texts.signupDone : "가입 완료");
-        if (navigator) navigator.IsAuthenticated = true;
-        navigator?.GoTo(ScreenId.HOME);
+
+        // 자동 로그인 시도 => 세션 기록 => 홈으로
+        var lr = auth.Login(email, pw);
+        if (lr.Ok && lr.Value != null)
+        {
+            if (SessionManager.Instance != null)
+                SessionManager.Instance.SignIn(lr.Value);
+
+            navigator?.GoTo(ScreenId.HOME);
+        }
+        else
+        {
+            // 자동 로그인 실패 시 로그인 탭으로 유도
+            tabs?.ShowLogin();
+        }
     }
 
-    // ── 실시간 힌트(선택) ────────────────────────────────────
     void HandlePasswordChanged(string pw)
     {
         if (string.IsNullOrEmpty(pw)) { view.SetPasswordHint("", false); return; }

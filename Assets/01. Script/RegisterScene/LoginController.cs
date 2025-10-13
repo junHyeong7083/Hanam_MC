@@ -16,13 +16,14 @@ public class LoginController : MonoBehaviour
     void Awake()
     {
         view = GetComponent<LoginFormUI>();
-        auth = new AuthService();
+        auth = new AuthService(); // 나중에 RemoteAuthService로 교체 가능
 
         // 탭 전환: 회원가입 탭으로
-        view.OnGoSignupRequested += () => tabs?.ShowSignup();
+        view.OnGoSignupRequested += HandleGoSignup;
 
         // 로그인 시도 (버튼은 항상 눌림)
         view.OnLoginRequested += HandleLogin;
+
         view.Show(texts ? texts.required : "필수 항목을 입력하세요.");
     }
 
@@ -30,23 +31,25 @@ public class LoginController : MonoBehaviour
     {
         if (!view) return;
         view.OnLoginRequested -= HandleLogin;
-        view.OnGoSignupRequested -= () => tabs?.ShowSignup();
+        view.OnGoSignupRequested -= HandleGoSignup;
     }
+
+    void HandleGoSignup() => tabs?.ShowSignup();
 
     void HandleLogin(string email, string pw)
     {
-        // 검증 실패도 messageText로만 표시 (버튼 비활성화 X)
         var res = auth.Login(email, pw);
+
         if (!res.Ok || res.Value == null)
         {
-            // 실패 원인에 따라 메시지(원하면 switch로 더 세분화)
             view.Show(texts ? texts.loginFail : "이메일 또는 비밀번호가 올바르지 않습니다.");
             return;
         }
 
-        // 성공
-        view.Show(texts ? texts.loginDone : "로그인 성공");
-        if (navigator) navigator.IsAuthenticated = true;
+        if (SessionManager.Instance != null)
+            SessionManager.Instance.SignIn(res.Value);
+
+        // 홈으로 전환 (가드는 SceneNavigator가 SessionManager를 조회)
         navigator?.GoTo(ScreenId.HOME);
     }
 }
