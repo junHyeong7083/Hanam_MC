@@ -16,6 +16,11 @@ public class User
     public UserRole Role { get; set; } = UserRole.USER;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+
+    // admin 검색용 보조필드
+    public string LowerName { get; set; }
+    public string NameChosung { get; set; }
 }
 
 
@@ -29,4 +34,54 @@ public class ResultDoc
     public int? DurationSec { get; set; } // 문제풀이에 걸린 시간
     public string MetaJson { get; set; }   // 문항별 로그 JSON
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class Problem
+{
+    public string Id { get; set; }
+    public string OwnerEmail { get; set; }
+    public string Theme { get; set; }     // Gardener/Director 등
+    public string Title { get; set; }
+    public string Content { get; set; }
+    public System.DateTime CreatedAt { get; set; }
+}
+public class SessionRecord
+{
+    public string Id { get; set; }
+    public string UserEmail { get; set; }
+    public string Theme { get; set; }
+    public string CurrentStep { get; set; }     // enum 직렬화 or string
+    public System.DateTime CreatedAt { get; set; }
+}
+public class Attempt
+{
+    public string Id { get; set; }
+    public string SessionId { get; set; }
+    public string UserEmail { get; set; }
+    public string Content { get; set; }         // 텍스트/녹취 요약 등
+    public System.DateTime CreatedAt { get; set; }
+}
+public class Feedback
+{
+    public string Id { get; set; }
+    public string ResultId { get; set; }
+    public string AdminEmail { get; set; }
+    public string Comment { get; set; }
+    public float? Score { get; set; }
+    public System.DateTime CreatedAt { get; set; }
+}
+public class UserProgress
+{
+    public string UserEmail { get; set; }
+    public int TotalSessions { get; set; }
+    public int TotalSolved { get; set; }
+    public System.DateTime? LastSessionAt { get; set; }
+}
+
+public class UserSummary
+{
+    public string Email { get; set; }
+    public string Name { get; set; }
+    public UserRole Role { get; set; }   
+    public bool IsActive { get; set; }
 }
