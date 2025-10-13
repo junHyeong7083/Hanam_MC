@@ -1,6 +1,12 @@
 using LiteDB;
-
-public class UserRepository
+public interface IUserRepository
+{
+    bool ExistsEmail(string email);
+    bool HasSuperAdmin();
+    User FindActiveByEmail(string email);
+    void Insert(User u);
+}
+public class UserRepository : IUserRepository
 {
     static ILiteCollection<User> Col(LiteDatabase db) => db.GetCollection<User>("users");
 
@@ -10,7 +16,7 @@ public class UserRepository
         return DBHelper.With(db =>
         {
             var users = Col(db);
-            users.EnsureIndex(x => x.Email, true); // °íÀ¯ ÀÎµ¦½º
+            users.EnsureIndex(x => x.Email, true);
             return users.Exists(u => u.Email == email);
         });
     }
