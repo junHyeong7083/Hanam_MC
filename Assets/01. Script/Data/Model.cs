@@ -1,9 +1,9 @@
 using System;
 
 public class Model
-{}
+{ }
 
-public enum UserRole {  USER=0, ADMIN = 1, SUPERADMIN = 2}
+public enum UserRole { USER = 0, ADMIN = 1, SUPERADMIN = 2 }
 public class User
 {
     // 고유 식별자
@@ -16,7 +16,7 @@ public class User
     public UserRole Role { get; set; } = UserRole.USER;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
+
 
     // admin 검색용 보조필드
     public string LowerName { get; set; }
@@ -82,6 +82,6 @@ public class UserSummary
 {
     public string Email { get; set; }
     public string Name { get; set; }
-    public UserRole Role { get; set; }   
+    public UserRole Role { get; set; }
     public bool IsActive { get; set; }
 }

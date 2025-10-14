@@ -1,4 +1,4 @@
-using TMPro;
+ï»¿using TMPro;
 using UnityEngine;
 
 public class AdminUserItemUI : MonoBehaviour
@@ -18,11 +18,11 @@ public class AdminUserItemUI : MonoBehaviour
         var currentEmail = SessionManager.Instance?.CurrentUser?.Email;
         bool isCurrent = !string.IsNullOrEmpty(currentEmail) && currentEmail == u.Email;
 
-        // isCurrent: Áö±İ ·Î±×ÀÎÇÑ »ç¿ëÀÚ
-        // u.IsActive: °èÁ¤ »ç¿ë °¡´É ¿©ºÎ(Á¤Áö/ºñÈ°¼º ¾Æ´Ô)
+        // isCurrent: ì§€ê¸ˆ ë¡œê·¸ì¸í•œ ì‚¬ìš©ì
+        // u.IsActive: ê³„ì • ì‚¬ìš© ê°€ëŠ¥ ì—¬ë¶€(ì •ì§€/ë¹„í™œì„± ì•„ë‹˜)
         string status = isCurrent
-            ? "È°¼º(ÇöÀç Á¢¼Ó)"
-            : (u.IsActive ? "¿ÀÇÁ¶óÀÎ" : "Á¤Áö");
+            ? "í™œì„±(í˜„ì¬ ì ‘ì†)"
+            : (u.IsActive ? "ì˜¤í”„ë¼ì¸" : "ì •ì§€");
 
         if (activeText) activeText.text = status;
     }

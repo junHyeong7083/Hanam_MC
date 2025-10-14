@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AuthUIText", menuName = "Auth/UI Text", order = 0)]
+[CreateAssetMenu(fileName = "AuthUIText", menuName = "Auth/UI Text")]
 public class AuthUIText : ScriptableObject
 {
     [Header("Common")]
