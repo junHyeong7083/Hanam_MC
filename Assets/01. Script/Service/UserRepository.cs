@@ -5,7 +5,7 @@ using LiteDB;
 
 // 모델(User, UserSummary, UserRole)은 Model.cs에 있다고 가정
 // DBHelper.With(...) 유틸은 DBHelper.cs에 있다고 가정
-// UserSearchUtility는 UserSearchUtility.cs에 있다고 가정
+// UserSearchUtility는 UserSearchUtility.cs에 있다고 가정 (여기선 LowerName만 씀)
 
 public interface IUserRepository
 {
@@ -34,14 +34,16 @@ public class UserRepository : IUserRepository
         users.EnsureIndex(u => u.Email, true);
         users.EnsureIndex(u => u.IsActive);
         users.EnsureIndex(u => u.LowerName);
-        users.EnsureIndex(u => u.NameChosung);
+        // 초성 검색 제거로 더 이상 필요 없음:
+        // users.EnsureIndex(u => u.NameChosung);
     }
 
-    // 검색 보조필드 세팅
+    // 검색 보조필드 세팅 (LowerName만 유지)
     private void SetSearchFields(User u)
     {
         u.LowerName = UserSearchUtility.NormalizeName(u.Name ?? "");
-        u.NameChosung = UserSearchUtility.ToChosung(u.Name ?? "");
+        // 레거시 필드 비사용
+        u.NameChosung = null;
     }
 
     // ===== CRUD =====
@@ -136,11 +138,11 @@ public class UserRepository : IUserRepository
     }
 
     /// <summary>
-    /// 친화적 검색:
-    /// 1) 정확 일치(이름/초성/이메일)가 있으면 그것만 반환
+    /// 친화적 검색 (초성 완전 제거 버전):
+    /// 1) 정확 일치(이름/이메일)가 있으면 그것만 반환
     /// 2) 없으면 접두(StartsWith) 매칭 반환
-    /// * 초성 검색은 “입력이 초성만일 때”만 동작 (완성형 입력은 초성 비교 안 함)
-    /// * 이름 비교는 공백 제거 + 소문자 정규화(NormalizeName) 기준
+    /// - 이름 비교는 원본 Name 및 LowerName(공백 제거 + 소문자) 모두 비교
+    /// - 초성(NameChosung) 및 초성 입력 분기는 사용하지 않음
     /// </summary>
     public UserSummary[] SearchUsersFriendly(string query)
     {
@@ -149,22 +151,19 @@ public class UserRepository : IUserRepository
 
         var qLower = qRaw.ToLowerInvariant();
         var norm = UserSearchUtility.NormalizeName(qRaw); // 공백 제거 + 소문자
-        var isCho = UserSearchUtility.IsChoseongOnly(qRaw);
-        var choInput = isCho ? UserSearchUtility.NormalizeChoseongInput(qRaw) : ""; // 초성만 입력일 때만 세팅
 
         return DBHelper.With(db =>
         {
             var users = Col(db);
             EnsureIndexes(users);
 
-            // 메모리에서 우선 처리 (필드 백필/정렬 우선순위 적용)
             var all = users.FindAll().ToList();
 
-            // 누락된 검색 보조필드 백필
+            // 누락된 LowerName 백필
             bool dirty = false;
             foreach (var u in all)
             {
-                if (string.IsNullOrEmpty(u.LowerName) || string.IsNullOrEmpty(u.NameChosung))
+                if (string.IsNullOrEmpty(u.LowerName))
                 {
                     SetSearchFields(u);
                     users.Update(u);
@@ -175,19 +174,29 @@ public class UserRepository : IUserRepository
 
             bool IsExact(User u)
             {
-                if (!string.IsNullOrEmpty(norm) && (u.LowerName ?? "") == norm) return true; // 이름 정확 일치
-                if (isCho && !string.IsNullOrEmpty(choInput) && (u.NameChosung ?? "") == choInput) return true; // 초성 정확 일치 (초성만 입력했을 때만)
+                // 이름 정확 일치(원본) 또는 LowerName 정확 일치
+                if (!string.IsNullOrEmpty(qRaw) && string.Equals(u.Name ?? "", qRaw, StringComparison.Ordinal)) return true;
+                if (!string.IsNullOrEmpty(norm) && string.Equals(u.LowerName ?? "", norm, StringComparison.Ordinal)) return true;
+
+                // 이메일 정확 일치(대소문자 무시)
                 if (!string.IsNullOrEmpty(qLower) && !string.IsNullOrEmpty(u.Email) &&
-                    u.Email.Equals(qLower, StringComparison.OrdinalIgnoreCase)) return true; // 이메일 정확 일치
+                    u.Email.Equals(qLower, StringComparison.OrdinalIgnoreCase)) return true;
+
                 return false;
             }
 
             bool IsPrefix(User u)
             {
-                if (!string.IsNullOrEmpty(norm) && (u.LowerName ?? "").StartsWith(norm)) return true; // 이름 접두
-                if (isCho && !string.IsNullOrEmpty(choInput) && (u.NameChosung ?? "").StartsWith(choInput)) return true; // 초성 접두 (초성만 입력했을 때만)
+                // 이름 접두 매칭: 원본 Name 기준(대소문자 무시) + LowerName 기준
+                if (!string.IsNullOrEmpty(qRaw) && !string.IsNullOrEmpty(u.Name) &&
+                    u.Name.StartsWith(qRaw, StringComparison.OrdinalIgnoreCase)) return true;
+
+                if (!string.IsNullOrEmpty(norm) && (u.LowerName ?? "").StartsWith(norm)) return true;
+
+                // 이메일 접두 매칭
                 if (!string.IsNullOrEmpty(qLower) && !string.IsNullOrEmpty(u.Email) &&
-                    u.Email.StartsWith(qLower, StringComparison.OrdinalIgnoreCase)) return true; // 이메일 접두
+                    u.Email.StartsWith(qLower, StringComparison.OrdinalIgnoreCase)) return true;
+
                 return false;
             }
 
