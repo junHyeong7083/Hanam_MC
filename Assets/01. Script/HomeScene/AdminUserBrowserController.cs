@@ -1,12 +1,12 @@
 ﻿using System.Collections;
-using System.Linq;                // ← 추가
+using System.Linq;             
 using UnityEngine;
 
 [RequireComponent(typeof(AdminUserBrowserUI))]
 public class AdminUserBrowserController : MonoBehaviour
 {
-    AdminUserBrowserUI view;
-    UserRepository repo;
+    AdminUserBrowserUI view; // UI 쪽
+    UserRepository repo; // 데이터 접근용
 
     Coroutine debounceCo;
     const float DebounceSec = 0.25f;
@@ -15,6 +15,8 @@ public class AdminUserBrowserController : MonoBehaviour
     {
         view = GetComponent<AdminUserBrowserUI>();
         repo = new UserRepository();
+
+        // UI가 프레임마다 조합 포함 문자열 푸시 -> 디바운싱후 검색 실행
         view.OnQueryChanged += HandleQueryChanged;
     }
 
@@ -25,6 +27,7 @@ public class AdminUserBrowserController : MonoBehaviour
         if (view) view.OnQueryChanged -= HandleQueryChanged;
     }
 
+    // UI에서 쿼리 들어올때마다 호출
     void HandleQueryChanged(string q)
     {
         if (debounceCo != null) StopCoroutine(debounceCo);
@@ -35,18 +38,18 @@ public class AdminUserBrowserController : MonoBehaviour
     {
         yield return new WaitForSeconds(DebounceSec);
 
-        // before: if (string.IsNullOrWhiteSpace(q) || q.Trim().Length < 2) RefreshAll();
         if (string.IsNullOrWhiteSpace(q)) RefreshAll();
-        else RefreshSearch(q); // ← 1글자부터 검색
+        else RefreshSearch(q);
     }
 
+    // 전체목록 새로고침
     void RefreshAll()
     {
         view.ClearList();
 
-        var me = SessionManager.Instance?.CurrentUser?.Email;  // ← 현재 로그인 이메일
+        var me = SessionManager.Instance?.CurrentUser?.Email;  
         var list = repo.ListAllUsers(limit: 2000)
-                       .Where(u => string.IsNullOrEmpty(me) || u.Email != me) // ← 나 제외
+                       .Where(u => string.IsNullOrEmpty(me) || u.Email != me) 
                        .ToArray();
 
         foreach (var u in list) view.AddItem(u);
@@ -54,6 +57,7 @@ public class AdminUserBrowserController : MonoBehaviour
             view.AddItem(new UserSummary { Name = "사용자 없음", Email = "", Role = UserRole.USER, IsActive = true });
     }
 
+    // 검색어 기반 갱신
     void RefreshSearch(string q)
     {
         view.ClearList();
