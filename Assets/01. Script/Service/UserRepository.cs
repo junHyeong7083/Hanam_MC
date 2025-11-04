@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using LiteDB;
 
-// Model(User 등)은 Model.cs에 존재 (LowerName, NameChosung 필드 사용)  :contentReference[oaicite:1]{index=1}
 public interface IUserRepository
 {
     bool ExistsEmail(string email);
@@ -13,16 +12,14 @@ public interface IUserRepository
     void Insert(User u);
     void Update(User u);
 
-    // 검색 (기존 시그니처 유지)
     UserSummary[] SearchUsersFriendly(string query);
-
-    // 전체
     UserSummary[] ListAllUsers(int limit = 0);
 }
 
 public class UserRepository : IUserRepository
 {
-    // ===== 내부 구성요소 (SRP 분리; 파일 추가 없이 내부 클래스로 캡슐화) =====
+    private const string COL = "users";
+
     static class Bootstrapper
     {
         static bool _done;
@@ -30,77 +27,43 @@ public class UserRepository : IUserRepository
         public static void Ensure(ILiteDatabase db)
         {
             if (_done) return;
-            var users = db.GetCollection<User>("users");
+            var users = db.GetCollection<User>(COL);
 
-            // 인덱스 보장
-            users.EnsureIndex(u => u.Email, true);
-            users.EnsureIndex(u => u.IsActive);
-            users.EnsureIndex(u => u.LowerName);
+            users.EnsureIndex(u => u.Email, unique: true);
+            users.EnsureIndex(u => u.IsActive, unique: false);
+            users.EnsureIndex(u => u.CreatedAt, unique: false);
 
-            // 레거시 백필 (LowerName 채움)
+            // --- 기존 레코드 Email을 소문자/트림으로 정규화 (1회) ---
             bool dirty = false;
             foreach (var u in users.FindAll())
             {
-                if (string.IsNullOrEmpty(u.LowerName))
+                var norm = (u.Email ?? string.Empty).Trim().ToLowerInvariant();
+                if (!string.Equals(u.Email, norm, StringComparison.Ordinal))
                 {
-                    u.LowerName = UserSearchUtility.NormalizeName(u.Name ?? "");
-                    u.NameChosung = null; // 초성 검색 폐기 => 추후 개발예정
+                    // (주의) 서로 다른 문서가 대소문자만 달라 같은 이메일이면 Unique 인덱스 충돌 가능
+                    // 운영 중이면 사전 중복 정리 필요. 로컬/개발이라면 그대로 normalize.  => 우선 개발 후 추후 이메일 중복 방지 함수 추가하기
+                    u.Email = norm;
                     users.Update(u);
                     dirty = true;
                 }
             }
-            if (dirty) { /* no-op, 저장 완료 */ }
+            if (dirty) db.Checkpoint();
 
             _done = true;
         }
+
     }
 
-    // 검색 규칙 클래스
-    static class SearchPolicy
-    {
-        public static UserSummary[] Search(ILiteCollection<User> users, string query)
-        {
-            var qRaw = (query ?? string.Empty).Trim();
-            if (qRaw.Length == 0)
-                return users.FindAll().OrderBy(u => u.Name).Select(ToSummary).ToArray();
+    private ILiteCollection<User> Col(ILiteDatabase db) => db.GetCollection<User>(COL);
 
-            var qLower = qRaw.ToLowerInvariant();
-            var norm = UserSearchUtility.NormalizeName(qRaw); // 공백제거+소문자
-
-            // 전체 한번만 로드 (LiteDB 내장 필터로 바꿔도 되지만, 정확/접두 혼합 규칙을 단일 패스에서 처리)
-            var all = users.FindAll().ToList();
-
-            bool IsExact(User u)
-            {
-                if (!string.IsNullOrEmpty(u.Name) && string.Equals(u.Name, qRaw, StringComparison.OrdinalIgnoreCase)) return true;
-                if (!string.IsNullOrEmpty(u.LowerName) && string.Equals(u.LowerName, norm, StringComparison.Ordinal)) return true;
-                if (!string.IsNullOrEmpty(u.Email) && u.Email.Equals(qLower, StringComparison.OrdinalIgnoreCase)) return true;
-                return false;
-            }
-            bool IsPrefix(User u)
-            {
-                if (!string.IsNullOrEmpty(u.Name) && u.Name.StartsWith(qRaw, StringComparison.OrdinalIgnoreCase)) return true;
-                if (!string.IsNullOrEmpty(u.LowerName) && u.LowerName.StartsWith(norm)) return true;
-                if (!string.IsNullOrEmpty(u.Email) && u.Email.StartsWith(qLower, StringComparison.OrdinalIgnoreCase)) return true;
-                return false;
-            }
-
-            var exact = all.Where(IsExact).OrderBy(u => u.Name).Select(ToSummary).ToArray();
-            if (exact.Length > 0) return exact;
-
-            var prefix = all.Where(IsPrefix).OrderBy(u => u.Name).Select(ToSummary).ToArray();
-            return prefix;
-        }
-    }
-
-    // ===== Repository 본체 =====
-
-    private ILiteCollection<User> Col(ILiteDatabase db) => db.GetCollection<User>("users");
+    private static string NormalizeEmail(string email)
+        => (email ?? string.Empty).Trim().ToLowerInvariant();
 
     public bool ExistsEmail(string email)
     {
-        if (string.IsNullOrWhiteSpace(email)) return false;
-        var e = email.Trim();
+        var e = NormalizeEmail(email);
+        if (string.IsNullOrEmpty(e)) return false;
+
         return DBHelper.With(db =>
         {
             Bootstrapper.Ensure(db);
@@ -119,8 +82,9 @@ public class UserRepository : IUserRepository
 
     public User FindActiveByEmail(string email)
     {
-        if (string.IsNullOrWhiteSpace(email)) return null;
-        var e = email.Trim();
+        var e = NormalizeEmail(email);
+        if (string.IsNullOrEmpty(e)) return null;
+
         return DBHelper.With(db =>
         {
             Bootstrapper.Ensure(db);
@@ -145,8 +109,9 @@ public class UserRepository : IUserRepository
         {
             Bootstrapper.Ensure(db);
             var users = Col(db);
-            u.LowerName = UserSearchUtility.NormalizeName(u.Name ?? "");
-            u.NameChosung = null; // 레거시 무효화
+
+            // 정규화: Email만 강제, 이름 관련 레거시는 건드리지 않음
+            u.Email = NormalizeEmail(u.Email);
             users.Insert(u);
             return true;
         });
@@ -158,12 +123,14 @@ public class UserRepository : IUserRepository
         {
             Bootstrapper.Ensure(db);
             var users = Col(db);
-            u.LowerName = UserSearchUtility.NormalizeName(u.Name ?? "");
-            u.NameChosung = null;
+
+            // 정규화: Email만 강제
+            u.Email = NormalizeEmail(u.Email);
             users.Update(u);
             return true;
         });
     }
+
 
     public UserSummary[] ListAllUsers(int limit = 0)
     {
@@ -176,12 +143,61 @@ public class UserRepository : IUserRepository
         });
     }
 
+
     public UserSummary[] SearchUsersFriendly(string query)
     {
         return DBHelper.With(db =>
         {
             Bootstrapper.Ensure(db);
-            return SearchPolicy.Search(Col(db), query);
+            var users = Col(db);
+
+            var qRaw = (query ?? string.Empty).Trim();
+            var qLower = qRaw.ToLowerInvariant();
+
+            // 0) 빈 쿼리 → 기본 목록(최근/이름순)
+            if (qRaw.Length == 0)
+            {
+                return users.Query()
+                            .OrderBy(u => u.Name ?? string.Empty)
+                            .Limit(200)
+                            .ToList()
+                            .Select(ToSummary)
+                            .ToArray();
+            }
+
+            // 1) 정확 일치 (Email == qLower) — 인덱스 타는 경로
+            var exactByEmail = users.FindOne(x => x.Email == qLower);
+            if (exactByEmail != null)
+                return new[] { ToSummary(exactByEmail) };
+
+            // 2) Email 접두(prefix) — 인덱스 기반
+            var emailPrefix = users.Find(Query.StartsWith(nameof(User.Email), qLower))
+                                   .Take(200)
+                                   .ToList();
+
+            // 3) 이름 보조검색(소규모): 최근 N명만 메모리에서 case-insensitive 부분일치
+            //    - 전량 스캔 금지; 운영 규모 고려해 N 조절 (여기선 2000)
+            const int NAME_SCAN_LIMIT = 2000;
+            var recentChunk = users.Query()
+                                   .OrderByDescending(u => u.CreatedAt)
+                                   .Limit(NAME_SCAN_LIMIT)
+                                   .ToList();
+
+            var nameHits = recentChunk
+                .Where(u => !string.IsNullOrEmpty(u.Name) &&
+                            u.Name.IndexOf(qRaw, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+
+            var merged = emailPrefix
+                .Concat(nameHits)
+                .GroupBy(u => u.Id)
+                .Select(g => g.First())
+                .OrderBy(u => u.Name ?? string.Empty)
+                .Take(200)
+                .Select(ToSummary)
+                .ToArray();
+
+            return merged;
         });
     }
 

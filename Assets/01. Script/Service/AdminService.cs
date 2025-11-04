@@ -7,6 +7,8 @@ using System.Linq;
 /// 1. 사용자 권한 변경
 /// 2. 사용자 활성/비활성 전환
 /// 
+/// 
+/// 아직 해당 클래스를 이용한 기능은 미구현
 /// </summary>
 public static class AdminService
 {
@@ -74,16 +76,38 @@ public static class AdminService
         return DBHelper.With(db =>
         {
             var users = db.GetCollection<User>("users");
+
             var acting = users.FindById(actingUserId);
-            if (acting == null || acting.Role != UserRole.SUPERADMIN || acting.Role != UserRole.ADMIN) return false;
+            // acting이 없거나, ADMIN/SUPERADMIN 둘 다 아니면 거부
+            if (acting == null || (acting.Role != UserRole.SUPERADMIN && acting.Role != UserRole.ADMIN))
+                return false;
 
             var target = users.FindById(targetUserId);
-            if (target == null || target.Id == actingUserId) return false;
+            if (target == null) return false;
+
+            // 자기 자신 비활성화 방지(실수 보호)
+            if (!active && target.Id == actingUserId)
+                return false;
+
+            // SUPERADMIN 비활성화 금지
+            if (!active && target.Role == UserRole.SUPERADMIN)
+                return false;
+
+            // 마지막 활성 관리자 보호(ADMIN/SUPERADMIN이 최소 1명은 남아야 함)
+            if (!active && (target.Role == UserRole.ADMIN || target.Role == UserRole.SUPERADMIN))
+            {
+                bool stillHasAdmin = users.Exists(u =>
+                    u.Id != target.Id &&
+                    u.IsActive &&
+                    (u.Role == UserRole.ADMIN || u.Role == UserRole.SUPERADMIN));
+                if (!stillHasAdmin) return false;
+            }
 
             target.IsActive = active;
             return users.Update(target);
         });
     }
+
 
     // ADMIN 이상: 사용자 검색
     public static List<User> SearchUsers(string actingUserId, string contains = "")
@@ -92,12 +116,18 @@ public static class AdminService
         {
             var users = db.GetCollection<User>("users");
             var act = users.FindById(actingUserId);
-            if (act == null || (int)act.Role < (int)UserRole.ADMIN) return new List<User>();
+            if (act == null || (int)act.Role < (int)UserRole.ADMIN)
+                return new List<User>();
 
-            contains = (contains ?? "").Trim().ToLower();
-            return users.Find(u => string.IsNullOrEmpty(contains) || u.Email.Contains(contains) || (u.Name ?? "").ToLower().Contains(contains))
-                        .OrderByDescending(u => u.CreatedAt)
-                        .ToList();
+            string q = (contains ?? string.Empty).Trim().ToLower();
+
+            return users.Find(u =>
+                        string.IsNullOrEmpty(q) ||
+                        (u.Email ?? string.Empty).ToLower().Contains(q) ||
+                        (u.Name ?? string.Empty).ToLower().Contains(q))
+                    .OrderByDescending(u => u.CreatedAt)
+                    .ToList();
         });
     }
+
 }
