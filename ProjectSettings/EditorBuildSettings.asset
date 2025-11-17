@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/04. Scene/RegisterScene.unity
     guid: 09a3b133a584ec84eb8575d841b1e49d
   - enabled: 1
-    path: Assets/04. Scene/HomeScene.unity
+    path: Assets/04. Scene/ResultScene.unity
     guid: c0c9cf5984553364480f0c208736b7f8
   - enabled: 1
     path: Assets/04. Scene/ProblemScene.unity

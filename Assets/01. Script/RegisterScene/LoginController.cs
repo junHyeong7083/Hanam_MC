@@ -49,7 +49,8 @@ public class LoginController : MonoBehaviour
         if (SessionManager.Instance != null)
             SessionManager.Instance.SignIn(res.Value);
 
-        // 홈으로 전환 (가드는 SceneNavigator가 SessionManager를 조회)
-        navigator?.GoTo(ScreenId.HOME);
+        // 현재 테스트용으로 모든계정 바로 Result Scene으로 이동
+        // 추후 각 등급에따라 Home, Result로 분류하는 로직필요
+        navigator?.GoTo(ScreenId.RESULT);
     }
 }
