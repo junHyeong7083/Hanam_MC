@@ -9,14 +9,17 @@ EditorBuildSettings:
     path: Assets/04. Scene/RegisterScene.unity
     guid: 09a3b133a584ec84eb8575d841b1e49d
   - enabled: 1
-    path: Assets/04. Scene/ResultScene.unity
-    guid: c0c9cf5984553364480f0c208736b7f8
+    path: Assets/04. Scene/HomeScene.unity
+    guid: b8e1dc6d252522d4ba8e6c25f5f2ad43
   - enabled: 1
     path: Assets/04. Scene/ProblemScene.unity
     guid: ac7d2c02ad3064048b7522a861a446a8
   - enabled: 1
     path: Assets/04. Scene/ResultScene.unity
-    guid: 30d80d3aa14edc74db22c6b0035190d2
+    guid: c0c9cf5984553364480f0c208736b7f8
+  - enabled: 1
+    path: Assets/04. Scene/ResultScene.unity
+    guid: c0c9cf5984553364480f0c208736b7f8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

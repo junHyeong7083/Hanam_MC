@@ -49,8 +49,19 @@ public class LoginController : MonoBehaviour
         if (SessionManager.Instance != null)
             SessionManager.Instance.SignIn(res.Value);
 
-        // 현재 테스트용으로 모든계정 바로 Result Scene으로 이동
-        // 추후 각 등급에따라 Home, Result로 분류하는 로직필요
-        navigator?.GoTo(ScreenId.RESULT);
+        var user = res.Value;
+        if (navigator != null)
+        {
+            // ADMIN 이상 → ResultScene
+            if (user.Role == UserRole.ADMIN || user.Role == UserRole.SUPERADMIN)
+            {
+                navigator.GoTo(ScreenId.RESULT);
+            }
+            // USER → HomeScene
+            else
+            {
+                navigator.GoTo(ScreenId.HOME);
+            }
+        }
     }
 }
