@@ -4,6 +4,13 @@ public class Model
 { }
 
 public enum UserRole { USER = 0, ADMIN = 1, SUPERADMIN = 2 }
+
+public enum ProblemTheme
+{
+    Director = 0,
+    Gardener = 1
+}
+
 public class User
 {
     // 고유 식별자
@@ -17,12 +24,10 @@ public class User
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
     // admin 검색용 보조필드
     public string LowerName { get; set; }
     public string NameChosung { get; set; }
 }
-
 
 public class ResultDoc
 {
@@ -38,44 +43,60 @@ public class ResultDoc
 
 public class Problem
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public string OwnerEmail { get; set; }
-    public string Theme { get; set; }     // Gardener/Director 등
+
+    // Director / Gardener 테마
+    public ProblemTheme Theme { get; set; }
+
+    // 테마 안에서의 문제 번호 (1..10)
+    public int Index { get; set; }
+
     public string Title { get; set; }
     public string Content { get; set; }
-    public System.DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
 public class SessionRecord
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public string UserEmail { get; set; }
-    public string Theme { get; set; }
+    public ProblemTheme Theme { get; set; }
     public string CurrentStep { get; set; }     // enum 직렬화 or string
-    public System.DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
 public class Attempt
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public string SessionId { get; set; }
     public string UserEmail { get; set; }
+
+    // 어떤 문제에 대한 시도인지
     public string Content { get; set; }         // 텍스트/녹취 요약 등
-    public System.DateTime CreatedAt { get; set; }
+    public string ProblemId { get; set; }       // Problem.Id
+    public ProblemTheme Theme { get; set; }     // Director / Gardener
+    public int? ProblemIndex { get; set; }      // 1..10
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
 public class Feedback
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public string ResultId { get; set; }
     public string AdminEmail { get; set; }
     public string Comment { get; set; }
     public float? Score { get; set; }
-    public System.DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
 public class UserProgress
 {
     public string UserEmail { get; set; }
     public int TotalSessions { get; set; }
     public int TotalSolved { get; set; }
-    public System.DateTime? LastSessionAt { get; set; }
+    public DateTime? LastSessionAt { get; set; }
 }
 
 public class UserSummary

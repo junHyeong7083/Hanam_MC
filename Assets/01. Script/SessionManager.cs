@@ -55,7 +55,7 @@ public class SessionManager : MonoBehaviour
         Debug.Log("[Session] Signed out");
     }
 
-    // ────── (옵션) 간단 복원/저장 구현 ──────
+    // ────── 간단 복원/저장 구현 ──────
     const string KeyUser = "session.user";    // PlayerPrefs 키 (데모/개발용)
     const string KeySess = "session.id";
 
