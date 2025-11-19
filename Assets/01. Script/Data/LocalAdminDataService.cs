@@ -1,48 +1,40 @@
 using System;
-using System.Linq;
-using LiteDB;
 using UnityEngine;
+
+/// <summary>
+/// 관리자용 데이터 서비스 (검색 / 결과 조회 / 피드백 등록).
+/// 실제 DB 접근은 DbGateway + IUserRepository를 통해서만 한다.
+/// </summary>
 public interface IAdminDataService
 {
-    // 사용자 검색(이메일/이름 일부)
+    // 사용자 검색 (이메일/이름 일부 일치)
     Result<UserSummary[]> SearchUsers(string query);
 
     // 특정 사용자 결과 목록
     Result<ResultDoc[]> FetchResultsByUser(string userEmail);
 
-    // 피드백 저장(결과에 코멘트/점수 등)
+    // 결과에 대한 피드백 등록
     Result SubmitFeedback(string resultId, Feedback feedback);
 }
 
 public class LocalAdminDataService : IAdminDataService
 {
-    const string CUsers = "users";    
-    const string CResults = "results";
-    const string CFeedback = "feedbacks";
+    readonly DBGateway _db;
+    readonly IUserRepository _userRepo;
+
+    public LocalAdminDataService(DBGateway db = null, IUserRepository userRepo = null)
+    {
+        _db = db ?? new DBGateway();
+        _userRepo = userRepo ?? new UserRepository(_db);
+    }
 
     public Result<UserSummary[]> SearchUsers(string query)
     {
         try
         {
-            var arr = DBHelper.With(db =>
-            {
-                var users = db.GetCollection<User>(CUsers);
-                users.EnsureIndex(x => x.Email, true);
-                var q = (query ?? "").Trim().ToLower();
-
-                return users.Find(u =>
-                            (u.Email ?? "").ToLower().Contains(q) ||
-                            (u.Name ?? "").ToLower().Contains(q))
-                        .Select(u => new UserSummary
-                        {
-                            Email = u.Email,
-                            Name = u.Name,
-                            Role = u.Role,
-                            IsActive = u.IsActive
-                        })
-                        .ToArray();
-            });
-            return Result<UserSummary[]>.Success(arr);
+            var items = _userRepo.SearchUsersFriendly(query ?? string.Empty)
+                        ?? Array.Empty<UserSummary>();
+            return Result<UserSummary[]>.Success(items);
         }
         catch (Exception e)
         {
@@ -55,10 +47,8 @@ public class LocalAdminDataService : IAdminDataService
     {
         try
         {
-            var arr = DBHelper.With(db =>
-                db.GetCollection<ResultDoc>(CResults).Find(r => r.UserId == userEmail).ToArray()
-            );
-            return Result<ResultDoc[]>.Success(arr);
+            var items = _db.GetResultsByUser(userEmail) ?? Array.Empty<ResultDoc>();
+            return Result<ResultDoc[]>.Success(items);
         }
         catch (Exception e)
         {
@@ -69,19 +59,18 @@ public class LocalAdminDataService : IAdminDataService
 
     public Result SubmitFeedback(string resultId, Feedback feedback)
     {
+        if (string.IsNullOrWhiteSpace(resultId) || feedback == null)
+            return Result.Fail(AuthError.Internal, "Invalid feedback");
+
         try
         {
-            feedback.Id ??= ObjectId.NewObjectId().ToString();
             feedback.ResultId = resultId;
-            feedback.CreatedAt = DateTime.UtcNow;
+            if (string.IsNullOrEmpty(feedback.Id))
+                feedback.Id = Guid.NewGuid().ToString();
+            if (feedback.CreatedAt == default)
+                feedback.CreatedAt = DateTime.UtcNow;
 
-            DBHelper.With(db =>
-            {
-                var col = db.GetCollection<Feedback>(CFeedback);
-                col.EnsureIndex(x => x.Id, true);
-                col.EnsureIndex(x => x.ResultId);
-                col.Insert(feedback);
-            });
+            _db.InsertFeedback(feedback);
             return Result.Success();
         }
         catch (Exception e)

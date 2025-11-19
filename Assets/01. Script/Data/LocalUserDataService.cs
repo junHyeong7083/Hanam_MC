@@ -1,64 +1,42 @@
 ﻿using System;
-using System.Linq;
-using LiteDB;
 using UnityEngine;
 
+/// <summary>
+/// 사용자 문제 풀이 / 진행도용 로컬 데이터 서비스.
+/// 실제 DB 접근은 DbGateway를 통해서만 한다.
+/// </summary>
 public interface IUserDataService
 {
     // 나의 진행 요약
     Result<UserProgress> FetchProgress(string userEmail);
 
-    // 문제 데이터 조회
+    // 문제 데이터 조회 (ID 기준)
     Result<Problem> FetchProblem(string problemId);
 
     // 제출 저장(시도/답안 등)
     Result SaveAttempt(Attempt attempt);
 
-    // 결과 조회(세션 기준)
-    Result<ResultDoc> FetchResult(string sessionId);
+    // 결과 조회(세션 또는 ResultId 기준)
+    Result<ResultDoc> FetchResult(string resultIdOrSessionId);
 
-    // 특정 유저가 특정 테마에서 이미 푼 문제 번호들(1~10)
-    Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme);
+    // 사용자가 푼 문제 번호 목록
+    Result<int[]> FetchSolvedProblemIndexes(string userEmail, string theme = null);
 }
 
 public class LocalUserDataService : IUserDataService
 {
-    // 컬렉션 이름
-    const string CProblems = "problems";
-    const string CSessions = "sessions";
-    const string CResults = "results";
-    const string CAttempts = "attempts";
+    readonly DBGateway _db;
 
-    /// <summary>
-    /// 유저별 전체 진행 요약
-    /// </summary>
+    public LocalUserDataService(DBGateway db = null)
+    {
+        _db = db ?? new DBGateway();
+    }
+
     public Result<UserProgress> FetchProgress(string userEmail)
     {
-        if (string.IsNullOrWhiteSpace(userEmail))
-            return Result<UserProgress>.Fail(AuthError.Internal);
-
         try
         {
-            var progress = DBHelper.With(db =>
-            {
-                var sessions = db.GetCollection<SessionRecord>(CSessions);
-                var results = db.GetCollection<ResultDoc>(CResults);
-
-                var mySessions = sessions.Find(s => s.UserEmail == userEmail).ToArray();
-                var myResults = results.Find(r => r.UserId == userEmail).ToArray();
-
-                return new UserProgress
-                {
-                    UserEmail = userEmail,
-                    TotalSessions = mySessions.Length,
-                    TotalSolved = myResults.Length,
-                    LastSessionAt = mySessions
-                        .OrderByDescending(s => s.CreatedAt)
-                        .FirstOrDefault()
-                        ?.CreatedAt
-                };
-            });
-
+            var progress = _db.GetUserProgress(userEmail);
             return Result<UserProgress>.Success(progress);
         }
         catch (Exception e)
@@ -68,26 +46,15 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
-    /// <summary>
-    /// 문제 데이터 조회
-    /// </summary>
     public Result<Problem> FetchProblem(string problemId)
     {
-        if (string.IsNullOrWhiteSpace(problemId))
-            return Result<Problem>.Fail(AuthError.Internal);
-
         try
         {
-            var problem = DBHelper.With(db =>
-            {
-                var col = db.GetCollection<Problem>(CProblems);
-                return col.FindById(problemId);
-            });
-
-            if (problem == null)
+            var p = _db.GetProblemById(problemId);
+            if (p == null)
                 return Result<Problem>.Fail(AuthError.NotFoundOrInactive);
 
-            return Result<Problem>.Success(problem);
+            return Result<Problem>.Success(p);
         }
         catch (Exception e)
         {
@@ -96,35 +63,19 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
-    /// <summary>
-    /// 시도/답안 저장
-    /// </summary>
     public Result SaveAttempt(Attempt attempt)
     {
-        if (attempt == null || string.IsNullOrWhiteSpace(attempt.UserEmail))
-            return Result.Fail(AuthError.Internal);
+        if (attempt == null)
+            return Result.Fail(AuthError.Internal, "Attempt is null");
 
         try
         {
-            DBHelper.With(db =>
-            {
-                var col = db.GetCollection<Attempt>(CAttempts);
-
-                // 인덱스 설정
-                col.EnsureIndex(x => x.Id, true);
-                col.EnsureIndex(x => x.SessionId);
-                col.EnsureIndex(x => x.UserEmail);
-                col.EnsureIndex(x => x.Theme);
-                col.EnsureIndex(x => x.ProblemIndex);
-
-                if (string.IsNullOrEmpty(attempt.Id))
-                    attempt.Id = ObjectId.NewObjectId().ToString();
-
+            if (string.IsNullOrEmpty(attempt.Id))
+                attempt.Id = Guid.NewGuid().ToString();
+            if (attempt.CreatedAt == default)
                 attempt.CreatedAt = DateTime.UtcNow;
 
-                col.Insert(attempt);
-            });
-
+            _db.InsertAttempt(attempt);
             return Result.Success();
         }
         catch (Exception e)
@@ -134,27 +85,20 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
-    /// <summary>
-    /// 특정 세션 기준 결과 조회
-    /// (지금은 단순히 ResultDoc.Id == sessionId 인 것만 찾는 형태로 둠)
-    /// </summary>
-    public Result<ResultDoc> FetchResult(string sessionId)
+    public Result<ResultDoc> FetchResult(string resultIdOrSessionId)
     {
-        if (string.IsNullOrWhiteSpace(sessionId))
-            return Result<ResultDoc>.Fail(AuthError.Internal);
+        if (string.IsNullOrWhiteSpace(resultIdOrSessionId))
+            return Result<ResultDoc>.Fail(AuthError.NotFoundOrInactive);
 
         try
         {
-            var result = DBHelper.With(db =>
-            {
-                var col = db.GetCollection<ResultDoc>(CResults);
-                return col.FindById(sessionId);
-            });
+            // 1) Id로 직접 조회
+            var r = _db.GetResultById(resultIdOrSessionId);
+            if (r != null)
+                return Result<ResultDoc>.Success(r);
 
-            if (result == null)
-                return Result<ResultDoc>.Fail(AuthError.NotFoundOrInactive);
-
-            return Result<ResultDoc>.Success(result);
+            // 2) 나중에 필요하면 MetaJson 등에 세션ID를 저장해서 추가 검색 로직 확장 가능
+            return Result<ResultDoc>.Fail(AuthError.NotFoundOrInactive);
         }
         catch (Exception e)
         {
@@ -163,36 +107,12 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
-    /// <summary>
-    /// 특정 유저가 특정 테마에서 이미 푼 문제 번호들(1~10)을 반환
-    ///  - Director 테마에서 1,2번 풀었으면 [1,2] 반환
-    ///  - 이후 패널에서
-    ///      - 한 바퀴 다 돌기 전 → "다음 문제"만 열어주기
-    ///      - 1~10 다 풀었으면 → 1~10 전부 다시 선택 가능
-    /// </summary>
-    public Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme)
+    public Result<int[]> FetchSolvedProblemIndexes(string userEmail, string theme = null)
     {
-        if (string.IsNullOrWhiteSpace(userEmail))
-            return Result<int[]>.Fail(AuthError.Internal);
-
         try
         {
-            var solved = DBHelper.With(db =>
-            {
-                var col = db.GetCollection<Attempt>(CAttempts);
-
-                return col.Find(a =>
-                            a.UserEmail == userEmail &&
-                            a.Theme == theme
-                        )
-                        .Where(a => a.ProblemIndex.HasValue)
-                        .Select(a => a.ProblemIndex.Value)
-                        .Distinct()
-                        .OrderBy(x => x)
-                        .ToArray();
-            });
-
-            return Result<int[]>.Success(solved);
+            var indexes = _db.GetSolvedProblemIndexes(userEmail, theme) ?? Array.Empty<int>();
+            return Result<int[]>.Success(indexes);
         }
         catch (Exception e)
         {

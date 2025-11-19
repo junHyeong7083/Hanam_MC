@@ -1,12 +1,12 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [RequireComponent(typeof(LoginFormUI))]
 public class LoginController : MonoBehaviour
 {
     [Header("Navigation")]
-    [SerializeField] SceneNavigator navigator;              // Bootstrap Àü¿ª ³×ºñ°ÔÀÌÅÍ
+    [SerializeField] SceneNavigator navigator;          // ì”¬ ì´ë™
     [Header("Tabs")]
-    [SerializeField] RegisterTabsController tabs;           // RegisterSceneÀÇ ÅÇ °ü¸®ÀÚ
+    [SerializeField] RegisterTabsController tabs;       // ë¡œê·¸ì¸/íšŒì›ê°€ì… íƒ­
     [Header("Texts (Optional)")]
     [SerializeField] AuthUIText texts;
 
@@ -16,52 +16,72 @@ public class LoginController : MonoBehaviour
     void Awake()
     {
         view = GetComponent<LoginFormUI>();
-        auth = new AuthService(); // ³ªÁß¿¡ RemoteAuthService·Î ±³Ã¼ °¡´É
 
-        // ÅÇ ÀüÈ¯: È¸¿ø°¡ÀÔ ÅÇÀ¸·Î
+        // ğŸ”— DataServiceì—ì„œ Auth ê°€ì ¸ì˜¤ê¸°
+        if (DataService.Instance != null && DataService.Instance.Auth != null)
+        {
+            auth = DataService.Instance.Auth;
+        }
+        else
+        {
+            Debug.LogWarning("[LoginController] DataService.Auth ì—†ìŒ, ì„ì‹œ AuthService ìƒì„±");
+            auth = new AuthService(new UserRepository());
+        }
+
         view.OnGoSignupRequested += HandleGoSignup;
-
-        // ·Î±×ÀÎ ½Ãµµ (¹öÆ°Àº Ç×»ó ´­¸²)
         view.OnLoginRequested += HandleLogin;
 
-        view.Show(texts ? texts.required : "ÇÊ¼ö Ç×¸ñÀ» ÀÔ·ÂÇÏ¼¼¿ä.");
+        if (texts != null)
+            view.Show(texts.required);
+        else
+            view.Show("ì´ë©”ì¼ê³¼ ë¹„ë°€ë²ˆí˜¸ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.");
     }
 
     void OnDestroy()
     {
-        if (!view) return;
-        view.OnLoginRequested -= HandleLogin;
+        if (view == null) return;
         view.OnGoSignupRequested -= HandleGoSignup;
+        view.OnLoginRequested -= HandleLogin;
     }
 
-    void HandleGoSignup() => tabs?.ShowSignup();
-
-    void HandleLogin(string email, string pw)
+    void HandleGoSignup()
     {
-        var res = auth.Login(email, pw);
+        if (tabs != null)
+            tabs.ShowSignup();
+    }
 
-        if (!res.Ok || res.Value == null)
+    void HandleLogin(string email, string password)
+    {
+        if (auth == null)
         {
-            view.Show(texts ? texts.loginFail : "ÀÌ¸ŞÀÏ ¶Ç´Â ºñ¹Ğ¹øÈ£°¡ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("[LoginController] auth ì„œë¹„ìŠ¤ê°€ null");
             return;
         }
 
-        if (SessionManager.Instance != null)
-            SessionManager.Instance.SignIn(res.Value);
+        view.SetInteractable(false);
+        view.Show(texts ? texts.loginInProgress : "ë¡œê·¸ì¸ ì¤‘...");
+
+        var res = auth.Login(email, password);
+        if (!res.Ok || res.Value == null)
+        {
+            view.SetInteractable(true);
+            view.Show(texts ? texts.loginFail : "ì•„ì´ë”” ë˜ëŠ” ë¹„ë°€ë²ˆí˜¸ê°€ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            return;
+        }
 
         var user = res.Value;
+
+        // ì„¸ì…˜ ì €ì¥
+        if (SessionManager.Instance != null)
+            SessionManager.Instance.SignIn(user);
+
+        // USER â†’ HOME, ADMIN/SUPERADMIN â†’ RESULT
         if (navigator != null)
         {
-            // ADMIN ÀÌ»ó ¡æ ResultScene
-            if (user.Role == UserRole.ADMIN || user.Role == UserRole.SUPERADMIN)
-            {
+            if (user.Role >= UserRole.ADMIN)
                 navigator.GoTo(ScreenId.RESULT);
-            }
-            // USER ¡æ HomeScene
             else
-            {
                 navigator.GoTo(ScreenId.HOME);
-            }
         }
     }
 }

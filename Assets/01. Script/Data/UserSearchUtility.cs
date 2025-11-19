@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 
+// 미사용
 public static class UserSearchUtility
 {
     // 이름 정규화(공백 제거 + 소문자)

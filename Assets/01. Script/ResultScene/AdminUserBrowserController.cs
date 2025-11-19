@@ -1,12 +1,12 @@
 ﻿using System.Collections;
-using System.Linq;             
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(AdminUserBrowserUI))]
 public class AdminUserBrowserController : MonoBehaviour
 {
-    AdminUserBrowserUI view; // UI 쪽
-    UserRepository repo; // 데이터 접근용
+    AdminUserBrowserUI view;
+    IAdminDataService admin;      // 🔗 DataService에서 가져옴
 
     Coroutine debounceCo;
     const float DebounceSec = 0.25f;
@@ -14,23 +14,37 @@ public class AdminUserBrowserController : MonoBehaviour
     void Awake()
     {
         view = GetComponent<AdminUserBrowserUI>();
-        repo = new UserRepository();
 
-        // UI가 프레임마다 조합 포함 문자열 푸시 -> 디바운싱후 검색 실행
+        if (DataService.Instance != null && DataService.Instance.Admin != null)
+        {
+            admin = DataService.Instance.Admin;
+        }
+        else
+        {
+            Debug.LogWarning("[AdminUserBrowser] DataService.Admin 없음, 임시 LocalAdminDataService 사용");
+            admin = new LocalAdminDataService();
+        }
+
         view.OnQueryChanged += HandleQueryChanged;
     }
 
-    void Start() => RefreshAll();
+    void Start()
+    {
+        RefreshAll();
+    }
 
     void OnDestroy()
     {
-        if (view) view.OnQueryChanged -= HandleQueryChanged;
+        if (view != null)
+            view.OnQueryChanged -= HandleQueryChanged;
     }
 
-    // UI에서 쿼리 들어올때마다 호출
+    // ── 검색창 입력 디바운스 ───────────────────────────────
     void HandleQueryChanged(string q)
     {
-        if (debounceCo != null) StopCoroutine(debounceCo);
+        if (debounceCo != null)
+            StopCoroutine(debounceCo);
+
         debounceCo = StartCoroutine(CoDebouncedSearch(q));
     }
 
@@ -38,37 +52,99 @@ public class AdminUserBrowserController : MonoBehaviour
     {
         yield return new WaitForSeconds(DebounceSec);
 
-        if (string.IsNullOrWhiteSpace(q)) RefreshAll();
-        else RefreshSearch(q);
+        if (string.IsNullOrWhiteSpace(q))
+            RefreshAll();
+        else
+            RefreshSearch(q);
     }
 
-    // 전체목록 새로고침
+    // ── 전체 목록 새로고침 ─────────────────────────────────
     void RefreshAll()
     {
         view.ClearList();
 
-        var me = SessionManager.Instance?.CurrentUser?.Email;  
-        var list = repo.ListAllUsers(limit: 2000)
-                       .Where(u => string.IsNullOrEmpty(me) || u.Email != me) 
-                       .ToArray();
+        if (admin == null)
+        {
+            Debug.LogError("[AdminUserBrowser] admin data service null");
+            return;
+        }
 
-        foreach (var u in list) view.AddItem(u);
+        var me = SessionManager.Instance?.CurrentUser?.Email;
+
+        var res = admin.SearchUsers("");
+        if (!res.Ok || res.Value == null || res.Value.Length == 0)
+        {
+            view.AddItem(new UserSummary
+            {
+                Name = "사용자 없음",
+                Email = "",
+                Role = UserRole.USER,
+                IsActive = true
+            });
+            return;
+        }
+
+        var list = res.Value
+            .Where(u => string.IsNullOrEmpty(me) || u.Email != me)   // 나 자신은 목록에서 제외
+            .ToArray();
+
+        foreach (var u in list)
+            view.AddItem(u);
+
         if (list.Length == 0)
-            view.AddItem(new UserSummary { Name = "사용자 없음", Email = "", Role = UserRole.USER, IsActive = true });
+        {
+            view.AddItem(new UserSummary
+            {
+                Name = "사용자 없음",
+                Email = "",
+                Role = UserRole.USER,
+                IsActive = true
+            });
+        }
     }
 
-    // 검색어 기반 갱신
+    // ── 검색 결과 새로고침 ─────────────────────────────────
     void RefreshSearch(string q)
     {
         view.ClearList();
 
-        var me = SessionManager.Instance?.CurrentUser?.Email;  // ← 현재 로그인 이메일
-        var list = repo.SearchUsersFriendly(q)
-                       .Where(u => string.IsNullOrEmpty(me) || u.Email != me) // ← 나 제외
-                       .ToArray();
+        if (admin == null)
+        {
+            Debug.LogError("[AdminUserBrowser] admin data service null");
+            return;
+        }
 
-        foreach (var u in list) view.AddItem(u);
+        var me = SessionManager.Instance?.CurrentUser?.Email;
+
+        var res = admin.SearchUsers(q);
+        if (!res.Ok || res.Value == null || res.Value.Length == 0)
+        {
+            view.AddItem(new UserSummary
+            {
+                Name = $"검색 결과 없음: {q}",
+                Email = "",
+                Role = UserRole.USER,
+                IsActive = true
+            });
+            return;
+        }
+
+        var list = res.Value
+            .Where(u => string.IsNullOrEmpty(me) || u.Email != me)
+            .ToArray();
+
+        foreach (var u in list)
+            view.AddItem(u);
+
         if (list.Length == 0)
-            view.AddItem(new UserSummary { Name = $"검색 결과 없음: {q}", Email = "", Role = UserRole.USER, IsActive = true });
+        {
+            view.AddItem(new UserSummary
+            {
+                Name = $"검색 결과 없음: {q}",
+                Email = "",
+                Role = UserRole.USER,
+                IsActive = true
+            });
+        }
     }
 }
