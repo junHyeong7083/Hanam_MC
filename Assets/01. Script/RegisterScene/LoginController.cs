@@ -25,7 +25,7 @@ public class LoginController : MonoBehaviour
         else
         {
             Debug.LogWarning("[LoginController] DataService.Auth 없음, 임시 AuthService 생성");
-            auth = new AuthService(new UserRepository());
+            auth = new AuthService(new UserRepository());        
         }
 
         view.OnGoSignupRequested += HandleGoSignup;

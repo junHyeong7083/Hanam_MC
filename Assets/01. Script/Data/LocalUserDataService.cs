@@ -20,7 +20,7 @@ public interface IUserDataService
     Result<ResultDoc> FetchResult(string resultIdOrSessionId);
 
     // 사용자가 푼 문제 번호 목록
-    Result<int[]> FetchSolvedProblemIndexes(string userEmail, string theme = null);
+    Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme);
 }
 
 public class LocalUserDataService : IUserDataService
@@ -107,11 +107,15 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
-    public Result<int[]> FetchSolvedProblemIndexes(string userEmail, string theme = null)
+    public Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme)
     {
         try
         {
-            var indexes = _db.GetSolvedProblemIndexes(userEmail, theme) ?? Array.Empty<int>();
+            string themeKey = theme.ToString();
+
+            var indexes = _db.GetSolvedProblemIndexes(userEmail, themeKey)
+                         ?? Array.Empty<int>();
+
             return Result<int[]>.Success(indexes);
         }
         catch (Exception e)

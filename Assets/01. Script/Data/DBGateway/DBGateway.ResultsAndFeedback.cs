@@ -1,7 +1,7 @@
-using System;
+ï»¿using System;
 using System.Linq;
 
-// °á°ú(ResultDoc), ÇÇµå¹é(Feedback) °ü·Ã DB Á¢±Ù
+// ê²°ê³¼(ResultDoc), í”¼ë“œë°±(Feedback) ê´€ë ¨ DB ì ‘ê·¼
 public partial class DBGateway
 {
     public void InsertResult(ResultDoc result)
@@ -14,9 +14,11 @@ public partial class DBGateway
             col.EnsureIndex(x => x.Id, true);
             col.EnsureIndex(x => x.UserId);
             col.EnsureIndex(x => x.Stage);
+            col.EnsureIndex(x => x.Theme);   
             col.Insert(result);
         });
     }
+
 
     public ResultDoc[] GetResultsByUser(string userEmail)
     {

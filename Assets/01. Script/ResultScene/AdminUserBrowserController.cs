@@ -28,10 +28,7 @@ public class AdminUserBrowserController : MonoBehaviour
         view.OnQueryChanged += HandleQueryChanged;
     }
 
-    void Start()
-    {
-        RefreshAll();
-    }
+    void Start() => RefreshAll();
 
     void OnDestroy()
     {

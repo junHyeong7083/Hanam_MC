@@ -112,13 +112,16 @@ public partial class DBGateway
             users.EnsureIndex(x => x.Email, true);
             results.EnsureIndex(x => x.UserId);
             results.EnsureIndex(x => x.Stage);
+            results.EnsureIndex(x => x.Theme);
 
             var user = users.FindOne(u => u.Email == userEmail);
             if (user == null) return Array.Empty<int>();
 
-            var q = results.Find(r => r.UserId == user.Id);
+            var q = results.Find(r =>
+                r.UserId == user.Id &&
+                (string.IsNullOrEmpty(theme) || r.Theme == theme)    
+            );
 
-            // theme별로 구분하고 싶으면 여기서 theme 사용
             var indexes = q.Select(r => r.Stage)
                            .Distinct()
                            .OrderBy(i => i)

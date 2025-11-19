@@ -26,6 +26,7 @@ public class HomeSceneUI : MonoBehaviour
         if (startProblemButton) startProblemButton.onClick.AddListener(ClickStartProblem);
         if (historyButton) historyButton.onClick.AddListener(ClickHistory);
         if (logoutButton) logoutButton.onClick.AddListener(ClickLogout);
+
     }
 
     // ── 버튼 콜백 ───────────────────────────────────────────────

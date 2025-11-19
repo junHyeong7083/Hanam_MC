@@ -15,7 +15,6 @@ public partial class DBGateway
     // 式式式式式式式式式式式式式式式式式式式式式式式式式式式式式
     // 奢辨 ⑦ぷ (DBHelper 楚ё)
     // 式式式式式式式式式式式式式式式式式式式式式式式式式式式式式
-
     public T WithDb<T>(Func<LiteDatabase, T> func)
     {
         return DBHelper.With(func);

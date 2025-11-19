@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// 회원가입 / 로그인 / 이메일 중복 확인을 담당하는 인증 서비스.
@@ -16,9 +17,9 @@ public class AuthService : IAuthService
     private readonly IUserRepository _repo;
     private const int BcryptWorkFactor = 10;
 
-    public AuthService(IUserRepository repo = null)
+    public AuthService(IUserRepository repo)
     {
-        _repo = repo ?? new UserRepository();
+        _repo = repo ?? throw new ArgumentNullException(nameof(repo));
         EnsureSuperAdmin();
     }
 

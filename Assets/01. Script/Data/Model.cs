@@ -33,6 +33,7 @@ public class ResultDoc
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string UserId { get; set; }     // User(class).Id 참조
+    public string Theme { get; set; }
     public int Stage { get; set; }         // 1..10 (문제 단계 번호)
     public int Score { get; set; }          // 점수
     public decimal? CorrectRate { get; set; } // 정답비율
