@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,27 +8,31 @@ public class ThemePanelsController : MonoBehaviour
     [Serializable]
     public class ThemePanelBinding
     {
-        [Tooltip("ÀÌ ÆĞ³ÎÀÌ ´ã´çÇÏ´Â Å×¸¶ (Director / Gardener µî)")]
+        [Tooltip("ì´ íŒ¨ë„ì´ ë‹´ë‹¹í•˜ëŠ” í…Œë§ˆ (Director / Gardener ë“±)")]
         public ProblemTheme theme = ProblemTheme.Director;
 
-        [Tooltip("ÇØ´ç Å×¸¶ÀÇ ¹®Á¦ ÆĞ³Î UI")]
+        [Tooltip("í•´ë‹¹ í…Œë§ˆì˜ ë¬¸ì œ íŒ¨ë„ UI")]
         public ThemePanelUI panel;
 
-        [Tooltip("ÀÌ Å×¸¶¿¡ ¼ÓÇÑ ¹®Á¦ ¼ö")]
+        [Tooltip("ì´ í…Œë§ˆì— ì†í•œ ë¬¸ì œ ìˆ˜")]
         public int totalProblems = 10;
     }
 
     [Header("Navigation")]
     [SerializeField] SceneNavigator navigator;
 
-    [Header("°¢ Å×¸¶º° ÆĞ³Î ¹ÙÀÎµù")]
+    [Header("ê° í…Œë§ˆë³„ íŒ¨ë„ ë°”ì¸ë”©")]
     [SerializeField] ThemePanelBinding[] themePanels;
+
+    // ğŸ”¹ íŒ¨ë„ë³„ë¡œ êµ¬ë…í•œ í•¸ë“¤ëŸ¬ë¥¼ ì €ì¥í•´ë‘ëŠ” ë”•ì…”ë„ˆë¦¬
+    private readonly Dictionary<ThemePanelUI, Action<int>> _clickHandlers
+        = new Dictionary<ThemePanelUI, Action<int>>();
 
     User currentUser;
 
     void Awake()
     {
-        // °¢ ÆĞ³ÎÀÇ Å¬¸¯ ÀÌº¥Æ®¸¦ ÇÏ³ªÀÇ ÇÚµé·¯·Î ¹­±â
+        // ê° íŒ¨ë„ì˜ í´ë¦­ ì´ë²¤íŠ¸ë¥¼ í•˜ë‚˜ì˜ í•¸ë“¤ëŸ¬ë¡œ ë¬¶ê¸°
         if (themePanels == null) return;
 
         foreach (var entry in themePanels)
@@ -38,7 +42,11 @@ public class ThemePanelsController : MonoBehaviour
             var theme = entry.theme;
             var panel = entry.panel;
 
-            panel.OnProblemClicked += index => HandleProblemClicked(theme, index);
+            // ì—¬ê¸°ì„œ í•œ ë²ˆ ë§Œë“  í•¸ë“¤ëŸ¬ë¥¼ ë”•ì…”ë„ˆë¦¬ì— ì €ì¥
+            Action<int> handler = index => HandleProblemClicked(theme, index);
+            _clickHandlers[panel] = handler;
+
+            panel.OnProblemClicked += handler;
         }
     }
 
@@ -50,20 +58,23 @@ public class ThemePanelsController : MonoBehaviour
         {
             if (entry == null || entry.panel == null) continue;
 
-            var theme = entry.theme;
             var panel = entry.panel;
 
-            panel.OnProblemClicked -= index => HandleProblemClicked(theme, index);
-            // ½ÇÁ¦·Î´Â ¶÷´Ù Ä¸ÃÄ ¶§¹®¿¡ ÀÌ°Ç Á¦°Å ¾È µÇÁö¸¸,
-            // ¾îÂ÷ÇÇ ¾À ÀüÈ¯ ½Ã °°ÀÌ ³¯¾Æ°¡¼­ Å©°Ô ¹®Á¦´Â ¾È µÊ.
+            // Awakeì—ì„œ ì €ì¥í•œ ê°™ì€ í•¸ë“¤ëŸ¬ ì¸ìŠ¤í„´ìŠ¤ë¥¼ êº¼ë‚´ì„œ í•´ì œ
+            if (_clickHandlers.TryGetValue(panel, out var handler))
+            {
+                panel.OnProblemClicked -= handler;
+            }
         }
+
+        _clickHandlers.Clear();
     }
 
     void Start()
     {
         if (SessionManager.Instance == null || SessionManager.Instance.CurrentUser == null)
         {
-            Debug.LogWarning("[ThemePanels] ·Î±×ÀÎ »óÅÂ°¡ ¾Æ´Ô. Register È­¸éÀ¸·Î ÀÌµ¿.");
+            Debug.LogWarning("[ThemePanels] ë¡œê·¸ì¸ ìƒíƒœê°€ ì•„ë‹˜. Register í™”ë©´ìœ¼ë¡œ ì´ë™.");
             navigator?.GoTo(ScreenId.REGISTER);
             return;
         }
@@ -74,7 +85,7 @@ public class ThemePanelsController : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ğµç Å×¸¶ ÆĞ³Î ¹öÆ° Àá±İ/ÇØÁ¦ »óÅÂ °»½Å
+    /// ëª¨ë“  í…Œë§ˆ íŒ¨ë„ ë²„íŠ¼ ì ê¸ˆ/í•´ì œ ìƒíƒœ ê°±ì‹ 
     /// </summary>
     void RefreshAllPanels()
     {
@@ -87,10 +98,10 @@ public class ThemePanelsController : MonoBehaviour
     }
 
     /// <summary>
-    /// Æ¯Á¤ Å×¸¶ ÆĞ³Î ÇÏ³ª¿¡ ´ëÇØ
-    /// - ÀÌ¹Ì Ç¬ ¹®Á¦ ¸ñ·Ï Á¶È¸
-    /// - ¼øÂ÷ Á¦ÇÑ / ÀüÃ¼ ¿ÀÇÂ ±ÔÄ¢ Àû¿ë
-    /// - UI¿¡ ¹İ¿µ
+    /// íŠ¹ì • í…Œë§ˆ íŒ¨ë„ í•˜ë‚˜ì— ëŒ€í•´
+    /// - ì´ë¯¸ í‘¼ ë¬¸ì œ ëª©ë¡ ì¡°íšŒ
+    /// - ìˆœì°¨ ì œí•œ / ì „ì²´ ì˜¤í”ˆ ê·œì¹™ ì ìš©
+    /// - UIì— ë°˜ì˜
     /// </summary>
     void RefreshSinglePanel(ThemePanelBinding entry)
     {
@@ -98,13 +109,14 @@ public class ThemePanelsController : MonoBehaviour
 
         if (DataService.Instance == null || DataService.Instance.User == null)
         {
-            Debug.LogError("[ThemePanels] DataService.Instance.User °¡ ÁØºñµÇÁö ¾ÊÀ½");
+            Debug.LogError("[ThemePanels] DataService.Instance.User ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ");
             return;
         }
 
         var theme = entry.theme;
         int totalProblems = Mathf.Max(1, entry.totalProblems);
 
+        // enum ê¸°ë°˜ìœ¼ë¡œ í˜¸ì¶œ (LocalUserDataServiceì—ì„œ theme.ToString() -> DBë¡œ ì „ë‹¬)
         var res = DataService.Instance.User.FetchSolvedProblemIndexes(currentUser.Email, theme);
         int[] solved = (res.Ok && res.Value != null) ? res.Value : Array.Empty<int>();
 
@@ -118,7 +130,7 @@ public class ThemePanelsController : MonoBehaviour
                 Enumerable.Range(1, totalProblems).All(i => solvedSet.Contains(i));
         }
 
-        bool[] unlocked = new bool[totalProblems + 1]; // 1 ±â¹İ
+        bool[] unlocked = new bool[totalProblems + 1]; // 1 ê¸°ë°˜
 
         int nextIndex = -1;
         if (!allSolved)
@@ -139,12 +151,12 @@ public class ThemePanelsController : MonoBehaviour
         {
             if (allSolved)
             {
-                // 10°³ ´Ù Ç®¾úÀ¸¸é ¡æ ÀüÃ¼ ¾ğ¶ô
+                // 10ê°œ ë‹¤ í’€ì—ˆìœ¼ë©´ -> ì „ì²´ ì–¸ë½
                 unlocked[i] = true;
             }
             else
             {
-                // ¾ÆÁ÷ ÇÑ ¹ÙÄû ¾È µ¹¾ÒÀ¸¸é ¡æ '´ÙÀ½ ¹®Á¦'¸¸ ¾ğ¶ô
+                // ì•„ì§ í•œ ë°”í€´ ì•ˆ ëŒì•˜ìœ¼ë©´ -> 'ë‹¤ìŒ ë¬¸ì œ'ë§Œ ì–¸ë½
                 unlocked[i] = (i == nextIndex);
             }
         }
@@ -153,28 +165,28 @@ public class ThemePanelsController : MonoBehaviour
     }
 
     /// <summary>
-    /// ¾î¶² Å×¸¶ÀÇ ¸î ¹ø ¹®Á¦ ¹öÆ°ÀÌ ´­·È´ÂÁö Ã³¸®
+    /// ì–´ë–¤ í…Œë§ˆì˜ ëª‡ ë²ˆ ë¬¸ì œ ë²„íŠ¼ì´ ëˆŒë ¸ëŠ”ì§€ ì²˜ë¦¬
     /// </summary>
     void HandleProblemClicked(ProblemTheme theme, int index)
     {
-        // ¹æ¾î ·ÎÁ÷: totalProblems ¾È ³Ñ´ÂÁö °£´ÜÈ÷ Ã¼Å© (ÇÊ¿ä ¾øÀ¸¸é »©µµ µÊ)
+        // ë°©ì–´ ë¡œì§: totalProblems ì•ˆ ë„˜ëŠ”ì§€ ê°„ë‹¨íˆ ì²´í¬
         var binding = themePanels?.FirstOrDefault(b => b.theme == theme);
         if (binding == null)
         {
-            Debug.LogWarning($"[ThemePanels] Å×¸¶ {theme} ¹ÙÀÎµùÀ» Ã£À» ¼ö ¾øÀ½");
+            Debug.LogWarning($"[ThemePanels] í…Œë§ˆ {theme} ë°”ì¸ë”©ì„ ì°¾ì„ ìˆ˜ ì—†ìŒ");
             return;
         }
 
         if (index < 1 || index > binding.totalProblems)
         {
-            Debug.LogWarning($"[ThemePanels] Àß¸øµÈ ¹®Á¦ ¹øÈ£ Å¬¸¯: {theme} - {index}");
+            Debug.LogWarning($"[ThemePanels] ì˜ëª»ëœ ë¬¸ì œ ë²ˆí˜¸ í´ë¦­: {theme} - {index}");
             return;
         }
 
-        // ProblemScene¿¡¼­ »ç¿ëÇÒ ÄÁÅØ½ºÆ® ¼¼ÆÃ
+        // ProblemSceneì—ì„œ ì‚¬ìš©í•  ì»¨í…ìŠ¤íŠ¸ ì„¸íŒ…
         ProblemSession.CurrentTheme = theme;
         ProblemSession.CurrentProblemIndex = index;
-        ProblemSession.CurrentProblemId = null; // ProblemScene¿¡¼­ Theme+Index·Î Á¶È¸ ÈÄ Ã¤¿öµµ µÊ
+        ProblemSession.CurrentProblemId = null; // ProblemSceneì—ì„œ Theme+Indexë¡œ ì¡°íšŒ í›„ ì±„ì›Œë„ ë¨
 
         navigator?.GoTo(ScreenId.PROBLEM);
     }
