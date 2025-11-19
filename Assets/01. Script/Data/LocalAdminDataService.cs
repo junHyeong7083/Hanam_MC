@@ -24,8 +24,8 @@ public class LocalAdminDataService : IAdminDataService
 
     public LocalAdminDataService(DBGateway db = null, IUserRepository userRepo = null)
     {
-        _db = db ?? new DBGateway();
-        _userRepo = userRepo ?? new UserRepository(_db);
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
     }
 
     public Result<UserSummary[]> SearchUsers(string query)
