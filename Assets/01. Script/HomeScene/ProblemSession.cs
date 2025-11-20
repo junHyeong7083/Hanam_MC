@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 
 /// <summary>
 /// ProblemScene에서 필요한 컨텍스트를 임시로 담아두는 스태틱 컨테이너.
@@ -8,7 +9,7 @@ public static class ProblemSession
 {
     /// <summary>예: Director, Gardener 등</summary>
     public static ProblemTheme CurrentTheme { get; set; }
-
+    
     /// <summary>테마 안에서의 문제 번호(1~10)</summary>
     public static int CurrentProblemIndex { get; set; }
 
