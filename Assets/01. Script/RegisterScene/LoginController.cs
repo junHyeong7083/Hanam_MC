@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(LoginFormUI))]
 public class LoginController : MonoBehaviour
@@ -17,16 +18,15 @@ public class LoginController : MonoBehaviour
     {
         view = GetComponent<LoginFormUI>();
 
-        //  DataService에서 Auth 가져오기
-        if (DataService.Instance != null && DataService.Instance.Auth != null)
+        // DataService에서 Auth 가져오기 (유일한 진실 소스)
+        if (DataService.Instance == null || DataService.Instance.Auth == null)
         {
-            auth = DataService.Instance.Auth;
+            Debug.LogError("[LoginController] DataService.Auth 없음. DataService 세팅을 먼저 확인하세요.");
+            enabled = false;
+            return;
         }
-        else // TODO : 추후 베포시 ELSE부분 삭제하기
-        {
-            Debug.LogWarning("[LoginController] DataService.Auth 없음, 임시 AuthService 생성");
-            auth = new AuthService(new UserRepository());        
-        }
+
+        auth = DataService.Instance.Auth;
 
         view.OnGoSignupRequested += HandleGoSignup;
         view.OnLoginRequested += HandleLogin;

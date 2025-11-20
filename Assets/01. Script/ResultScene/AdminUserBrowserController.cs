@@ -15,15 +15,14 @@ public class AdminUserBrowserController : MonoBehaviour
     {
         view = GetComponent<AdminUserBrowserUI>();
 
-        if (DataService.Instance != null && DataService.Instance.Admin != null)
+        if (DataService.Instance == null || DataService.Instance.Admin == null)
         {
-            admin = DataService.Instance.Admin;
+            Debug.LogError("[AdminUserBrowser] DataService.Admin 없음. DataService 설정을 먼저 확인하세요.");
+            enabled = false;
+            return;
         }
-        else
-        {
-            Debug.LogWarning("[AdminUserBrowser] DataService.Admin 없음, 임시 LocalAdminDataService 사용");
-            admin = new LocalAdminDataService();
-        }
+
+        admin = DataService.Instance.Admin;
 
         view.OnQueryChanged += HandleQueryChanged;
     }

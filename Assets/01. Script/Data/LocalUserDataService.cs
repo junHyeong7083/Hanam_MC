@@ -27,9 +27,9 @@ public class LocalUserDataService : IUserDataService
 {
     readonly DBGateway _db;
 
-    public LocalUserDataService(DBGateway db = null)
+    public LocalUserDataService(DBGateway db)
     {
-        _db = db ?? new DBGateway();
+        _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
     public Result<UserProgress> FetchProgress(string userEmail)

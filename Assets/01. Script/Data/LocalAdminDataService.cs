@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// 관리자용 데이터 서비스 (검색 / 결과 조회 / 피드백 등록).
-/// 실제 DB 접근은 DbGateway + IUserRepository를 통해서만 한다.
+/// 실제 DB 접근은 DbGateway를 통해서만 한다.
 /// </summary>
 public interface IAdminDataService
 {
@@ -20,19 +20,17 @@ public interface IAdminDataService
 public class LocalAdminDataService : IAdminDataService
 {
     readonly DBGateway _db;
-    readonly IUserRepository _userRepo;
 
-    public LocalAdminDataService(DBGateway db = null, IUserRepository userRepo = null)
+    public LocalAdminDataService(DBGateway db)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
-        _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
     }
 
     public Result<UserSummary[]> SearchUsers(string query)
     {
         try
         {
-            var items = _userRepo.SearchUsersFriendly(query ?? string.Empty)
+            var items = _db.SearchUsersFriendly(query ?? string.Empty)
                         ?? Array.Empty<UserSummary>();
             return Result<UserSummary[]>.Success(items);
         }

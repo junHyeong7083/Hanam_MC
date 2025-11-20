@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// 앱 전체에서 사용하는 데이터/서비스 싱글톤 허브.
@@ -12,8 +13,9 @@ public class DataService : MonoBehaviour
     [SerializeField] bool useRemote = false;
     [SerializeField] string baseUrl = "https://api.example.com";
 
+    // DbGateway는 여전히 외부에 노출 (AdminService 등에서 사용할 수 있음)
     public DBGateway Db { get; private set; }
-    public IUserRepository UserRepo { get; private set; }
+
     public IAuthService Auth { get; private set; }
     public IUserDataService User { get; private set; }
     public IAdminDataService Admin { get; private set; }
@@ -27,9 +29,9 @@ public class DataService : MonoBehaviour
         // 현재는 로컬 DB만 사용.
         // 나중에 useRemote가 true일 때는 HTTP 기반 서비스로 갈아끼우면 됨.
         Db = new DBGateway();
-        UserRepo = new UserRepository(Db);
-        Auth = new AuthService(UserRepo);
+
+        Auth = new AuthService(Db);
         User = new LocalUserDataService(Db);
-        Admin = new LocalAdminDataService(Db, UserRepo);
+        Admin = new LocalAdminDataService(Db);
     }
 }

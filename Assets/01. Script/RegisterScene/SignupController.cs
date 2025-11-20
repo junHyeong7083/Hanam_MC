@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 [RequireComponent(typeof(SignupFormUI))]
 public class SignupController : MonoBehaviour
@@ -18,16 +19,15 @@ public class SignupController : MonoBehaviour
     {
         view = GetComponent<SignupFormUI>();
 
-        //  DataService에서 Auth 가져오기
-        if (DataService.Instance != null && DataService.Instance.Auth != null)
+        // DataService에서 Auth 가져오기
+        if (DataService.Instance == null || DataService.Instance.Auth == null)
         {
-            auth = DataService.Instance.Auth;
+            Debug.LogError("[SignupController] DataService.Auth 없음. DataService 세팅을 먼저 확인하세요.");
+            enabled = false;
+            return;
         }
-        else // TODO : 추후 베포시 ELSE부분 삭제하기
-        {
-            Debug.LogWarning("[SignupController] DataService.Auth 없음, 임시 AuthService 생성");
-            auth = new AuthService(new UserRepository());
-        }
+
+        auth = DataService.Instance.Auth;
 
         // 이벤트 바인딩
         view.OnCheckEmailRequested += HandleCheckEmail;
