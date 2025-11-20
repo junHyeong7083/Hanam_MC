@@ -6,7 +6,7 @@ using UnityEngine;
 public class AdminUserBrowserController : MonoBehaviour
 {
     AdminUserBrowserUI view;
-    IAdminDataService admin;      // 🔗 DataService에서 가져옴
+    IAdminDataService admin;     
 
     Coroutine debounceCo;
     const float DebounceSec = 0.25f;
