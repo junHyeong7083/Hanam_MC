@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProblemFlowController : MonoBehaviour
+public class StepFlowController : MonoBehaviour   
 {
-    [Header("이 문제에서 사용할 패널 순서")]
+    [Header("이 흐름에서 사용할 패널 순서")]
     [SerializeField] private List<GameObject> stepPanels = new List<GameObject>();
 
     [Header("Skip 설정 (Intro 건너뛰기 등)")]
