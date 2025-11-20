@@ -61,5 +61,6 @@ public enum AuthError
     // 비밀번호 불일치
     PasswordMismatch,
     // 내부 오류(네트워크/DB/예상치 못한 예외 등)
-    Internal
+    Internal,
+    InventoryError
 }

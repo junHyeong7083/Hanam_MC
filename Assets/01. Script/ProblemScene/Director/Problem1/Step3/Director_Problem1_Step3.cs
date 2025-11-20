@@ -345,6 +345,7 @@ public class Director_Problem1_Step3 : MonoBehaviour
         if (DataService.Instance == null || DataService.Instance.User == null)
         {
             Debug.LogWarning("[Director_Problem1_Step3] DataService.Instance.User 없음 - DB 저장 불가");
+
             return;
         }
 
@@ -369,6 +370,6 @@ public class Director_Problem1_Step3 : MonoBehaviour
         };
 
         DataService.Instance.User.SaveAttempt(attempt);
-        Debug.Log("[Director_Problem1_Step3] SaveAttempt 호출 완료");
+       // Debug.Log("[Director_Problem1_Step3] SaveAttempt 호출 완료");
     }
 }

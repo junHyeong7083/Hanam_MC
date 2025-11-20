@@ -21,6 +21,10 @@ public interface IUserDataService
 
     // 사용자가 푼 문제 번호 목록
     Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme);
+
+    // ===== 인벤토리 =====
+    Result GrantInventoryItem(string userEmail, InventoryItem item);
+    Result<InventoryItem[]> GetInventory(string userEmail);
 }
 
 public class LocalUserDataService : IUserDataService
@@ -122,6 +126,46 @@ public class LocalUserDataService : IUserDataService
         {
             Debug.LogError($"[LocalUserData] FetchSolvedProblemIndexes: {e}");
             return Result<int[]>.Fail(AuthError.Internal);
+        }
+    }
+
+    // =========================
+    // 인벤토리 관련 메서드
+    // =========================
+    public Result GrantInventoryItem(string userEmail, InventoryItem item)
+    {
+        if (item == null)
+            return Result.Fail(AuthError.Internal, "Inventory item is null");
+
+        try
+        {
+            // 이미 있으면 조용히 성공 처리
+            if (_db.HasInventoryItem(userEmail, item.ItemId))
+                return Result.Success();
+
+            _db.AddInventoryItem(item);
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[LocalUserData] GrantInventoryItem error: {ex}");
+            return Result.Fail(AuthError.InventoryError, "인벤토리 저장 중 오류가 발생했습니다.");
+        }
+    }
+
+    public Result<InventoryItem[]> GetInventory(string userEmail)
+    {
+        try
+        {
+            var list = _db.GetInventoryByUser(userEmail);
+            var arr = (list != null) ? list.ToArray() : Array.Empty<InventoryItem>();
+            Debug.Log("DB List" + list);
+            return Result<InventoryItem[]>.Success(arr);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[LocalUserData] GetInventory error: {ex}");
+            return Result<InventoryItem[]>.Fail(AuthError.InventoryError);
         }
     }
 }

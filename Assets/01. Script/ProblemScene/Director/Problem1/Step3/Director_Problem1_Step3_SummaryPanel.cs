@@ -128,7 +128,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         int configCount = (lineConfigs != null) ? lineConfigs.Length : 0;
         int count = Mathf.Min(descCount, configCount);
 
-        Debug.Log($"[SummaryPanel] descriptions={descCount}, configs={configCount}, loopCount={count}");
+        //Debug.Log($"[SummaryPanel] descriptions={descCount}, configs={configCount}, loopCount={count}");
 
         for (int i = 0; i < count; i++)
         {
@@ -172,7 +172,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             if (textComp != null)
                 textComp.text = data.description;
 
-            Debug.Log($"[SummaryPanel] line {i} 积己 - \"{data.description}\"");
+           // Debug.Log($"[SummaryPanel] line {i} 积己 - \"{data.description}\"");
 
             // 2) 矫累/格钎 困摹
             rt.position = spawn.position;

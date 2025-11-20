@@ -58,6 +58,17 @@ public class Problem
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
+public class InventoryItem
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();          // LiteDB ObjectId 문자열 or Guid
+    public string UserEmail { get; set; }   // 소유자
+    public string ItemId { get; set; }      // "mind_lens" 같은 내부 ID
+    public string ItemName { get; set; }    // "마음 렌즈" (관리자/리포트용)
+
+    public ProblemTheme Theme { get; set; } // 어디 문제에서 주는지 메
+    public DateTime AcquiredAt { get; set; }
+}
+
 public class SessionRecord
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
