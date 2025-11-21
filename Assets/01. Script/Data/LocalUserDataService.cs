@@ -95,6 +95,18 @@ public class LocalUserDataService : IUserDataService
 
         try
         {
+            var sess = SessionManager.Instance;
+            var currentUser = sess?.CurrentUser;
+
+            if (currentUser != null)
+            {
+                // UserId / Email 보정
+                if (string.IsNullOrEmpty(attempt.UserId))
+                    attempt.UserId = currentUser.Id;
+                if (string.IsNullOrEmpty(attempt.UserEmail))
+                    attempt.UserEmail = currentUser.Email;
+            }
+
             if (string.IsNullOrEmpty(attempt.Id))
                 attempt.Id = Guid.NewGuid().ToString();
             if (attempt.CreatedAt == default)
@@ -109,6 +121,7 @@ public class LocalUserDataService : IUserDataService
             return Result.Fail(AuthError.Internal);
         }
     }
+
 
     public Result<ResultDoc> FetchResult(string resultIdOrSessionId)
     {
@@ -154,14 +167,16 @@ public class LocalUserDataService : IUserDataService
     // 편의 메서드: 현재 로그인 사용자 기준 Attempt / Reward 저장
     // =========================
     public Result SaveStepAttemptForCurrentUser(
-        ProblemTheme theme,
-        int problemIndex,
-        string problemId,
-        object payload
-    )
+      ProblemTheme theme,
+      int problemIndex,
+      string problemId,
+      object payload
+  )
     {
-        if (SessionManager.Instance == null ||
-            SessionManager.Instance.CurrentUser == null)
+        var sess = SessionManager.Instance;
+        var currentUser = sess?.CurrentUser;
+
+        if (sess == null || currentUser == null)
         {
             Debug.LogWarning("[LocalUserData] 세션/유저 없음 - Attempt 저장 스킵");
             return Result.Fail(AuthError.Internal, "세션 정보가 없습니다.");
@@ -169,19 +184,21 @@ public class LocalUserDataService : IUserDataService
 
         try
         {
-            string userEmail = SessionManager.Instance.CurrentUser.Email;
-            string sessionId = SessionManager.Instance.SessionId;
-
-            string contentJson = JsonUtility.ToJson(payload);
+            // body는 JSON 직렬화를 위해 문자열로 저장
+            string json = payload != null
+                ? UnityEngine.JsonUtility.ToJson(payload)
+                : null;
 
             var attempt = new Attempt
             {
-                SessionId = sessionId,
-                UserEmail = userEmail,
-                Content = contentJson,
-                ProblemId = string.IsNullOrEmpty(problemId) ? null : problemId,
+                UserId = currentUser.Id,
+                UserEmail = currentUser.Email,
+                SessionId = null,               // 나중에 SessionRecord 도입 시 채워도 됨
+                ProblemId = problemId,
                 Theme = theme,
-                ProblemIndex = problemIndex
+                ProblemIndex = problemIndex,
+                Content = json,
+                CreatedAt = DateTime.UtcNow
             };
 
             return SaveAttempt(attempt);
@@ -193,23 +210,26 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
+
     public Result SaveRewardForCurrentUser(
-        ProblemTheme theme,
-        int problemIndex,
-        string problemId,
-        object payload,
-        string itemId,
-        string itemName
-    )
+     ProblemTheme theme,
+     int problemIndex,
+     string problemId,
+     object payload,
+     string itemId,
+     string itemName
+ )
     {
-        if (SessionManager.Instance == null ||
-            SessionManager.Instance.CurrentUser == null)
+        var sess = SessionManager.Instance;
+        var currentUser = sess?.CurrentUser;
+
+        if (sess == null || currentUser == null)
         {
             Debug.LogWarning("[LocalUserData] 세션/유저 없음 - 보상 저장 스킵");
             return Result.Fail(AuthError.Internal, "세션 정보가 없습니다.");
         }
 
-        string userEmail = SessionManager.Instance.CurrentUser.Email;
+        string userEmail = currentUser.Email;
 
         // 1) Attempt 로그 저장
         var attemptResult = SaveStepAttemptForCurrentUser(
@@ -227,10 +247,12 @@ public class LocalUserDataService : IUserDataService
         {
             var invItem = new InventoryItem
             {
+                UserId = currentUser.Id,
                 UserEmail = userEmail,
                 ItemId = itemId,
                 ItemName = itemName,
                 Theme = theme,
+                ProblemIndex = problemIndex,
                 AcquiredAt = DateTime.UtcNow
             };
 
@@ -239,9 +261,10 @@ public class LocalUserDataService : IUserDataService
         catch (Exception ex)
         {
             Debug.LogError($"[LocalUserData] SaveRewardForCurrentUser error: {ex}");
-            return Result.Fail(AuthError.InventoryError, "인벤토리 저장 중 오류가 발생했습니다.");
+            return Result.Fail(AuthError.Internal);
         }
     }
+
 
     // =========================
     // 인벤토리 관련 메서드
@@ -249,23 +272,31 @@ public class LocalUserDataService : IUserDataService
     public Result GrantInventoryItem(string userEmail, InventoryItem item)
     {
         if (item == null)
-            return Result.Fail(AuthError.Internal, "Inventory item is null");
+            return Result.Fail(AuthError.Internal, "InventoryItem is null");
 
         try
         {
-            // 이미 있으면 조용히 성공 처리
-            if (_db.HasInventoryItem(userEmail, item.ItemId))
-                return Result.Success();
+            var user = _db.FindActiveUserByEmail(userEmail);
+            if (user == null)
+                return Result.Fail(AuthError.NotFoundOrInactive);
+
+            // UserId / Email 보정
+            item.UserId = user.Id;
+            item.UserEmail = user.Email;
+
+            if (item.AcquiredAt == default)
+                item.AcquiredAt = DateTime.UtcNow;
 
             _db.AddInventoryItem(item);
             return Result.Success();
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            Debug.LogError($"[LocalUserData] GrantInventoryItem error: {ex}");
-            return Result.Fail(AuthError.InventoryError, "인벤토리 저장 중 오류가 발생했습니다.");
+            Debug.LogError($"[LocalUserData] GrantInventoryItem: {e}");
+            return Result.Fail(AuthError.Internal);
         }
     }
+
 
     public Result<InventoryItem[]> GetInventory(string userEmail)
     {
@@ -305,10 +336,11 @@ public class LocalUserDataService : IUserDataService
                 return Result.Fail(AuthError.NotFoundOrInactive);
             }
 
-            // 2) 이미 같은 Theme + Stage 결과가 있는지 체크 (중복 방지)
+            // 2) 이미 같은 Theme + ProblemIndex 결과가 있는지 체크 (중복 방지)
             var existing = _db
                 .GetResultsByUser(userEmail)
-                ?.FirstOrDefault(r => r.Stage == problemIndex && r.Theme == themeKey);
+                ?.FirstOrDefault(r => r.ProblemIndex == problemIndex &&
+                                      r.Theme == themeKey);
 
             // 이미 기록되어 있으면 그냥 성공 처리
             if (existing != null)
@@ -321,7 +353,11 @@ public class LocalUserDataService : IUserDataService
             {
                 UserId = user.Id,
                 Theme = themeKey,
-                Stage = problemIndex,
+                ProblemIndex = problemIndex,
+                Score = 0,
+                CorrectRate = null,
+                DurationSec = null,
+                MetaJson = null,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -335,6 +371,7 @@ public class LocalUserDataService : IUserDataService
             return Result.Fail(AuthError.Internal);
         }
     }
+
 
 
 

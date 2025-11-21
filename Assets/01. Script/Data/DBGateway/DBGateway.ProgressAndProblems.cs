@@ -51,6 +51,7 @@ public partial class DBGateway
             };
         });
     }
+
     public Problem GetProblemById(string problemId)
     {
         if (string.IsNullOrWhiteSpace(problemId)) return null;
@@ -76,7 +77,7 @@ public partial class DBGateway
         {
             var col = db.GetCollection<Problem>(CProblems);
             col.EnsureIndex(x => x.Theme);
-            // TODO: Problem에 Stage/Index 필드 생기면 index까지 같이 비교
+            // TODO: Problem에 ProblemIndex 필드가 생기면 theme + index 조합으로 조회하도록 확장
             return col.FindOne(p => p.Theme == theme);
         });
     }
@@ -89,14 +90,19 @@ public partial class DBGateway
         {
             var col = db.GetCollection<Attempt>(CAttempts);
             col.EnsureIndex(x => x.Id, true);
+            col.EnsureIndex(x => x.UserId);
             col.EnsureIndex(x => x.UserEmail);
+            col.EnsureIndex(x => x.ProblemId);
+            col.EnsureIndex(x => x.Theme);
+            col.EnsureIndex(x => x.ProblemIndex);
+
             col.Insert(attempt);
         });
     }
 
     /// <summary>
-    /// 사용자가 푼 문제 번호(Stage) 목록.
-    /// TODO: 테마별로 나누고 싶으면 ResultDoc/Problem 구조를 확장해서 theme 기준 필터 추가.
+    /// 사용자가 푼 문제 번호(ProblemIndex) 목록.
+    /// theme 파라미터로 테마별 필터링 가능.
     /// </summary>
     public int[] GetSolvedProblemIndexes(string userEmail, string theme = null)
     {
@@ -110,7 +116,7 @@ public partial class DBGateway
 
             users.EnsureIndex(x => x.Email, true);
             results.EnsureIndex(x => x.UserId);
-            results.EnsureIndex(x => x.Stage);
+            results.EnsureIndex(x => x.ProblemIndex);
             results.EnsureIndex(x => x.Theme);
 
             var user = users.FindOne(u => u.Email == userEmail);
@@ -118,14 +124,15 @@ public partial class DBGateway
 
             var q = results.Find(r =>
                 r.UserId == user.Id &&
-                (string.IsNullOrEmpty(theme) || r.Theme == theme)    
+                (string.IsNullOrEmpty(theme) || r.Theme == theme)
             );
 
-            var indexes = q.Select(r => r.Stage)
+            var indexes = q.Select(r => r.ProblemIndex)
                            .Distinct()
                            .OrderBy(i => i)
                            .ToArray();
             return indexes;
         });
     }
+
 }

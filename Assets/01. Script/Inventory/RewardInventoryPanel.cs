@@ -86,13 +86,65 @@ public class RewardInventoryPanel : MonoBehaviour
     }
 
     /// <summary>
+    /// DB에서 현재 유저 인벤토리를 읽어와 슬롯 isUnlocked를 맞춰준다.
+    /// (예: 1번 문제에서 이미 얻은 아이템은 여기서 전부 언락 처리)
+    /// </summary>
+    private void SyncSlotsFromDb()
+    {
+        if (slots == null) return;
+
+        var dataService = DataService.Instance;
+        var userService = dataService != null ? dataService.User : null;
+        var session = SessionManager.Instance;
+        var currentUser = session != null ? session.CurrentUser : null;
+
+        if (userService == null || currentUser == null || string.IsNullOrEmpty(currentUser.Email))
+        {
+            // 서비스가 아직 준비 안 됐으면 그냥 인스펙터 기본값만 사용
+            return;
+        }
+
+        var result = userService.GetInventory(currentUser.Email);
+        if (!result.Ok || result.Value == null || result.Value.Length == 0)
+            return;
+
+        var inventory = result.Value;
+
+        // DB에 있는 아이템과 슬롯 itemId를 매칭해서 isUnlocked = true
+        foreach (var s in slots)
+        {
+            if (s == null || string.IsNullOrEmpty(s.itemId))
+                continue;
+
+            bool hasItem = false;
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                var it = inventory[i];
+                if (it != null && it.ItemId == s.itemId)
+                {
+                    hasItem = true;
+                    break;
+                }
+            }
+
+            if (hasItem)
+            {
+                s.isUnlocked = true;
+            }
+        }
+    }
+
+    /// <summary>
     /// 인벤토리를 보여줄 때 사용하는 진입 함수.
     /// unlockedItemId: 이번에 새로 획득한 아이템 ID (없으면 null 또는 빈 문자열).
     /// playAnimation: true면 슬롯들이 순차적으로 등장하는 애니메이션, false면 즉시 표시.
     /// </summary>
     public void ShowInventory(string unlockedItemId, bool playAnimation)
     {
-        // 새로 언락된 아이템이 있으면 슬롯 상태 갱신
+        // 1) DB 기준으로 현재까지 획득한 아이템들 전부 언락
+        SyncSlotsFromDb();
+
+        // 2) 이번 문제에서 새로 얻은 아이템이 있으면 그 슬롯도 언락 표시
         if (!string.IsNullOrEmpty(unlockedItemId))
         {
             var newSlot = FindSlot(unlockedItemId);
@@ -102,24 +154,24 @@ public class RewardInventoryPanel : MonoBehaviour
             }
         }
 
-        // 현재 isUnlocked 상태를 실제 Lock/Unlock 오브젝트에 반영
+        // 3) isUnlocked 상태를 실제 Lock/Unlock 오브젝트에 반영
         ApplyLockStatesFromRuntime();
 
+        // 4) 애니메이션 코루틴 정리
         if (_sequenceRoutine != null)
         {
             StopCoroutine(_sequenceRoutine);
             _sequenceRoutine = null;
         }
 
+        // 5) 애니메이션 or 즉시 표시
         if (playAnimation)
         {
-            // 애니메이션용으로 slot scale/alpha 초기화 후 코루틴 시작
             InitSlotsForAnimation();
             _sequenceRoutine = StartCoroutine(SlotsSequence(unlockedItemId));
         }
         else
         {
-            // 애니메이션 없이 바로 보여주기
             ShowSlotsInstant(unlockedItemId);
         }
     }

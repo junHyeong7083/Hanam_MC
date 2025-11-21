@@ -13,9 +13,21 @@ public partial class DBGateway
             var col = db.GetCollection<ResultDoc>(CResults);
             col.EnsureIndex(x => x.Id, true);
             col.EnsureIndex(x => x.UserId);
-            col.EnsureIndex(x => x.Stage);
-            col.EnsureIndex(x => x.Theme);   
+            col.EnsureIndex(x => x.Theme);
+            col.EnsureIndex(x => x.ProblemIndex); // Stage → ProblemIndex
+
             col.Insert(result);
+        });
+    }
+
+    public void UpdateResult(ResultDoc result)
+    {
+        if (result == null) throw new ArgumentNullException(nameof(result));
+
+        WithDb(db =>
+        {
+            var col = db.GetCollection<ResultDoc>(CResults);
+            col.Update(result);
         });
     }
 
