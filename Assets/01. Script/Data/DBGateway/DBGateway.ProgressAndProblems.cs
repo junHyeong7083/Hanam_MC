@@ -51,7 +51,6 @@ public partial class DBGateway
             };
         });
     }
-
     public Problem GetProblemById(string problemId)
     {
         if (string.IsNullOrWhiteSpace(problemId)) return null;

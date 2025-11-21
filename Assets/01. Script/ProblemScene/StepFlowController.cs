@@ -115,6 +115,30 @@ public class StepFlowController : MonoBehaviour
         GoToStep(target);
     }
 
+    public void ProblemEnd()
+    {
+        var ds = DataService.Instance;
+        var user = SessionManager.Instance?.CurrentUser;
+
+        if (ds != null && ds.User != null && user != null)
+        {
+            var theme = ProblemSession.CurrentTheme;
+            var index = ProblemSession.CurrentProblemIndex;
+
+
+            var res = ds.User.MarkProblemSolvedForCurrentUser(theme, index);
+            if (!res.Ok)
+            {
+                Debug.LogWarning($"[StepFlow] MarkProblemSolved 실패: {res.Error}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[StepFlow] 진행도 저장 실패 - 세션 또는 DataService 없음");
+        }
+        SceneNavigator.Instance.GoTo(ScreenId.HOME);
+    }
+
     protected virtual void OnFlowFinished()
     {
         Debug.Log($"[ProblemFlowController] 문제 흐름 종료: {name}");

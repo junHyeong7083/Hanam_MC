@@ -35,10 +35,6 @@ public class ResultDoc
     public string UserId { get; set; }     // User(class).Id 참조
     public string Theme { get; set; }
     public int Stage { get; set; }         // 1..10 (문제 단계 번호)
-    public int Score { get; set; }          // 점수
-    public decimal? CorrectRate { get; set; } // 정답비율
-    public int? DurationSec { get; set; } // 문제풀이에 걸린 시간
-    public string MetaJson { get; set; }   // 문항별 로그 JSON
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
@@ -109,6 +105,15 @@ public class UserProgress
     public int TotalSessions { get; set; }
     public int TotalSolved { get; set; }
     public DateTime? LastSessionAt { get; set; }
+
+    public void MarkSolved(string themeKey, int problemIndex)
+    {
+        // 여기서는 요약 정보만 간단히 갱신해도 됨.
+        // (필요하면 나중에 테마별 통계, 최근 푼 문제 정보 등 더 넣을 수 있음)
+
+        TotalSolved++;
+        LastSessionAt = DateTime.UtcNow;
+    }
 }
 
 public class UserSummary

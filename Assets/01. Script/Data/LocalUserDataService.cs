@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-
+using System.Linq;
 /// <summary>
 /// 사용자 문제 풀이 / 진행도용 로컬 데이터 서비스.
 /// 실제 DB 접근은 DbGateway를 통해서만 한다.
@@ -43,6 +43,9 @@ public interface IUserDataService
     // ===== 인벤토리 =====
     Result GrantInventoryItem(string userEmail, InventoryItem item);
     Result<InventoryItem[]> GetInventory(string userEmail);
+
+    Result MarkProblemSolvedForCurrentUser(ProblemTheme theme, int problemIndex);
+
 }
 
 public class LocalUserDataService : IUserDataService
@@ -279,4 +282,60 @@ public class LocalUserDataService : IUserDataService
             return Result<InventoryItem[]>.Fail(AuthError.InventoryError);
         }
     }
+
+    public Result MarkProblemSolvedForCurrentUser(ProblemTheme theme, int problemIndex)
+    {
+        var sess = SessionManager.Instance;
+        if (sess == null || sess.CurrentUser == null)
+        {
+            Debug.LogWarning("[LocalUserData] 세션/유저 없음 - 문제 클리어 저장 스킵");
+            return Result.Fail(AuthError.Internal, "세션 정보가 없습니다.");
+        }
+
+        try
+        {
+            string userEmail = sess.CurrentUser.Email;
+            string themeKey = theme.ToString();
+
+            // 1) 현재 로그인한 유저 찾기
+            var user = _db.FindActiveUserByEmail(userEmail);
+            if (user == null)
+            {
+                Debug.LogWarning("[LocalUserData] MarkProblemSolvedForCurrentUser: user not found or inactive");
+                return Result.Fail(AuthError.NotFoundOrInactive);
+            }
+
+            // 2) 이미 같은 Theme + Stage 결과가 있는지 체크 (중복 방지)
+            var existing = _db
+                .GetResultsByUser(userEmail)
+                ?.FirstOrDefault(r => r.Stage == problemIndex && r.Theme == themeKey);
+
+            // 이미 기록되어 있으면 그냥 성공 처리
+            if (existing != null)
+            {
+                return Result.Success();
+            }
+
+            // 3) ResultDoc 한 줄 생성해서 '이 문제를 풀었다' 기록
+            var result = new ResultDoc
+            {
+                UserId = user.Id,
+                Theme = themeKey,
+                Stage = problemIndex,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _db.InsertResult(result);
+
+            return Result.Success();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[LocalUserData] MarkProblemSolvedForCurrentUser: {e}");
+            return Result.Fail(AuthError.Internal);
+        }
+    }
+
+
+
 }

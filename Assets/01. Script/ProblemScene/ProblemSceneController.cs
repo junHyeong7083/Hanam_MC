@@ -88,18 +88,5 @@ public class ProblemSceneController : MonoBehaviour
         }
     }
 
-    /*
-    // 다음 단계: 실제 문제 데이터 로딩 & UI 바인딩용 스켈레톤
-    private void LoadProblemDataAndBind()
-    {
-        var theme = ProblemSession.CurrentTheme;
-        int index = ProblemSession.CurrentProblemIndex;
-
-        // 여기서 DataService.Instance.User를 통해 문제를 불러오도록 확장할 예정
-        // 예)
-        // var res = DataService.Instance.User.FetchProblemByThemeIndex(theme, index);
-        // if (!res.Ok) { ... 에러 처리 ... }
-        // else { 현재 활성화된 Problem_X 오브젝트의 UI 컴포넌트에 텍스트/이미지 세팅 }
-    }
-    */
+   
 }
