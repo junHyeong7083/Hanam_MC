@@ -2451,10 +2451,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Inventory
       objectReference: {fileID: 0}
-    - target: {fileID: 6359892117783355052, guid: e97e48bccb1963344bd02625eb0dcf85, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 9133684132536958664, guid: e97e48bccb1963344bd02625eb0dcf85, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2556,6 +2552,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!225 &362691042 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 5588611184948885622, guid: e97e48bccb1963344bd02625eb0dcf85, type: 3}
+  m_PrefabInstance: {fileID: 362691039}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &368426602
 GameObject:
   m_ObjectHideFlags: 0
@@ -5643,6 +5644,12 @@ MonoBehaviour:
   textDelay: 0.5
   textEnterDuration: 0.4
   textStartOffsetY: -30
+  inventoryPanel: {fileID: 362691041}
+  inventoryRoot: {fileID: 362691040}
+  inventoryCanvasGroup: {fileID: 362691042}
+  inventoryDelay: 0.2
+  inventoryEnterDuration: 0.4
+  inventoryStartOffsetY: -30
   nextButtonCanvasGroup: {fileID: 0}
   nextButtonDelay: 1.5
   nextButtonFadeDuration: 0.3
@@ -5651,7 +5658,7 @@ MonoBehaviour:
   badgeFadeDuration: 0.3
   rewardItemId: mind_lens
   rewardItemName: "\uB9C8\uC74C \uB80C\uC988"
-  inventoryPanel: {fileID: 362691041}
+  context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
 --- !u!1 &1230878154
 GameObject:
   m_ObjectHideFlags: 0
@@ -6794,7 +6801,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1413835130
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9434,7 +9441,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2046801908
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9539,6 +9546,7 @@ MonoBehaviour:
   micIndicator: {fileID: 0}
   stepRoot: {fileID: 1407136721}
   summaryPanelRoot: {fileID: 1983275916}
+  context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
 --- !u!1 &2066423283
 GameObject:
   m_ObjectHideFlags: 0

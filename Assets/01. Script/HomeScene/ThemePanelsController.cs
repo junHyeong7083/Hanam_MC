@@ -18,8 +18,6 @@ public class ThemePanelsController : MonoBehaviour
         public int totalProblems = 10;
     }
 
-    [Header("Navigation")]
-    [SerializeField] SceneNavigator navigator;
 
     [Header("각 테마별 패널 바인딩")]
     [SerializeField] ThemePanelBinding[] themePanels;
@@ -75,7 +73,7 @@ public class ThemePanelsController : MonoBehaviour
         if (SessionManager.Instance == null || SessionManager.Instance.CurrentUser == null)
         {
             Debug.LogWarning("[ThemePanels] 로그인 상태가 아님. Register 화면으로 이동.");
-            navigator?.GoTo(ScreenId.REGISTER);
+            SceneNavigator.Instance?.GoTo(ScreenId.REGISTER);
             return;
         }
 
@@ -188,6 +186,6 @@ public class ThemePanelsController : MonoBehaviour
         ProblemSession.CurrentProblemIndex = index;
         ProblemSession.CurrentProblemId = null; // ProblemScene에서 Theme+Index로 조회 후 채워도 됨
 
-        navigator?.GoTo(ScreenId.PROBLEM);
+        SceneNavigator.Instance?.GoTo(ScreenId.PROBLEM);
     }
 }

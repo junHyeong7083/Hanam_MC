@@ -3,9 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(LoginFormUI))]
 public class LoginController : MonoBehaviour
-{
-    [Header("Navigation")]
-    [SerializeField] SceneNavigator navigator;          // 씬 이동
+{         
     [Header("Tabs")]
     [SerializeField] RegisterTabsController tabs;       // 로그인/회원가입 탭
     [Header("Texts (Optional)")]
@@ -76,12 +74,12 @@ public class LoginController : MonoBehaviour
             SessionManager.Instance.SignIn(user);
 
         // USER → HOME, ADMIN/SUPERADMIN → RESULT
-        if (navigator != null)
+        if (SceneNavigator.Instance != null)
         {
             if (user.Role >= UserRole.ADMIN)
-                navigator.GoTo(ScreenId.RESULT);
+                SceneNavigator.Instance.GoTo(ScreenId.RESULT);
             else
-                navigator.GoTo(ScreenId.HOME);
+                SceneNavigator.Instance.GoTo(ScreenId.HOME);
         }
     }
 }

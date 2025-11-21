@@ -7,6 +7,8 @@ public enum ScreenId { REGISTER, HOME, PROBLEM, RESULT }
 
 public class SceneNavigator : MonoBehaviour
 {
+    public static SceneNavigator Instance { get; private set; }
+
     [Header("Scene Names")]
     [SerializeField] string registerScene = "RegisterScene";
     [SerializeField] string homeScene = "HomeScene";
@@ -14,11 +16,23 @@ public class SceneNavigator : MonoBehaviour
     [SerializeField] string resultScene = "ResultScene";
 
     [Header("Optional Fade")]
-    [SerializeField] CanvasGroup fade;   // 전환용 페이드 (없으면 비워도 됨)
+    [SerializeField] CanvasGroup fade;   // 전환용 페이드 (전역으로 같이 들고 다님)
     [SerializeField] float fadeSpeed = 7f;
 
     readonly Stack<ScreenId> history = new();
-    ScreenId current;
+    ScreenId current = ScreenId.REGISTER;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     public void GoTo(ScreenId id) => StartCoroutine(CoGoTo(id));
 
@@ -69,7 +83,7 @@ public class SceneNavigator : MonoBehaviour
             fade.alpha = Mathf.MoveTowards(fade.alpha, target, Time.unscaledDeltaTime * fadeSpeed);
             yield return null;
         }
-        fade.blocksRaycasts = target > 0.01f;   // 전환 중 클릭 방지
+        fade.blocksRaycasts = target > 0.01f;
         if (target == 0f) fade.gameObject.SetActive(false);
     }
 }

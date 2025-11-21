@@ -40,7 +40,10 @@ public class ProblemFlowController : MonoBehaviour
             if (p != null) p.SetActive(false);
         }
     }
-
+    public void GoToHome()
+    {
+        //SceneNavigator.
+    }
     private void GoToStep(int index)
     {
         if (stepPanels == null || stepPanels.Count == 0) return;

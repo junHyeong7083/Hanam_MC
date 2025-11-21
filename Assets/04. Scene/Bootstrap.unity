@@ -129,9 +129,9 @@ GameObject:
   m_Component:
   - component: {fileID: 92874279}
   - component: {fileID: 92874278}
-  - component: {fileID: 92874280}
   - component: {fileID: 92874281}
   - component: {fileID: 92874282}
+  - component: {fileID: 92874283}
   m_Layer: 0
   m_Name: AppRoot
   m_TagString: Untagged
@@ -151,7 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c034ff9aa28fe1e4c903b164cf1e1237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navigator: {fileID: 92874280}
 --- !u!4 &92874279
 Transform:
   m_ObjectHideFlags: 0
@@ -167,24 +166,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &92874280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 92874277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c891bd1cc03edb64aa1f31dcb410df44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  registerScene: RegisterScene
-  homeScene: HomeScene
-  problemScene: ProblemScene
-  resultScene: ResultScene
-  fade: {fileID: 1420272589}
-  fadeSpeed: 0
 --- !u!114 &92874281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,6 +192,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useRemote: 0
   baseUrl: https://api.example.com
+--- !u!114 &92874283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92874277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c891bd1cc03edb64aa1f31dcb410df44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  registerScene: RegisterScene
+  homeScene: HomeScene
+  problemScene: ProblemScene
+  resultScene: ResultScene
+  fade: {fileID: 1420272589}
+  fadeSpeed: 0
 --- !u!1 &102650665
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,6 +426,37 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &313928756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 313928758}
+  m_Layer: 0
+  m_Name: SceneNavigator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &313928758
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313928756}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &642088894
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,6 +772,7 @@ RectTransform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 313928758}
   - {fileID: 164443224}
   - {fileID: 642088896}
   - {fileID: 92874279}

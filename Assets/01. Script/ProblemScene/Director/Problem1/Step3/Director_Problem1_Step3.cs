@@ -24,23 +24,12 @@ public class Director_Problem1_Step3 : MonoBehaviour
     }
 
     [Serializable]
-    class SortLogEntry
+    public class SortLogEntry
     {
         public int filmId;
         public string text;
-
         public string correctType;   // "생각" 또는 "사실" (원래 타입)
         public string chosenType;    // "생각" 또는 "사실" (사용자 선택)
-    }
-
-    [Serializable]
-    class SortLogPayload
-    {
-        public string stepKey;       // 예: "Director_Problem1_Step3"
-        public string theme;         // "Director" / "Gardener"
-        public int problemIndex;     // 1..10
-
-        public SortLogEntry[] items; // 개별 필름 로그
     }
 
     [Header("문항 설정 (인스펙터에서 입력)")]
@@ -71,28 +60,8 @@ public class Director_Problem1_Step3 : MonoBehaviour
     [SerializeField] private GameObject stepRoot;         // 현재 Step3 패널 루트
     [SerializeField] private GameObject summaryPanelRoot; // 요약 패널 루트
 
-    // ===== DB 메타 정보 =====
-    // 전부 인스펙터에 안 보이게 private
-    private ProblemTheme _theme = ProblemTheme.Director;
-    private int _problemIndex = 1;
-    private string _problemId;
-    private string _sessionId;
-    private string _userEmail;
-
-    // 외부(ProblemSceneController 같은 곳)에서 한 번만 셋업해주면 됨
-    public void ConfigureMeta(
-        ProblemTheme theme,
-        int problemIndex,
-        string problemId,
-        string sessionId,
-        string userEmail)
-    {
-        _theme = theme;
-        _problemIndex = problemIndex;
-        _problemId = problemId;
-        _sessionId = sessionId;
-        _userEmail = userEmail;
-    }
+    [Header("공용 Problem 컨텍스트")]
+    [SerializeField] private ProblemContext context;
 
     // 내부 상태
     private int _currentIndex;       // 0..films.Length
@@ -224,7 +193,7 @@ public class Director_Problem1_Step3 : MonoBehaviour
     // === 버튼에서 연결할 함수들 ===
 
     public void OnClickSortThought() => HandleSort(true);   // 사용자가 '생각' 버튼 클릭
-    public void OnClickSortFact() => HandleSort(false);   // 사용자가 '사실' 버튼 클릭
+    public void OnClickSortFact() => HandleSort(false);     // 사용자가 '사실' 버튼 클릭
 
     private void HandleSort(bool userChoseThought)
     {
@@ -342,34 +311,21 @@ public class Director_Problem1_Step3 : MonoBehaviour
             return;
         }
 
-        if (DataService.Instance == null || DataService.Instance.User == null)
+        if (context == null)
         {
-            Debug.LogWarning("[Director_Problem1_Step3] DataService.Instance.User 없음 - DB 저장 불가");
-
+            Debug.LogWarning("[Director_Problem1_Step3] ProblemContext가 설정되지 않아 저장 스킵");
             return;
         }
 
-        var payload = new SortLogPayload
+        // 이 스텝 키 설정
+        context.CurrentStepKey = "Director_Problem1_Step3";
+
+        // body에는 이 스텝 전용 데이터 구조만 넣어준다.
+        var body = new
         {
-            stepKey = "Director_Problem1_Step3",
-            theme = _theme.ToString(),
-            problemIndex = _problemIndex,
             items = _logs.ToArray()
         };
 
-        string contentJson = JsonUtility.ToJson(payload);
-
-        var attempt = new Attempt
-        {
-            SessionId = _sessionId,
-            UserEmail = _userEmail,
-            Content = contentJson,
-            ProblemId = string.IsNullOrEmpty(_problemId) ? null : _problemId,
-            Theme = _theme,
-            ProblemIndex = _problemIndex
-        };
-
-        DataService.Instance.User.SaveAttempt(attempt);
-       // Debug.Log("[Director_Problem1_Step3] SaveAttempt 호출 완료");
+        context.SaveStepAttempt(body);
     }
 }

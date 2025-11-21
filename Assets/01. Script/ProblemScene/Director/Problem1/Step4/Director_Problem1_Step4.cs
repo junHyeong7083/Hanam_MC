@@ -25,6 +25,15 @@ public class Director_Problem1_Step4 : MonoBehaviour
     [SerializeField] private float textEnterDuration = 0.4f;
     [SerializeField] private float textStartOffsetY = -30f;
 
+    // ===== 인벤토리 패널 =====
+    [Header("Inventory Panel (선택)")]
+    [SerializeField] private RewardInventoryPanel inventoryPanel;
+    [SerializeField] private RectTransform inventoryRoot;
+    [SerializeField] private CanvasGroup inventoryCanvasGroup;
+    [SerializeField] private float inventoryDelay = 0.2f;
+    [SerializeField] private float inventoryEnterDuration = 0.4f;
+    [SerializeField] private float inventoryStartOffsetY = -30f;
+
     // ===== Next 버튼 =====
     [Header("Next Button")]
     [SerializeField] private CanvasGroup nextButtonCanvasGroup;
@@ -42,49 +51,9 @@ public class Director_Problem1_Step4 : MonoBehaviour
     [SerializeField] private string rewardItemId = "mind_lens";
     [SerializeField] private string rewardItemName = "마음 렌즈";
 
-    // ===== 인벤토리 패널 (선택) =====
-    [Header("Inventory Panel (선택)")]
-    [SerializeField] private RewardInventoryPanel inventoryPanel;
-
-    // ===== DB 메타 정보 =====
-    private ProblemTheme _theme = ProblemTheme.Director;
-    private int _problemIndex = 1;
-    private string _problemId;
-    private string _sessionId;
-    private string _userEmail;
-
-    // Step3과 동일 패턴: ProblemScene 쪽에서 한 번만 세팅
-    public void ConfigureMeta(
-        ProblemTheme theme,
-        int problemIndex,
-        string problemId,
-        string sessionId,
-        string userEmail)
-    {
-        _theme = theme;
-        _problemIndex = problemIndex;
-        _problemId = problemId;
-        _sessionId = sessionId;
-        _userEmail = userEmail;
-    }
-
-    // ===== 보상 로그용 내부 DTO =====
-    [Serializable]
-    private class RewardItemLog
-    {
-        public string itemId;
-        public string itemName;
-        public bool unlocked;
-    }
-
-    [Serializable]
-    private class RewardLogPayload
-    {
-        public string stepKey;      // 예: "Director_Problem1_Step4"
-        public string theme;        // "Director" / "Gardener"
-        public int problemIndex;    // 1..10
-        public RewardItemLog[] items;
-    }
+    // ===== 공용 Problem 컨텍스트 =====
+    [Header("공용 Problem 컨텍스트")]
+    [SerializeField] private ProblemContext context;
 
     // ===== 내부 상태 =====
     private Coroutine _sequenceRoutine;
@@ -95,6 +64,9 @@ public class Director_Problem1_Step4 : MonoBehaviour
 
     private bool _textInit;
     private Vector2 _textBasePos;
+
+    private bool _inventoryInit;
+    private Vector2 _inventoryBasePos;
 
     private bool _rewardSaved;
 
@@ -139,6 +111,13 @@ public class Director_Problem1_Step4 : MonoBehaviour
             _textInit = true;
         }
 
+        // Inventory 기본값 캐시
+        if (inventoryRoot != null && !_inventoryInit)
+        {
+            _inventoryBasePos = inventoryRoot.anchoredPosition;
+            _inventoryInit = true;
+        }
+
         // Reward 초기 상태
         if (rewardItemRoot != null)
         {
@@ -154,6 +133,12 @@ public class Director_Problem1_Step4 : MonoBehaviour
         if (textGroupCanvasGroup != null)
             textGroupCanvasGroup.alpha = 0f;
 
+        // Inventory 초기 상태
+        if (inventoryRoot != null)
+            inventoryRoot.anchoredPosition = _inventoryBasePos + new Vector2(0f, inventoryStartOffsetY);
+        if (inventoryCanvasGroup != null)
+            inventoryCanvasGroup.alpha = 0f;
+
         // 버튼/뱃지 초기 상태
         if (nextButtonCanvasGroup != null)
             nextButtonCanvasGroup.alpha = 0f;
@@ -166,18 +151,15 @@ public class Director_Problem1_Step4 : MonoBehaviour
         // 1) 보상 아이템 등장
         yield return RewardEnterRoutine();
 
-        // 2) 텍스트 등장
+        // 2) 텍스트 등장 (완전히 끝날 때까지 기다림)
         if (textGroupRoot != null && textGroupCanvasGroup != null)
-            StartCoroutine(TextEnterRoutine());
+            yield return TextEnterRoutine();
 
-        // 3) 인벤토리 연출 (선택)
-        if (inventoryPanel != null)
-        {
-            // DB에서 인벤토리 다시 읽어와서, 이 itemId 기준으로 슬롯 갱신/효과 처리
-            inventoryPanel.ShowInventory(rewardItemId, true);
-        }
+        // 3) 인벤토리 패널 등장 (텍스트 이후)
+        if (inventoryRoot != null && inventoryCanvasGroup != null && inventoryPanel != null)
+            yield return InventoryEnterRoutine();
 
-        // 4) 버튼/뱃지 페이드 인
+        // 4) 버튼/뱃지 페이드 인 (동시에)
         if (nextButtonCanvasGroup != null)
             StartCoroutine(NextButtonRoutine());
 
@@ -265,6 +247,39 @@ public class Director_Problem1_Step4 : MonoBehaviour
         textGroupCanvasGroup.alpha = 1f;
     }
 
+    // ==== Inventory Panel ====
+    private IEnumerator InventoryEnterRoutine()
+    {
+        if (inventoryRoot == null || inventoryCanvasGroup == null || inventoryPanel == null)
+            yield break;
+
+        // 텍스트가 다 나온 뒤 약간 기다렸다가 등장
+        if (inventoryDelay > 0f)
+            yield return new WaitForSeconds(inventoryDelay);
+
+        // 이 시점에 슬롯 애니메이션 시작
+        inventoryPanel.ShowInventory(rewardItemId, true);
+
+        float t = 0f;
+        Vector2 startPos = inventoryRoot.anchoredPosition;
+        Vector2 endPos = _inventoryBasePos;
+
+        while (t < inventoryEnterDuration)
+        {
+            t += Time.deltaTime;
+            float x = Mathf.Clamp01(t / inventoryEnterDuration);
+            float lerp = Mathf.SmoothStep(0f, 1f, x);
+
+            inventoryRoot.anchoredPosition = Vector2.Lerp(startPos, endPos, lerp);
+            inventoryCanvasGroup.alpha = x;
+
+            yield return null;
+        }
+
+        inventoryRoot.anchoredPosition = endPos;
+        inventoryCanvasGroup.alpha = 1f;
+    }
+
     // ==== Next Button ====
     private IEnumerator NextButtonRoutine()
     {
@@ -309,74 +324,29 @@ public class Director_Problem1_Step4 : MonoBehaviour
         if (_rewardSaved) return;
         _rewardSaved = true;
 
-        if (DataService.Instance == null || DataService.Instance.User == null)
+        if (context == null)
         {
-            Debug.LogWarning("[Director_Problem1_Step4] DataService.Instance.User 없음 - 보상 저장 스킵");
+            Debug.LogWarning("[Director_Problem1_Step4] ProblemContext가 설정되지 않아 보상 저장 스킵");
             return;
         }
 
-        // 혹시 _userEmail이 비어 있으면 현재 세션 이메일로 채워주기 (중요)
-        if (string.IsNullOrEmpty(_userEmail) &&
-            SessionManager.Instance != null &&
-            SessionManager.Instance.CurrentUser != null)
-        {
-            _userEmail = SessionManager.Instance.CurrentUser.Email;
-        }
+        // 이 스텝 키 설정
+        context.CurrentStepKey = "Director_Problem1_Step4";
 
-        if (string.IsNullOrEmpty(_userEmail))
+        // body에는 이 스텝 전용 데이터 구조만 넣어준다.
+        var body = new
         {
-            Debug.LogWarning("[Director_Problem1_Step4] userEmail이 없어 보상 저장 스킵");
-            return;
-        }
-
-        // 1) Attempt 로그
-        var itemLog = new RewardItemLog
-        {
-            itemId = rewardItemId,
-            itemName = rewardItemName,
-            unlocked = true
+            items = new[]
+            {
+                new
+                {
+                    itemId = rewardItemId,
+                    itemName = rewardItemName,
+                    unlocked = true
+                }
+            }
         };
 
-        var payload = new RewardLogPayload
-        {
-            stepKey = "Director_Problem1_Step4",
-            theme = _theme.ToString(),
-            problemIndex = _problemIndex,
-            items = new[] { itemLog }
-        };
-
-        string contentJson = JsonUtility.ToJson(payload);
-
-        var attempt = new Attempt
-        {
-            SessionId = _sessionId,
-            UserEmail = _userEmail,
-            Content = contentJson,
-            ProblemId = string.IsNullOrEmpty(_problemId) ? null : _problemId,
-            Theme = _theme,
-            ProblemIndex = _problemIndex
-        };
-
-        DataService.Instance.User.SaveAttempt(attempt);
-
-        // 2) 인벤토리 저장
-        var invItem = new InventoryItem
-        {
-            UserEmail = _userEmail,
-            ItemId = rewardItemId,
-            ItemName = rewardItemName,
-            Theme = _theme,
-            AcquiredAt = DateTime.UtcNow
-        };
-
-        var invResult = DataService.Instance.User.GrantInventoryItem(_userEmail, invItem);
-        if (!invResult.Ok)
-        {
-            Debug.LogWarning("[Director_Problem1_Step4] 인벤토리 저장 실패: " + invResult.Error);
-            return;
-        }
-
-        
+        context.SaveReward(body, rewardItemId, rewardItemName);
     }
-
 }

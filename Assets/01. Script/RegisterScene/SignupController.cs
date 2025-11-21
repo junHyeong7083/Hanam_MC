@@ -5,8 +5,6 @@ using System;
 [RequireComponent(typeof(SignupFormUI))]
 public class SignupController : MonoBehaviour
 {
-    [Header("Navigation")]
-    [SerializeField] SceneNavigator navigator;              // (필요시) 씬 이동
     [Header("Tabs")]
     [SerializeField] RegisterTabsController tabs;           // RegisterScene 탭 관리자
     [Header("Texts (Optional)")]
@@ -153,7 +151,7 @@ public class SignupController : MonoBehaviour
     {
         if (tabs != null)
             tabs.ShowLogin();
-        else if (navigator != null)
-            navigator.GoTo(ScreenId.REGISTER);
+        else if (SceneNavigator.Instance != null)
+            SceneNavigator.Instance.GoTo(ScreenId.REGISTER);
     }
 }
