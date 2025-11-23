@@ -50,8 +50,8 @@ public class RewardInventoryPanel : MonoBehaviour
 
     [Header("슬롯 순차 애니메이션 설정")]
     [SerializeField] private float firstDelay = 0.1f;      // 인벤토리 전체가 뜬 뒤 대기 시간
-    [SerializeField] private float slotInterval = 0.05f;   // ★다음 슬롯 시작까지의 간격 (겹치게 시작)
-    [SerializeField] private float slotAnimDuration = 0.3f; // ★각 슬롯 애니메이션 길이
+    [SerializeField] private float slotInterval = 0.05f;   // 다음 슬롯 시작까지의 간격 (겹치게 시작)
+    [SerializeField] private float slotAnimDuration = 0.3f; // 각 슬롯 애니메이션 길이
     [SerializeField] private float slotStartScale = 0.0f;  // 0이면 0에서 시작해서 1로
 
     [Header("뱃지 팝 애니메이션")]
@@ -68,10 +68,10 @@ public class RewardInventoryPanel : MonoBehaviour
         {
             if (s == null) continue;
 
-            // 언락/락 상태만 먼저 반영
+            // 언락/락 상태만 먼저 반영 (defaultUnlocked 기준)
             s.InitRuntimeState();
 
-            // ★ 처음에는 전부 안 보이게 (플리커 방지)
+            // 처음에는 전부 안 보이게 (플리커 방지)
             if (s.slotRoot != null)
                 s.slotRoot.localScale = Vector3.one * slotStartScale; // 보통 0
             if (s.canvasGroup != null)
@@ -94,13 +94,14 @@ public class RewardInventoryPanel : MonoBehaviour
         if (slots == null) return;
 
         var dataService = DataService.Instance;
-        var userService = dataService != null ? dataService.User : null;
+        var userService = (dataService != null) ? dataService.User : null;
+
         var session = SessionManager.Instance;
-        var currentUser = session != null ? session.CurrentUser : null;
+        var currentUser = (session != null) ? session.CurrentUser : null;
 
         if (userService == null || currentUser == null || string.IsNullOrEmpty(currentUser.Email))
         {
-            // 서비스가 아직 준비 안 됐으면 그냥 인스펙터 기본값만 사용
+            // 서비스가 아직 준비 안 됐으면 그냥 defaultUnlocked 상태만 사용
             return;
         }
 
@@ -144,7 +145,7 @@ public class RewardInventoryPanel : MonoBehaviour
         // 1) DB 기준으로 현재까지 획득한 아이템들 전부 언락
         SyncSlotsFromDb();
 
-        // 2) 이번 문제에서 새로 얻은 아이템이 있으면 그 슬롯도 언락 표시
+        // 2) 이번 문제에서 새로 언락된 아이템이 있으면 슬롯 상태 갱신
         if (!string.IsNullOrEmpty(unlockedItemId))
         {
             var newSlot = FindSlot(unlockedItemId);
@@ -154,24 +155,26 @@ public class RewardInventoryPanel : MonoBehaviour
             }
         }
 
-        // 3) isUnlocked 상태를 실제 Lock/Unlock 오브젝트에 반영
+        // 3) 현재 isUnlocked 상태를 실제 Lock/Unlock 오브젝트에 반영
         ApplyLockStatesFromRuntime();
 
-        // 4) 애니메이션 코루틴 정리
+        // 4) 이전 코루틴 정리
         if (_sequenceRoutine != null)
         {
             StopCoroutine(_sequenceRoutine);
             _sequenceRoutine = null;
         }
 
-        // 5) 애니메이션 or 즉시 표시
+        // 5) 애니메이션 / 즉시 표시 선택
         if (playAnimation)
         {
+            // 애니메이션용으로 slot scale/alpha 초기화 후 코루틴 시작
             InitSlotsForAnimation();
             _sequenceRoutine = StartCoroutine(SlotsSequence(unlockedItemId));
         }
         else
         {
+            // 애니메이션 없이 바로 보여주기
             ShowSlotsInstant(unlockedItemId);
         }
     }
@@ -212,8 +215,8 @@ public class RewardInventoryPanel : MonoBehaviour
 
     /// <summary>
     /// bool이 true일 때 사용하는 슬롯 순차 애니메이션
-    /// 슬롯1 시작 -> 0.05초 후 슬롯2 시작 -> 0.05초 후 슬롯3 시작 ...
-    /// 각 슬롯 애니메이션 자체는 slotAnimDuration(0.3초) 동안 진행 (겹쳐서 재생)
+    /// 슬롯1 시작 -> slotInterval 후 슬롯2 시작 -> slotInterval 후 슬롯3 시작 ...
+    /// 각 슬롯 애니메이션 자체는 slotAnimDuration 동안 진행 (겹쳐서 재생)
     /// </summary>
     private IEnumerator SlotsSequence(string unlockedItemId)
     {
@@ -229,24 +232,24 @@ public class RewardInventoryPanel : MonoBehaviour
                 if (s == null || s.slotRoot == null || s.canvasGroup == null)
                     continue;
 
-                // ★ 완료를 기다리지 않고 바로 시작만 하고
+                // 슬롯 애니메이션 시작 (완료 기다리지 않음)
                 StartCoroutine(PlaySlotEnter(s));
 
-                // ★ slotInterval 만큼 기다렸다가 다음 슬롯 시작
+                // 다음 슬롯까지 간격
                 if (slotInterval > 0f)
                     yield return new WaitForSeconds(slotInterval);
             }
         }
 
-        // 모든 슬롯이 시작된 뒤, 마지막 애니메이션이 끝났을 법한 시간만큼 기다림
+        // 마지막 슬롯 애니메이션이 끝날 시간을 조금 기다림
         if (slotAnimDuration > 0f)
             yield return new WaitForSeconds(slotAnimDuration);
 
         // 새로 언락된 슬롯에 뱃지 팝 애니메이션
-        var newSlot2 = FindSlot(unlockedItemId);
-        if (newSlot2 != null && newSlot2.badgeRoot != null)
+        var newSlot = FindSlot(unlockedItemId);
+        if (newSlot != null && newSlot.badgeRoot != null)
         {
-            yield return StartCoroutine(PlayBadgePop(newSlot2.badgeRoot.transform));
+            yield return StartCoroutine(PlayBadgePop(newSlot.badgeRoot.transform));
         }
 
         _sequenceRoutine = null;
@@ -314,7 +317,7 @@ public class RewardInventoryPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// bool이 false일 때: 애니메이션 없이 즉시 보여주기
+    /// 애니메이션 없이 즉시 보여주기
     /// </summary>
     private void ShowSlotsInstant(string unlockedItemId)
     {

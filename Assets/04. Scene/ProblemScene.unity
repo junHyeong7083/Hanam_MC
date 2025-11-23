@@ -6819,13 +6819,14 @@ GameObject:
   - component: {fileID: 798336393}
   - component: {fileID: 798336392}
   - component: {fileID: 798336394}
+  - component: {fileID: 798336395}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &798336391
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6899,6 +6900,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c94e4c1e2fa6f74ca5a0235dc2fcc4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDBSave: 0
+  context: {fileID: 0}
+  stepKey: Problem1_Step2
   films:
   - id: 0
     checkMark: {fileID: 899564379}
@@ -6948,10 +6952,23 @@ MonoBehaviour:
     dimTarget: {fileID: 79777506}
     buttonText: {fileID: 1375201510}
     wiggle: {fileID: 79777509}
-  progressFillImage: {fileID: 1663954195}
   dimAlpha: 0.4
   normalAlpha: 1
-  nextButtonRoot: {fileID: 919493202}
+  completionGate: {fileID: 798336395}
+--- !u!114 &798336395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798336390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  progressFillImage: {fileID: 1663954195}
+  completeRoot: {fileID: 919493202}
 --- !u!1 &803642040
 GameObject:
   m_ObjectHideFlags: 0

@@ -816,7 +816,8 @@ PlayerSettings:
   webGLWebAssemblyBigInt: 0
   webGLCloseOnQuit: 0
   webWasm2023: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Standalone: DACR_EXISTS;DAG_EXISTS;FCU_EXISTS;JSONNET_EXISTS;TextMeshPro;UITK_EXISTS
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
