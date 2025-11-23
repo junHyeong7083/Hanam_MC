@@ -3,15 +3,17 @@ using UnityEngine.UI;
 
 public class StepCompletionGate : MonoBehaviour
 {
-    [Header("진행도 바 사용 여부")]
-    [SerializeField] private bool useProgressFill = true;
 
+    [Header("진행도 바 사용 여부")]
+    [SerializeField] private bool useProgressFill = false;
     [Header("진행도 Fill 이미지 (옵션)")]
     [SerializeField] private Image progressFillImage;
-
+    [Header("Complete Root 사용 여부")]
+    [SerializeField] private bool useCompleteRoot= true;
     [Header("다음 스텝으로 넘어가기 버튼 루트 (Complete Root)")]
     [SerializeField] private GameObject completeRoot;   // 없으면 버튼 제어 안 함
-
+    [Header("Hide Root 사용 여부")]
+    [SerializeField] private bool useHideRoot = true;
     [Header("CompleteRoot가 켜질 때 숨길 루트 (옵션)")]
     [SerializeField] private GameObject hideRoot;
 
