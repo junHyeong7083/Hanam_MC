@@ -3,17 +3,24 @@ using UnityEngine.UI;
 
 public class StepCompletionGate : MonoBehaviour
 {
-
     [Header("진행도 바 사용 여부")]
     [SerializeField] private bool useProgressFill = false;
+
     [Header("진행도 Fill 이미지 (옵션)")]
     [SerializeField] private Image progressFillImage;
+
     [Header("Complete Root 사용 여부")]
-    [SerializeField] private bool useCompleteRoot= true;
+    [SerializeField] private bool useCompleteRoot = true;
+
     [Header("다음 스텝으로 넘어가기 버튼 루트 (Complete Root)")]
-    [SerializeField] private GameObject completeRoot;   // 없으면 버튼 제어 안 함
+    [SerializeField] private GameObject completeRoot;
+
+    [Header("자동 진행용 StepFlowController (useCompleteRoot=false 일 때 사용)")]
+    [SerializeField] private StepFlowController stepFlowController;
+
     [Header("Hide Root 사용 여부")]
     [SerializeField] private bool useHideRoot = true;
+
     [Header("CompleteRoot가 켜질 때 숨길 루트 (옵션)")]
     [SerializeField] private GameObject hideRoot;
 
@@ -21,14 +28,22 @@ public class StepCompletionGate : MonoBehaviour
     private int _currentCount;
 
     private bool _initialized;
+    private bool _autoNextFired;   // 자동 진행 한 번만 호출하기 위한 플래그
 
     private void OnEnable()
     {
+        // 새로 켜질 때 자동 진행 플래그 리셋
+        _autoNextFired = false;
+
         // 이 컴포넌트가 처음 켜질 때 한 번 기본 상태 적용
         if (!_initialized)
         {
             Apply();
             _initialized = true;
+        }
+        else
+        {
+            Apply();
         }
     }
 
@@ -40,6 +55,7 @@ public class StepCompletionGate : MonoBehaviour
     {
         _totalCount = Mathf.Max(0, total);
         _currentCount = 0;
+        _autoNextFired = false;
         Apply();
     }
 
@@ -66,7 +82,6 @@ public class StepCompletionGate : MonoBehaviour
         // 2) 진행도 바 업데이트 (있으면만 + 사용 옵션 따라)
         if (progressFillImage != null)
         {
-            // useProgressFill에 따라 통째로 켜고 끄기
             progressFillImage.gameObject.SetActive(useProgressFill);
 
             if (useProgressFill)
@@ -76,12 +91,25 @@ public class StepCompletionGate : MonoBehaviour
         // 3) 완료 여부
         bool completed = (_totalCount > 0 && _currentCount >= _totalCount);
 
-        // 4) 완료 버튼 켜기 (있으면만)
-        if (completeRoot != null)
-            completeRoot.SetActive(completed);
-
-        // 5) 함께 숨기고 싶은 루트 처리 (있으면만)
-        if (hideRoot != null)
+        // 4) 함께 숨기고 싶은 루트 처리 (있으면만 + 옵션 체크)
+        if (useHideRoot && hideRoot != null)
             hideRoot.SetActive(!completed);
+
+        // 5) 완료 처리
+        if (useCompleteRoot)
+        {
+            // 버튼으로 제어하는 모드: CompleteRoot 활성/비활성만
+            if (completeRoot != null)
+                completeRoot.SetActive(completed);
+        }
+        else
+        {
+            // 자동으로 다음 스텝으로 넘어가는 모드
+            if (completed && !_autoNextFired && stepFlowController != null)
+            {
+                _autoNextFired = true;
+                stepFlowController.NextStep();
+            }
+        }
     }
 }

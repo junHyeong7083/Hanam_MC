@@ -14,6 +14,8 @@ public class StepCompletionGateEditor : Editor
     SerializedProperty useHideProp;
     SerializedProperty hideRootProp;
 
+    SerializedProperty stepFlowControllerProp;
+
     private void OnEnable()
     {
         useProgressFillProp = serializedObject.FindProperty("useProgressFill");
@@ -21,6 +23,8 @@ public class StepCompletionGateEditor : Editor
 
         useCompleteProp = serializedObject.FindProperty("useCompleteRoot");
         completeRootProp = serializedObject.FindProperty("completeRoot");
+
+        stepFlowControllerProp = serializedObject.FindProperty("stepFlowController");
 
         useHideProp = serializedObject.FindProperty("useHideRoot");
         hideRootProp = serializedObject.FindProperty("hideRoot");
@@ -53,11 +57,18 @@ public class StepCompletionGateEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
-        // 3) Complete Root 사용 여부 + 대상
+        // 3) Complete Root 사용 여부
         EditorGUILayout.PropertyField(useCompleteProp);
+
         if (useCompleteProp.boolValue)
         {
+            // 버튼 모드: CompleteRoot만 보여줌
             EditorGUILayout.PropertyField(completeRootProp);
+        }
+        else
+        {
+            // 자동 진행 모드: StepFlowController 참조 필요
+            EditorGUILayout.PropertyField(stepFlowControllerProp);
         }
 
         EditorGUILayout.Space();

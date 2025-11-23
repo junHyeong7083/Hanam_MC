@@ -3,12 +3,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
+/// <summary>
 /// Step 내부 인벤토리의 각 아이템 슬롯에서
 /// - Hover 시 살짝 확대
 /// - 필요 시 wiggle(크기 진동) 연출
 /// - 드래그 시 반투명 고스트 + 아이콘 드래그
 /// 를 담당하는 컴포넌트.
+/// </summary>
 public class StepInventoryItem : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler,
     IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -43,8 +44,7 @@ public class StepInventoryItem : MonoBehaviour,
     [SerializeField] private float wiggleAmplitude = 0.05f;
     [SerializeField] private float wiggleSpeed = 4f;
 
-    [Header("Step 드래그 콜백 (옵션)")]
-    [SerializeField] private MonoBehaviour dragHandlerTarget; // IStepInventoryDragHandler 구현체
+    MonoBehaviour dragHandlerTarget; // IStepInventoryDragHandler 구현체 (비워놔도 됨)
 
     private IStepInventoryDragHandler _dragHandler;
 
@@ -59,6 +59,12 @@ public class StepInventoryItem : MonoBehaviour,
     private Canvas _cachedCanvas;
 
     private bool _initialized;
+
+    /// <summary>
+    /// 이 스텝에서 실제로 드래그 가능한 아이템인지 외부에서 조회할 때 사용
+    /// (Step 쪽에서 penItemId 비교 대신 이거만 보면 됨)
+    /// </summary>
+    public bool IsDraggableThisStep => _canDrag;
 
     // ==== 초기화 & 활성화 ====
 
@@ -112,9 +118,20 @@ public class StepInventoryItem : MonoBehaviour,
             backgroundImage.color = c;
         }
 
-        if (dragHandlerTarget is IStepInventoryDragHandler handler)
+        // 1순위: 인스펙터에 직접 연결된 타겟
+        if (dragHandlerTarget is IStepInventoryDragHandler handlerFromField)
         {
-            _dragHandler = handler;
+            _dragHandler = handlerFromField;
+        }
+        else
+        {
+            // 2순위: 부모 트랜스폼에서 자동으로 찾기
+            var handlerFromParent = GetComponentInParent<IStepInventoryDragHandler>();
+            if (handlerFromParent != null)
+            {
+                _dragHandler = handlerFromParent;
+                dragHandlerTarget = _dragHandler as MonoBehaviour;
+            }
         }
     }
 
@@ -312,7 +329,6 @@ public class StepInventoryItem : MonoBehaviour,
 }
 
 /// <summary>
-/// Step 쪽(예: Director_Problem3_Step1)에서
 /// 인벤토리 드래그를 받기 위한 인터페이스.
 /// </summary>
 public interface IStepInventoryDragHandler
