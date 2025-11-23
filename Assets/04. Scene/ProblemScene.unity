@@ -3145,6 +3145,7 @@ GameObject:
   - component: {fileID: 337969206}
   - component: {fileID: 337969208}
   - component: {fileID: 337969209}
+  - component: {fileID: 337969210}
   - component: {fileID: 337969207}
   m_Layer: 5
   m_Name: Step3
@@ -3224,6 +3225,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf35a7019143754caa9614241e20ce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDBSave: 1
+  context: {fileID: 11400000, guid: 8875f04155d778942b9313b923dd7483, type: 2}
+  stepKey: Director_Problem2_Step3
   ngSentence: "\uBAA8\uB450 \uB098\uB97C \uC774\uC0C1\uD558\uAC8C \uC0DD\uAC01\uD560
     \uAC70\uC57C"
   perspectives:
@@ -3253,12 +3257,27 @@ MonoBehaviour:
   - {fileID: 333681885}
   micButtonRoot: {fileID: 1820761134}
   micIndicator: {fileID: 0}
-  summaryButtonRoot: {fileID: 81919011}
   stepRoot: {fileID: 546013653}
   summaryPanelRoot: {fileID: 539549043}
-  context: {fileID: 11400000, guid: 8875f04155d778942b9313b923dd7483, type: 2}
+  completionGate: {fileID: 337969210}
   flipDelay: 0.3
   flipDuration: 0.5
+--- !u!114 &337969210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337969205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useProgressFill: 0
+  progressFillImage: {fileID: 0}
+  completeRoot: {fileID: 81919011}
+  hideRoot: {fileID: 0}
 --- !u!1 &360015729
 GameObject:
   m_ObjectHideFlags: 0
@@ -4652,6 +4671,7 @@ GameObject:
   - component: {fileID: 546968093}
   - component: {fileID: 546968092}
   - component: {fileID: 546968095}
+  - component: {fileID: 546968096}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
@@ -4737,6 +4757,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: decea6a2e12aeda48906e0e010f9309d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDBSave: 0
+  context: {fileID: 0}
+  stepKey: 
   slots:
   - sceneText: "\uBC1C\uD45C\uD560\uB54C \uB5A8\uB838\uB358 \uC21C\uAC04"
     emotionText: "\uBD88\uC548"
@@ -4817,7 +4840,23 @@ MonoBehaviour:
   playLightAppearAnimation: 1
   lightAppearDuration: 0.25
   lightAppearScale: 1.15
-  completeButtonRoot: {fileID: 1280593505}
+  completionGate: {fileID: 546968096}
+--- !u!114 &546968096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 546968090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useProgressFill: 0
+  progressFillImage: {fileID: 0}
+  completeRoot: {fileID: 1280593505}
+  hideRoot: {fileID: 0}
 --- !u!1 &547307716
 GameObject:
   m_ObjectHideFlags: 0
@@ -6520,6 +6559,7 @@ GameObject:
   - component: {fileID: 753990061}
   - component: {fileID: 753990064}
   - component: {fileID: 753990063}
+  - component: {fileID: 753990065}
   - component: {fileID: 753990062}
   m_Layer: 5
   m_Name: Step1
@@ -6591,6 +6631,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992183418fa73244c9ee2d7d83836f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDBSave: 0
+  context: {fileID: 0}
+  stepKey: 
   dropBoxArea: {fileID: 901887669}
   dropBoxOutline: {fileID: 1169909972}
   dragItems:
@@ -6604,6 +6647,7 @@ MonoBehaviour:
   leftStartOffsetX: -300
   rightStartOffsetX: 300
   introDelay: 0.1
+  completionGate: {fileID: 753990065}
 --- !u!222 &753990064
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6612,6 +6656,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 753990060}
   m_CullTransparentMesh: 1
+--- !u!114 &753990065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753990060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useProgressFill: 0
+  progressFillImage: {fileID: 0}
+  completeRoot: {fileID: 1954998714}
+  hideRoot: {fileID: 1169909972}
 --- !u!1 &755953676
 GameObject:
   m_ObjectHideFlags: 0
@@ -6826,7 +6886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &798336391
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6967,8 +7027,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useProgressFill: 1
   progressFillImage: {fileID: 1663954195}
   completeRoot: {fileID: 919493202}
+  hideRoot: {fileID: 0}
 --- !u!1 &803642040
 GameObject:
   m_ObjectHideFlags: 0
@@ -9883,6 +9945,10 @@ PrefabInstance:
     - target: {fileID: 1293773582482844000, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_Name
       value: Step4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1293773582482844000, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1841969170529906458, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_Text
@@ -15140,6 +15206,22 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6465083528880466169, guid: 77e589898d84f2b48855421552e80dbb, type: 3}
   m_PrefabInstance: {fileID: 9009633385301614020}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1983275918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983275916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useProgressFill: 1
+  progressFillImage: {fileID: 0}
+  completeRoot: {fileID: 0}
+  hideRoot: {fileID: 0}
 --- !u!1 &1994870825
 GameObject:
   m_ObjectHideFlags: 0
@@ -15621,6 +15703,7 @@ GameObject:
   - component: {fileID: 2046801910}
   - component: {fileID: 2046801909}
   - component: {fileID: 2046801911}
+  - component: {fileID: 2046801912}
   m_Layer: 5
   m_Name: Step3
   m_TagString: Untagged
@@ -15701,6 +15784,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03580f9c80897044fad6cce42ea96392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDBSave: 1
+  context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
+  stepKey: Director_Problem1_Step3
   films:
   - id: 0
     text: "\uB098\uB294 \uC2E4\uD328\uD560 \uAC83\uC774\uB2E4"
@@ -15732,7 +15818,23 @@ MonoBehaviour:
   micIndicator: {fileID: 0}
   stepRoot: {fileID: 1407136721}
   summaryPanelRoot: {fileID: 1983275916}
-  context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
+  completionGate: {fileID: 2046801912}
+--- !u!114 &2046801912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046801907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670a7563de0a6e8419ae934576614a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useProgressFill: 0
+  progressFillImage: {fileID: 0}
+  completeRoot: {fileID: 1298352369}
+  hideRoot: {fileID: 1415187738}
 --- !u!1 &2066423283
 GameObject:
   m_ObjectHideFlags: 0
@@ -16609,10 +16711,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: SummaryPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 7864464265286428866, guid: 77e589898d84f2b48855421552e80dbb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7864464265286428866, guid: 77e589898d84f2b48855421552e80dbb, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 1983275918}
   m_SourcePrefab: {fileID: 100100000, guid: 77e589898d84f2b48855421552e80dbb, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

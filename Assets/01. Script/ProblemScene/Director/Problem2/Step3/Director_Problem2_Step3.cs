@@ -8,10 +8,10 @@ using UnityEngine.UI;
 /// - NG 문장을 보여주고,
 /// - 사용자가 새로운 관점(카메라 앵글)을 하나 선택
 /// - 마이크 버튼을 눌러 답변(녹음 완료했다고 가정)
-/// - 카드가 OK 장면으로 뒤집히고, 요약 보기 버튼 노출
+/// - 카드가 OK 장면으로 뒤집히고, 완료 상태가 되면 StepCompletionGate가 요약 버튼 노출
 /// - 요약 보기 버튼에서 DB에 Attempt 저장 + 패널 전환
 /// </summary>
-public class Director_Problem2_Step3 : MonoBehaviour
+public class Director_Problem2_Step3 : ProblemStepBase
 {
     [Serializable]
     public class PerspectiveOption
@@ -44,15 +44,14 @@ public class Director_Problem2_Step3 : MonoBehaviour
 
     [Header("마이크 UI")]
     [SerializeField] private GameObject micButtonRoot;          // 마이크 버튼 루트
-    [SerializeField] private MicRecordingIndicator micIndicator; // 기존 Indicator 재사용
+    [SerializeField] private MicRecordingIndicator micIndicator; // Indicator
 
-    [Header("요약 버튼 / 패널 전환")]
-    [SerializeField] private GameObject summaryButtonRoot;      // "요약 보기" 버튼 루트
+    [Header("패널 전환")]
     [SerializeField] private GameObject stepRoot;               // 현재 Step3 패널 루트
     [SerializeField] private GameObject summaryPanelRoot;       // 요약 패널 루트
 
-    [Header("공용 Problem Context")]
-    [SerializeField] private ProblemContext context;
+    [Header("완료 게이트 (요약 버튼 / 기타 숨김은 Gate에서 처리)")]
+    [SerializeField] private StepCompletionGate completionGate;
 
     [Header("연출 옵션")]
     [SerializeField] private float flipDelay = 0.3f;    // 말하기 끝 ~ 플립 시작까지 대기 시간
@@ -64,10 +63,23 @@ public class Director_Problem2_Step3 : MonoBehaviour
     private bool _hasRecordedAnswer;
     private bool _isFinished; // OK 장면으로 전환 완료 여부
 
-    private void OnEnable()
+    // === ProblemStepBase 구현 ===
+    protected override void OnStepEnter()
     {
-        Debug.Log("[Step3] OnEnable 호출");
+        Debug.Log("[Step3] OnStepEnter 호출");
         ResetState();
+
+        // 완료 연출을 StepCompletionGate에 위임
+        if (completionGate != null)
+        {
+            // Step3는 “한 번 완료되면 끝” 구조라서 총 카운트 1로 사용
+            completionGate.ResetGate(1);
+        }
+    }
+
+    protected override void OnStepExit()
+    {
+        // 필요하면 상태 정리
     }
 
     private void ResetState()
@@ -79,9 +91,11 @@ public class Director_Problem2_Step3 : MonoBehaviour
         _hasRecordedAnswer = false;
         _isFinished = false;
 
+        // Step / Summary 패널 기본 상태
+        if (stepRoot != null) stepRoot.SetActive(true);
+        if (summaryPanelRoot != null) summaryPanelRoot.SetActive(false);
+
         // NG 문장으로 강제 덮어쓸지 여부
-        // - STT/외부 입력으로 sceneText.text를 이미 세팅했다면, 
-        //   Inspector에서 overwriteSceneTextOnReset = false 로 두면 그대로 사용.
         if (sceneText != null && overwriteSceneTextOnReset)
         {
             sceneText.text = ngSentence;
@@ -93,9 +107,7 @@ public class Director_Problem2_Step3 : MonoBehaviour
         if (perspectiveButtonsRoot != null)
             perspectiveButtonsRoot.SetActive(true);
 
-        if (summaryButtonRoot != null)
-            summaryButtonRoot.SetActive(false);
-
+        // 마이크는 처음엔 숨김
         if (micButtonRoot != null)
             micButtonRoot.SetActive(false);
 
@@ -115,7 +127,8 @@ public class Director_Problem2_Step3 : MonoBehaviour
         {
             foreach (var btn in perspectiveButtons)
             {
-                if (btn != null) btn.interactable = true;
+                if (btn != null)
+                    btn.interactable = true;
             }
         }
 
@@ -225,9 +238,6 @@ public class Director_Problem2_Step3 : MonoBehaviour
 
     /// <summary>
     /// 카드 NG -> OK로 뒤집는 연출을 코루틴으로 처리
-    /// - 1단계: 가로 스케일 1 -> 0 (카드가 말려 들어가며 사라짐)
-    /// - 2단계: 가로 스케일 0 -> 1 (카드가 다시 펼쳐짐)
-    /// - ★ 애니메이션이 완전히 끝난 뒤에 텍스트/배지를 선택 관점으로 교체
     /// </summary>
     private IEnumerator PlayCardFlipCoroutine()
     {
@@ -243,21 +253,15 @@ public class Director_Problem2_Step3 : MonoBehaviour
             yield break;
         }
 
-        float duration = Mathf.Max(0.05f, flipDuration); // React 쪽 0.5s랑 맞추고 싶으면 0.5로 세팅
+        float duration = Mathf.Max(0.05f, flipDuration);
         float half = duration * 0.5f;
 
         RectTransform rt = sceneCardRect;
 
-        // 원래 UI 사이즈 / 위치 저장
         Vector2 originalSize = rt.sizeDelta;
         Vector2 originalPos = rt.anchoredPosition;
 
-        // pivot은 가운데 기준이 자연스러움 (Inspector에서 0.5,0.5로 맞춰두는 거 추천)
-        // rt.pivot = new Vector2(0.5f, 0.5f);
-
-        // ==========================
         // 1단계: width -> 0 (NG 장면 그대로, 접히기만 함)
-        // ==========================
         float t = 0f;
         while (t < half)
         {
@@ -266,18 +270,15 @@ public class Director_Problem2_Step3 : MonoBehaviour
 
             float width = Mathf.Lerp(originalSize.x, 0f, lerp);
             rt.sizeDelta = new Vector2(width, originalSize.y);
-            rt.anchoredPosition = originalPos; // 중앙 유지
+            rt.anchoredPosition = originalPos;
 
             yield return null;
         }
 
-        // 완전히 납작한 상태
         rt.sizeDelta = new Vector2(0f, originalSize.y);
         rt.anchoredPosition = originalPos;
 
-        // ==========================
-        // 2단계: 0 -> 원래 width (여전히 NG 텍스트 유지)
-        // ==========================
+        // 2단계: 0 -> 원래 width
         t = 0f;
         while (t < half)
         {
@@ -291,20 +292,13 @@ public class Director_Problem2_Step3 : MonoBehaviour
             yield return null;
         }
 
-        // 원래 사이즈/위치로 복원
         rt.sizeDelta = originalSize;
         rt.anchoredPosition = originalPos;
 
-        // ==========================
-        // ★ 여기서부터가 React의
-        //    setSceneVariant('ok'); 에 해당하는 부분
-        // ==========================
-
-        // 텍스트를 선택한 관점으로 교체
+        // 여기서부터가 'OK 장면'으로 바뀌는 지점
         if (sceneText != null && _selected != null)
             sceneText.text = _selected.text;
 
-        // NG/OK 배지 전환
         if (ngBadgeRoot != null) ngBadgeRoot.SetActive(false);
         if (okBadgeRoot != null) okBadgeRoot.SetActive(true);
     }
@@ -317,23 +311,21 @@ public class Director_Problem2_Step3 : MonoBehaviour
 
         // 관점 선택지는 "보이긴 하되" 더 이상 클릭은 안 되게 처리
         if (perspectiveButtonsRoot != null)
-            perspectiveButtonsRoot.SetActive(true); // 혹시 꺼져 있을 수 있으니 보이게 유지
+            perspectiveButtonsRoot.SetActive(true);
 
         // 말하기가 끝난 뒤 잠시 대기 후 플립 시작
         if (flipDelay > 0f)
             yield return new WaitForSeconds(flipDelay);
 
-        // 여기선 버튼의 색상 알파값을 0.3으로 만들어주는 로직
+        // 버튼 알파/인터랙션 정리
         if (perspectiveButtons != null)
         {
             foreach (var btn in perspectiveButtons)
             {
                 if (btn == null) continue;
 
-                // 더 이상 클릭 안 되게
                 btn.interactable = false;
 
-                // 1) 버튼의 메인 그래픽 알파 줄이기
                 if (btn.targetGraphic != null)
                 {
                     var c = btn.targetGraphic.color;
@@ -341,7 +333,6 @@ public class Director_Problem2_Step3 : MonoBehaviour
                     btn.targetGraphic.color = c;
                 }
 
-                // 2) 버튼 안에 들어있는 Text / Image / TMP 등 자식 Graphic들도 같이 알파 줄이기
                 var childGraphics = btn.GetComponentsInChildren<Graphic>(true);
                 foreach (var g in childGraphics)
                 {
@@ -359,17 +350,19 @@ public class Director_Problem2_Step3 : MonoBehaviour
         _isFinished = true;
         Debug.Log("[Step3] 플립 완료, _isFinished = true");
 
-        if (summaryButtonRoot != null)
+        // 완료 연출: Gate에 “완료했다”만 알림
+        if (completionGate != null)
         {
-            summaryButtonRoot.SetActive(true);
-            Debug.Log("[Step3] summaryButtonRoot 활성화");
+            completionGate.MarkOneDone();
         }
+        // Gate가 없으면 그냥 끝난 상태로만 두고, 버튼은 씬에서 직접 켜주든지 별도 처리
     }
 
     /// <summary>
     /// "요약 보기" 버튼에서 호출
     /// - Attempt DB 저장
     /// - 패널 전환
+    /// (실제 버튼 GameObject는 StepCompletionGate.completeRoot로 관리)
     /// </summary>
     public void OnClickSummaryButton()
     {
@@ -385,35 +378,25 @@ public class Director_Problem2_Step3 : MonoBehaviour
     }
 
     /// <summary>
-    /// ProblemContext를 이용해 Attempt 저장
+    /// ProblemStepBase.SaveAttempt를 이용해 Attempt 저장
     /// </summary>
     private void SaveRefilmLogToDb()
     {
-        if (context == null)
-        {
-            Debug.LogWarning("[Director_Problem2_Step3] ProblemContext가 설정되지 않아 저장 스킵");
-            return;
-        }
-
         if (_selected == null)
         {
             Debug.Log("[Director_Problem2_Step3] 선택된 관점이 없어 저장 스킵");
             return;
         }
 
-        // 이 스텝 키 설정 (Problem2 / Step3)
-        context.CurrentStepKey = "Director_Problem2_Step3";
-
-        // body에는 이 스텝에서 필요한 정보만 넣기
         var body = new
         {
-            ngText = ngSentence,          // 원래 NG 문장 (참고용)
-            selectedId = _selected.id,    // 선택한 관점 id
-            selectedText = _selected.text,// 선택한 관점 문장
-            //recorded = _hasRecordedAnswer // 마이크를 한 번이라도 종료했는지 여부
+            ngText = ngSentence,
+            selectedId = _selected.id,
+            selectedText = _selected.text,
+            // recorded = _hasRecordedAnswer
         };
 
-        Debug.Log("[Director_Problem2_Step3] SaveStepAttempt 호출");
-        context.SaveStepAttempt(body);
+        // Base에서 context/stepKey 검사 + SaveStepAttempt 호출
+        SaveAttempt(body);
     }
 }

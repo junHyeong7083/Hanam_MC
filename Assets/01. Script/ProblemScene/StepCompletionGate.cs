@@ -3,9 +3,17 @@ using UnityEngine.UI;
 
 public class StepCompletionGate : MonoBehaviour
 {
-    [Header("필수 X, 상황에 따라 쓰는 옵션들")]
-    [SerializeField] private Image progressFillImage;   // 없으면 진행도 안 씀
+    [Header("진행도 바 사용 여부")]
+    [SerializeField] private bool useProgressFill = true;
+
+    [Header("진행도 Fill 이미지 (옵션)")]
+    [SerializeField] private Image progressFillImage;
+
+    [Header("다음 스텝으로 넘어가기 버튼 루트 (Complete Root)")]
     [SerializeField] private GameObject completeRoot;   // 없으면 버튼 제어 안 함
+
+    [Header("CompleteRoot가 켜질 때 숨길 루트 (옵션)")]
+    [SerializeField] private GameObject hideRoot;
 
     private int _totalCount;
     private int _currentCount;
@@ -14,7 +22,7 @@ public class StepCompletionGate : MonoBehaviour
 
     private void OnEnable()
     {
-        // 이 컴포넌트가 켜질 때 한 번 기본 상태 적용
+        // 이 컴포넌트가 처음 켜질 때 한 번 기본 상태 적용
         if (!_initialized)
         {
             Apply();
@@ -53,9 +61,15 @@ public class StepCompletionGate : MonoBehaviour
             ? (float)_currentCount / _totalCount
             : 0f;
 
-        // 2) 진행도 바 업데이트 (있으면만)
+        // 2) 진행도 바 업데이트 (있으면만 + 사용 옵션 따라)
         if (progressFillImage != null)
-            progressFillImage.fillAmount = progress;
+        {
+            // useProgressFill에 따라 통째로 켜고 끄기
+            progressFillImage.gameObject.SetActive(useProgressFill);
+
+            if (useProgressFill)
+                progressFillImage.fillAmount = progress;
+        }
 
         // 3) 완료 여부
         bool completed = (_totalCount > 0 && _currentCount >= _totalCount);
@@ -63,5 +77,9 @@ public class StepCompletionGate : MonoBehaviour
         // 4) 완료 버튼 켜기 (있으면만)
         if (completeRoot != null)
             completeRoot.SetActive(completed);
+
+        // 5) 함께 숨기고 싶은 루트 처리 (있으면만)
+        if (hideRoot != null)
+            hideRoot.SetActive(!completed);
     }
 }

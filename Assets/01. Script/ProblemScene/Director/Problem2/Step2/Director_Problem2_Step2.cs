@@ -8,9 +8,9 @@ using TMPro;
 /// Director / Problem2 / Step2
 /// - 아래 필름 카드를 클릭하면 위쪽 감정 조명이 켜짐.
 /// - 클릭 시 필름 ↔ 조명 사이에 UI 라인(Image) 이펙트가 재생됨.
-/// - 모두 켜지면 완료 버튼이 활성화되고, 눌렀을 때 onComplete 호출.
+/// - 모두 켜지면 StepCompletionGate를 통해 완료 버튼이 활성화됨.
 /// </summary>
-public class Director_Problem2_Step2 : MonoBehaviour
+public class Director_Problem2_Step2 : ProblemStepBase
 {
     [Serializable]
     public class EmotionLightSlot
@@ -64,20 +64,29 @@ public class Director_Problem2_Step2 : MonoBehaviour
     [SerializeField] private float lightAppearDuration = 0.25f;
     [SerializeField] private float lightAppearScale = 1.15f;
 
-    [Header("완료 UI")]
-    [SerializeField] private GameObject completeButtonRoot;
+    [Header("완료 게이트")]
+    [SerializeField] private StepCompletionGate completionGate;
 
-    private void OnEnable()
+    // === ProblemStepBase 구현 ===
+    protected override void OnStepEnter()
     {
         _canvas = GetComponentInParent<Canvas>();
         if (_canvas != null)
             _canvasRect = _canvas.transform as RectTransform;
 
         InitSlots();
-        Debug.Log("sibal");
 
-        if (completeButtonRoot != null)
-            completeButtonRoot.SetActive(false);
+        // 진행도/완료 버튼은 StepCompletionGate가 관리
+        if (completionGate != null)
+        {
+            int total = (slots != null) ? slots.Length : 0;
+            completionGate.ResetGate(total);
+        }
+    }
+
+    protected override void OnStepExit()
+    {
+        // 필요시 정리
     }
 
     // ------------------------------------------------------------------
@@ -94,9 +103,7 @@ public class Director_Problem2_Step2 : MonoBehaviour
             slot.revealed = false;
 
             if (slot.lightLabelRoot != null)
-            {
                 slot.lightLabelRoot.SetActive(false);
-            }
 
             // 색상 반영
             if (slot.lightCircleImage != null)
@@ -125,7 +132,7 @@ public class Director_Problem2_Step2 : MonoBehaviour
             }
 
             // 잠긴 상태로 시작
-            SetRevealState(slot, false, immediate: true);
+            SetRevealState(slot, reveal: false, immediate: true);
 
             // 버튼 연결
             if (slot.filmButton != null)
@@ -143,6 +150,7 @@ public class Director_Problem2_Step2 : MonoBehaviour
 
         if (slot.lightLockedRoot != null)
             slot.lightLockedRoot.SetActive(!reveal);
+
         if (slot.lightRevealedRoot != null)
         {
             slot.lightRevealedRoot.SetActive(reveal);
@@ -179,12 +187,9 @@ public class Director_Problem2_Step2 : MonoBehaviour
         // 1) 조명/필름 UI 상태 갱신
         SetRevealState(slot, true);
 
-        // 2) 모든 슬롯이 열린 상태라면 완료 버튼 On
-        if (completeButtonRoot != null && CheckAllRevealed())
-        {
-            Debug.Log("[OnFilmClicked] all revealed → show completeButtonRoot");
-            completeButtonRoot.SetActive(true);
-        }
+        // 2) StepCompletionGate에 진행도 1 증가 보고
+        if (completionGate != null)
+            completionGate.MarkOneDone();
 
         // 어떤게 null인지 다 찍어보기
         if (slot.lineRect == null) Debug.LogWarning("[OnFilmClicked] lineRect is NULL");
@@ -204,18 +209,6 @@ public class Director_Problem2_Step2 : MonoBehaviour
             Debug.Log("[OnFilmClicked] StartCoroutine(PlayUILine)");
             slot.lineRoutine = StartCoroutine(PlayUILine(slot));
         }
-    }
-
-    private bool CheckAllRevealed()
-    {
-        if (slots == null || slots.Length == 0) return false;
-
-        foreach (var s in slots)
-        {
-            if (s == null) continue;
-            if (!s.revealed) return false;
-        }
-        return true;
     }
 
     // ------------------------------------------------------------------

@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Director / Problem_2 / Step1 전용 로직.
+/// Director / Problem_2 / Step1
 /// - 장면 아이템들을 드래그해서 가운데 드래그 박스에 놓는 단계.
 /// - 아이템을 드래그박스 위로 가져오면 드래그박스 바깥 흰색 선이 활성화.
 /// - 드롭이 성공하면 숨겨져 있던 설명 텍스트/버튼들이 나타남.
 /// - DB 저장은 이 단계에서는 사용하지 않음.
 /// </summary>
-public class Director_Problem2_Step1 : MonoBehaviour
+public class Director_Problem2_Step1 : ProblemStepBase
 {
     [Header("Drag Box")]
     [SerializeField] private RectTransform dropBoxArea;     // 드래그 박스 RectTransform
@@ -40,6 +41,9 @@ public class Director_Problem2_Step1 : MonoBehaviour
     [SerializeField] private float rightStartOffsetX = 300f;  // 오른쪽 루트 시작 오프셋 (양수 방향)
     [SerializeField] private float introDelay = 0.1f;         // 시작 전 살짝 딜레이
 
+    [Header("완료 게이트 (Next 버튼용)")]
+    [SerializeField] private StepCompletionGate completionGate;
+
     // 내부용: 원래 위치 캐시
     private bool _leftInit;
     private bool _rightInit;
@@ -53,22 +57,28 @@ public class Director_Problem2_Step1 : MonoBehaviour
     // 최종 드롭된 아이템(선택된 장면)
     private Director_Problem2_DragItem _selectedItem;
 
+    // 한 번 드롭 성공했는지 (게이트 중복 호출 방지)
+    private bool _isCompleted;
 
-    private void OnEnable()
+    // === ProblemStepBase 구현 ===
+    protected override void OnStepEnter()
     {
         InitState();
         StartCoroutine(PlayIntroAnimationRoutine());
     }
 
-    private void OnDisable()
+    protected override void OnStepExit()
     {
-        // 필요하면 상태 초기화/로그 등 추가
+        // 필요하면 여기서 상태 정리
     }
+
+    // === 내부 로직 ===
 
     private void InitState()
     {
         _currentDraggingItem = null;
         _selectedItem = null;
+        _isCompleted = false;
 
         if (dropBoxOutline != null)
             dropBoxOutline.SetActive(false);
@@ -100,6 +110,12 @@ public class Director_Problem2_Step1 : MonoBehaviour
 
         if (iconImage != null)
             iconImage.gameObject.SetActive(true);
+
+        // 완료 게이트 초기화 (드롭 성공 1번이면 완료)
+        if (completionGate != null)
+        {
+            completionGate.ResetGate(1);
+        }
     }
 
     private void InitIntroRoot(
@@ -116,7 +132,6 @@ public class Director_Problem2_Step1 : MonoBehaviour
         if (!inited)
         {
             basePos = root.anchoredPosition;
-            _ = basePos; // just to silence warnings if needed
             inited = true;
 
             // CanvasGroup이 없으면 추가해서 알파 컨트롤
@@ -131,7 +146,7 @@ public class Director_Problem2_Step1 : MonoBehaviour
             cg.alpha = 0f;
     }
 
-    private System.Collections.IEnumerator PlayIntroAnimationRoutine()
+    private IEnumerator PlayIntroAnimationRoutine()
     {
         if (introDelay > 0f)
             yield return new WaitForSeconds(introDelay);
@@ -201,8 +216,6 @@ public class Director_Problem2_Step1 : MonoBehaviour
     {
         _currentDraggingItem = item;
 
-        // 드래그 시작 시에는 아웃라인 끔,
-        // 드래그 중에 dropBox 위로 올라올 때만 켜짐.
         if (dropBoxOutline != null)
             dropBoxOutline.SetActive(false);
     }
@@ -222,7 +235,6 @@ public class Director_Problem2_Step1 : MonoBehaviour
                 eventData.pressEventCamera
             );
 
-        // 3. 아이템이 드래그박스 "위로 들어간 순간" 아웃라인 on/off
         dropBoxOutline.SetActive(isOver);
     }
 
@@ -278,9 +290,18 @@ public class Director_Problem2_Step1 : MonoBehaviour
         item.SnapToDropBoxCenter(dropBoxArea);
 
         // 드롭 성공 시: 원래 자리에서 드래그용 아이콘만 숨기기
-        // iconImageBackground는 남기고, iconImage만 비활성화
+        if (iconImage != null)
+            iconImage.gameObject.SetActive(false);
 
-        iconImage.gameObject.SetActive(false);
-        iconImageBackground.gameObject.SetActive(true);
+        if (iconImageBackground != null)
+            iconImageBackground.gameObject.SetActive(true);
+
+        // 완료 게이트에 한 번만 신고
+        if (!_isCompleted)
+        {
+            _isCompleted = true;
+            if (completionGate != null)
+                completionGate.MarkOneDone();
+        }
     }
 }

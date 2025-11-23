@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ using UnityEngine.UI;
 /// - 분류 로그를 쌓았다가 요약 보기 시점에 Attempt로 DB에 저장
 /// - Summary 버튼 클릭 시: StepRoot 비활성화, SummaryPanel 활성화
 /// </summary>
-public class Director_Problem1_Step3 : MonoBehaviour
+public class Director_Problem1_Step3 : ProblemStepBase
 {
     [Serializable]
     public class FilmItem
@@ -60,9 +61,6 @@ public class Director_Problem1_Step3 : MonoBehaviour
     [SerializeField] private GameObject stepRoot;         // 현재 Step3 패널 루트
     [SerializeField] private GameObject summaryPanelRoot; // 요약 패널 루트
 
-    [Header("공용 Problem 컨텍스트")]
-    [SerializeField] private ProblemContext context;
-
     // 내부 상태
     private int _currentIndex;       // 0..films.Length
     private int[] _order;            // 랜덤 인덱스 순서
@@ -72,13 +70,28 @@ public class Director_Problem1_Step3 : MonoBehaviour
     private readonly List<FilmItem> _factFilms = new();
     private readonly List<SortLogEntry> _logs = new();
 
-    private void OnEnable()
+    [Header("완료 게이트")]
+    [SerializeField] private StepCompletionGate completionGate;
+    // ==== ProblemStepBase 구현부 ====
+
+    protected override void OnStepEnter()
     {
         if (summaryPanelRoot != null)
             summaryPanelRoot.gameObject.SetActive(false);
 
         ResetState();
+
+        if(completionGate != null)
+        {
+            int total = (films != null) ? films.Length : 0;
+            completionGate.ResetGate(total);
+        }
     }
+
+    protected override void OnStepExit()
+    {
+    }
+
 
     private void ResetState()
     {
@@ -153,8 +166,6 @@ public class Director_Problem1_Step3 : MonoBehaviour
         if (answerButtonsRoot != null)
             answerButtonsRoot.SetActive(!isComplete);
 
-        if (summaryButtonRoot != null)
-            summaryButtonRoot.SetActive(isComplete);
     }
 
     private void SpawnOrUpdateCurrentFilmCard(string text)
@@ -229,6 +240,9 @@ public class Director_Problem1_Step3 : MonoBehaviour
             });
 
             RefreshBinsUI();
+
+            if (completionGate != null)
+                completionGate.MarkOneDone();
         }
 
         // 선택 후 중복 입력 방지
@@ -289,9 +303,6 @@ public class Director_Problem1_Step3 : MonoBehaviour
             micIndicator.ToggleRecording();
     }
 
-    // 요약 보기 버튼에서 호출:
-    // 1) 지금까지의 분류 로그를 DB에 저장
-    // 2) stepRoot 비활성화, summaryPanelRoot 활성화
     public void OnClickSummaryButton()
     {
         SaveSortLogToDb();
@@ -311,21 +322,13 @@ public class Director_Problem1_Step3 : MonoBehaviour
             return;
         }
 
-        if (context == null)
-        {
-            Debug.LogWarning("[Director_Problem1_Step3] ProblemContext가 설정되지 않아 저장 스킵");
-            return;
-        }
-
-        // 이 스텝 키 설정
-        context.CurrentStepKey = "Director_Problem1_Step3";
-
-        // body에는 이 스텝 전용 데이터 구조만 넣어준다.
+        // ProblemStepBase.SaveAttempt 사용
+        // (context null 이면 내부에서 경고 로그 찍고 스킵)
         var body = new
         {
             items = _logs.ToArray()
         };
 
-        context.SaveStepAttempt(body);
+        SaveAttempt(body);
     }
 }

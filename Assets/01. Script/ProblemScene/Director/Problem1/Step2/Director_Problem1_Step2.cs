@@ -43,10 +43,6 @@ public class Director_Problem1_Step2 : ProblemStepBase
         BuildFilmMap();
         ResetState();
     }
-
-    // 필요 없으면 OnStepExit는 안 만들어도 됨
-    // protected override void OnStepExit() { }
-
     private void BuildFilmMap()
     {
         _filmMap.Clear();
@@ -102,10 +98,6 @@ public class Director_Problem1_Step2 : ProblemStepBase
         }
     }
 
-    /// <summary>
-    /// 각 필름 버튼에서 OnClick 이벤트로 호출해주면 됨.
-    /// 버튼 인스펙터에서 id를 파라미터로 넘겨줘.
-    /// </summary>
     public void OnFilmClicked(int id)
     {
         if (_filmMap == null || !_filmMap.TryGetValue(id, out var fragment))
