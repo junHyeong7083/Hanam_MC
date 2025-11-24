@@ -77,6 +77,7 @@ public class StepInventoryItem : MonoBehaviour,
             _initialized = true;
         }
 
+        _originalScale = new Vector3(1,1,1);
         // 활성화될 때마다 리셋할 것들
         if (iconRect != null)
         {
@@ -117,7 +118,6 @@ public class StepInventoryItem : MonoBehaviour,
             c.a = 0f;
             backgroundImage.color = c;
         }
-
         // 1순위: 인스펙터에 직접 연결된 타겟
         if (dragHandlerTarget is IStepInventoryDragHandler handlerFromField)
         {
@@ -191,7 +191,6 @@ public class StepInventoryItem : MonoBehaviour,
     private void Update()
     {
         if (iconRect == null) return;
-
         Vector3 targetScale = _originalScale;
 
         // Hover 시 살짝 키우기
@@ -218,6 +217,7 @@ public class StepInventoryItem : MonoBehaviour,
             t += Time.deltaTime * wiggleSpeed;
             float s = 1f + Mathf.Sin(t) * wiggleAmplitude;
             iconRect.localScale = _originalScale * s;
+          //  Debug.Log("  iconRect.localScale : " + iconRect.localScale);
             yield return null;
         }
     }

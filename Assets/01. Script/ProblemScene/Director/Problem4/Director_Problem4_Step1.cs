@@ -3,18 +3,19 @@ using UnityEngine.EventSystems;
 using System.Collections;
 
 /// <summary>
-/// Director / Problem_3 / Step1
-/// - 인벤토리에서 '시나리오 펜'을 드래그해서 책 위로 올리는 단계.
+/// Director / Problem4 / Step1
+/// - 인벤토리에서 '편집용 가위'를 드래그해서
+///   흑백 필름의 여러 프레임을 잘라내는 단계.
 /// </summary>
-public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandler
+public class Director_Problem4_Step1 : ProblemStepBase, IStepInventoryDragHandler
 {
     [Header("책 드롭 타겟")]
-    [SerializeField] private RectTransform bookDropArea;
+    [SerializeField] private RectTransform filmDropArea;
     [SerializeField] private GameObject dropIndicatorRoot;
     [SerializeField] private float dropRadius = 200f;
 
     [Header("책 활성화 연출")]
-    [SerializeField] private RectTransform bookVisualRoot;
+    [SerializeField] private RectTransform filmVisualRoot;
     [SerializeField] private float activateScale = 1.05f;
     [SerializeField] private float activateDuration = 0.6f;
     [SerializeField] private float delayBeforeComplete = 1.5f;
@@ -25,7 +26,7 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
     [Header("완료 게이트 (옵션)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    private bool _bookActivated;
+    private bool _filmActivated;
     private bool _animPlaying;
 
     protected override void OnStepEnter()
@@ -38,7 +39,7 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
 
     private void ResetState()
     {
-        _bookActivated = false;
+        _filmActivated = false;
         _animPlaying = false;
 
         if (dropIndicatorRoot != null)
@@ -47,8 +48,8 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
         if (instructionRoot != null)
             instructionRoot.SetActive(true);
 
-        if (bookVisualRoot != null)
-            bookVisualRoot.localScale = Vector3.one;
+        if (filmVisualRoot != null)
+            filmVisualRoot.localScale = Vector3.one;
     }
 
     protected override void OnStepExit()
@@ -62,7 +63,7 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
     public void OnInventoryDragBegin(StepInventoryItem item, PointerEventData eventData)
     {
         // 이 스텝에서는 'pen' 아이템만 처리
-        if (_bookActivated) return;
+        if (_filmActivated) return;
         if (item == null) return;
         if (!item.IsDraggableThisStep)
             return;
@@ -87,7 +88,7 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
             return;
         }
 
-        if (_bookActivated || bookDropArea == null)
+        if (_filmActivated || filmDropArea == null)
         {
             item.ReturnToSlot();
             return;
@@ -95,7 +96,7 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
 
         // 1) 책 중심 스크린 좌표
         var cam = eventData.pressEventCamera;
-        Vector2 bookScreenPos = RectTransformUtility.WorldToScreenPoint(cam, bookDropArea.position);
+        Vector2 bookScreenPos = RectTransformUtility.WorldToScreenPoint(cam, filmDropArea.position);
 
         // 2) 드롭 위치
         Vector2 dropPos = eventData.position;
@@ -107,7 +108,7 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
         {
             // 성공: 고스트만 남기고 아이콘 숨김
             item.HideIconKeepGhost();
-            StartCoroutine(HandleBookActivatedRoutine());
+            StartCoroutine(HandleFilmActivatedRoutine());
         }
         else
         {
@@ -116,18 +117,18 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
         }
     }
 
-    private IEnumerator HandleBookActivatedRoutine()
+    private IEnumerator HandleFilmActivatedRoutine()
     {
-        if (_bookActivated || _animPlaying)
+        if (_filmActivated || _animPlaying)
             yield break;
 
-        _bookActivated = true;
+        _filmActivated = true;
         _animPlaying = true;
 
         if (instructionRoot != null)
             instructionRoot.SetActive(false);
 
-        if (bookVisualRoot != null)
+        if (filmVisualRoot != null)
         {
             float t = 0f;
             Vector3 baseScale = Vector3.one;
@@ -139,11 +140,11 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
                 float s = Mathf.Sin(x * Mathf.PI);
                 float scale = Mathf.Lerp(1f, activateScale, s);
 
-                bookVisualRoot.localScale = Vector3.one * scale;
+                filmVisualRoot.localScale = Vector3.one * scale;
                 yield return null;
             }
 
-            bookVisualRoot.localScale = baseScale;
+            filmVisualRoot.localScale = baseScale;
         }
 
         _animPlaying = false;
@@ -154,4 +155,5 @@ public class Director_Problem3_Step1 : ProblemStepBase, IStepInventoryDragHandle
         if (completionGate != null)
             completionGate.MarkOneDone();
     }
+
 }

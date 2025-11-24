@@ -14,7 +14,7 @@ public class StepInventoryPanel : MonoBehaviour
     public class Slot
     {
         [Header("공통 설정")]
-        [Tooltip("DB InventoryItem.ItemId 와 동일 (비워두면 itemComponent.itemId 사용)")]
+        //[Tooltip("DB InventoryItem.ItemId 와 동일 (비워두면 itemComponent.itemId 사용)")]
         public string itemId;
 
         [Tooltip("이 스텝에서 이 아이템을 드래그 가능하게 할지 여부")]
@@ -89,12 +89,7 @@ public class StepInventoryPanel : MonoBehaviour
             if (s == null)
                 continue;
 
-            // 1) 이 슬롯이 어떤 ItemId를 쓸지 결정
-            string slotItemId =
-                (s.itemComponent != null && !string.IsNullOrEmpty(s.itemComponent.itemId))
-                    ? s.itemComponent.itemId
-                    : s.itemId;
-
+            string slotItemId = s.itemComponent != null ? s.itemComponent.itemId : null;
             if (string.IsNullOrEmpty(slotItemId))
             {
                 s.isUnlocked = false;
@@ -109,6 +104,7 @@ public class StepInventoryPanel : MonoBehaviour
                 var it = inventory[i];
                 if (it != null && it.ItemId == slotItemId)
                 {
+                    Debug.Log("Has Item!! : " +  it.ItemId);
                     hasItem = true;
                     break;
                 }
