@@ -312,6 +312,7 @@ public class Director_Problem4_Step3 : ProblemStepBase
 
     private void CompleteStep()
     {
+
         // 버튼 막기
         if (yesButton != null) yesButton.interactable = false;
         if (noButton != null) noButton.interactable = false;

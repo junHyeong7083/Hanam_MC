@@ -849,6 +849,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681027fff52bf44459c7ba82cf0fbbd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDBSave: 0
+  context: {fileID: 0}
+  stepKey: 
   useDust: 0
   dustParent: {fileID: 0}
   dustPrefab: {fileID: 8819971521786195261, guid: 85b298aea4f7b144e9226281b5f80cf2, type: 3}
@@ -4692,6 +4695,7 @@ MonoBehaviour:
   ngBadgeRoot: {fileID: 1653719515}
   okBadgeRoot: {fileID: 749567857}
   sceneCardRect: {fileID: 594341446}
+  cardFlip: {fileID: 594341449}
   perspectiveButtonsRoot: {fileID: 1266023011}
   perspectiveButtons:
   - {fileID: 96037224}
@@ -6292,7 +6296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6351,6 +6355,19 @@ MonoBehaviour:
   useDBSave: 1
   context: {fileID: 11400000, guid: a8792ba666d6d484ea9453bda9cc11f1, type: 2}
   stepKey: Director_Problem3_Step3
+  questionLabel: {fileID: 964106219}
+  optionButtons:
+  - {fileID: 14338024}
+  - {fileID: 1535763287}
+  - {fileID: 1493950992}
+  optionLabels:
+  - {fileID: 113729188}
+  - {fileID: 1928100647}
+  - {fileID: 746470821}
+  optionNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  optionCorrectColor: {r: 0, g: 1, b: 0, a: 1}
+  optionWrongColor: {r: 1, g: 0, b: 0, a: 1}
+  completionGate: {fileID: 501296000}
   questions:
   - id: q_strength_1
     questionText: "\uACF5\uBC31\uAE30 : \uC8FC\uC778\uACF5\uC774 \uB2E4\uC74C \uC7AC\uCDA9\uC804\uD588\uB2E4.
@@ -6366,24 +6383,12 @@ MonoBehaviour:
     - 
     - "\uC624\uB798 \uBC84\uD2F4 \uAC83\uB3C4 \uC911\uC694\uD558\uC9C0\uB9CC, '\uAD00\uB9AC'\uC5D0
       \uB354 \uCD08\uC810\uC774 \uB9DE\uCDB0\uC838 \uC788\uC5B4\uC694"
-  questionLabel: {fileID: 964106219}
-  optionButtons:
-  - {fileID: 14338024}
-  - {fileID: 1535763287}
-  - {fileID: 1493950992}
-  optionLabels:
-  - {fileID: 113729188}
-  - {fileID: 1928100647}
-  - {fileID: 746470821}
   hintRoot: {fileID: 1305942776}
   hintLabel: {fileID: 600552087}
   hintCanvasGroup: {fileID: 1305942778}
   hintShowDuration: 1.5
   hintFadeDuration: 0.4
   hideRootOnCorrect: {fileID: 1305942776}
-  completionGate: {fileID: 501296000}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  correctColor: {r: 1, g: 0.8, b: 0.3, a: 1}
   disabledColor: {r: 1, g: 1, b: 1, a: 0.4}
 --- !u!1 &501406512
 GameObject:
@@ -7187,6 +7192,7 @@ MonoBehaviour:
     filmEmotionPopupRoot: {fileID: 1639064406}
     lineRect: {fileID: 1429648234}
     lineImage: {fileID: 1429648235}
+    lineConnector: {fileID: 1429648237}
   - sceneText: "\uC2DC\uD5D8 \uC804\uB0A0 \uBC24"
     emotionText: "\uB450\uB824\uC6C0"
     color: {r: 0.54509807, g: 0.36078432, b: 0.9647059, a: 0}
@@ -7203,6 +7209,7 @@ MonoBehaviour:
     filmEmotionPopupRoot: {fileID: 1027304372}
     lineRect: {fileID: 1739005107}
     lineImage: {fileID: 1739005108}
+    lineConnector: {fileID: 1739005110}
   - sceneText: "\uD63C\uC790 \uB0A8\uACA8\uC84C\uC744 \uB54C"
     emotionText: "\uC704\uCD95"
     color: {r: 0.41960785, g: 0.44705883, b: 0.5019608, a: 0}
@@ -7219,6 +7226,7 @@ MonoBehaviour:
     filmEmotionPopupRoot: {fileID: 700936357}
     lineRect: {fileID: 556793562}
     lineImage: {fileID: 556793563}
+    lineConnector: {fileID: 556793565}
   lineDrawDuration: 0.35
   lineHoldDuration: 0.4
   lineFadeDuration: 0.25
@@ -7356,6 +7364,7 @@ GameObject:
   - component: {fileID: 556793562}
   - component: {fileID: 556793564}
   - component: {fileID: 556793563}
+  - component: {fileID: 556793565}
   m_Layer: 5
   m_Name: LineImage3
   m_TagString: Untagged
@@ -7394,7 +7403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 5b9158f1d8d6b3c4d83295b005d31e17, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -7420,6 +7429,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556793561}
   m_CullTransparentMesh: 1
+--- !u!114 &556793565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556793561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e780c24be2b4a4c8e4959759d8054e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
+  maxThickness: 12
+  growDuration: 0.25
+  holdDuration: 0.15
+  fadeDuration: 0.25
+  growCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.020832062
+      value: -0.002357483
+      inSlope: 1.9792382
+      outSlope: 1.9792382
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.48571587
+      value: 1.0002215
+      inSlope: 0.042513013
+      outSlope: 0.042513013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0125122
+      value: 0.002357483
+      inSlope: -1.8942121
+      outSlope: -1.8942121
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  disableAtEnd: 1
 --- !u!1 &569019527
 GameObject:
   m_ObjectHideFlags: 0
@@ -7823,6 +7907,7 @@ GameObject:
   - component: {fileID: 594341446}
   - component: {fileID: 594341448}
   - component: {fileID: 594341447}
+  - component: {fileID: 594341449}
   m_Layer: 5
   m_Name: ProblemImage
   m_TagString: Untagged
@@ -7891,6 +7976,45 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 594341445}
   m_CullTransparentMesh: 1
+--- !u!114 &594341449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 594341445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edeed11f2c431c54d985f37602c19454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRect: {fileID: 594341446}
+  duration: 0.5
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  keepPosition: 1
 --- !u!1 &600552085
 GameObject:
   m_ObjectHideFlags: 0
@@ -9651,8 +9775,7 @@ MonoBehaviour:
   useDBSave: 0
   context: {fileID: 0}
   stepKey: 
-  dropBoxArea: {fileID: 901887669}
-  dropBoxOutline: {fileID: 1169909972}
+  dropBoxArea: {fileID: 901887672}
   dragItems:
   - {fileID: 1099255121}
   resultPanelRoot: {fileID: 1344042946}
@@ -10637,7 +10760,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &831358587
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11502,6 +11625,7 @@ GameObject:
   - component: {fileID: 901887669}
   - component: {fileID: 901887671}
   - component: {fileID: 901887670}
+  - component: {fileID: 901887672}
   m_Layer: 5
   m_Name: DragBox Image
   m_TagString: Untagged
@@ -11567,6 +11691,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 901887668}
   m_CullTransparentMesh: 1
+--- !u!114 &901887672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901887668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd5a2c7252a3b3746bef5b3bbe56ee54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  area: {fileID: 901887669}
+  outline: {fileID: 1169909972}
 --- !u!1 &919493202
 GameObject:
   m_ObjectHideFlags: 0
@@ -14228,7 +14366,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1169909973
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17748,7 +17886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1413835130
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17956,6 +18094,7 @@ GameObject:
   - component: {fileID: 1429648234}
   - component: {fileID: 1429648236}
   - component: {fileID: 1429648235}
+  - component: {fileID: 1429648237}
   m_Layer: 5
   m_Name: LineImage1
   m_TagString: Untagged
@@ -17994,7 +18133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 5b9158f1d8d6b3c4d83295b005d31e17, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -18020,6 +18159,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1429648233}
   m_CullTransparentMesh: 1
+--- !u!114 &1429648237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429648233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e780c24be2b4a4c8e4959759d8054e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
+  maxThickness: 12
+  growDuration: 0.25
+  holdDuration: 0.15
+  fadeDuration: 0.25
+  growCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.020832062
+      value: -0.002357483
+      inSlope: 1.9792382
+      outSlope: 1.9792382
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.48571587
+      value: 1.0002215
+      inSlope: 0.042513013
+      outSlope: 0.042513013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0125122
+      value: 0.002357483
+      inSlope: -1.8942121
+      outSlope: -1.8942121
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  disableAtEnd: 1
 --- !u!1 &1434677822
 GameObject:
   m_ObjectHideFlags: 0
@@ -19775,7 +19989,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1629263204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21147,6 +21361,7 @@ GameObject:
   - component: {fileID: 1739005107}
   - component: {fileID: 1739005109}
   - component: {fileID: 1739005108}
+  - component: {fileID: 1739005110}
   m_Layer: 5
   m_Name: LineImage2
   m_TagString: Untagged
@@ -21185,7 +21400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 5b9158f1d8d6b3c4d83295b005d31e17, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -21211,6 +21426,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1739005106}
   m_CullTransparentMesh: 1
+--- !u!114 &1739005110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1739005106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e780c24be2b4a4c8e4959759d8054e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
+  maxThickness: 12
+  growDuration: 0.25
+  holdDuration: 0.15
+  fadeDuration: 0.25
+  growCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.020832062
+      value: -0.002357483
+      inSlope: 1.9792382
+      outSlope: 1.9792382
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.48571587
+      value: 1.0002215
+      inSlope: 0.042513013
+      outSlope: 0.042513013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0125122
+      value: 0.002357483
+      inSlope: -1.8942121
+      outSlope: -1.8942121
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  disableAtEnd: 1
 --- !u!1 &1760072157
 GameObject:
   m_ObjectHideFlags: 0
@@ -24848,6 +25138,8 @@ MonoBehaviour:
   useDBSave: 1
   context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
   stepKey: Director_Problem1_Step3
+  progressLabel: {fileID: 1688002993}
+  completionGate: {fileID: 2046801912}
   films:
   - id: 0
     text: "\uB098\uB294 \uC2E4\uD328\uD560 \uAC83\uC774\uB2E4"
@@ -24869,7 +25161,6 @@ MonoBehaviour:
     isThought: 0
   currentFilmRoot: {fileID: 444466310}
   currentFilmPrefab: {fileID: 1500329242432800110, guid: 0f3d1b75dba99714a97ef32106da8e8d, type: 3}
-  progressText: {fileID: 1688002993}
   answerButtonsRoot: {fileID: 1415187738}
   summaryButtonRoot: {fileID: 1298352369}
   thoughtsContainer: {fileID: 1891125337}
@@ -24879,7 +25170,6 @@ MonoBehaviour:
   micIndicator: {fileID: 0}
   stepRoot: {fileID: 1407136721}
   summaryPanelRoot: {fileID: 1983275916}
-  completionGate: {fileID: 2046801912}
 --- !u!114 &2046801912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29107,7 +29397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &2262651737973369145
 GameObject:
   m_ObjectHideFlags: 0

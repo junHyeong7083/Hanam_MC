@@ -1,22 +1,21 @@
-// Director_Problem4_Step1.cs
-
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System.Collections;
 
 /// <summary>
-/// Director / Problem4 / Step1
-/// - 인벤토리에서 '편집용 가위'를 드래그해서
-///   흑백 필름 위로 올리는 단계.
+/// Director / Problem_3 / Step1
+/// - 인벤토리에서 '시나리오 펜'을 드래그해서 책 위로 올리는 단계.
 /// - 공통 로직은 InventoryDropTargetStepBase에서 처리.
 /// </summary>
-public class Director_Problem4_Step1 : InventoryDropTargetStepBase
+public class Director_Problem3_Step1 : InventoryDropTargetStepBase
 {
-    [Header("필름 드롭 타겟")]
-    [SerializeField] private RectTransform filmDropArea;
+    [Header("책 드롭 타겟")]
+    [SerializeField] private RectTransform bookDropArea;
     [SerializeField] private GameObject dropIndicatorRoot;
     [SerializeField] private float dropRadius = 200f;
 
-    [Header("필름 활성화 연출")]
-    [SerializeField] private RectTransform filmVisualRoot;
+    [Header("책 활성화 연출")]
+    [SerializeField] private RectTransform bookVisualRoot;
     [SerializeField] private float activateScale = 1.05f;
     [SerializeField] private float activateDuration = 0.6f;
     [SerializeField] private float delayBeforeComplete = 1.5f;
@@ -28,9 +27,9 @@ public class Director_Problem4_Step1 : InventoryDropTargetStepBase
     [SerializeField] private StepCompletionGate completionGate;
 
     // === 베이스에 넘겨줄 프로퍼티들 ===
-    protected override RectTransform DropTargetRect => filmDropArea;
+    protected override RectTransform DropTargetRect => bookDropArea;
     protected override GameObject DropIndicatorRoot => dropIndicatorRoot;
-    protected override RectTransform TargetVisualRoot => filmVisualRoot;
+    protected override RectTransform TargetVisualRoot => bookVisualRoot;
     protected override GameObject InstructionRoot => instructionRoot;
     protected override StepCompletionGate CompletionGate => completionGate;
 
@@ -39,5 +38,4 @@ public class Director_Problem4_Step1 : InventoryDropTargetStepBase
     protected override float ActivateDuration => activateDuration;
     protected override float DelayBeforeComplete => delayBeforeComplete;
 
-    // 필요하면 OnStepEnterExtra, OnDropComplete 등에 추가 로직 넣으면 됨.
 }
