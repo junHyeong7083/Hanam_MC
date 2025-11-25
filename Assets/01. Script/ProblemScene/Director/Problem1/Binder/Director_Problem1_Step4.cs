@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Director 테마 / Problem1 / Step4 (보상 연출 + 보상 DB 기록)
+/// Director 테마  Step4 (보상 연출 + 보상 DB 기록)
 /// </summary>
 public class Director_Problem1_Step4 : MonoBehaviour
 {

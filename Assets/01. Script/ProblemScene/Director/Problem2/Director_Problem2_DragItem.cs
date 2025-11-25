@@ -19,7 +19,7 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
     [SerializeField] private Canvas rootCanvas;   // 최상위 Canvas (UI 좌표 계산용)
 
     private RectTransform _rect;
-    private Director_Problem2_Step1 _stepController;
+    private Director_Problem2_Step1_Logic _stepController;
 
     private Vector2 _originalAnchoredPos;
     private bool _initializedPos = false;
@@ -53,7 +53,7 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
         }
     }
 
-    public void SetStepController(Director_Problem2_Step1 controller)
+    public void SetStepController(Director_Problem2_Step1_Logic controller)
     {
         _stepController = controller;
     }
