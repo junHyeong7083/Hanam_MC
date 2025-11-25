@@ -42,6 +42,7 @@ public class ProblemContext : ScriptableObject
 
         if (!result.Ok)
             Debug.LogWarning("[ProblemContext] SaveStepAttempt 실패: " + result.Error);
+        Debug.Log("DB저장 완료");
     }
 
     /// <summary>

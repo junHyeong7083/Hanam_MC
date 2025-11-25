@@ -181,7 +181,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     /// </summary>
     protected virtual void OnDropSuccess(StepInventoryItem item, PointerEventData eventData)
     {
-        item.HideIconKeepGhost();
+        //item.HideIconKeepGhost();
         StartCoroutine(HandleActivatedRoutine());
     }
 

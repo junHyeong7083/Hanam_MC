@@ -314,7 +314,7 @@ public class StepInventoryItem : MonoBehaviour,
     /// <summary>
     /// 드롭 성공 시, 슬롯에는 반투명 배경만 남기고 아이콘만 숨길 때 사용.
     /// </summary>
-    public void HideIconKeepGhost()
+   /* public void HideIconKeepGhost()
     {
         if (iconImage != null)
             iconImage.gameObject.SetActive(false);
@@ -325,7 +325,7 @@ public class StepInventoryItem : MonoBehaviour,
             c.a = 0.3f;
             backgroundImage.color = c;
         }
-    }
+    }*/
 }
 
 /// <summary>
