@@ -1,20 +1,35 @@
-﻿using System;
+using System;
 using System.Linq;
-
-// 결과(ResultDoc), 피드백(Feedback) 관련 DB 접근
-public partial class DBGateway
+public interface IResultRepository
 {
+    void InsertResult(ResultDoc result);
+    void UpdateResult(ResultDoc result);
+    ResultDoc[] GetResultsByUser(string userEmail);
+    ResultDoc GetResultById(string resultId);
+}
+
+public class ResultRepository : IResultRepository
+{
+    private readonly IDBGateway _db;
+    private const string CUsers = "users";
+    private const string CResults = "results";
+
+    public ResultRepository(IDBGateway db)
+    {
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+    }
+
     public void InsertResult(ResultDoc result)
     {
         if (result == null) throw new ArgumentNullException(nameof(result));
 
-        WithDb(db =>
+        _db.WithDb(db =>
         {
             var col = db.GetCollection<ResultDoc>(CResults);
             col.EnsureIndex(x => x.Id, true);
             col.EnsureIndex(x => x.UserId);
             col.EnsureIndex(x => x.Theme);
-            col.EnsureIndex(x => x.ProblemIndex); // Stage → ProblemIndex
+            col.EnsureIndex(x => x.ProblemIndex);
 
             col.Insert(result);
         });
@@ -24,20 +39,19 @@ public partial class DBGateway
     {
         if (result == null) throw new ArgumentNullException(nameof(result));
 
-        WithDb(db =>
+        _db.WithDb(db =>
         {
             var col = db.GetCollection<ResultDoc>(CResults);
             col.Update(result);
         });
     }
 
-
     public ResultDoc[] GetResultsByUser(string userEmail)
     {
         if (string.IsNullOrWhiteSpace(userEmail))
             return Array.Empty<ResultDoc>();
 
-        return WithDb(db =>
+        return _db.WithDb(db =>
         {
             var users = db.GetCollection<User>(CUsers);
             var results = db.GetCollection<ResultDoc>(CResults);
@@ -58,39 +72,11 @@ public partial class DBGateway
     {
         if (string.IsNullOrWhiteSpace(resultId)) return null;
 
-        return WithDb(db =>
+        return _db.WithDb(db =>
         {
             var col = db.GetCollection<ResultDoc>(CResults);
             col.EnsureIndex(x => x.Id, true);
             return col.FindById(resultId);
-        });
-    }
-
-    public void InsertFeedback(Feedback feedback)
-    {
-        if (feedback == null) throw new ArgumentNullException(nameof(feedback));
-
-        WithDb(db =>
-        {
-            var col = db.GetCollection<Feedback>(CFeedback);
-            col.EnsureIndex(x => x.Id, true);
-            col.EnsureIndex(x => x.ResultId);
-            col.Insert(feedback);
-        });
-    }
-
-    public Feedback[] GetFeedbacksByResult(string resultId)
-    {
-        if (string.IsNullOrWhiteSpace(resultId))
-            return Array.Empty<Feedback>();
-
-        return WithDb(db =>
-        {
-            var col = db.GetCollection<Feedback>(CFeedback);
-            col.EnsureIndex(x => x.ResultId);
-            var q = col.Find(f => f.ResultId == resultId)
-                       .OrderBy(f => f.CreatedAt);
-            return q.ToArray();
         });
     }
 }

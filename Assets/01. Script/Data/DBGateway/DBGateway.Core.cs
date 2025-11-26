@@ -1,8 +1,15 @@
 using System;
 using LiteDB;
 
+public interface IDBGateway
+{
+    T WithDb<T>(Func<LiteDatabase, T> func);
+    void WithDb(Action<LiteDatabase> action);
+}
+
+
 // LiteDB(mc.db)에 대한 공통 헬퍼 및 컬렉션 이름 정의.
-public partial class DBGateway
+public partial class DBGateway : IDBGateway
 {
     // 컬렉션 이름 상수
     const string CUsers = "users";
@@ -24,4 +31,5 @@ public partial class DBGateway
     {
         DBHelper.With(action);
     }
+
 }

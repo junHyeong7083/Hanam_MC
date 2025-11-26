@@ -12,12 +12,14 @@ using System.Linq;
 /// </summary>
 public static class AdminService
 {
+    private static IUserRepository Users => DataService.Instance.UserRepository;
+
     public static bool SetRole(string actingUserId, string targetUserId, UserRole role)
-        => DataService.Instance.Db.TrySetUserRole(actingUserId, targetUserId, role);
+        => Users.TrySetUserRole(actingUserId, targetUserId, role);
 
     public static bool SetActive(string actingUserId, string targetUserId, bool active)
-        => DataService.Instance.Db.TrySetUserActive(actingUserId, targetUserId, active);
+        => Users.TrySetUserActive(actingUserId, targetUserId, active);
 
     public static List<User> SearchUsers(string actingUserId, string contains = "")
-        => DataService.Instance.Db.SearchUsersRaw(actingUserId, contains).ToList();
+        => Users.SearchUsersRaw(actingUserId, contains).ToList();
 }

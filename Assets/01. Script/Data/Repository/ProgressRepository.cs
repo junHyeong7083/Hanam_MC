@@ -1,9 +1,27 @@
 using System;
 using System.Linq;
 
-// 유저 진행도, 세션, 문제, 시도(Attempt) 관련 DB 접근
-public partial class DBGateway
+public interface IProgressRepository
 {
+    UserProgress GetUserProgress(string userEmail);
+    void InsertAttempt(Attempt attempt);
+    int[] GetSolvedProblemIndexes(string userEmail, string theme = null);
+}
+
+
+public class ProgressRepository : IProgressRepository
+{
+    private readonly IDBGateway _db;
+    private const string CUsers = "users";
+    private const string CSessions = "sessions";
+    private const string CResults = "results";
+    private const string CAttempts = "attempts";
+
+    public ProgressRepository(IDBGateway db)
+    {
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+    }
+
     public UserProgress GetUserProgress(string userEmail)
     {
         if (string.IsNullOrWhiteSpace(userEmail))
@@ -17,7 +35,7 @@ public partial class DBGateway
             };
         }
 
-        return WithDb(db =>
+        return _db.WithDb(db =>
         {
             var users = db.GetCollection<User>(CUsers);
             var sessions = db.GetCollection<SessionRecord>(CSessions);
@@ -52,41 +70,11 @@ public partial class DBGateway
         });
     }
 
-    public Problem GetProblemById(string problemId)
-    {
-        if (string.IsNullOrWhiteSpace(problemId)) return null;
-
-        return WithDb(db =>
-        {
-            var col = db.GetCollection<Problem>(CProblems);
-            col.EnsureIndex(x => x.Id, true);
-            return col.FindById(problemId);
-        });
-    }
-
-    /// <summary>
-    /// (선택) 테마/번호로 문제를 가져오고 싶을 때 쓸 수 있는 확장용 메서드.
-    /// 현재 Problem에 Index 정보가 없으면 나중에 스키마에 맞게 수정해야 함.
-    /// </summary>
-    public Problem GetProblemByThemeAndIndex(ProblemTheme theme, int index)
-    {
-        if (index <= 0)
-            return null;
-
-        return WithDb(db =>
-        {
-            var col = db.GetCollection<Problem>(CProblems);
-            col.EnsureIndex(x => x.Theme);
-            // TODO: Problem에 ProblemIndex 필드가 생기면 theme + index 조합으로 조회하도록 확장
-            return col.FindOne(p => p.Theme == theme);
-        });
-    }
-
     public void InsertAttempt(Attempt attempt)
     {
         if (attempt == null) throw new ArgumentNullException(nameof(attempt));
 
-        WithDb(db =>
+        _db.WithDb(db =>
         {
             var col = db.GetCollection<Attempt>(CAttempts);
             col.EnsureIndex(x => x.Id, true);
@@ -100,16 +88,12 @@ public partial class DBGateway
         });
     }
 
-    /// <summary>
-    /// 사용자가 푼 문제 번호(ProblemIndex) 목록.
-    /// theme 파라미터로 테마별 필터링 가능.
-    /// </summary>
     public int[] GetSolvedProblemIndexes(string userEmail, string theme = null)
     {
         if (string.IsNullOrWhiteSpace(userEmail))
             return Array.Empty<int>();
 
-        return WithDb(db =>
+        return _db.WithDb(db =>
         {
             var users = db.GetCollection<User>(CUsers);
             var results = db.GetCollection<ResultDoc>(CResults);
@@ -134,5 +118,5 @@ public partial class DBGateway
             return indexes;
         });
     }
-
 }
+

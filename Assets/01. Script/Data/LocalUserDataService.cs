@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Linq;
 /// <summary>
 /// 사용자 문제 풀이 / 진행도용 로컬 데이터 서비스.
-/// 실제 DB 접근은 DbGateway를 통해서만 한다.
+/// 실제 DB 접근은 Repository들(Progress/Problem/Result/Inventory)을 통해서만 한다.
 /// </summary>
 public interface IUserDataService
 {
@@ -50,18 +50,31 @@ public interface IUserDataService
 
 public class LocalUserDataService : IUserDataService
 {
-    readonly DBGateway _db;
-
-    public LocalUserDataService(DBGateway db)
+    private readonly IInventoryRepository _inventoryRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IProgressRepository _progressRepository;
+    private readonly IProblemRepository _problemRepository;
+    private readonly IResultRepository _resultRepository;
+    public LocalUserDataService(
+     IInventoryRepository inventoryRepository,
+     IUserRepository userRepository,
+     IProgressRepository progressRepository,
+     IProblemRepository problemRepository,
+     IResultRepository resultRepository)
     {
-        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _inventoryRepository = inventoryRepository ?? throw new ArgumentNullException(nameof(inventoryRepository));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _progressRepository = progressRepository ?? throw new ArgumentNullException(nameof(progressRepository));
+        _problemRepository = problemRepository ?? throw new ArgumentNullException(nameof(problemRepository));
+        _resultRepository = resultRepository ?? throw new ArgumentNullException(nameof(resultRepository));
     }
+
 
     public Result<UserProgress> FetchProgress(string userEmail)
     {
         try
         {
-            var progress = _db.GetUserProgress(userEmail);
+            var progress = _progressRepository.GetUserProgress(userEmail);
             return Result<UserProgress>.Success(progress);
         }
         catch (Exception e)
@@ -71,11 +84,12 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
+
     public Result<Problem> FetchProblem(string problemId)
     {
         try
         {
-            var p = _db.GetProblemById(problemId);
+            var p = _problemRepository.GetProblemById(problemId);
             if (p == null)
                 return Result<Problem>.Fail(AuthError.NotFoundOrInactive);
 
@@ -87,6 +101,7 @@ public class LocalUserDataService : IUserDataService
             return Result<Problem>.Fail(AuthError.Internal);
         }
     }
+
 
     public Result SaveAttempt(Attempt attempt)
     {
@@ -100,7 +115,6 @@ public class LocalUserDataService : IUserDataService
 
             if (currentUser != null)
             {
-                // UserId / Email 보정
                 if (string.IsNullOrEmpty(attempt.UserId))
                     attempt.UserId = currentUser.Id;
                 if (string.IsNullOrEmpty(attempt.UserEmail))
@@ -112,7 +126,7 @@ public class LocalUserDataService : IUserDataService
             if (attempt.CreatedAt == default)
                 attempt.CreatedAt = DateTime.UtcNow;
 
-            _db.InsertAttempt(attempt);
+            _progressRepository.InsertAttempt(attempt);
             return Result.Success();
         }
         catch (Exception e)
@@ -123,6 +137,7 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+
     public Result<ResultDoc> FetchResult(string resultIdOrSessionId)
     {
         if (string.IsNullOrWhiteSpace(resultIdOrSessionId))
@@ -130,12 +145,10 @@ public class LocalUserDataService : IUserDataService
 
         try
         {
-            // 1) Id로 직접 조회
-            var r = _db.GetResultById(resultIdOrSessionId);
+            var r = _resultRepository.GetResultById(resultIdOrSessionId);
             if (r != null)
                 return Result<ResultDoc>.Success(r);
 
-            // 2) 나중에 필요하면 MetaJson 등에 세션ID를 저장해서 추가 검색 로직 확장 가능
             return Result<ResultDoc>.Fail(AuthError.NotFoundOrInactive);
         }
         catch (Exception e)
@@ -145,13 +158,13 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
+
     public Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme)
     {
         try
         {
             string themeKey = theme.ToString();
-
-            var indexes = _db.GetSolvedProblemIndexes(userEmail, themeKey)
+            var indexes = _progressRepository.GetSolvedProblemIndexes(userEmail, themeKey)
                          ?? Array.Empty<int>();
 
             return Result<int[]>.Success(indexes);
@@ -162,6 +175,7 @@ public class LocalUserDataService : IUserDataService
             return Result<int[]>.Fail(AuthError.Internal);
         }
     }
+
 
     // =========================
     // 편의 메서드: 현재 로그인 사용자 기준 Attempt / Reward 저장
@@ -276,7 +290,7 @@ public class LocalUserDataService : IUserDataService
 
         try
         {
-            var user = _db.FindActiveUserByEmail(userEmail);
+            var user = _userRepository.FindActiveUserByEmail(userEmail);
             if (user == null)
                 return Result.Fail(AuthError.NotFoundOrInactive);
 
@@ -287,7 +301,7 @@ public class LocalUserDataService : IUserDataService
             if (item.AcquiredAt == default)
                 item.AcquiredAt = DateTime.UtcNow;
 
-            _db.AddInventoryItem(item);
+            _inventoryRepository.Add(item);
             return Result.Success();
         }
         catch (Exception e)
@@ -302,7 +316,7 @@ public class LocalUserDataService : IUserDataService
     {
         try
         {
-            var list = _db.GetInventoryByUser(userEmail);
+            var list = _inventoryRepository.GetByUser(userEmail);
             var arr = (list != null) ? list.ToArray() : Array.Empty<InventoryItem>();
             Debug.Log("DB List" + list);
             return Result<InventoryItem[]>.Success(arr);
@@ -328,27 +342,23 @@ public class LocalUserDataService : IUserDataService
             string userEmail = sess.CurrentUser.Email;
             string themeKey = theme.ToString();
 
-            // 1) 현재 로그인한 유저 찾기
-            var user = _db.FindActiveUserByEmail(userEmail);
+            var user = _userRepository.FindActiveUserByEmail(userEmail);
             if (user == null)
             {
                 Debug.LogWarning("[LocalUserData] MarkProblemSolvedForCurrentUser: user not found or inactive");
                 return Result.Fail(AuthError.NotFoundOrInactive);
             }
 
-            // 2) 이미 같은 Theme + ProblemIndex 결과가 있는지 체크 (중복 방지)
-            var existing = _db
+            var existing = _resultRepository
                 .GetResultsByUser(userEmail)
                 ?.FirstOrDefault(r => r.ProblemIndex == problemIndex &&
                                       r.Theme == themeKey);
 
-            // 이미 기록되어 있으면 그냥 성공 처리
             if (existing != null)
             {
                 return Result.Success();
             }
 
-            // 3) ResultDoc 한 줄 생성해서 '이 문제를 풀었다' 기록
             var result = new ResultDoc
             {
                 UserId = user.Id,
@@ -361,7 +371,7 @@ public class LocalUserDataService : IUserDataService
                 CreatedAt = DateTime.UtcNow
             };
 
-            _db.InsertResult(result);
+            _resultRepository.InsertResult(result);
 
             return Result.Success();
         }
@@ -371,6 +381,7 @@ public class LocalUserDataService : IUserDataService
             return Result.Fail(AuthError.Internal);
         }
     }
+
 
 
 

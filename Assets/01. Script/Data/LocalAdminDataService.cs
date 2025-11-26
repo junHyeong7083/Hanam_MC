@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// 관리자용 데이터 서비스 (검색 / 결과 조회 / 피드백 등록).
-/// 실제 DB 접근은 DbGateway를 통해서만 한다.
+/// 실제 DB 접근은 User/Result/Feedback Repository를 통해서만 한다.
 /// </summary>
 public interface IAdminDataService
 {
@@ -19,19 +19,28 @@ public interface IAdminDataService
 
 public class LocalAdminDataService : IAdminDataService
 {
-    readonly DBGateway _db;
+    private readonly IUserRepository _users;
+    private readonly IResultRepository _results;
+    private readonly IFeedbackRepository _feedback;
 
-    public LocalAdminDataService(DBGateway db)
+    public LocalAdminDataService(
+        IUserRepository users,
+        IResultRepository results,
+        IFeedbackRepository feedback)
     {
-        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _users = users ?? throw new ArgumentNullException(nameof(users));
+        _results = results ?? throw new ArgumentNullException(nameof(results));
+        _feedback = feedback ?? throw new ArgumentNullException(nameof(feedback));
     }
 
     public Result<UserSummary[]> SearchUsers(string query)
     {
         try
         {
-            var items = _db.SearchUsersFriendly(query ?? string.Empty)
-                        ?? Array.Empty<UserSummary>();
+            var items = _users
+                .SearchUsersFriendly(query ?? string.Empty)
+                ?? Array.Empty<UserSummary>();
+
             return Result<UserSummary[]>.Success(items);
         }
         catch (Exception e)
@@ -45,7 +54,7 @@ public class LocalAdminDataService : IAdminDataService
     {
         try
         {
-            var items = _db.GetResultsByUser(userEmail) ?? Array.Empty<ResultDoc>();
+            var items = _results.GetResultsByUser(userEmail) ?? Array.Empty<ResultDoc>();
             return Result<ResultDoc[]>.Success(items);
         }
         catch (Exception e)
@@ -68,7 +77,7 @@ public class LocalAdminDataService : IAdminDataService
             if (feedback.CreatedAt == default)
                 feedback.CreatedAt = DateTime.UtcNow;
 
-            _db.InsertFeedback(feedback);
+            _feedback.InsertFeedback(feedback);
             return Result.Success();
         }
         catch (Exception e)

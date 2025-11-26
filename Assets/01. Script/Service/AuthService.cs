@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 /// <summary>
 /// 회원가입 / 로그인 / 이메일 중복 확인을 담당하는 인증 서비스.
@@ -14,12 +15,12 @@ public interface IAuthService
 
 public class AuthService : IAuthService
 {
-    private readonly DBGateway _db;
+    private readonly IUserRepository _users;
     private const int BcryptWorkFactor = 10;
 
-    public AuthService(DBGateway db)
+    public AuthService(IUserRepository users)
     {
-        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _users = users ?? throw new ArgumentNullException(nameof(users));
         EnsureSuperAdmin();
     }
 
@@ -30,7 +31,7 @@ public class AuthService : IAuthService
     {
         try
         {
-            if (_db.HasSuperAdmin()) return;
+            if (_users.HasSuperAdmin()) return;
 
             var user = new User
             {
@@ -41,7 +42,7 @@ public class AuthService : IAuthService
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin1234", BcryptWorkFactor),
             };
 
-            _db.InsertUser(user);
+            _users.InsertUser(user);
             Debug.Log("[AuthService] Default SUPERADMIN created: admin@local / admin1234");
         }
         catch (Exception ex)
@@ -58,7 +59,7 @@ public class AuthService : IAuthService
             if (!AuthValidator.IsValidEmail(e))
                 return Result<bool>.Fail(AuthError.EmailInvalid);
 
-            bool exists = _db.ExistsEmail(e);
+            bool exists = _users.ExistsEmail(e);
             return Result<bool>.Success(exists);
         }
         catch (Exception ex)
@@ -84,7 +85,7 @@ public class AuthService : IAuthService
             if (!AuthValidator.IsStrongPassword(password))
                 return Result.Fail(AuthError.PasswordWeak, "비밀번호는 8자 이상, 영문+숫자를 포함해야 합니다.");
 
-            if (_db.ExistsEmail(email))
+            if (_users.ExistsEmail(email))
                 return Result.Fail(AuthError.EmailDuplicate, "이미 가입된 이메일입니다.");
 
             var user = new User
@@ -96,7 +97,7 @@ public class AuthService : IAuthService
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password, BcryptWorkFactor),
             };
 
-            _db.InsertUser(user);
+            _users.InsertUser(user);
             return Result.Success();
         }
         catch (Exception ex)
@@ -105,6 +106,7 @@ public class AuthService : IAuthService
             return Result.Fail(AuthError.Internal);
         }
     }
+
 
     public Result<User> Login(string email, string password)
     {
@@ -117,7 +119,7 @@ public class AuthService : IAuthService
             if (string.IsNullOrEmpty(password))
                 return Result<User>.Fail(AuthError.PasswordWeak);
 
-            var u = _db.FindActiveUserByEmail(e);
+            var u = _users.FindActiveUserByEmail(e);
             if (u == null)
                 return Result<User>.Fail(AuthError.NotFoundOrInactive);
 
