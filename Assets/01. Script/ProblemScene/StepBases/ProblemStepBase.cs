@@ -1,49 +1,98 @@
-// ProblemStepBase.cs
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public abstract class ProblemStepBase : MonoBehaviour
 {
-    [Header("DB ÀúÀå »ç¿ë ¿©ºÎ")]
-    [SerializeField] private bool useDBSave = false;
+    [Header("DB ì €ì¥ ì‚¬ìš© ì—¬ë¶€")]
+    [SerializeField] private bool useDBSave = true;
 
-    [Header("°ø¿ë Problem ÄÁÅØ½ºÆ®")]
+    [Header("ê³µìš© Problem ì»¨í…ìŠ¤íŠ¸")]
     [SerializeField] protected ProblemContext context;
 
-    [Header("ÀÌ ½ºÅÜÀÇ °íÀ¯ Å° (DB¿ë)")]
-    [SerializeField] protected string stepKey;
+    [Header("ì´ ìŠ¤í…ì˜ ê³ ìœ  í‚¤ (Enum ê¸°ë°˜)")]
+    [SerializeField] protected StepKeyConfig stepKeyConfig;
 
-    protected virtual void OnEnable()
-    {
-        OnStepEnter();
-    }
+    protected virtual void OnEnable() => OnStepEnter();
+    protected virtual void OnDisable() => OnStepExit();
 
-    protected virtual void OnDisable()
-    {
-        OnStepExit();
-    }
-
-    /// <summary>
-    /// ½ºÅÜÀÌ ÄÑÁú ¶§ È£Ãâ (°¢ Step¿¡¼­ ±¸Çö)
-    /// </summary>
     protected abstract void OnStepEnter();
-
-    /// <summary>
-    /// ½ºÅÜÀÌ ²¨Áú ¶§ ÇÊ¿äÇÑ Á¤¸® ÀÛ¾÷ ÀÖÀ¸¸é ¿À¹ö¶óÀÌµå
-    /// </summary>
     protected virtual void OnStepExit() { }
 
-    /// <summary>
-    /// ÀÌ ½ºÅÜÀÇ ½Ãµµ/°á°ú¸¦ DB¿¡ ÀúÀåÇÏ´Â °øÅë ÇÔ¼ö
-    /// </summary>
-    protected void SaveAttempt(object body)
+    // ğŸ”¹ ì—¬ê¸°ì„œë§Œ stringìœ¼ë¡œ ë³€í™˜
+    protected string BuildStepKey()
     {
         if (context == null)
         {
-            Debug.LogWarning($"{name}: ProblemContext°¡ ¾ø¾î SaveAttempt ½ºÅµ");
+            Debug.LogWarning("[ProblemStepBase] context ì—†ìŒ - BuildStepKey ì‹¤íŒ¨");
+            return null;
+        }
+        return stepKeyConfig.BuildKey(context);
+    }
+
+    protected void SaveAttempt(object body)
+    {
+        if (!useDBSave || context == null)
+            return;
+
+        var ds = DataService.Instance;
+        if (ds == null || ds.Progress == null)
+        {
+            Debug.LogWarning("[ProblemStepBase] DataService.Progress ì—†ìŒ - SaveAttempt ìŠ¤í‚µ");
             return;
         }
 
-        context.CurrentStepKey = stepKey;
-        context.SaveStepAttempt(body);
+        string stepKey = BuildStepKey();
+
+        var payload = new
+        {
+            stepKey,
+            theme = context.Theme.ToString(),
+            problemIndex = context.ProblemIndex,
+            body
+        };
+
+        var result = ds.Progress.SaveStepAttemptForCurrentUser(
+            context.Theme,
+            context.ProblemIndex,
+            context.ProblemId,
+            payload
+        );
+
+        if (!result.Ok)
+            Debug.LogWarning("[ProblemStepBase] SaveAttempt ì‹¤íŒ¨: " + result.Error);
+    }
+
+    protected void SaveReward(object body, string itemId, string itemName)
+    {
+        if (!useDBSave || context == null)
+            return;
+
+        var ds = DataService.Instance;
+        if (ds == null || ds.Reward == null)
+        {
+            Debug.LogWarning("[ProblemStepBase] DataService.Reward ì—†ìŒ - SaveReward ìŠ¤í‚µ");
+            return;
+        }
+
+        string stepKey = BuildStepKey();
+
+        var payload = new
+        {
+            stepKey,
+            theme = context.Theme.ToString(),
+            problemIndex = context.ProblemIndex,
+            body
+        };
+
+        var result = ds.Reward.SaveRewardForCurrentUser(
+            context.Theme,
+            context.ProblemIndex,
+            context.ProblemId,
+            payload,
+            itemId,
+            itemName
+        );
+
+        if (!result.Ok)
+            Debug.LogWarning("[ProblemStepBase] SaveReward ì‹¤íŒ¨: " + result.Error);
     }
 }

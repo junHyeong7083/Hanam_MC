@@ -1173,7 +1173,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: 901c0b1f3072aff4f98249d79f8e17d9, type: 2}
-  stepKey: Director_Problem6_Step2
+  stepKeyConfig:
+    stepId: 1
   cardSlots:
   - id: headache
     label: "\uB450\uD1B5"
@@ -1475,7 +1476,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   useDust: 0
   dustParent: {fileID: 0}
   dustPrefab: {fileID: 8819971521786195261, guid: 85b298aea4f7b144e9226281b5f80cf2, type: 3}
@@ -2896,6 +2898,10 @@ PrefabInstance:
     - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: rewardItemName
       value: "\uACA9\uB824\uC758 \uBA54\uAC00\uD3F0"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
+      propertyPath: stepKeyConfig.stepId
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6874814782692154244, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_Text
@@ -4714,7 +4720,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   dropTargetRect: {fileID: 623363403}
   targetVisualRoot: {fileID: 623363403}
   dropIndicatorRoot: {fileID: 990231324}
@@ -6695,7 +6702,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   bookDropArea: {fileID: 1126635182}
   dropIndicatorRoot: {fileID: 1369209475}
   dropRadius: 200
@@ -6903,7 +6911,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   emptySpaceRect: {fileID: 921880367}
   dropIndicatorRoot: {fileID: 1033031319}
   chairTargetVisualRoot: {fileID: 921880367}
@@ -7061,7 +7070,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   steps:
   - id: 1
     title: "\uD3B8\uC548\uD55C \uC790"
@@ -7959,7 +7969,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: 8875f04155d778942b9313b923dd7483, type: 2}
-  stepKey: Director_Problem2_Step3
+  stepKeyConfig:
+    stepId: 2
   ngSentence: "\uBAA8\uB450 \uB098\uB97C \uC774\uC0C1\uD558\uAC8C \uC0DD\uAC01\uD560
     \uAC70\uC57C"
   perspectives:
@@ -11874,7 +11885,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: a8792ba666d6d484ea9453bda9cc11f1, type: 2}
-  stepKey: Director_Problem3_Step3
+  stepKeyConfig:
+    stepId: 2
   questionLabel: {fileID: 964106219}
   optionButtons:
   - {fileID: 14338024}
@@ -12398,6 +12410,10 @@ PrefabInstance:
       propertyPath: rewardItemName
       value: "\uD3B8\uC9D1\uC6A9 \uAC00\uC704"
       objectReference: {fileID: 0}
+    - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
+      propertyPath: stepKeyConfig.stepId
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7090775849540818224, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -12617,7 +12633,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   scenes:
   - id: 0
     closeUpEmoji: "\U0001F620"
@@ -13021,7 +13038,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   slots:
   - sceneText: "\uBC1C\uD45C\uD560\uB54C \uB5A8\uB838\uB358 \uC21C\uAC04"
     emotionText: "\uBD88\uC548"
@@ -17848,7 +17866,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   dropBoxArea: {fileID: 901887672}
   dragItems:
   - {fileID: 1099255121}
@@ -18879,7 +18898,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: Problem1_Step2
+  stepKeyConfig:
+    stepId: 0
   films:
   - id: 0
     checkMark: {fileID: 899564379}
@@ -19193,6 +19213,7 @@ GameObject:
   - component: {fileID: 819192822}
   - component: {fileID: 819192821}
   - component: {fileID: 819192820}
+  - component: {fileID: 819192823}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -19274,6 +19295,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &819192823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819192819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!1 &821963802
 GameObject:
   m_ObjectHideFlags: 0
@@ -20565,6 +20630,10 @@ PrefabInstance:
     - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: rewardItemName
       value: "\uD734\uC2DD\uC6A9 \uAC10\uB3C5 \uC758\uC790"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
+      propertyPath: stepKeyConfig.stepId
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6874814782692154244, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_Text
@@ -28305,6 +28374,10 @@ PrefabInstance:
       propertyPath: rewardItemName
       value: "\uC2DC\uB098\uB9AC\uC624\uD39C"
       objectReference: {fileID: 0}
+    - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
+      propertyPath: stepKeyConfig.stepId
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7090775849540818224, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -32700,7 +32773,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: a8792ba666d6d484ea9453bda9cc11f1, type: 2}
-  stepKey: Director_Problem3_Step2
+  stepKeyConfig:
+    stepId: 1
   steps:
   - id: 1
     originalText: "\uACF5\uBC31\uAE30 : \uC544\uBB34\uAC83\uB3C4 \uD558\uC9C0 \uC54A\uC558\uB2E4."
@@ -45509,7 +45583,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: f1805782b11bc9d49bde5c5e75ab91e2, type: 2}
-  stepKey: Director_Problem5_Step3
+  stepKeyConfig:
+    stepId: 2
   options:
   - id: 0
     text: "\"\uC544\uB2C8\uC694, \uC544\uBB34 \uBB38\uC81C \uC5C6\uC5B4\uC694.\""
@@ -47148,7 +47223,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
-  stepKey: Director_Problem1_Step3
+  stepKeyConfig:
+    stepId: 2
   progressLabel: {fileID: 1688002993}
   completionGate: {fileID: 2046801912}
   films:
@@ -54009,6 +54085,10 @@ PrefabInstance:
       propertyPath: useDBSave
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5802654471527818509, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
+      propertyPath: stepKeyConfig.stepId
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7090775849540818224, guid: 1442e04197a38dc4e9141e8cd87fc1af, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -57154,7 +57234,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: a1d8d22fc32ac5143880f42e5f513d7f, type: 2}
-  stepKey: Director_Problem4_Step4
+  stepKeyConfig:
+    stepId: 4
   sequenceItems:
   - name: RewardItemRoot
     root: {fileID: 2828617859822474056}
@@ -59418,7 +59499,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 0
   context: {fileID: 0}
-  stepKey: 
+  stepKeyConfig:
+    stepId: 0
   filmDropArea: {fileID: 8821101509810179238}
   dropIndicatorRoot: {fileID: 1645571579}
   dropRadius: 200
@@ -60123,7 +60205,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: a1d8d22fc32ac5143880f42e5f513d7f, type: 2}
-  stepKey: Director_Problem4_Step2
+  stepKeyConfig:
+    stepId: 0
   filmCuts:
   - cutID: 
     text: "\uB098\uB294 \uBA74\uC811\uC5D0\uC11C \uB5A8\uC5B4\uC84C\uB2E4"
@@ -61150,7 +61233,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useDBSave: 1
   context: {fileID: 11400000, guid: a1d8d22fc32ac5143880f42e5f513d7f, type: 2}
-  stepKey: Director_Problem4_Step3
+  stepKeyConfig:
+    stepId: 2
   questions:
   - questionId: problem4_step3_q1
     mainText: "\uC774\uC81C \uB2E4\uC2DC\uB294 \uD751\uBC31\uB17C\uB9AC\uC5D0 \uBE60\uC9C0\uC9C0

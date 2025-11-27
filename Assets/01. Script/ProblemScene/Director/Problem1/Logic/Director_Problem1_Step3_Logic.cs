@@ -24,6 +24,12 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         public string chosenType;    // "생각" / "사실" (사용자 선택)
     }
 
+    [Serializable]
+    private class SortLogPayload
+    {
+        public SortLogEntry[] items;
+    }
+
     // ====== 자식이 채워줄 추상 프로퍼티들 ======
 
     /// <summary>전체 필름 개수</summary>
@@ -290,7 +296,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             return;
         }
 
-        var body = new
+        var body = new SortLogPayload
         {
             items = _logs.ToArray()
         };

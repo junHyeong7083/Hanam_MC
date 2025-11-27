@@ -11,6 +11,17 @@ public enum ProblemTheme
     Gardener = 1
 }
 
+public enum StepId
+{
+    Step1,
+    Step2,
+    Step3,
+    Step4,
+    Reward,  
+    Extra1,
+    Extra2,
+}
+
 public class User
 {
     // 고유 식별자
@@ -77,7 +88,7 @@ public class InventoryItem
     public string UserEmail { get; set; }
     public string ItemId { get; set; }      // "mind_lens" 같은 내부 ID
     public string ItemName { get; set; }    // "마음 렌즈" (관리자/리포트용)
-    public int? ProblemIndex { get; set; }  // 어느 문제(1..N)에서 얻었는지 (필요 없으면 null)
+    public int ProblemIndex { get; set; }  // 어느 문제(1..N)에서 얻었는지 (필요 없으면 null)
     public ProblemTheme Theme { get; set; } // 어디 문제에서 주는지 메
     public DateTime AcquiredAt { get; set; }
 }

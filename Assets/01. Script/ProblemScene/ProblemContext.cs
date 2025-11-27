@@ -5,10 +5,14 @@ public class ProblemContext : ScriptableObject
 {
     [Header("문제 메타")]
     public ProblemTheme Theme = ProblemTheme.Director;
+
+    [Tooltip("테마 안에서의 문제 번호 (1부터 시작, 예: 1..10)")]
     public int ProblemIndex = 1;
+
+    // 나중에 서버/DB Problem 테이블과 연결할 때 사용할 Id (지금은 비워둬도 됨)
     public string ProblemId;
 
-    [Header("현재 Step Key (로그용)")]
+    [Header("현재 Step Key (로그용, 문자열)")]
     public string CurrentStepKey;
 
     /// <summary>
@@ -24,7 +28,6 @@ public class ProblemContext : ScriptableObject
             return;
         }
 
-        // 공통으로 쓰는 wrapper를 한 번만 정의
         var payload = new
         {
             stepKey = CurrentStepKey,

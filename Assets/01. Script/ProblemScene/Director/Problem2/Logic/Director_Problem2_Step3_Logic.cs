@@ -14,9 +14,20 @@ public interface IDirectorProblem2PerspectiveOption
     int Id { get; }
     string Text { get; }
 }
-
 public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 {
+    // ==========================
+    // 이 스텝 전용 로그 payload
+    // ==========================
+    [Serializable]
+    private class RefilmLogPayload
+    {
+        public string ngText;
+        public int selectedId;
+        public string selectedText;
+        public bool recorded;
+    }
+
     // ==========================
     // 자식에서 주입할 추상 프로퍼티
     // ==========================
@@ -381,12 +392,12 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             return;
         }
 
-        var body = new
+        var body = new RefilmLogPayload
         {
             ngText = NgSentence,
             selectedId = _selected.Id,
             selectedText = _selected.Text,
-            // recorded = _hasRecordedAnswer
+            recorded = _hasRecordedAnswer
         };
 
         // Base에서 context/stepKey 검사 + SaveStepAttempt 호출

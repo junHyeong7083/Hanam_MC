@@ -1,87 +1,99 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// °ø¿ë º¸»ó ¿¬Ãâ Step
-/// - ProblemStepBase ¸¦ »ó¼Ó
-/// - ¿©·¯ UI ¿ä¼Ò¸¦ ¹è¿­(sequenceItems)·Î ¹Ş¾Æ ¼øÂ÷ÀûÀ¸·Î µîÀå
-/// - ÀÎº¥Åä¸® ÆĞ³Î + º¸»ó DB ÀúÀå±îÁö Æ÷ÇÔ
+/// ê³µìš© ë³´ìƒ ì—°ì¶œ Step
+/// - ProblemStepBase ë¥¼ ìƒì†
+/// - ì—¬ëŸ¬ UI ìš”ì†Œë¥¼ ë°°ì—´(sequenceItems)ë¡œ ë°›ì•„ ìˆœì°¨ì ìœ¼ë¡œ ë“±ì¥
+/// - ì¸ë²¤í† ë¦¬ íŒ¨ë„ + ë³´ìƒ DB ì €ì¥ê¹Œì§€ í¬í•¨
 /// </summary>
 public class CommonRewardStep : ProblemStepBase
 {
     [Serializable]
     public class SequenceItem
     {
-        [Header("µğ¹ö±×/¼³¸í¿ë ÀÌ¸§ (¼±ÅÃ)")]
+        [Header("ë””ë²„ê·¸/ì„¤ëª…ìš© ì´ë¦„ (ì„ íƒ)")]
         public string name;
 
         [Header("UI Root")]
-        public RectTransform root;         // À§Ä¡/½ºÄÉÀÏÀ» ÁÙ ´ë»ó
-        public CanvasGroup canvasGroup;    // ¾ËÆÄ ÆäÀÌµå ´ë»ó (¾øÀ¸¸é »ı·« °¡´É)
+        public RectTransform root;         // ìœ„ì¹˜/ìŠ¤ì¼€ì¼ì„ ì¤„ ëŒ€ìƒ
+        public CanvasGroup canvasGroup;    // ì•ŒíŒŒ í˜ì´ë“œ ëŒ€ìƒ (ì—†ìœ¼ë©´ ìƒëµ ê°€ëŠ¥)
 
-        [Header("Å¸ÀÌ¹Ö")]
-        [Tooltip("ÀÌÀü ¾ÆÀÌÅÛÀÌ ³¡³­ ÈÄ ±â´Ù¸± ½Ã°£")]
+        [Header("íƒ€ì´ë°")]
+        [Tooltip("ì´ì „ ì•„ì´í…œì´ ëë‚œ í›„ ê¸°ë‹¤ë¦´ ì‹œê°„")]
         public float delay = 0f;
-        [Tooltip("ÀÌ ¾ÆÀÌÅÛÀÇ µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç ½Ã°£")]
+
+        [Tooltip("ì´ ì•„ì´í…œì˜ ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜ ì‹œê°„")]
         public float duration = 0.4f;
 
-        [Header("À§Ä¡/½ºÄÉÀÏ ¿¬Ãâ")]
-        [Tooltip("basePos + startOffset À§Ä¡¿¡¼­ ½ÃÀÛ")]
+        [Header("ìœ„ì¹˜/ìŠ¤ì¼€ì¼ ì—°ì¶œ")]
+        [Tooltip("basePos + startOffset ìœ„ì¹˜ì—ì„œ ì‹œì‘")]
         public Vector2 startOffset = Vector2.zero;
 
-        [Tooltip("½ºÄÉÀÏ ¾Ö´Ï¸ŞÀÌ¼ÇÀ» »ç¿ëÇÒÁö ¿©ºÎ")]
+        [Tooltip("ìŠ¤ì¼€ì¼ ì• ë‹ˆë©”ì´ì…˜ì„ ì‚¬ìš©í• ì§€ ì—¬ë¶€")]
         public bool useScale = false;
         public float startScale = 1f;
 
-        [Tooltip("½ºÄÉÀÏ ¿À¹ö½´Æ®(ÅëÅë Æ¢´Â È¿°ú) »ç¿ë ¿©ºÎ")]
+        [Tooltip("ìŠ¤ì¼€ì¼ ì˜¤ë²„ìŠˆíŠ¸(í†µí†µ íŠ€ëŠ” íš¨ê³¼) ì‚¬ìš© ì—¬ë¶€")]
         public bool useOvershoot = false;
         public float overshootScale = 1.1f;
 
-        // --- ³»ºÎ Ä³½Ã ---
+        // --- ë‚´ë¶€ ìºì‹œ ---
         [NonSerialized] public bool initialized;
         [NonSerialized] public Vector2 basePos;
         [NonSerialized] public Vector3 baseScale;
     }
 
-    [Header("¿¬Ãâ ½ÃÄö½º (À§¿¡¼­ ¾Æ·¡ ¼ø¼­´ë·Î Àç»ı)")]
+    [Header("ì—°ì¶œ ì‹œí€€ìŠ¤ (ìœ„ì—ì„œ ì•„ë˜ ìˆœì„œëŒ€ë¡œ ì¬ìƒ)")]
     [SerializeField] private SequenceItem[] sequenceItems;
 
-    [Header("ÀÎº¥Åä¸® ÆĞ³Î (¼±ÅÃ)")]
-    [Tooltip("º¸»ó ¾ÆÀÌÅÛÀ» º¸¿©ÁÙ RewardInventoryPanel (¾øÀ¸¸é ¹«½Ã)")]
+    [Header("ì¸ë²¤í† ë¦¬ íŒ¨ë„ (ì„ íƒ)")]
+    [Tooltip("ë³´ìƒ ì•„ì´í…œì„ ë³´ì—¬ì¤„ RewardInventoryPanel (ì—†ìœ¼ë©´ ë¬´ì‹œ)")]
     [SerializeField] private RewardInventoryPanel inventoryPanel;
 
-    [Tooltip("sequenceItems Áß ÀÎº¥Åä¸®°¡ µîÀåÇÏ´Â ÀÎµ¦½º (¾øÀ¸¸é -1)")]
+    [Tooltip("sequenceItems ì¤‘ ì¸ë²¤í† ë¦¬ê°€ ë“±ì¥í•˜ëŠ” ì¸ë±ìŠ¤ (ì—†ìœ¼ë©´ -1)")]
     [SerializeField] private int inventorySequenceIndex = -1;
 
-    [Header("º¸»ó ¸ŞÅ¸ (DB ÀúÀå¿ë)")]
+    [Header("ë³´ìƒ ë©”íƒ€ (DB ì €ì¥ìš©)")]
     [SerializeField] private string rewardItemId = "mind_lens";
-    [SerializeField] private string rewardItemName = "¸¶À½ ·»Áî";
+    [SerializeField] private string rewardItemName = "ë§ˆìŒ ë Œì¦ˆ";
 
-    // ³»ºÎ »óÅÂ
+    // ë‚´ë¶€ ìƒíƒœ
     private Coroutine _sequenceRoutine;
     private bool _rewardSaved;
-
+    [Serializable]
+    public class StepRewardItemDto
+    {
+        public string itemId;
+        public string itemName;
+        public bool unlocked;
+    }
+    [Serializable]
+    public class StepRewardAttemptDto
+    {
+        public StepRewardItemDto[] items;
+    }
     // =========================
-    // ProblemStepBase ±¸Çö
+    // ProblemStepBase êµ¬í˜„
     // =========================
 
     /// <summary>
-    /// ½ºÅÜÀÌ ÄÑÁú ¶§(È°¼ºÈ­µÉ ¶§) È£ÃâµÊ.
-    /// ProblemStepBase.OnEnable -> OnStepEnter() ¼ø¼­·Î µé¾î¿È.
+    /// ìŠ¤í…ì´ ì¼œì§ˆ ë•Œ(í™œì„±í™”ë  ë•Œ) í˜¸ì¶œë¨.
+    /// ProblemStepBase.OnEnable -> OnStepEnter() ìˆœì„œë¡œ ë“¤ì–´ì˜´.
     /// </summary>
     protected override void OnStepEnter()
     {
-        // 1) º¸»ó DB ÀúÀå (ÇÑ ¹ø¸¸)
+        // 1) ë³´ìƒ DB ì €ì¥ (í•œ ë²ˆë§Œ)
         SaveRewardToDbOnce();
 
-        // 2) ¿¬Ãâ ½ÃÄö½º ½ÃÀÛ
+        // 2) ì—°ì¶œ ì‹œí€€ìŠ¤ ì‹œì‘
         StartSequence();
     }
 
     /// <summary>
-    /// ½ºÅÜÀÌ ²¨Áú ¶§ Á¤¸®
+    /// ìŠ¤í…ì´ êº¼ì§ˆ ë•Œ ì •ë¦¬
     /// </summary>
     protected override void OnStepExit()
     {
@@ -93,11 +105,11 @@ public class CommonRewardStep : ProblemStepBase
     }
 
     // =========================
-    // ½ÃÄö½º Á¦¾î
+    // ì‹œí€€ìŠ¤ ì œì–´
     // =========================
 
     /// <summary>
-    /// ¿ÜºÎ¿¡¼­ ´Ù½Ã Àç»ıÇÏ°í ½ÍÀ» ¶§ È£Ãâ
+    /// ì™¸ë¶€ì—ì„œ ë‹¤ì‹œ ì¬ìƒí•˜ê³  ì‹¶ì„ ë•Œ í˜¸ì¶œ
     /// </summary>
     public void StartSequence()
     {
@@ -109,7 +121,7 @@ public class CommonRewardStep : ProblemStepBase
     }
 
     /// <summary>
-    /// sequenceItems ÃÊ±â À§Ä¡/½ºÄÉÀÏ/¾ËÆÄ ¼¼ÆÃ
+    /// sequenceItems ì´ˆê¸° ìœ„ì¹˜/ìŠ¤ì¼€ì¼/ì•ŒíŒŒ ì„¸íŒ…
     /// </summary>
     private void InitState()
     {
@@ -127,23 +139,23 @@ public class CommonRewardStep : ProblemStepBase
                 item.initialized = true;
             }
 
-            // ½ÃÀÛ À§Ä¡: basePos + startOffset
+            // ì‹œì‘ ìœ„ì¹˜: basePos + startOffset
             item.root.anchoredPosition = item.basePos + item.startOffset;
 
-            // ½ÃÀÛ ½ºÄÉÀÏ
+            // ì‹œì‘ ìŠ¤ì¼€ì¼
             if (item.useScale)
                 item.root.localScale = Vector3.one * item.startScale;
             else
                 item.root.localScale = item.baseScale;
 
-            // ½ÃÀÛ ¾ËÆÄ 0
+            // ì‹œì‘ ì•ŒíŒŒ 0
             if (item.canvasGroup != null)
                 item.canvasGroup.alpha = 0f;
         }
     }
 
     /// <summary>
-    /// ÀüÃ¼ ½ÃÄö½º Àç»ı
+    /// ì „ì²´ ì‹œí€€ìŠ¤ ì¬ìƒ
     /// </summary>
     private IEnumerator SequenceRoutine()
     {
@@ -156,7 +168,7 @@ public class CommonRewardStep : ProblemStepBase
             if (item == null || item.root == null)
                 continue;
 
-            // ÀÎº¥Åä¸® µîÀå ½ÃÁ¡ÀÌ¸é ShowInventory È£Ãâ
+            // ì¸ë²¤í† ë¦¬ ë“±ì¥ ì‹œì ì´ë©´ ShowInventory í˜¸ì¶œ
             if (i == inventorySequenceIndex &&
                 inventoryPanel != null &&
                 !string.IsNullOrEmpty(rewardItemId))
@@ -164,17 +176,17 @@ public class CommonRewardStep : ProblemStepBase
                 inventoryPanel.ShowInventory(rewardItemId, true);
             }
 
-            // °³º° ¾ÆÀÌÅÛ ¾Õ µô·¹ÀÌ
+            // ê°œë³„ ì•„ì´í…œ ì• ë”œë ˆì´
             if (item.delay > 0f)
                 yield return new WaitForSeconds(item.delay);
 
-            // °³º° ¾ÆÀÌÅÛ µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç
+            // ê°œë³„ ì•„ì´í…œ ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜
             yield return PlayItemRoutine(item);
         }
     }
 
     /// <summary>
-    /// °³º° SequenceItem µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç
+    /// ê°œë³„ SequenceItem ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜
     /// </summary>
     private IEnumerator PlayItemRoutine(SequenceItem item)
     {
@@ -200,10 +212,10 @@ public class CommonRewardStep : ProblemStepBase
             float x = Mathf.Clamp01(t / duration);
             float ease = Mathf.SmoothStep(0f, 1f, x);
 
-            // À§Ä¡ lerp
+            // ìœ„ì¹˜ lerp
             item.root.anchoredPosition = Vector2.Lerp(startPos, endPos, ease);
 
-            // ½ºÄÉÀÏ ¿¬Ãâ
+            // ìŠ¤ì¼€ì¼ ì—°ì¶œ
             if (item.useScale)
             {
                 if (item.useOvershoot)
@@ -227,14 +239,14 @@ public class CommonRewardStep : ProblemStepBase
                 }
             }
 
-            // ¾ËÆÄ ÆäÀÌµå
+            // ì•ŒíŒŒ í˜ì´ë“œ
             if (item.canvasGroup != null)
                 item.canvasGroup.alpha = x;
 
             yield return null;
         }
 
-        // ÃÖÁ¾°ª º¸Á¤
+        // ìµœì¢…ê°’ ë³´ì •
         item.root.anchoredPosition = endPos;
         if (item.useScale)
             item.root.localScale = endScale;
@@ -243,12 +255,12 @@ public class CommonRewardStep : ProblemStepBase
     }
 
     // =========================
-    // º¸»ó DB ÀúÀå
+    // ë³´ìƒ DB ì €ì¥
     // =========================
 
     /// <summary>
-    /// º¸»ó Attempt + ÀÎº¥Åä¸® ÀúÀåÀ» ÇÑ ¹ø¸¸ ¼öÇà
-    /// ProblemStepBase.stepKey / context ¸¦ »ç¿ë
+    /// ë³´ìƒ Attempt + ì¸ë²¤í† ë¦¬ ì €ì¥ì„ í•œ ë²ˆë§Œ ìˆ˜í–‰
+    /// ProblemStepBaseì˜ StepKeyConfig/SaveRewardë¥¼ ì‚¬ìš©.
     /// </summary>
     private void SaveRewardToDbOnce()
     {
@@ -257,29 +269,24 @@ public class CommonRewardStep : ProblemStepBase
 
         if (context == null)
         {
-            Debug.LogWarning("[CommonRewardStep] ProblemContext°¡ ¼³Á¤µÇÁö ¾Ê¾Æ º¸»ó ÀúÀå ½ºÅµ");
+            Debug.LogWarning("[CommonRewardStep] ProblemContextê°€ ì„¤ì •ë˜ì§€ ì•Šì•„ ë³´ìƒ ì €ì¥ ìŠ¤í‚µ");
             return;
         }
 
-        // ÀÌ ½ºÅÜÀÇ key ¼³Á¤ (ÀÎ½ºÆåÅÍ¿¡¼­ stepKey ¼¼ÆÃÇØµÑ °Í)
-        if (!string.IsNullOrEmpty(stepKey))
-            context.CurrentStepKey = stepKey;
-
-        // body¿¡´Â ÀÌ ½ºÅÜ Àü¿ë µ¥ÀÌÅÍ ±¸Á¶¸¸ ³Ö¾îÁØ´Ù.
-        var body = new
+        var body = new StepRewardAttemptDto
         {
             items = new[]
             {
-                new
-                {
-                    itemId = rewardItemId,
-                    itemName = rewardItemName,
-                    unlocked = true
-                }
+            new StepRewardItemDto
+            {
+                itemId = rewardItemId,
+                itemName = rewardItemName,
+                unlocked = true
             }
+        }
         };
 
-        // ±âÁ¸ Step4Ã³·³ Reward + InventoryItem ÀúÀå
-        context.SaveReward(body, rewardItemId, rewardItemName);
+        SaveReward(body, rewardItemId, rewardItemName);
     }
+
 }

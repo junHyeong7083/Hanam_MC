@@ -1,15 +1,15 @@
-#if UNITY_EDITOR
+ï»¿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(ProblemStepBase), true)]   // true = ÀÚ½Ä Å¸ÀÔ¿¡µµ Àû¿ë
+[CustomEditor(typeof(ProblemStepBase), true)]   // true = ìì‹ íƒ€ì…ì—ë„ ì ìš©
 public class ProblemStepBaseEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        // 1) ½ºÅ©¸³Æ® ÇÊµå(m_Script)´Â ±×³É Ç¥½Ã
+        // 1) ìŠ¤í¬ë¦½íŠ¸ í•„ë“œ(m_Script)ëŠ” ê·¸ëƒ¥ í‘œì‹œ
         GUI.enabled = false;
         EditorGUILayout.ObjectField(
             "Script",
@@ -20,29 +20,35 @@ public class ProblemStepBaseEditor : Editor
         GUI.enabled = true;
         EditorGUILayout.Space();
 
-        // 2) useDbSave ¸ÕÀú ³ëÃâ
+        // 2) useDBSave ë¨¼ì € ë…¸ì¶œ
         var useDbSaveProp = serializedObject.FindProperty("useDBSave");
-        EditorGUILayout.PropertyField(useDbSaveProp);
+        if (useDbSaveProp == null)
+        {
+            // í•„ë“œ ì´ë¦„ì´ ë°”ë€Œì—ˆì„ ë•Œ ì•ˆì „ì¥ì¹˜
+            DrawDefaultInspector();
+            return;
+        }
 
+        EditorGUILayout.PropertyField(useDbSaveProp);
         bool useDb = useDbSaveProp.boolValue;
 
-        // 3) useDbSave == trueÀÏ ¶§¸¸ context / stepKey ³ëÃâ
+        // 3) useDBSave == trueì¼ ë•Œë§Œ context / stepKeyConfig ë…¸ì¶œ
         if (useDb)
         {
             EditorGUILayout.PropertyField(serializedObject.FindProperty("context"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("stepKey"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("stepKeyConfig"));
         }
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
-        // 4) ³ª¸ÓÁö ÇÊµåµé ±×¸®±â (Áßº¹ ¹æÁö¸¦ À§ÇØ Á¦¿Ü ¸ñ·Ï ÁöÁ¤)
+        // 4) ë‚˜ë¨¸ì§€ í•„ë“œë“¤ ê·¸ë¦¬ê¸° (ì¤‘ë³µ ë°©ì§€ë¥¼ ìœ„í•´ ì œì™¸ ëª©ë¡ ì§€ì •)
         DrawPropertiesExcluding(
             serializedObject,
-            "m_Script",      // ½ºÅ©¸³Æ®
+            "m_Script",      // ìŠ¤í¬ë¦½íŠ¸
             "useDBSave",
             "context",
-            "stepKey"
+            "stepKeyConfig"
         );
 
         serializedObject.ApplyModifiedProperties();
