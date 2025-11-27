@@ -105,17 +105,16 @@ public class ThemePanelsController : MonoBehaviour
     {
         if (entry == null || entry.panel == null) return;
 
-        if (DataService.Instance == null || DataService.Instance.User == null)
+        if (DataService.Instance == null || DataService.Instance.Progress == null)
         {
-            Debug.LogError("[ThemePanels] DataService.Instance.User 가 준비되지 않음");
+            Debug.LogError("[ThemePanels] DataService.Instance.Progress  가 준비되지 않음");
             return;
         }
 
         var theme = entry.theme;
         int totalProblems = Mathf.Max(1, entry.totalProblems);
 
-        // enum 기반으로 호출 (LocalUserDataService에서 theme.ToString() -> DB로 전달)
-        var res = DataService.Instance.User.FetchSolvedProblemIndexes(currentUser.Email, theme);
+        var res = DataService.Instance.Progress.FetchSolvedProblemIndexes(currentUser.Email, theme);
         int[] solved = (res.Ok && res.Value != null) ? res.Value : Array.Empty<int>();
 
         var solvedSet = new HashSet<int>(solved);

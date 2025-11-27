@@ -18,9 +18,9 @@ public class ProblemContext : ScriptableObject
     public void SaveStepAttempt(object body)
     {
         var ds = DataService.Instance;
-        if (ds == null || ds.User == null)
+        if (ds == null || ds.Progress == null)
         {
-            Debug.LogWarning("[ProblemContext] DataService.User 없음 - SaveStepAttempt 스킵");
+            Debug.LogWarning("[ProblemContext] DataService.Progress 없음 - SaveStepAttempt 스킵");
             return;
         }
 
@@ -33,7 +33,7 @@ public class ProblemContext : ScriptableObject
             body
         };
 
-        var result = ds.User.SaveStepAttemptForCurrentUser(
+        var result = ds.Progress.SaveStepAttemptForCurrentUser(
             Theme,
             ProblemIndex,
             ProblemId,
@@ -42,7 +42,8 @@ public class ProblemContext : ScriptableObject
 
         if (!result.Ok)
             Debug.LogWarning("[ProblemContext] SaveStepAttempt 실패: " + result.Error);
-        Debug.Log("DB저장 완료");
+        else
+            Debug.Log("[ProblemContext] SaveStepAttempt DB 저장 완료");
     }
 
     /// <summary>
@@ -52,9 +53,9 @@ public class ProblemContext : ScriptableObject
     public void SaveReward(object body, string itemId, string itemName)
     {
         var ds = DataService.Instance;
-        if (ds == null || ds.User == null)
+        if (ds == null || ds.Reward == null)
         {
-            Debug.LogWarning("[ProblemContext] DataService.User 없음 - SaveReward 스킵");
+            Debug.LogWarning("[ProblemContext] DataService.Reward 없음 - SaveReward 스킵");
             return;
         }
 
@@ -66,7 +67,7 @@ public class ProblemContext : ScriptableObject
             body
         };
 
-        var result = ds.User.SaveRewardForCurrentUser(
+        var result = ds.Reward.SaveRewardForCurrentUser(
             Theme,
             ProblemIndex,
             ProblemId,

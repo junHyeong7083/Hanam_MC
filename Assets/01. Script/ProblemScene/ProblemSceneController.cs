@@ -11,10 +11,10 @@ public class ProblemSceneController : MonoBehaviour
 
     void Start()
     {
-        // 1) DataService / UserDataService 존재 체크
-        if (DataService.Instance == null || DataService.Instance.User == null)
+        // 1) DataService / ProblemQueryService 존재 체크
+        if (DataService.Instance == null || DataService.Instance.Problems == null)
         {
-            Debug.LogError("[ProblemScene] DataService.User 없음. DataService 세팅을 먼저 확인하세요.");
+            Debug.LogError("[ProblemScene] DataService.Problems 없음. DataService 세팅을 먼저 확인하세요.");
             enabled = false;
             return;
         }
@@ -87,6 +87,4 @@ public class ProblemSceneController : MonoBehaviour
             rootTr.GetChild(i).gameObject.SetActive(active);
         }
     }
-
-   
 }

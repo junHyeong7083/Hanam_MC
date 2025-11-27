@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// 앱 전체에서 사용하는 데이터/서비스 싱글톤 허브.
-/// - 씬 어디서나 DataService.Instance를 통해 Auth/User/Admin 서비스 접근
+/// - 씬 어디서나 DataService.Instance를 통해 Auth/Progress/Reward/Admin 등 접근
 /// - 실제 DB 접근은 Repository들 내부에서만 수행된다.
 /// </summary>
 public class DataService : MonoBehaviour
@@ -26,7 +26,10 @@ public class DataService : MonoBehaviour
 
     // ===== Services =====
     public IAuthService Auth { get; private set; }
-    public IUserDataService User { get; private set; }
+    public IProgressService Progress { get; private set; }
+    public IRewardService Reward { get; private set; }
+    public IProblemQueryService Problems { get; private set; }
+    public IResultQueryService Results { get; private set; }
     public IAdminDataService Admin { get; private set; }
 
     void Awake()
@@ -40,11 +43,9 @@ public class DataService : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // 현재는 항상 로컬 LiteDB 사용.
-        // 나중에 useRemote == true면 여기서 HTTP 기반 Repo/Service로 갈아끼우면 됨.
         Db = new DBGateway();
 
         // ----- Repository 조립 -----
-        // DBGateway는 IDbGateway를 구현하고 있어야 함.
         var dbCore = (IDBGateway)Db;
 
         InventoryRepository = new InventoryRepository(dbCore);
@@ -57,11 +58,23 @@ public class DataService : MonoBehaviour
         // ----- Service 조립 -----
         Auth = new AuthService(UserRepository);
 
-        User = new LocalUserDataService(
+        Progress = new LocalProgressService(
+            ProgressRepository,
+            UserRepository,
+            ResultRepository
+        );
+
+        Reward = new LocalRewardService(
             InventoryRepository,
             UserRepository,
-            ProgressRepository,
-            ProblemRepository,
+            Progress
+        );
+
+        Problems = new LocalProblemQueryService(
+            ProblemRepository
+        );
+
+        Results = new LocalResultQueryService(
             ResultRepository
         );
 

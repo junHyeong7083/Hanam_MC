@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StepFlowController : MonoBehaviour   
+public class StepFlowController : MonoBehaviour
 {
     [Header("이 흐름에서 사용할 패널 순서")]
     [SerializeField] private List<GameObject> stepPanels = new List<GameObject>();
@@ -120,13 +120,12 @@ public class StepFlowController : MonoBehaviour
         var ds = DataService.Instance;
         var user = SessionManager.Instance?.CurrentUser;
 
-        if (ds != null && ds.User != null && user != null)
+        if (ds != null && ds.Progress != null && user != null)
         {
             var theme = ProblemSession.CurrentTheme;
             var index = ProblemSession.CurrentProblemIndex;
 
-
-            var res = ds.User.MarkProblemSolvedForCurrentUser(theme, index);
+            var res = ds.Progress.MarkProblemSolvedForCurrentUser(theme, index);
             if (!res.Ok)
             {
                 Debug.LogWarning($"[StepFlow] MarkProblemSolved 실패: {res.Error}");
@@ -134,8 +133,9 @@ public class StepFlowController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[StepFlow] 진행도 저장 실패 - 세션 또는 DataService 없음");
+            Debug.LogWarning("[StepFlow] 진행도 저장 실패 - 세션 또는 DataService.Progress 없음");
         }
+
         SceneNavigator.Instance.GoTo(ScreenId.HOME);
     }
 

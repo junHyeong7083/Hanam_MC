@@ -94,18 +94,18 @@ public class RewardInventoryPanel : MonoBehaviour
         if (slots == null) return;
 
         var dataService = DataService.Instance;
-        var userService = (dataService != null) ? dataService.User : null;
+        var rewardService = (dataService != null) ? dataService.Reward : null;
 
         var session = SessionManager.Instance;
         var currentUser = (session != null) ? session.CurrentUser : null;
 
-        if (userService == null || currentUser == null || string.IsNullOrEmpty(currentUser.Email))
+        if (rewardService == null || currentUser == null || string.IsNullOrEmpty(currentUser.Email))
         {
             // 서비스가 아직 준비 안 됐으면 그냥 defaultUnlocked 상태만 사용
             return;
         }
 
-        var result = userService.GetInventory(currentUser.Email);
+        var result = rewardService.GetInventory(currentUser.Email);
         if (!result.Ok || result.Value == null || result.Value.Length == 0)
             return;
 

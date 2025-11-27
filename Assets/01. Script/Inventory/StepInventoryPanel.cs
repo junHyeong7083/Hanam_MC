@@ -1,37 +1,37 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 /// <summary>
-/// Step ³»ºÎ¿¡¼­ »ç¿ëÇÏ´Â ÀÎº¥Åä¸® ÆĞ³Î.
-/// - DB¿¡¼­ ÇöÀç À¯ÀúÀÇ ÀÎº¥Åä¸®¸¦ ÀĞ¾î¼­,
-///   º¸À¯ÇÑ ¾ÆÀÌÅÛ¸¸ ¾ğ¶ô »óÅÂ·Î Ç¥½Ã.
-/// - °¢ ½½·Ô¸¶´Ù "ÀÌ ½ºÅÜ¿¡¼­ µå·¡±× °¡´É ¿©ºÎ"¸¦ ¼³Á¤.
-/// - RewardInventoryPanel °ú °°Àº DB¸¦ °øÀ¯ (ItemId ±âÁØ).
+/// Step ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•˜ëŠ” ì¸ë²¤í† ë¦¬ íŒ¨ë„.
+/// - DBì—ì„œ í˜„ì¬ ìœ ì €ì˜ ì¸ë²¤í† ë¦¬ë¥¼ ì½ì–´ì„œ,
+///   ë³´ìœ í•œ ì•„ì´í…œë§Œ ì–¸ë½ ìƒíƒœë¡œ í‘œì‹œ.
+/// - ê° ìŠ¬ë¡¯ë§ˆë‹¤ "ì´ ìŠ¤í…ì—ì„œ ë“œë˜ê·¸ ê°€ëŠ¥ ì—¬ë¶€"ë¥¼ ì„¤ì •.
+/// - RewardInventoryPanel ê³¼ ê°™ì€ DBë¥¼ ê³µìœ  (ItemId ê¸°ì¤€).
 /// </summary>
 public class StepInventoryPanel : MonoBehaviour
 {
     [Serializable]
     public class Slot
     {
-        [Header("°øÅë ¼³Á¤")]
-        //[Tooltip("DB InventoryItem.ItemId ¿Í µ¿ÀÏ (ºñ¿öµÎ¸é itemComponent.itemId »ç¿ë)")]
+        [Header("ê³µí†µ ì„¤ì •")]
+        //[Tooltip("DB InventoryItem.ItemId ì™€ ë™ì¼ (ë¹„ì›Œë‘ë©´ itemComponent.itemId ì‚¬ìš©)")]
         public string itemId;
 
-        [Tooltip("ÀÌ ½ºÅÜ¿¡¼­ ÀÌ ¾ÆÀÌÅÛÀ» µå·¡±× °¡´ÉÇÏ°Ô ÇÒÁö ¿©ºÎ")]
+        [Tooltip("ì´ ìŠ¤í…ì—ì„œ ì´ ì•„ì´í…œì„ ë“œë˜ê·¸ ê°€ëŠ¥í•˜ê²Œ í• ì§€ ì—¬ë¶€")]
         public bool draggableThisStep = false;
 
-        [Header("UI ÂüÁ¶")]
-        [Tooltip("½½·Ô ÀüÃ¼ ·çÆ® (Ç×»ó º¸ÀÌ°Ô µÎ°í, ¾È¿¡¼­ ¶ô/¾ğ¶ô¸¸ ¹Ù²Ş)")]
+        [Header("UI ì°¸ì¡°")]
+        [Tooltip("ìŠ¬ë¡¯ ì „ì²´ ë£¨íŠ¸ (í•­ìƒ ë³´ì´ê²Œ ë‘ê³ , ì•ˆì—ì„œ ë½/ì–¸ë½ë§Œ ë°”ê¿ˆ)")]
         public GameObject slotRoot;
 
-        [Tooltip("½½·Ô ¾È¿¡¼­ ½ÇÁ¦ ¾ÆÀÌÄÜ µå·¡±×/È£¹ö¸¦ ´ã´çÇÏ´Â ÄÄÆ÷³ÍÆ®")]
+        [Tooltip("ìŠ¬ë¡¯ ì•ˆì—ì„œ ì‹¤ì œ ì•„ì´ì½˜ ë“œë˜ê·¸/í˜¸ë²„ë¥¼ ë‹´ë‹¹í•˜ëŠ” ì»´í¬ë„ŒíŠ¸")]
         public StepInventoryItem itemComponent;
 
-        // ³»ºÎ »óÅÂ
+        // ë‚´ë¶€ ìƒíƒœ
         [NonSerialized] public bool isUnlocked;
     }
 
-    [Header("½½·Ôµé (ÀÎ½ºÆåÅÍ¿¡¼­ ÇÒ´ç)")]
+    [Header("ìŠ¬ë¡¯ë“¤ (ì¸ìŠ¤í™í„°ì—ì„œ í• ë‹¹)")]
     [SerializeField] private Slot[] slots;
 
     private void OnEnable()
@@ -41,8 +41,8 @@ public class StepInventoryPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// DB¿¡¼­ ÇöÀç À¯Àú ÀÎº¥Åä¸®¸¦ ÀĞ¾î¼­,
-    /// °¢ ½½·ÔÀÇ º¸À¯ ¿©ºÎ(isUnlocked)¸¦ ¾÷µ¥ÀÌÆ®.
+    /// DBì—ì„œ í˜„ì¬ ìœ ì € ì¸ë²¤í† ë¦¬ë¥¼ ì½ì–´ì„œ,
+    /// ê° ìŠ¬ë¡¯ì˜ ë³´ìœ  ì—¬ë¶€(isUnlocked)ë¥¼ ì—…ë°ì´íŠ¸.
     /// </summary>
     private void RefreshFromDb()
     {
@@ -52,15 +52,16 @@ public class StepInventoryPanel : MonoBehaviour
         var data = DataService.Instance;
         if (data == null)
         {
-            Debug.LogWarning("[StepInventoryPanel] DataService.Instance °¡ ¾øÀ½");
+            Debug.LogWarning("[StepInventoryPanel] DataService.Instance ê°€ ì—†ìŒ");
             MarkAllLocked();
             return;
         }
 
-        var userService = data.User;
-        if (userService == null)
+        // ğŸ” ì—¬ê¸°: User â†’ Reward ë¡œ êµì²´
+        var rewardService = data.Reward;
+        if (rewardService == null)
         {
-            Debug.LogWarning("[StepInventoryPanel] UserService °¡ ¾øÀ½");
+            Debug.LogWarning("[StepInventoryPanel] RewardService ê°€ ì—†ìŒ");
             MarkAllLocked();
             return;
         }
@@ -69,15 +70,15 @@ public class StepInventoryPanel : MonoBehaviour
         var currentUser = sess?.CurrentUser;
         if (currentUser == null)
         {
-            Debug.LogWarning("[StepInventoryPanel] ·Î±×ÀÎ À¯Àú°¡ ¾ø¾î ÀÎº¥Åä¸® Ç¥½Ã ½ºÅµ");
+            Debug.LogWarning("[StepInventoryPanel] ë¡œê·¸ì¸ ìœ ì €ê°€ ì—†ì–´ ì¸ë²¤í† ë¦¬ í‘œì‹œ ìŠ¤í‚µ");
             MarkAllLocked();
             return;
         }
 
-        var invResult = userService.GetInventory(currentUser.Email);
+        var invResult = rewardService.GetInventory(currentUser.Email);
         if (!invResult.Ok || invResult.Value == null)
         {
-            Debug.LogWarning("[StepInventoryPanel] ÀÎº¥Åä¸® Á¶È¸ ½ÇÆĞ È¤Àº null");
+            Debug.LogWarning("[StepInventoryPanel] ì¸ë²¤í† ë¦¬ ì¡°íšŒ ì‹¤íŒ¨ í˜¹ì€ null");
             MarkAllLocked();
             return;
         }
@@ -104,7 +105,7 @@ public class StepInventoryPanel : MonoBehaviour
                 var it = inventory[i];
                 if (it != null && it.ItemId == slotItemId)
                 {
-                    Debug.Log("Has Item!! : " +  it.ItemId);
+                    Debug.Log("Has Item!! : " + it.ItemId);
                     hasItem = true;
                     break;
                 }
@@ -113,7 +114,7 @@ public class StepInventoryPanel : MonoBehaviour
             s.isUnlocked = hasItem;
 
             if (s.slotRoot != null)
-                s.slotRoot.SetActive(true); // ½½·ÔÀº Ç×»ó º¸ÀÌ°Ô
+                s.slotRoot.SetActive(true); // ìŠ¬ë¡¯ì€ í•­ìƒ ë³´ì´ê²Œ
 
             if (s.itemComponent != null)
                 s.itemComponent.SetUnlockedVisual(hasItem);
@@ -121,7 +122,7 @@ public class StepInventoryPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÎº¥Åä¸® Á¶È¸ ½ÇÆĞ/À¯Àú ¾øÀ½ µîÀÇ °æ¿ì ÀüºÎ Àá±ä »óÅÂ·Î Ç¥½Ã
+    /// ì¸ë²¤í† ë¦¬ ì¡°íšŒ ì‹¤íŒ¨/ìœ ì € ì—†ìŒ ë“±ì˜ ê²½ìš° ì „ë¶€ ì ê¸´ ìƒíƒœë¡œ í‘œì‹œ
     /// </summary>
     private void MarkAllLocked()
     {
@@ -134,7 +135,7 @@ public class StepInventoryPanel : MonoBehaviour
             s.isUnlocked = false;
 
             if (s.slotRoot != null)
-                s.slotRoot.SetActive(true); // ½½·Ô ÀÚÃ¼´Â º¸ÀÌ°Ô
+                s.slotRoot.SetActive(true); // ìŠ¬ë¡¯ ìì²´ëŠ” ë³´ì´ê²Œ
 
             if (s.itemComponent != null)
                 s.itemComponent.SetUnlockedVisual(false);
@@ -142,7 +143,7 @@ public class StepInventoryPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// °¢ ½½·Ô¿¡ ´ëÇØ "ÀÌ ½ºÅÜ¿¡¼­ µå·¡±× °¡´É" ¿©ºÎ¸¦ StepInventoryItem¿¡ ³Ñ°ÜÁÜ.
+    /// ê° ìŠ¬ë¡¯ì— ëŒ€í•´ "ì´ ìŠ¤í…ì—ì„œ ë“œë˜ê·¸ ê°€ëŠ¥" ì—¬ë¶€ë¥¼ StepInventoryItemì— ë„˜ê²¨ì¤Œ.
     /// </summary>
     private void ApplyStepSettings()
     {
@@ -153,7 +154,7 @@ public class StepInventoryPanel : MonoBehaviour
             if (s == null || s.itemComponent == null)
                 continue;
 
-            // ÀÎº¥Åä¸®¸¦ º¸À¯ÇÏ°í ÀÖ°í && ÀÌ ½ºÅÜ¿¡¼­ µå·¡±× Çã¿ëÀÌ¸é
+            // ì¸ë²¤í† ë¦¬ë¥¼ ë³´ìœ í•˜ê³  ìˆê³  && ì´ ìŠ¤í…ì—ì„œ ë“œë˜ê·¸ í—ˆìš©ì´ë©´
             bool canDragNow = s.isUnlocked && s.draggableThisStep;
 
             s.itemComponent.SetDraggable(canDragNow);
