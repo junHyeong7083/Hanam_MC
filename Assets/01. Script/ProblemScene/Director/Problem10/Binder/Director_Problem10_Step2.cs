@@ -63,6 +63,10 @@ public class Director_Problem10_Step2 : Director_Problem10_Step2_Logic
     [Tooltip("completeRoot에 선택 확인 화면 연결")]
     [SerializeField] private StepCompletionGate completionGate;
 
+    [Header("===== 공유 데이터 =====")]
+    [Tooltip("Step3과 공유할 데이터 (같은 에셋 연결)")]
+    [SerializeField] private Problem10SharedData sharedData;
+
     #region 부모 추상 프로퍼티 구현
 
     protected override GenreData[] Genres => genres;
@@ -70,6 +74,7 @@ public class Director_Problem10_Step2 : Director_Problem10_Step2_Logic
     protected override GenreCardUI[] GenreCards => genreCards;
     protected override Button ConfirmButton => confirmButton;
     protected override StepCompletionGate CompletionGateRef => completionGate;
+    protected override Problem10SharedData SharedData => sharedData;
 
     #endregion
 }

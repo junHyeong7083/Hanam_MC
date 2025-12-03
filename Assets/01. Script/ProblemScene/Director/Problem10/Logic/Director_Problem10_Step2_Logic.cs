@@ -58,6 +58,9 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
     [Header("===== 완료 게이트 =====")]
     protected abstract StepCompletionGate CompletionGateRef { get; }
 
+    [Header("===== 공유 데이터 =====")]
+    protected abstract Problem10SharedData SharedData { get; }
+
     #endregion
 
     #region Virtual Config
@@ -196,6 +199,18 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         if (genres == null || _selectedIndex >= genres.Length) return;
 
         var selected = genres[_selectedIndex];
+
+        // 공유 데이터에 저장 (Step3에서 사용)
+        var sharedData = SharedData;
+        if (sharedData != null)
+        {
+            sharedData.SetSelectedGenre(
+                selected.id,
+                selected.name,
+                selected.emoji,
+                selected.description
+            );
+        }
 
         // DB 저장
         SaveAttempt(new GenreSelectionDto
