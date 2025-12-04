@@ -4,64 +4,64 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem2 / Step3
-/// - ÀÎ½ºÆåÅÍ¿¡¼­ UI ¿ÀºêÁ§Æ® + µ¥ÀÌÅÍ¸¸ ¹ÙÀÎµù.
-/// - ½ÇÁ¦ µ¿ÀÛÀº Director_Problem2_Step3_Logic(ºÎ¸ð)¿¡¼­ Ã³¸®.
+/// - ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® + ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½Îµï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Director_Problem2_Step3_Logic(ï¿½Î¸ï¿½)ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 /// </summary>
 public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
 {
     [Serializable]
     public class PerspectiveOption : IDirectorProblem2PerspectiveOption
     {
-        public int id;          // 1..N (ÀÎ½ºÆåÅÍ¿¡¼­ ºÎ¿©)
+        public int id;          // 1..N (ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½)
         [TextArea]
-        public string text;     // ¿¹: "»ó´ëµµ ±äÀåÇßÀ» ¼öµµ ÀÖ¾î"
+        public string text;     // ï¿½ï¿½: "ï¿½ï¿½ëµµ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½"
 
-        // ÀÎÅÍÆäÀÌ½º ±¸Çö (·ÎÁ÷ º£ÀÌ½º¿¡¼­ ÀÐ±â¿ëÀ¸·Î »ç¿ë)
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
         int IDirectorProblem2PerspectiveOption.Id => id;
         string IDirectorProblem2PerspectiveOption.Text => text;
     }
 
-    [Header("¹®±¸ ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [TextArea]
-    [SerializeField] private string ngSentence = "¸ðµÎ ³ª¸¦ ÀÌ»óÇÏ°Ô »ý°¢ÇÒ °Å¾ß";
+    [SerializeField] private string ngSentence = "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¾ï¿½";
     [SerializeField] private PerspectiveOption[] perspectives;
 
-    [Header("ÃÊ±â ÅØ½ºÆ® ¼³Á¤ ¿É¼Ç")]
-    [Tooltip("true¸é Reset ½Ã Ç×»ó ngSentence·Î µ¤¾î¾¸, false¸é ¿ÜºÎ¿¡¼­ ¹Ì¸® ³Ö¾îµÐ sceneText¸¦ ±×´ë·Î »ç¿ë")]
+    [Header("ï¿½Ê±ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½")]
+    [Tooltip("trueï¿½ï¿½ Reset ï¿½ï¿½ ï¿½×»ï¿½ ngSentenceï¿½ï¿½ ï¿½ï¿½ï¿½î¾¸, falseï¿½ï¿½ ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Ö¾ï¿½ï¿½ sceneTextï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½")]
     [SerializeField] private bool overwriteSceneTextOnReset = false;
 
-    [Header("¾À Ä«µå UI (NG / OK)")]
-    [SerializeField] private Text sceneText;                // Ä«µå ¾È¿¡ µé¾î°¥ ¹®Àå ÅØ½ºÆ®
-    [SerializeField] private GameObject ngBadgeRoot;        // "NG" ¹èÁö ¿ÀºêÁ§Æ®
-    [SerializeField] private GameObject okBadgeRoot;        // "OK" ¹èÁö ¿ÀºêÁ§Æ®
+    [Header("ï¿½ï¿½ Ä«ï¿½ï¿½ UI (NG / OK)")]
+    [SerializeField] private Text sceneText;                // Ä«ï¿½ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½î°¥ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
+    [SerializeField] private GameObject ngBadgeRoot;        // "NG" ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    [SerializeField] private GameObject okBadgeRoot;        // "OK" ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
     [SerializeField] private RectTransform sceneCardRect;
 
-    [Header("Ä«µå ÇÃ¸³ ÄÄÆ÷³ÍÆ® ")]
-    [SerializeField] private UICardFlip cardFlip;
+    [Header("Ä«ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ")]
+    [SerializeField] private CardFlip cardFlip;
 
-    [Header("°üÁ¡ ¼±ÅÃÁö UI")]
-    [SerializeField] private GameObject perspectiveButtonsRoot;      // ÀüÃ¼ ¼±ÅÃÁö ¹­À½ ·çÆ®
-    [SerializeField] private Button[] perspectiveButtons;            // °¢ ¹öÆ°
-    [SerializeField] private Text[] perspectiveTexts;                // ¹öÆ° ¾È¿¡ µé¾î°¥ ÅØ½ºÆ®
-    [SerializeField] private GameObject[] perspectiveSelectedMarks;  // Ã¼Å©¸¶Å© µî ¼±ÅÃ Ç¥½Ã
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI")]
+    [SerializeField] private GameObject perspectiveButtonsRoot;      // ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®
+    [SerializeField] private Button[] perspectiveButtons;            // ï¿½ï¿½ ï¿½ï¿½Æ°
+    [SerializeField] private Text[] perspectiveTexts;                // ï¿½ï¿½Æ° ï¿½È¿ï¿½ ï¿½ï¿½î°¥ ï¿½Ø½ï¿½Æ®
+    [SerializeField] private GameObject[] perspectiveSelectedMarks;  // Ã¼Å©ï¿½ï¿½Å© ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 
-    [Header("¸¶ÀÌÅ© UI")]
-    [SerializeField] private GameObject micButtonRoot;          // ¸¶ÀÌÅ© ¹öÆ° ·çÆ®
+    [Header("ï¿½ï¿½ï¿½ï¿½Å© UI")]
+    [SerializeField] private GameObject micButtonRoot;          // ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½Æ° ï¿½ï¿½Æ®
     [SerializeField] private MicRecordingIndicator micIndicator; // Indicator
 
-    [Header("ÆÐ³Î ÀüÈ¯")]
-    [SerializeField] private GameObject stepRoot;               // ÇöÀç Step3 ÆÐ³Î ·çÆ®
-    [SerializeField] private GameObject summaryPanelRoot;       // ¿ä¾à ÆÐ³Î ·çÆ®
+    [Header("ï¿½Ð³ï¿½ ï¿½ï¿½È¯")]
+    [SerializeField] private GameObject stepRoot;               // ï¿½ï¿½ï¿½ï¿½ Step3 ï¿½Ð³ï¿½ ï¿½ï¿½Æ®
+    [SerializeField] private GameObject summaryPanelRoot;       // ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½Æ®
 
-    [Header("¿Ï·á °ÔÀÌÆ® (¿ä¾à ¹öÆ° / ±âÅ¸ ¼û±èÀº Gate¿¡¼­ Ã³¸®)")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° / ï¿½ï¿½Å¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Gateï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    [Header("¿¬Ãâ ¿É¼Ç")]
-    [SerializeField] private float flipDelay = 0.3f;    // ¸»ÇÏ±â ³¡ ~ ÇÃ¸³ ½ÃÀÛ±îÁö ´ë±â ½Ã°£
-    [SerializeField] private float flipDuration = 0.5f; // Ä«µå ÇÑ ¹ø µÚÁýÈ÷´Â ÀüÃ¼ ½Ã°£
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½")]
+    [SerializeField] private float flipDelay = 0.3f;    // ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ ~ ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½Û±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    [SerializeField] private float flipDuration = 0.5f; // Ä«ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Ã°ï¿½
 
 
-    // ===== º£ÀÌ½º¿¡ °ª ÁÖÀÔ¿ë ÇÁ·ÎÆÛÆ¼ ±¸Çö =====
+    // ===== ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ô¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ =====
 
     protected override string NgSentence => ngSentence;
     protected override IDirectorProblem2PerspectiveOption[] Perspectives => perspectives;
@@ -72,7 +72,7 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override GameObject OkBadgeRoot => okBadgeRoot;
     protected override RectTransform SceneCardRect => sceneCardRect;
 
-    protected override UICardFlip CardFlip => cardFlip;
+    protected override CardFlip CardFlip => cardFlip;
 
     protected override GameObject PerspectiveButtonsRoot => perspectiveButtonsRoot;
     protected override Button[] PerspectiveButtons => perspectiveButtons;

@@ -2,19 +2,26 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// µå·¡±× °¡´ÉÇÑ UI ¿ä¼ÒµéÀÌ "¿©±â¿¡ ¶³¾îÁö¸é ¼º°ø"ÇÏ´Â µå·Ó ¹Ú½º ¿µ¿ª.
-/// - RectTransform ±âÁØÀ¸·Î Æ÷ÀÎÅÍ°¡ ¾È/¹Û¿¡ ÀÖ´ÂÁö ÆÇÁ¤
-/// - ¿Ü°û¼±(ÇÏÀÌ¶óÀÌÆ®) On/Off °ü¸®
+/// ï¿½å·¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½Òµï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// - RectTransform ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½/ï¿½Û¿ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+/// - ï¿½Ü°ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ï¿½Æ®) On/Off ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class UIDropBoxArea : MonoBehaviour
 {
-    [Header("µå·Ó ¿µ¿ª")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private RectTransform area;
 
-    [Header("ÇÏÀÌ¶óÀÌÆ®(¿Ü°û¼±)")]
+    [Header("ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ï¿½Æ®(ï¿½Ü°ï¿½ï¿½ï¿½)")]
     [SerializeField] private GameObject outline;
 
-    /// <summary>ÃÊ±â »óÅÂ·Î ¸®¼Â (¶óÀÎ ²ô±â)</summary>
+    private void Awake()
+    {
+        // ì‹œìž‘ ì‹œ outline ìˆ¨ê¹€
+        if (outline != null)
+            outline.SetActive(false);
+    }
+
+    /// <summary>ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)</summary>
     public void ResetVisual()
     {
         if (outline != null)
@@ -22,8 +29,8 @@ public class UIDropBoxArea : MonoBehaviour
     }
 
     /// <summary>
-    /// ÇöÀç Æ÷ÀÎÅÍ°¡ µå·Ó ¿µ¿ª ¾È¿¡ ÀÖ´ÂÁö ÆÇÁ¤.
-    /// (true¸é µå·Ó ¼º°ø ÆÇÁ¤¿¡ ¾µ ¼ö ÀÖÀ½)
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È¿ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    /// (trueï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     /// </summary>
     public bool IsPointerOver(PointerEventData eventData)
     {
@@ -37,7 +44,7 @@ public class UIDropBoxArea : MonoBehaviour
         );
     }
 
-    /// <summary>µå·¡±× Áß¿¡ ¿µ¿ª À§/¹Û¿¡ µû¶ó ¿Ü°û¼± On/Off</summary>
+    /// <summary>ï¿½å·¡ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½/ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ü°ï¿½ï¿½ï¿½ On/Off</summary>
     public void UpdateHighlight(PointerEventData eventData)
     {
         if (outline == null) return;
@@ -46,7 +53,7 @@ public class UIDropBoxArea : MonoBehaviour
         outline.SetActive(over);
     }
 
-    /// <summary>¿Ü°û¼± °­Á¦ On/Off</summary>
+    /// <summary>ï¿½Ü°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ On/Off</summary>
     public void SetOutlineVisible(bool visible)
     {
         if (outline == null) return;

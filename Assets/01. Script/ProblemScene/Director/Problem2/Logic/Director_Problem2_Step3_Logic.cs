@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Step3 °üÁ¡ ¼±ÅÃ + ¸¶ÀÌÅ© + Ä«µå ÇÃ¸³ °øÅë ·ÎÁ÷ º£ÀÌ½º.
-/// - ProblemStepBase »ó¼Ó
-/// - ÀÚ½Ä(Director_Problem2_Step3)Àº UI ÂüÁ¶¸¸ SerializeField·Î µé°í,
-///   ¿©±â¼­ ¿ä±¸ÇÏ´Â Ãß»ó ÇÁ·ÎÆÛÆ¼·Î ÁÖÀÔÇØ ÁØ´Ù.
+/// Step3 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½Å© + Ä«ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½.
+/// - ProblemStepBase ï¿½ï¿½ï¿½
+/// - ï¿½Ú½ï¿½(Director_Problem2_Step3)ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SerializeFieldï¿½ï¿½ ï¿½ï¿½ï¿½,
+///   ï¿½ï¿½ï¿½â¼­ ï¿½ä±¸ï¿½Ï´ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½.
 /// </summary>
 public interface IDirectorProblem2PerspectiveOption
 {
@@ -17,7 +17,7 @@ public interface IDirectorProblem2PerspectiveOption
 public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 {
     // ==========================
-    // ÀÌ ½ºÅÜ Àü¿ë ·Î±× payload
+    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ payload
     // ==========================
     [Serializable]
     private class RefilmLogPayload
@@ -29,49 +29,49 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     }
 
     // ==========================
-    // ÀÚ½Ä¿¡¼­ ÁÖÀÔÇÒ Ãß»ó ÇÁ·ÎÆÛÆ¼
+    // ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼
     // ==========================
 
-    [Header("¹®±¸ ¼³Á¤ (ÀÚ½Ä¿¡¼­ ÁÖÀÔ)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     protected abstract string NgSentence { get; }
     protected abstract IDirectorProblem2PerspectiveOption[] Perspectives { get; }
 
-    [Header("ÃÊ±â ÅØ½ºÆ® ¼³Á¤ ¿É¼Ç")]
+    [Header("ï¿½Ê±ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½")]
     protected abstract bool OverwriteSceneTextOnReset { get; }
 
-    [Header("¾À Ä«µå UI (NG / OK)")]
+    [Header("ï¿½ï¿½ Ä«ï¿½ï¿½ UI (NG / OK)")]
     protected abstract Text SceneText { get; }
     protected abstract GameObject NgBadgeRoot { get; }
     protected abstract GameObject OkBadgeRoot { get; }
     protected abstract RectTransform SceneCardRect { get; }
 
-    [Header("Ä«µå ÇÃ¸³ ÄÄÆ÷³ÍÆ®")]
-    protected abstract UICardFlip CardFlip { get; }
+    [Header("Ä«ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®")]
+    protected abstract CardFlip CardFlip { get; }
 
-    [Header("°üÁ¡ ¼±ÅÃÁö UI")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI")]
     protected abstract GameObject PerspectiveButtonsRoot { get; }
     protected abstract Button[] PerspectiveButtons { get; }
     protected abstract Text[] PerspectiveTexts { get; }
     protected abstract GameObject[] PerspectiveSelectedMarks { get; }
 
-    [Header("¸¶ÀÌÅ© UI")]
+    [Header("ï¿½ï¿½ï¿½ï¿½Å© UI")]
     protected abstract GameObject MicButtonRoot { get; }
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
-    [Header("ÆÐ³Î ÀüÈ¯")]
+    [Header("ï¿½Ð³ï¿½ ï¿½ï¿½È¯")]
     protected abstract GameObject StepRoot { get; }
     protected abstract GameObject SummaryPanelRoot { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ® (¿ä¾à ¹öÆ° / ±âÅ¸ ¼û±èÀº Gate¿¡¼­ Ã³¸®)")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° / ï¿½ï¿½Å¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Gateï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    [Header("¿¬Ãâ ¿É¼Ç")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½")]
     protected abstract float FlipDelay { get; }
-    protected abstract float FlipDuration { get; } // ¾ÆÁ÷ ¾È ¾²´õ¶óµµ º¸Á¸
+    protected abstract float FlipDuration { get; } // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
     // ==========================
-    // ³»ºÎ »óÅÂ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     // ==========================
 
     private IDirectorProblem2PerspectiveOption _selected;
@@ -81,29 +81,29 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
 
     // ==========================
-    // ProblemStepBase ±¸Çö
+    // ProblemStepBase ï¿½ï¿½ï¿½ï¿½
     // ==========================
 
     protected override void OnStepEnter()
     {
-        Debug.Log("[Step3] OnStepEnter È£Ãâ");
+        Debug.Log("[Step3] OnStepEnter È£ï¿½ï¿½");
         ResetState();
 
         var gate = CompletionGate;
         if (gate != null)
         {
-            // Step3´Â ¡°ÇÑ ¹ø ¿Ï·áµÇ¸é ³¡¡± ±¸Á¶¶ó¼­ ÃÑ Ä«¿îÆ® 1·Î »ç¿ë
+            // Step3ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ï·ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä«ï¿½ï¿½Æ® 1ï¿½ï¿½ ï¿½ï¿½ï¿½
             gate.ResetGate(1);
         }
     }
 
     protected override void OnStepExit()
     {
-        // ÇÊ¿äÇÏ¸é »óÅÂ Á¤¸®
+        // ï¿½Ê¿ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     // ==========================
-    // ÃÊ±âÈ­ ·ÎÁ÷
+    // ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½
     // ==========================
 
     private void ResetState()
@@ -127,11 +127,11 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         var perspectiveButtons = PerspectiveButtons;
         var perspectiveSelectedMarks = PerspectiveSelectedMarks;
 
-        // Step / Summary ÆÐ³Î ±âº» »óÅÂ
+        // Step / Summary ï¿½Ð³ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½
         if (stepRoot != null) stepRoot.SetActive(true);
         if (summaryPanelRoot != null) summaryPanelRoot.SetActive(false);
 
-        // NG ¹®ÀåÀ¸·Î °­Á¦ µ¤¾î¾µÁö ¿©ºÎ
+        // NG ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½î¾µï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (sceneText != null && OverwriteSceneTextOnReset)
         {
             sceneText.text = NgSentence;
@@ -143,11 +143,11 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (perspectiveButtonsRoot != null)
             perspectiveButtonsRoot.SetActive(true);
 
-        // ¸¶ÀÌÅ©´Â Ã³À½¿£ ¼û±è
+        // ï¿½ï¿½ï¿½ï¿½Å©ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (micButtonRoot != null)
             micButtonRoot.SetActive(false);
 
-        // ¼±ÅÃÁö ÅØ½ºÆ® ¼¼ÆÃ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         if (perspectiveTexts != null && perspectives != null)
         {
             int count = Mathf.Min(perspectiveTexts.Length, perspectives.Length);
@@ -158,7 +158,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             }
         }
 
-        // ¹öÆ°/Ã¼Å©¸¶Å© ÃÊ±âÈ­
+        // ï¿½ï¿½Æ°/Ã¼Å©ï¿½ï¿½Å© ï¿½Ê±ï¿½È­
         if (perspectiveButtons != null)
         {
             foreach (var btn in perspectiveButtons)
@@ -178,41 +178,41 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     }
 
     // ==========================
-    // ¹öÆ° ÄÝ¹éµé
+    // ï¿½ï¿½Æ° ï¿½Ý¹ï¿½ï¿½
     // ==========================
 
     /// <summary>
-    /// °üÁ¡ ¼±ÅÃ ¹öÆ°¿¡¼­ È£Ãâ
-    /// Button OnClick ¡æ Director_Problem2_Step3.OnClickPerspective(ÀÎµ¦½º)
-    /// ÀÎµ¦½º = 0,1,2 ... : perspectives ¹è¿­ÀÇ ÀÎµ¦½º
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    /// Button OnClick ï¿½ï¿½ Director_Problem2_Step3.OnClickPerspective(ï¿½Îµï¿½ï¿½ï¿½)
+    /// ï¿½Îµï¿½ï¿½ï¿½ = 0,1,2 ... : perspectives ï¿½è¿­ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½
     /// </summary>
     public void OnClickPerspective(int optionIndex)
     {
-        Debug.Log($"[Step3] OnClickPerspective È£Ãâ: optionIndex={optionIndex}");
+        Debug.Log($"[Step3] OnClickPerspective È£ï¿½ï¿½: optionIndex={optionIndex}");
 
         if (_isFinished)
         {
-            Debug.Log("[Step3] ÀÌ¹Ì ¿Ï·á »óÅÂ¶ó Å¬¸¯ ¹«½Ã");
+            Debug.Log("[Step3] ï¿½Ì¹ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½Â¶ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         var perspectives = Perspectives;
         if (perspectives == null || perspectives.Length == 0)
         {
-            Debug.LogWarning("[Step3] perspectives ¹è¿­ÀÌ ºñ¾îÀÖÀ½");
+            Debug.LogWarning("[Step3] perspectives ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         if (optionIndex < 0 || optionIndex >= perspectives.Length)
         {
-            Debug.LogWarning($"[Step3] optionIndex ¹üÀ§ ¹Û: {optionIndex} / len={perspectives.Length}");
+            Debug.LogWarning($"[Step3] optionIndex ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½: {optionIndex} / len={perspectives.Length}");
             return;
         }
 
         _selected = perspectives[optionIndex];
-        Debug.Log($"[Step3] ¼±ÅÃµÈ °üÁ¡: id={_selected.Id}, text={_selected.Text}");
+        Debug.Log($"[Step3] ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½: id={_selected.Id}, text={_selected.Text}");
 
-        // ¼±ÅÃ Ç¥½Ã
+        // ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
         var perspectiveSelectedMarks = PerspectiveSelectedMarks;
         if (perspectiveSelectedMarks != null)
         {
@@ -223,7 +223,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             }
         }
 
-        // ¼±ÅÃ ÈÄ ´Ù¸¥ ¹öÆ° Àá±Ý (1È¸ ¼±ÅÃ ±¸Á¶)
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ (1È¸ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         var perspectiveButtons = PerspectiveButtons;
         if (perspectiveButtons != null)
         {
@@ -234,19 +234,19 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             }
         }
 
-        // ¸¶ÀÌÅ© ¹öÆ° ³ëÃâ
+        // ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½
         var micButtonRoot = MicButtonRoot;
         if (micButtonRoot != null)
         {
             micButtonRoot.SetActive(true);
-            Debug.Log("[Step3] micButtonRoot È°¼ºÈ­");
+            Debug.Log("[Step3] micButtonRoot È°ï¿½ï¿½È­");
         }
     }
 
     /// <summary>
-    /// ¸¶ÀÌÅ© ¹öÆ° Å¬¸¯
-    /// - Ã¹ Å¬¸¯: ³ìÀ½ ½ÃÀÛ (Indicator On)
-    /// - µÎ ¹øÂ° Å¬¸¯: ³ìÀ½ Á¾·á·Î º¸°í Ä«µå ÇÃ¸³ ¡æ OK Àå¸é
+    /// ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½Æ° Å¬ï¿½ï¿½
+    /// - Ã¹ Å¬ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (Indicator On)
+    /// - ï¿½ï¿½ ï¿½ï¿½Â° Å¬ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ OK ï¿½ï¿½ï¿½
     /// </summary>
     public void OnClickMic()
     {
@@ -254,13 +254,13 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         if (_selected == null)
         {
-            Debug.LogWarning("[Step3] ¾ÆÁ÷ ¼±ÅÃµÈ °üÁ¡ÀÌ ¾øÀ½");
+            Debug.LogWarning("[Step3] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         if (_isFinished)
         {
-            Debug.Log("[Step3] ÀÌ¹Ì ¿Ï·á »óÅÂ, ¸¶ÀÌÅ© ¹«½Ã");
+            Debug.Log("[Step3] ï¿½Ì¹ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -272,37 +272,37 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         Debug.Log($"[Step3] _isRecording={_isRecording}");
 
-        // false°¡ µÈ ½ÃÁ¡ = ³ìÀ½ Á¾·á¶ó°í °£ÁÖ
+        // falseï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ = ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (!_isRecording)
         {
             _hasRecordedAnswer = true;
-            Debug.Log("[Step3] ³ìÀ½ Á¾·á ¡æ PlayRefilmCompleteSequence ½ÃÀÛ");
+            Debug.Log("[Step3] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ PlayRefilmCompleteSequence ï¿½ï¿½ï¿½ï¿½");
             StartCoroutine(PlayRefilmCompleteSequence());
         }
     }
 
     // ==========================
-    // Ä«µå NG -> OK ÇÃ¸³ ¿¬Ãâ
+    // Ä«ï¿½ï¿½ NG -> OK ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     // ==========================
 
     private IEnumerator PlayRefilmCompleteSequence()
     {
-        // ¸¶ÀÌÅ© ¹öÆ°Àº ´õ ÀÌ»ó »ç¿ëÇÏÁö ¾ÊÀ¸´Ï ¼û±è
+        // ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         var micButtonRoot = MicButtonRoot;
         if (micButtonRoot != null)
             micButtonRoot.SetActive(false);
 
-        // °üÁ¡ ¼±ÅÃÁö´Â "º¸ÀÌ±ä ÇÏµÇ" ´õ ÀÌ»ó Å¬¸¯Àº ¾È µÇ°Ô Ã³¸®
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½Ïµï¿½" ï¿½ï¿½ ï¿½Ì»ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ç°ï¿½ Ã³ï¿½ï¿½
         var perspectiveButtonsRoot = PerspectiveButtonsRoot;
         if (perspectiveButtonsRoot != null)
             perspectiveButtonsRoot.SetActive(true);
 
-        // ¸»ÇÏ±â°¡ ³¡³­ µÚ Àá½Ã ´ë±â ÈÄ ÇÃ¸³ ½ÃÀÛ
+        // ï¿½ï¿½ï¿½Ï±â°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         float delay = FlipDelay;
         if (delay > 0f)
             yield return new WaitForSeconds(delay);
 
-        // ¹öÆ° ¾ËÆÄ/ÀÎÅÍ·¢¼Ç Á¤¸®
+        // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         var perspectiveButtons = PerspectiveButtons;
         if (perspectiveButtons != null)
         {
@@ -329,14 +329,14 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             }
         }
 
-        // Ä«µå ÇÃ¸³ ÄÚ·çÆ¾ ½ÇÇà
+        // Ä«ï¿½ï¿½ ï¿½Ã¸ï¿½ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½
         var cardFlip = CardFlip;
         if (cardFlip != null)
         {
             yield return StartCoroutine(cardFlip.PlayFlipRoutine());
         }
 
-        // OK ¹®ÀåÀ¸·Î ÅØ½ºÆ® ±³Ã¼
+        // OK ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½Ã¼
         var sceneText = SceneText;
         if (sceneText != null && _selected != null)
             sceneText.text = _selected.Text;
@@ -347,11 +347,11 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (ngBadgeRoot != null) ngBadgeRoot.SetActive(false);
         if (okBadgeRoot != null) okBadgeRoot.SetActive(true);
 
-        // ÇÃ¸³ ¿Ï·á ÈÄ »óÅÂ ¸¶¹«¸®
+        // ï¿½Ã¸ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         _isFinished = true;
-        Debug.Log("[Step3] ÇÃ¸³ ¿Ï·á, _isFinished = true");
+        Debug.Log("[Step3] ï¿½Ã¸ï¿½ ï¿½Ï·ï¿½, _isFinished = true");
 
-        // ¿Ï·á ¿¬Ãâ: Gate¿¡ ¡°¿Ï·áÇß´Ù¡±¸¸ ¾Ë¸²
+        // ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½: Gateï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ß´Ù¡ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½
         var gate = CompletionGate;
         if (gate != null)
         {
@@ -360,10 +360,10 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     }
 
     /// <summary>
-    /// "¿ä¾à º¸±â" ¹öÆ°¿¡¼­ È£Ãâ
-    /// - Attempt DB ÀúÀå
-    /// - ÆÐ³Î ÀüÈ¯
-    /// (½ÇÁ¦ ¹öÆ° GameObject´Â StepCompletionGate.completeRoot·Î °ü¸®)
+    /// "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    /// - Attempt DB ï¿½ï¿½ï¿½ï¿½
+    /// - ï¿½Ð³ï¿½ ï¿½ï¿½È¯
+    /// (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° GameObjectï¿½ï¿½ StepCompletionGate.completeRootï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     /// </summary>
     public void OnClickSummaryButton()
     {
@@ -382,13 +382,13 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     }
 
     /// <summary>
-    /// ProblemStepBase.SaveAttempt¸¦ ÀÌ¿ëÇØ Attempt ÀúÀå
+    /// ProblemStepBase.SaveAttemptï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ Attempt ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void SaveRefilmLogToDb()
     {
         if (_selected == null)
         {
-            Debug.Log("[Director_Problem2_Step3] ¼±ÅÃµÈ °üÁ¡ÀÌ ¾ø¾î ÀúÀå ½ºÅµ");
+            Debug.Log("[Director_Problem2_Step3] ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Åµ");
             return;
         }
 
@@ -400,7 +400,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             recorded = _hasRecordedAnswer
         };
 
-        // Base¿¡¼­ context/stepKey °Ë»ç + SaveStepAttempt È£Ãâ
+        // Baseï¿½ï¿½ï¿½ï¿½ context/stepKey ï¿½Ë»ï¿½ + SaveStepAttempt È£ï¿½ï¿½
         SaveAttempt(body);
     }
 }

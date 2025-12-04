@@ -12,7 +12,7 @@
         _InnerRadius ("Inner Radius", Range(0.0, 0.5)) = 0.25
 
         // 바깥 그라데이션이 끝나는 반지름 (Inner보다 항상 커야 함)
-        _HaloRadius  ("Halo Radius",  Range(0.0, 0.8)) = 0.45
+        _HaloRadius  ("Halo Radius",  Range(0.0, 2.0)) = 0.8
 
         // 그라데이션 최대 알파
         _HaloAlpha   ("Halo Alpha",   Range(0.0, 1.0)) = 0.35
