@@ -3,22 +3,27 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 오브젝트 등장 애니메이션
-/// - 아래에서 위로 슬라이드 + 페이드인 + 스케일
+/// - 슬라이드 + 페이드인 + 스케일
+/// - 4방향 슬라이드 지원 (Left, Right, Top, Bottom)
 /// - 순차 등장을 위한 딜레이 지원
 ///
 /// [사용처]
 /// - Problem2 Step2: 필름 카드 순차 등장
+/// - Problem3 Step1: 캐릭터(Left), 말풍선(Top), 책(Bottom)
 /// - 버튼, 카드, UI 요소 등장
 /// </summary>
 public class AppearAnimation : MonoBehaviour
 {
+    public enum SlideDirection { Bottom, Top, Left, Right }
+
     [Header("===== 애니메이션 설정 =====")]
     [SerializeField] private float delay = 0f;
     [SerializeField] private float duration = 0.4f;
 
     [Header("위치")]
     [SerializeField] private bool enableSlide = true;
-    [SerializeField] private float slideDistance = 50f;  // 아래에서 올라오는 거리
+    [SerializeField] private SlideDirection slideFrom = SlideDirection.Bottom;
+    [SerializeField] private float slideDistance = 50f;
 
     [Header("페이드")]
     [SerializeField] private bool enableFade = true;
@@ -56,7 +61,7 @@ public class AppearAnimation : MonoBehaviour
         _targetPosition = _rectTransform.anchoredPosition;
 
         if (enableSlide)
-            _rectTransform.anchoredPosition = _targetPosition + Vector2.down * slideDistance;
+            _rectTransform.anchoredPosition = _targetPosition + GetSlideOffset();
 
         if (enableFade && _canvasGroup != null)
             _canvasGroup.alpha = 0f;
@@ -66,6 +71,21 @@ public class AppearAnimation : MonoBehaviour
 
         _elapsedTime = -delay;  // 딜레이 처리
         _isAnimating = true;
+    }
+
+    /// <summary>
+    /// 슬라이드 방향에 따른 오프셋 계산
+    /// </summary>
+    private Vector2 GetSlideOffset()
+    {
+        switch (slideFrom)
+        {
+            case SlideDirection.Bottom: return Vector2.down * slideDistance;
+            case SlideDirection.Top: return Vector2.up * slideDistance;
+            case SlideDirection.Left: return Vector2.left * slideDistance;
+            case SlideDirection.Right: return Vector2.right * slideDistance;
+            default: return Vector2.down * slideDistance;
+        }
     }
 
     private void Update()
@@ -83,7 +103,7 @@ public class AppearAnimation : MonoBehaviour
         // 위치 애니메이션
         if (enableSlide)
         {
-            Vector2 startPos = _targetPosition + Vector2.down * slideDistance;
+            Vector2 startPos = _targetPosition + GetSlideOffset();
             _rectTransform.anchoredPosition = Vector2.Lerp(startPos, _targetPosition, eased);
         }
 

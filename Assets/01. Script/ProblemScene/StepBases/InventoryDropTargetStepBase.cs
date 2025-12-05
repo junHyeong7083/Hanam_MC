@@ -3,47 +3,47 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 인벤토리 아이템을 끌어서 특정 UI 타겟 근처에 놓으면 성공 처리하는 공통 베이스.
-/// - ProblemStepBase + IStepInventoryDragHandler 구현
-/// - 반경(dragRadius) 안에 드롭되면 성공으로 보고, 간단한 scale 연출 후 Gate 완료.
-/// - 실제 참조(타겟 Rect 등)는 파생 클래스에서 SerializeField로 들고 있다가
-///   protected 프로퍼티로 넘겨주는 구조.
+/// Base class for inventory drag-drop to specific UI target.
+/// - ProblemStepBase + IStepInventoryDragHandler implementation
+/// - When dropped within radius, item is consumed and target scale animation + Gate completion.
+/// - Actual references (target Rect, etc.) are provided via protected properties from derived classes.
 /// </summary>
 public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInventoryDragHandler
 {
-    // 파생 클래스에서 참조 넘겨줄 추상/가상 프로퍼티들
+    // Abstract/Virtual properties to be provided by derived classes
     #region Property
-    /// <summary>드롭 성공 판정 기준이 될 타겟 RectTransform</summary>
+    /// <summary>Drop target RectTransform for distance check</summary>
     protected abstract RectTransform DropTargetRect { get; }
 
-    /// <summary>드래그 중에 보여줄 인디케이터(하이라이트 등)</summary>
+    /// <summary>Indicator shown during drag (highlight, etc.)</summary>
     protected abstract GameObject DropIndicatorRoot { get; }
 
-    /// <summary>성공 시 scale 연출을 줄 비주얼 루트</summary>
+    /// <summary>Visual root for scale animation on drop success</summary>
     protected abstract RectTransform TargetVisualRoot { get; }
 
-    /// <summary>처음에 보여줄 안내 텍스트/루트 (성공 시 숨김)</summary>
+    /// <summary>Instruction text/root (hidden on success)</summary>
     protected abstract GameObject InstructionRoot { get; }
 
-    /// <summary>완료 게이트 (없으면 null 허용)</summary>
+    /// <summary>Completion gate (optional, can be null)</summary>
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    /// <summary>타겟 중심으로부터 허용 반경 (기본값 200)</summary>
+    /// <summary>Drop acceptance radius from target center (default 200)</summary>
     protected virtual float DropRadius => 200f;
 
-    /// <summary>활성화 연출 시 최대 스케일 배수</summary>
+    /// <summary>Max scale ratio during activation animation</summary>
     protected virtual float ActivateScale => 1.05f;
 
-    /// <summary>활성화 연출 시간</summary>
+    /// <summary>Activation animation duration</summary>
     protected virtual float ActivateDuration => 0.6f;
 
-    /// <summary>연출이 끝난 뒤 Gate 완료까지 대기 시간</summary>
+    /// <summary>Delay before Gate completion after animation</summary>
     protected virtual float DelayBeforeComplete => 1.5f;
 
-    // 내부 상태
+    // Internal state
     private bool _activated;
     private bool _animPlaying;
     #endregion
+
     // ================================
     // ProblemStepBase
     // ================================
@@ -61,12 +61,12 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     protected override void OnStepExit()
     {
         base.OnStepExit();
-        // 필요하면 나중에 공통 정리 추가
+        // Add cleanup logic if needed
     }
 
     /// <summary>
-    /// 파생 클래스에서 추가 초기화가 필요할 때 오버라이드.
-    /// (기본 상태 리셋 이후 호출)
+    /// Override in derived class for additional initialization.
+    /// Called after base state reset.
     /// </summary>
     protected virtual void OnStepEnterExtra() { }
 
@@ -89,7 +89,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     // ================================
-    // IStepInventoryDragHandler 구현
+    // IStepInventoryDragHandler Implementation
     // ================================
 
     public void OnInventoryDragBegin(StepInventoryItem item, PointerEventData eventData)
@@ -148,17 +148,17 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     /// <summary>
-    /// 드래그 시작 시 추가 처리 (파생 클래스에서 필요하면 사용)
+    /// Additional processing on drag begin (override if needed)
     /// </summary>
     protected virtual void OnInventoryDragBeginExtra(StepInventoryItem item, PointerEventData eventData) { }
 
     /// <summary>
-    /// 드래그 중 추가 처리 (보통 안 써도 됨)
+    /// Additional processing during drag (e.g., glow effect)
     /// </summary>
     protected virtual void OnInventoryDraggingExtra(StepInventoryItem item, PointerEventData eventData) { }
 
     /// <summary>
-    /// 포인터가 드롭 영역 안에 있는지 여부 (기본: 중심 기준 원형 반경)
+    /// Check if pointer is inside drop area (default: distance from center)
     /// </summary>
     protected virtual bool IsPointerInsideDropArea(PointerEventData eventData)
     {
@@ -175,9 +175,9 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     /// <summary>
-    /// 드롭 성공 시 기본 처리.
-    /// - 아이콘 숨기고 고스트 유지
-    /// - 활성화 코루틴 실행
+    /// Called on successful drop.
+    /// - Consume item visual effect
+    /// - Start activation coroutine
     /// </summary>
     protected virtual void OnDropSuccess(StepInventoryItem item, PointerEventData eventData)
     {
@@ -212,7 +212,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     /// <summary>
-    /// 타겟 활성화 scale 애니메이션 (기본: 살짝 커졌다가 복귀)
+    /// Target activation scale animation (default: slight grow then shrink)
     /// </summary>
     protected virtual IEnumerator PlayActivateAnimation()
     {
@@ -238,8 +238,8 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     /// <summary>
-    /// Gate 완료 직전에 추가로 뭔가 하고 싶을 때 사용.
-    /// (예: 효과음, 추가 UI 등)
+    /// Called after Gate completion for additional work.
+    /// (e.g., sound effect, additional UI)
     /// </summary>
     protected virtual void OnDropComplete() { }
 }
