@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Problem3 / Step2 ·ÎÁ÷ º£ÀÌ½º.
-/// - ½Ã³ª¸®¿À ¹®ÀåÀ» ´Ü°èº°·Î "»õ·Î¿î °üÁ¡"À¸·Î ´Ù½Ã ¾²´Â ½ºÅÜ.
-/// - µ¥ÀÌÅÍ/UI´Â ÀÚ½Ä¿¡¼­ ÁÖÀÔ.
+/// Problem3 / Step2 ë¡œì§ ë² ì´ìŠ¤.
+/// - ì‹œë‚˜ë¦¬ì˜¤ë¥¼ ë‹¨ê³„ë³„ë¡œ "ìƒˆë¡œìš´ ê´€ì "ìœ¼ë¡œ ë‹¤ì‹œ ì‘ì„± ìœ ë„.
+/// - ì• ë‹ˆë©”ì´ì…˜ì€ EffectControllerì— ìœ„ì„, ë¡œì§ë§Œ ë‹´ë‹¹.
 /// </summary>
 public interface IRewriteStepData
 {
@@ -18,55 +17,47 @@ public interface IRewriteStepData
 
 public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 {
-    // ===== ÀÚ½Ä¿¡¼­ ³Ñ°ÜÁÖ´Â Ãß»ó ÇÁ·ÎÆÛÆ¼µé =====
+    // ===== ìì‹ì—ì„œ ë„˜ê²¨ì£¼ëŠ” ì¶”ìƒ í”„ë¡œí¼í‹°ë“¤ =====
 
-    [Header("ÀçÇØ¼® ´Ü°è µ¥ÀÌÅÍ (ÀÚ½Ä ÁÖÀÔ)")]
+    [Header("ì¬ì‘ì„± ë‹¨ê³„ ë°ì´í„° (ìì‹ êµ¬í˜„)")]
     protected abstract IRewriteStepData[] Steps { get; }
 
-    [Header("¹®Àå UI")]
-    protected abstract Text SentenceText { get; }
-    protected abstract Color OriginalTextColor { get; }
-    protected abstract Color RewrittenTextColor { get; }
-    protected abstract CanvasGroup SentenceCanvasGroup { get; }
+    [Header("ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬")]
+    protected abstract Problem3_Step2_EffectController EffectController { get; }
 
-    [Header("Ææ ¾ÆÀÌÄÜ ¿¬Ãâ (¿É¼Ç)")]
-    protected abstract RectTransform PenIcon { get; }
-    protected abstract float PenAnimDelay { get; }
-    protected abstract float FadeOutDuration { get; }
-    protected abstract float FadeInDuration { get; }
-
-    [Header("¿É¼Ç ¹öÆ°µé (ÃÖ´ë N°³)")]
+    [Header("ì˜µì…˜ ë²„íŠ¼ë“¤ (ìµœëŒ€ Nê°œ)")]
     protected abstract Button[] OptionButtons { get; }
     protected abstract Text[] OptionLabels { get; }
 
-    [Header("¿É¼Ç »ö»ó")]
+    [Header("ì˜µì…˜ ìƒ‰ìƒ")]
     protected abstract Color OptionNormalColor { get; }
     protected abstract Color OptionSelectedColor { get; }
     protected abstract Color OptionDisabledColor { get; }
 
-    [Header("»ó´Ü ÁøÇàµµ Á¡µé (¿É¼Ç)")]
+    [Header("ìƒë‹¨ ì§„í–‰ë„ ì ë“¤ (ì˜µì…˜)")]
     protected abstract Image[] ProgressDots { get; }
     protected abstract Color ProgressDoneColor { get; }
     protected abstract Color ProgressCurrentColor { get; }
     protected abstract Color ProgressPendingColor { get; }
 
-    [Header("ÇÏ´Ü ³×ºñ°ÔÀÌ¼Ç ¹öÆ°")]
+    [Header("í•˜ë‹¨ ë„¤ë¹„ê²Œì´ì…˜ ë²„íŠ¼")]
     protected abstract GameObject NextButtonRoot { get; }
     protected abstract Text NextButtonLabel { get; }
     protected abstract string MiddleStepLabel { get; }
     protected abstract string LastStepLabel { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ® (¿É¼Ç)")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸ (ì˜µì…˜)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // ===== ³»ºÎ »óÅÂ =====
+    // ===== ë‚´ë¶€ ìƒíƒœ =====
     private int _currentIndex;
-    private int[] _selectedOptionIndices;   // stepº° ¼±ÅÃµÈ ¿É¼Ç ÀÎµ¦½º (-1 ÀÌ¸é ¹Ì¼±ÅÃ)
-    private bool[] _stepCompleted;          // stepº° ÀçÇØ¼® ¿Ï·á ¿©ºÎ
-    private bool _isRewriting;
-    private Coroutine _rewriteRoutine;
+    private int[] _selectedOptionIndices;   // stepë³„ ì„ íƒëœ ì˜µì…˜ ì¸ë±ìŠ¤ (-1 ì´ë©´ ë¯¸ì„ íƒ)
+    private bool[] _stepCompleted;          // stepë³„ ì¬ì‘ì„± ì™„ë£Œ ì—¬ë¶€
 
-    // === Attempt ÀúÀå¿ë DTO ===
+    // ì• ë‹ˆë©”ì´ì…˜ ì¤‘ì¸ì§€ ì—¬ë¶€ (EffectControllerì—ì„œ í™•ì¸)
+    private bool IsAnimating => EffectController != null && EffectController.IsAnimating;
+
+    // === Attempt ê¸°ë¡ìš© DTO ===
     [Serializable]
     private class AttemptStepLog
     {
@@ -83,7 +74,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     }
 
     // =============================
-    // ProblemStepBase ±¸Çö
+    // ProblemStepBase ì˜¤ë²„ë¼ì´ë“œ
     // =============================
     protected override void OnStepEnter()
     {
@@ -92,11 +83,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         var steps = Steps;
         if (steps == null || steps.Length == 0)
         {
-            Debug.LogWarning("[Problem3_Step2] steps µ¥ÀÌÅÍ°¡ ºñ¾îÀÖÀ½");
-            if (SentenceText != null)
-            {
-                SentenceText.text = "(¼³Á¤µÈ ½Ã³ª¸®¿À°¡ ¾ø½À´Ï´Ù)";
-            }
+            Debug.LogWarning("[Problem3_Step2] steps ë°ì´í„°ê°€ ë¹„ì–´ìˆìŒ");
             if (CompletionGate != null)
             {
                 CompletionGate.ResetGate(1);
@@ -113,16 +100,9 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
             _stepCompleted[i] = false;
         }
 
-        _isRewriting = false;
-        if (_rewriteRoutine != null)
-        {
-            StopCoroutine(_rewriteRoutine);
-            _rewriteRoutine = null;
-        }
-
         if (CompletionGate != null)
         {
-            // ÀÌ ½ºÅÜ ÀüÃ¼¸¦ 1Ä­Â¥¸® Gate·Î »ç¿ë
+            // ì´ ìŠ¤í… ì „ì²´ë¥¼ 1ì¹¸ì§œë¦¬ Gateë¡œ ì‚¬ìš©
             CompletionGate.ResetGate(1);
         }
 
@@ -131,22 +111,17 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
     protected override void OnStepExit()
     {
-        // ÇÊ¿ä ½Ã Á¤¸®
-        if (_rewriteRoutine != null)
-        {
-            StopCoroutine(_rewriteRoutine);
-            _rewriteRoutine = null;
-        }
+        // í•„ìš” ì‹œ ì •ë¦¬
     }
 
     // =============================
-    // UI ¼¼ÆÃ
+    // UI ê°±ì‹ 
     // =============================
 
     private void RefreshAllUI()
     {
         ApplyProgressDots();
-        ApplySentenceOriginalInstant();
+        ApplySentenceOriginal();
         SetupOptionsForCurrentStep();
         UpdateNextButton();
     }
@@ -177,7 +152,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         }
     }
 
-    private void ApplySentenceOriginalInstant()
+    private void ApplySentenceOriginal()
     {
         var steps = Steps;
         if (steps == null || steps.Length == 0 || _currentIndex < 0 || _currentIndex >= steps.Length)
@@ -185,21 +160,12 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
         var step = steps[_currentIndex];
 
-        if (SentenceText != null)
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ì— ìœ„ì„
+        var effectController = EffectController;
+        if (effectController != null)
         {
-            SentenceText.text = step.OriginalText;
-            SentenceText.color = OriginalTextColor;
-        }
-
-        if (SentenceCanvasGroup != null)
-        {
-            SentenceCanvasGroup.alpha = 1f;
-        }
-
-        var pen = PenIcon;
-        if (pen != null)
-        {
-            pen.gameObject.SetActive(false);
+            effectController.ResetForNextStep();
+            effectController.ShowOriginalTextImmediate(step.OriginalText);
         }
     }
 
@@ -240,7 +206,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
             }
         }
 
-        // ÀÌ ½ºÅÜ¿¡¼­ ¾ÆÁ÷ ¼±ÅÃ ¾È µÊ
+        // ìƒˆ ë‹¨ê³„ì—ì„œëŠ” ì„ íƒ ê°’ ì´ˆê¸°í™”
         if (_selectedOptionIndices != null)
         {
             _selectedOptionIndices[_currentIndex] = -1;
@@ -267,16 +233,16 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     }
 
     // =============================
-    // ¿É¼Ç Å¬¸¯ & ÀçÀÛ¼º ¿¬Ãâ
+    // ì˜µì…˜ í´ë¦­ & ì¬ì‘ì„± ì‹œì‘
     // =============================
 
     /// <summary>
-    /// ¿É¼Ç ¹öÆ° OnClick¿¡¼­ index¸¦ ³Ñ°Ü È£Ãâ.
-    /// ex) Button(0) ¡æ OnClickOption(0)
+    /// ì˜µì…˜ ë²„íŠ¼ OnClickì—ì„œ indexë¥¼ ë„˜ê²¨ í˜¸ì¶œ.
+    /// ex) Button(0) -> OnClickOption(0)
     /// </summary>
     public void OnClickOption(int optionIndex)
     {
-        if (_isRewriting)
+        if (IsAnimating)
             return;
 
         var steps = Steps;
@@ -290,20 +256,26 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (step.Options == null || optionIndex < 0 || optionIndex >= step.Options.Length)
             return;
 
-        // ÀÌ¹Ì ¼±ÅÃµÈ »óÅÂ¸é ¹«½Ã
+        // ì´ë¯¸ ì„ íƒëœ ìƒíƒœë©´ ë¬´ì‹œ
         if (_selectedOptionIndices != null && _selectedOptionIndices[_currentIndex] != -1)
             return;
 
         _selectedOptionIndices[_currentIndex] = optionIndex;
 
-        // ¹öÆ° ºñÁÖ¾ó ¾÷µ¥ÀÌÆ®
+        // ë²„íŠ¼ ë¹„ì£¼ì–¼ ì—…ë°ì´íŠ¸
         ApplyOptionSelectionVisual(optionIndex);
 
-        // ÀçÀÛ¼º ¿¬Ãâ ½ÃÀÛ
-        if (_rewriteRoutine != null)
-            StopCoroutine(_rewriteRoutine);
-
-        _rewriteRoutine = StartCoroutine(RewriteSentenceCoroutine());
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ì— ì¬ì‘ì„± ì• ë‹ˆë©”ì´ì…˜ ìš”ì²­
+        var effectController = EffectController;
+        if (effectController != null)
+        {
+            effectController.PlayRewriteSequence(step.RewrittenText, OnRewriteComplete);
+        }
+        else
+        {
+            // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ ì—†ìœ¼ë©´ ë°”ë¡œ ì™„ë£Œ ì²˜ë¦¬
+            OnRewriteComplete();
+        }
     }
 
     private void ApplyOptionSelectionVisual(int selectedIndex)
@@ -329,7 +301,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
             bool isSelected = (i == selectedIndex);
 
-            // ÇÑ ¹ø ¼±ÅÃÇÏ¸é ´Ù½Ã ¸ø ´©¸£°Ô ÇÏ±â À§ÇØ ÀüºÎ ºñÈ°¼ºÈ­
+            // í•œ ë²ˆ ì„ íƒí•˜ë©´ ë‹¤ì‹œ ëª» ëˆ„ë¥´ë„ë¡ ì „ë¶€ ë¹„í™œì„±í™”
             btn.interactable = false;
 
             var g = btn.targetGraphic;
@@ -343,88 +315,29 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         }
     }
 
-    private IEnumerator RewriteSentenceCoroutine()
+    /// <summary>
+    /// ì¬ì‘ì„± ì• ë‹ˆë©”ì´ì…˜ ì™„ë£Œ ì½œë°±
+    /// </summary>
+    private void OnRewriteComplete()
     {
-        _isRewriting = true;
-
-        // 1) ¾à°£ ´ë±â (React¿¡¼­ 500ms Á¤µµ)
-        if (PenAnimDelay > 0f)
-            yield return new WaitForSeconds(PenAnimDelay);
-
-        // 2) Ææ ¾ÆÀÌÄÜ ÄÑ±â (ÀÖ´Ù¸é)
-        var pen = PenIcon;
-        if (pen != null)
-            pen.gameObject.SetActive(true);
-
-        // 3) ±âÁ¸ ¹®Àå ÆäÀÌµå ¾Æ¿ô
-        var canvasGroup = SentenceCanvasGroup;
-        if (canvasGroup != null && FadeOutDuration > 0f)
-        {
-            float t = 0f;
-            while (t < FadeOutDuration)
-            {
-                t += Time.deltaTime;
-                float lerp = Mathf.Clamp01(t / FadeOutDuration);
-                canvasGroup.alpha = 1f - lerp;
-                yield return null;
-            }
-            canvasGroup.alpha = 0f;
-        }
-        else
-        {
-            yield return null;
-        }
-
-        // 4) ÅØ½ºÆ®¸¦ ÀçÇØ¼® ¹öÀüÀ¸·Î ±³Ã¼
-        var steps = Steps;
-        var step = steps[_currentIndex];
-
-        if (SentenceText != null)
-        {
-            SentenceText.text = step.RewrittenText;
-            SentenceText.color = RewrittenTextColor;
-        }
-
-        // 5) ÆäÀÌµå ÀÎ
-        canvasGroup = SentenceCanvasGroup;
-        if (canvasGroup != null && FadeInDuration > 0f)
-        {
-            float t2 = 0f;
-            while (t2 < FadeInDuration)
-            {
-                t2 += Time.deltaTime;
-                float lerp2 = Mathf.Clamp01(t2 / FadeInDuration);
-                canvasGroup.alpha = lerp2;
-                yield return null;
-            }
-            canvasGroup.alpha = 1f;
-        }
-
-        // 6) Ææ ¾ÆÀÌÄÜ ²ô±â
-        pen = PenIcon;
-        if (pen != null)
-            pen.gameObject.SetActive(false);
-
-        _isRewriting = false;
-
-        // ÀÌ step ¿Ï·á ÇÃ·¡±×
+        // í˜„ì¬ step ì™„ë£Œ í”Œë˜ê·¸
         if (_stepCompleted != null && _currentIndex >= 0 && _currentIndex < _stepCompleted.Length)
             _stepCompleted[_currentIndex] = true;
 
-        // ´ÙÀ½ ¹öÆ° Ç¥½Ã °»½Å
+        // ë‹¤ìŒ ë²„íŠ¼ í‘œì‹œ ê°±ì‹ 
         UpdateNextButton();
     }
 
     // =============================
-    // ´ÙÀ½/¿Ï·á ¹öÆ°
+    // ë‹¤ìŒ/ì™„ë£Œ ë²„íŠ¼
     // =============================
 
     /// <summary>
-    /// ÇÏ´Ü "´ÙÀ½ Àå¸é" / "°­Á¡ Ã£±â ´Ü°è·Î" ¹öÆ°¿¡¼­ È£Ãâ.
+    /// í•˜ë‹¨ "ë‹¤ìŒ ì¥ë©´" / "ê°•ì  ì°¾ê¸° ë‹¨ê³„ë¡œ" ë²„íŠ¼ì—ì„œ í˜¸ì¶œ.
     /// </summary>
     public void OnClickNextOrComplete()
     {
-        if (_isRewriting)
+        if (IsAnimating)
             return;
 
         var steps = Steps;
@@ -436,7 +349,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
             _currentIndex >= _stepCompleted.Length ||
             !_stepCompleted[_currentIndex])
         {
-            Debug.Log("[Problem3_Step2] ¾ÆÁ÷ ÀÌ ´Ü°èÀÇ ÀçÇØ¼®ÀÌ ¿Ï·áµÇÁö ¾ÊÀ½");
+            Debug.Log("[Problem3_Step2] í˜„ì¬ ì´ ë‹¨ê³„ì˜ ì¬ì‘ì„±ì´ ì™„ë£Œë˜ì§€ ì•ŠìŒ");
             return;
         }
 
@@ -444,16 +357,15 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
         if (!isLast)
         {
-            // ´ÙÀ½ ³»ºÎ step À¸·Î
+            // ë‹¤ìŒ ë‚´ë¶€ step ì´ë™
             _currentIndex++;
-            _isRewriting = false;
 
-            // »õ step UI ¼¼ÆÃ
+            // ìƒˆ step UI ê°±ì‹ 
             RefreshAllUI();
         }
         else
         {
-            // ÀüÃ¼ step(3´Ü°è) ¿Ï·á ¡æ Attempt ÀúÀå + Gate ¿Ï·á
+            // ì „ì²´ step(3ë‹¨ê³„) ì™„ë£Œ ì‹œ Attempt ì €ì¥ + Gate ì™„ë£Œ
             SaveRewriteLogToDb();
 
             if (CompletionGate != null)
@@ -464,7 +376,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     }
 
     // =============================
-    // DB ÀúÀå (Attempt)
+    // DB ì €ì¥ (Attempt)
     // =============================
 
     private void SaveRewriteLogToDb()
@@ -505,8 +417,8 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
             steps = logs
         };
 
-        // ProblemStepBase ¿¡¼­ DBGateway + UserDataService ¸¦ ÅëÇØ ÀúÀå
+        // ProblemStepBase ì—ì„œ DBGateway + UserDataService ë¥¼ í†µí•´ ì €ì¥
         SaveAttempt(body);
-        Debug.Log("[Problem3_Step2] SaveRewriteLogToDb È£Ãâ ¿Ï·á");
+        Debug.Log("[Problem3_Step2] SaveRewriteLogToDb í˜¸ì¶œ ì™„ë£Œ");
     }
 }

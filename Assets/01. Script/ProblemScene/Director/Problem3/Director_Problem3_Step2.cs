@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem3 / Step2
-/// - ÀÎ½ºÆåÅÍ¿¡¼­ µ¥ÀÌÅÍ/UI¸¸ ¼³Á¤.
-/// - ½ÇÁúÀûÀÎ ·ÎÁ÷Àº Director_Problem3_Step2_Logic(ºÎ¸ð)¿¡ ÀÖÀ½.
+/// - ì¸ìŠ¤íŽ™í„°ì—ì„œ ë°ì´í„°/UIë¥¼ ë°”ì¸ë”©.
+/// - ì‹¤ì œ ë¡œì§ì€ Director_Problem3_Step2_Logic(ë¶€ëª¨)ì—ì„œ ì²˜ë¦¬.
 /// </summary>
 public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
 {
@@ -29,58 +29,41 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
         string[] IRewriteStepData.Options => options;
     }
 
-    [Header("ÀçÇØ¼® ´Ü°è µ¥ÀÌÅÍ")]
+    [Header("ìž¬ìž‘ì„± ë‹¨ê³„ ë°ì´í„°")]
     [SerializeField] private RewriteStepData[] steps;
 
-    [Header("¹®Àå UI")]
-    [SerializeField] private Text sentenceText;
-    [SerializeField] private Color originalTextColor = new Color(0.24f, 0.18f, 0.14f);
-    [SerializeField] private Color rewrittenTextColor = new Color(1f, 0.54f, 0.24f);
-    [SerializeField] private CanvasGroup sentenceCanvasGroup;   // ¼±ÅÃ
+    [Header("ì´íŽ™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬")]
+    [SerializeField] private Problem3_Step2_EffectController effectController;
 
-    [Header("Ææ ¾ÆÀÌÄÜ ¿¬Ãâ (¿É¼Ç)")]
-    [SerializeField] private RectTransform penIcon;
-    [SerializeField] private float penAnimDelay = 0.5f;
-    [SerializeField] private float fadeOutDuration = 0.15f;
-    [SerializeField] private float fadeInDuration = 0.25f;
-
-    [Header("¿É¼Ç ¹öÆ°µé (ÃÖ´ë N°³)")]
+    [Header("ì˜µì…˜ ë²„íŠ¼ë“¤ (ìµœëŒ€ Nê°œ)")]
     [SerializeField] private Button[] optionButtons;
     [SerializeField] private Text[] optionLabels;
 
-    [Header("¿É¼Ç »ö»ó")]
+    [Header("ì˜µì…˜ ìƒ‰ìƒ")]
     [SerializeField] private Color optionNormalColor = Color.white;
     [SerializeField] private Color optionSelectedColor = new Color(1f, 0.54f, 0.24f);
     [SerializeField] private Color optionDisabledColor = new Color(1f, 1f, 1f, 0.4f);
 
-    [Header("»ó´Ü ÁøÇàµµ Á¡µé (¿É¼Ç)")]
+    [Header("ìƒë‹¨ ì§„í–‰ë„ ì ë“¤ (ì˜µì…˜)")]
     [SerializeField] private Image[] progressDots;
     [SerializeField] private Color progressDoneColor = new Color(0.22f, 0.8f, 0.4f);
     [SerializeField] private Color progressCurrentColor = new Color(1f, 0.54f, 0.24f);
     [SerializeField] private Color progressPendingColor = new Color(1f, 1f, 1f, 0.2f);
 
-    [Header("ÇÏ´Ü ³×ºñ°ÔÀÌ¼Ç ¹öÆ°")]
-    [SerializeField] private GameObject nextButtonRoot;    // ÇÏ³ªÀÇ ¹öÆ° ·çÆ®
+    [Header("í•˜ë‹¨ ë„¤ë¹„ê²Œì´ì…˜ ë²„íŠ¼")]
+    [SerializeField] private GameObject nextButtonRoot;    // í•˜ë‚˜ì˜ ë²„íŠ¼ ë£¨íŠ¸
     [SerializeField] private Text nextButtonLabel;
-    [SerializeField] private string middleStepLabel = "´ÙÀ½ Àå¸é";
-    [SerializeField] private string lastStepLabel = "°­Á¡ Ã£±â ´Ü°è·Î";
+    [SerializeField] private string middleStepLabel = "ë‹¤ìŒ ìž¥ë©´";
+    [SerializeField] private string lastStepLabel = "ê°•ì  ì°¾ê¸° ë‹¨ê³„ë¡œ";
 
-    [Header("¿Ï·á °ÔÀÌÆ® (¿É¼Ç)")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸ (ì˜µì…˜)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // ==== º£ÀÌ½º¿¡ °ª ÁÖÀÔ¿ë override ÇÁ·ÎÆÛÆ¼ ====
+    // ==== ë² ì´ìŠ¤ë¡œ ê°’ ì „ë‹¬ì„ ìœ„í•œ override í”„ë¡œí¼í‹° ====
 
     protected override IRewriteStepData[] Steps => steps;
 
-    protected override Text SentenceText => sentenceText;
-    protected override Color OriginalTextColor => originalTextColor;
-    protected override Color RewrittenTextColor => rewrittenTextColor;
-    protected override CanvasGroup SentenceCanvasGroup => sentenceCanvasGroup;
-
-    protected override RectTransform PenIcon => penIcon;
-    protected override float PenAnimDelay => penAnimDelay;
-    protected override float FadeOutDuration => fadeOutDuration;
-    protected override float FadeInDuration => fadeInDuration;
+    protected override Problem3_Step2_EffectController EffectController => effectController;
 
     protected override Button[] OptionButtons => optionButtons;
     protected override Text[] OptionLabels => optionLabels;
