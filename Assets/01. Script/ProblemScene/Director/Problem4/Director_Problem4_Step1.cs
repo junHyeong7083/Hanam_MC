@@ -1,43 +1,103 @@
 // Director_Problem4_Step1.cs
 
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Director / Problem4 / Step1
-/// - ÀÎº¥Åä¸®¿¡¼­ 'ÆíÁı¿ë °¡À§'¸¦ µå·¡±×ÇØ¼­
-///   Èæ¹é ÇÊ¸§ À§·Î ¿Ã¸®´Â ´Ü°è.
-/// - °øÅë ·ÎÁ÷Àº InventoryDropTargetStepBase¿¡¼­ Ã³¸®.
+/// - ì¸ë²¤í† ë¦¬ì—ì„œ 'ê°€ìœ„' ë“œë˜ê·¸í•˜ì—¬ í•„ë¦„ì— ë“œë¡­í•˜ëŠ” ë‹¨ê³„
+/// - ì´í™íŠ¸ëŠ” EffectControllerì— ìœ„ì„
 /// </summary>
 public class Director_Problem4_Step1 : InventoryDropTargetStepBase
 {
-    [Header("ÇÊ¸§ µå·Ó Å¸°Ù")]
+    [Header("í•„ë¦„ ë“œë¡­ íƒ€ê²Ÿ")]
     [SerializeField] private RectTransform filmDropArea;
-    [SerializeField] private GameObject dropIndicatorRoot;
     [SerializeField] private float dropRadius = 200f;
 
-    [Header("ÇÊ¸§ È°¼ºÈ­ ¿¬Ãâ")]
-    [SerializeField] private RectTransform filmVisualRoot;
-    [SerializeField] private float activateScale = 1.05f;
-    [SerializeField] private float activateDuration = 0.6f;
-    [SerializeField] private float delayBeforeComplete = 1.5f;
-
-    [Header("¾È³» ÅØ½ºÆ® / ±âÅ¸ ·çÆ®")]
-    [SerializeField] private GameObject instructionRoot;
-
-    [Header("¿Ï·á °ÔÀÌÆ® (¿É¼Ç)")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸ (ì˜µì…˜)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // === º£ÀÌ½º¿¡ ³Ñ°ÜÁÙ ÇÁ·ÎÆÛÆ¼µé ===
+    [Header("ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬")]
+    [SerializeField] private Problem4_Step1_EffectController effectController;
+
+    [Header("ì™„ë£Œ í›„ ë”œë ˆì´")]
+    [SerializeField] private float delayBeforeComplete = 1.5f;
+
+    // === ë² ì´ìŠ¤ë¡œ ë„˜ê²¨ì¤„ í”„ë¡œí¼í‹°ë“¤ ===
     protected override RectTransform DropTargetRect => filmDropArea;
-    protected override GameObject DropIndicatorRoot => dropIndicatorRoot;
-    protected override RectTransform TargetVisualRoot => filmVisualRoot;
-    protected override GameObject InstructionRoot => instructionRoot;
+    protected override GameObject DropIndicatorRoot => null; // EffectControllerê°€ ê´€ë¦¬
+    protected override RectTransform TargetVisualRoot => null; // EffectControllerê°€ ê´€ë¦¬
+    protected override GameObject InstructionRoot => null; // EffectControllerê°€ ê´€ë¦¬
     protected override StepCompletionGate CompletionGate => completionGate;
 
     protected override float DropRadius => dropRadius;
-    protected override float ActivateScale => activateScale;
-    protected override float ActivateDuration => activateDuration;
+    protected override float ActivateScale => 1f; // ì‚¬ìš© ì•ˆ í•¨
+    protected override float ActivateDuration => 0f; // ì‚¬ìš© ì•ˆ í•¨
     protected override float DelayBeforeComplete => delayBeforeComplete;
 
-    // ÇÊ¿äÇÏ¸é OnStepEnterExtra, OnDropComplete µî¿¡ Ãß°¡ ·ÎÁ÷ ³ÖÀ¸¸é µÊ.
+    // ====== ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ ì‚¬ìš©í•˜ë„ë¡ Override ======
+
+    protected override void OnStepEnterExtra()
+    {
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ ë¦¬ì…‹
+        if (effectController != null)
+        {
+            effectController.ResetForNextStep();
+        }
+    }
+
+    protected override void OnInventoryDragBeginExtra(StepInventoryItem item, PointerEventData eventData)
+    {
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ë¡œ ë“œë¡­ ì¸ë””ì¼€ì´í„° í‘œì‹œ
+        if (effectController != null)
+        {
+            effectController.ShowDropIndicator();
+        }
+    }
+
+    protected override void OnDropSuccess(StepInventoryItem item, PointerEventData eventData)
+    {
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ë¡œ í™œì„±í™” ì‹œí€€ìŠ¤ ì‹œì‘
+        if (effectController != null)
+        {
+            effectController.HideDropIndicator();
+            effectController.PlayActivateSequence(OnActivateSequenceComplete);
+        }
+        else
+        {
+            // í´ë°±: ë² ì´ìŠ¤ í´ë˜ìŠ¤ ë¡œì§ ì‚¬ìš©
+            base.OnDropSuccess(item, eventData);
+        }
+    }
+
+    private void OnActivateSequenceComplete()
+    {
+        // ë”œë ˆì´ í›„ ì™„ë£Œ ì²˜ë¦¬
+        StartCoroutine(DelayedComplete());
+    }
+
+    private IEnumerator DelayedComplete()
+    {
+        if (delayBeforeComplete > 0f)
+            yield return new WaitForSeconds(delayBeforeComplete);
+
+        OnDropComplete();
+
+        var gate = CompletionGate;
+        if (gate != null)
+            gate.MarkOneDone();
+    }
+
+    protected override void OnStepExit()
+    {
+        base.OnStepExit();
+
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ ì •ë¦¬
+        if (effectController != null)
+        {
+            effectController.HideDropIndicator();
+            effectController.HideSparkle();
+        }
+    }
 }

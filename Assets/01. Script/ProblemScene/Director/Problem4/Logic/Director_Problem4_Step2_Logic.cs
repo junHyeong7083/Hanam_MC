@@ -11,6 +11,11 @@ public interface IFilmCutData
     bool IsThinking { get; }
 }
 
+/// <summary>
+/// Director / Problem4 / Step2 / Logic
+/// - í•„ë¦„ ì»· ë¶„ë¥˜ ë¡œì§ (ìƒê° vs ì‚¬ì‹¤)
+/// - ì• ë‹ˆë©”ì´ì…˜ì€ EffectControllerì— ìœ„ì„
+/// </summary>
 public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 {
     [Serializable]
@@ -19,15 +24,15 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         public string cutID;
         public string text;
         public bool isThinking;
-        public string finalStatus; // "active" / "deleted" / "passed" / "cutting"
+        public string finalStatus;
     }
 
     [Serializable]
     protected class CutActionLog
     {
-        public string cutID;     // ¾î¶² ÄÆ¿¡ ´ëÇÑ ¼±ÅÃÀÎÁö
-        public string action;    // "cut" ¶Ç´Â "pass"
-        public bool wasCorrect;  // ÀÌ ¼±ÅÃÀÌ Á¤´äÀÌ¾ú´ÂÁö
+        public string cutID;
+        public string action;
+        public bool wasCorrect;
     }
 
     [Serializable]
@@ -39,84 +44,51 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 
     protected enum CutStatus
     {
-        ACTIVE,   // ¾ÆÁ÷ Ã³¸® ¾ÈµÊ
-        CUTTING,  // Àß¶ó³»´Â Áß(¿¬Ãâ¿ë)
-        PASSED,   // Åë°úµÈ »ç½Ç ÄÆ
-        DELETED   // Àß¶ó³½ »ı°¢ ÄÆ
+        ACTIVE,
+        CUTTING,
+        PASSED,
+        DELETED
     }
 
     // ======================
-    // ÀÚ½Ä¿¡¼­ ÁÖÀÔÇÒ Ãß»ó ÇÁ·ÎÆÛÆ¼
+    // ìì‹ì—ì„œ ì œê³µí•  ì¶”ìƒ í”„ë¡œí¼í‹°
     // ======================
 
-    [Header("ÄÆ µ¥ÀÌÅÍ (ÀÚ½Ä ÁÖÀÔ)")]
+    [Header("ì»· ë°ì´í„° (ìì‹ ì œê³µ)")]
     protected abstract IFilmCutData[] FilmCuts { get; }
 
-    [Header("ÇÊ¸§ Ä«µå UI")]
-    protected abstract GameObject FilmCardRoot { get; }
+    [Header("í•„ë¦„ ì¹´ë“œ UI")]
     protected abstract Text FilmSentenceLabel { get; }
     protected abstract Text FilmIndexLabel { get; }
 
-    [Header("¿À·ù ¸Ş¼¼Áö UI")]
+    [Header("ì—ëŸ¬ ë©”ì„¸ì§€ UI")]
     protected abstract GameObject ErrorRoot { get; }
     protected abstract Text ErrorLabel { get; }
     protected abstract string DefaultErrorMessage { get; }
+    protected abstract float ErrorShowDuration { get; }
 
-    [Header("ÄÃ·¯ º¹¿ø ¿¬Ãâ¿ë UI")]
-    protected abstract GameObject ColorRestoreRoot { get; }
-    protected abstract GameObject BeforeColorRoot { get; }
-
-    [Header("ÇÏ´Ü ¹öÆ°")]
+    [Header("í•˜ë‹¨ ë²„íŠ¼")]
     protected abstract Button CutBtn { get; }
     protected abstract Button PassBtn { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸")]
     protected abstract StepCompletionGate StepCompletionGate { get; }
 
-    [Header("¿À·ù ¸Ş½ÃÁö À¯Áö ½Ã°£")]
-    protected abstract float ErrorShowDuration { get; }
-
-    [Header("Ä«µå À§Ä¡/µîÀå ¿¬Ãâ")]
-    protected abstract RectTransform FilmCardRect { get; }
-    protected abstract CanvasGroup FilmCardCanvasGroup { get; }
-    protected abstract RectTransform FilmAppearStart { get; }
-    protected abstract float AppearDuration { get; }
-
-    [Header("PASS ¿¬Ãâ (Åë°ú Ä«µå ÀÌµ¿ À§Ä¡)")]
-    protected abstract RectTransform PassTargetRect { get; }
-    protected abstract float PassMoveDuration { get; }
-
-    [Header("°¡À§ ¿¬Ãâ")]
-    protected abstract RectTransform ScissorsRect { get; }
-    protected abstract float ScissorsMoveDuration { get; }
-    protected abstract Vector2 ScissorsOffsetFromCard { get; }
-
-    [Header("ºĞÇÒ Ä«µå ¿¬Ãâ")]
-    protected abstract RectTransform CardLeftRect { get; }
-    protected abstract RectTransform CardRightRect { get; }
-    protected abstract CanvasGroup CardLeftCanvas { get; }
-    protected abstract CanvasGroup CardRightCanvas { get; }
-    protected abstract float SplitDuration { get; }
-    protected abstract float SplitHorizontalOffset { get; }
-    protected abstract float SplitFallDistance { get; }
-    protected abstract float SplitRotateAngle { get; }
+    [Header("ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬")]
+    protected abstract Problem4_Step2_EffectController EffectController { get; }
 
     // ======================
-    // ³»ºÎ »óÅÂ
+    // ë‚´ë¶€ ìƒíƒœ
     // ======================
 
     private CutStatus[] _status;
     private bool _isColorRestored;
     private bool _stepCompleted;
     private Coroutine _errorRoutine;
-
     private readonly List<CutActionLog> _actionLogs = new List<CutActionLog>();
 
-    private Vector2 _filmCardDefaultPos;
-    private bool _defaultPosInitialized;
-
     // =========================================
-    // ProblemStepBase ±¸Çö
+    // ProblemStepBase êµ¬í˜„
     // =========================================
 
     protected override void OnStepEnter()
@@ -124,9 +96,9 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         var cuts = FilmCuts;
         if (cuts == null || cuts.Length == 0)
         {
-            Debug.LogWarning("[Problem4_Step2] FilmCuts °¡ ºñ¾î ÀÖÀ½");
+            Debug.LogWarning("[Problem4_Step2] FilmCutsê°€ ë¹„ì–´ìˆìŒ");
             if (FilmSentenceLabel != null)
-                FilmSentenceLabel.text = "(¼³Á¤µÈ ÇÊ¸§ ÄÆÀÌ ¾ø½À´Ï´Ù)";
+                FilmSentenceLabel.text = "(ì„¤ì •ëœ í•„ë¦„ ì»·ì´ ì—†ìŠµë‹ˆë‹¤)";
             if (StepCompletionGate != null)
                 StepCompletionGate.ResetGate(1);
             return;
@@ -140,17 +112,17 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         _stepCompleted = false;
         _actionLogs.Clear();
 
-        var cardRect = FilmCardRect;
-
-        if (cardRect != null && !_defaultPosInitialized)
+        // ì´í™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬ ì´ˆê¸°í™”
+        var effect = EffectController;
+        if (effect != null)
         {
-            _filmCardDefaultPos = cardRect.anchoredPosition;
-            _defaultPosInitialized = true;
+            effect.SaveDefaultPosition();
+            effect.SetGrayscale();
+            effect.HideCompletionSparkle();
+            effect.ResetForNextCard();
         }
 
-        if (ColorRestoreRoot != null) ColorRestoreRoot.SetActive(false);
-        if (BeforeColorRoot != null) BeforeColorRoot.SetActive(true);
-
+        // ì—ëŸ¬ UI ìˆ¨ê¹€
         if (_errorRoutine != null)
         {
             StopCoroutine(_errorRoutine);
@@ -159,34 +131,22 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (ErrorRoot != null)
             ErrorRoot.SetActive(false);
 
+        // ë²„íŠ¼ í™œì„±í™”
         if (CutBtn != null) CutBtn.interactable = true;
         if (PassBtn != null) PassBtn.interactable = true;
 
+        // ì™„ë£Œ ê²Œì´íŠ¸ ë¦¬ì…‹
         if (StepCompletionGate != null)
             StepCompletionGate.ResetGate(1);
 
-        if (FilmCardRoot != null)
-            FilmCardRoot.SetActive(true);
-        if (FilmCardCanvasGroup != null)
-            FilmCardCanvasGroup.alpha = 1f;
-
-        if (CardLeftRect != null)
-            CardLeftRect.gameObject.SetActive(false);
-        if (CardRightRect != null)
-            CardRightRect.gameObject.SetActive(false);
-
-        if (CardLeftCanvas != null)
-            CardLeftCanvas.alpha = 0f;
-        if (CardRightCanvas != null)
-            CardRightCanvas.alpha = 0f;
-
-        if (ScissorsRect != null)
-            ScissorsRect.gameObject.SetActive(false);
-
+        // ì²« ì¹´ë“œ í‘œì‹œ
         RefreshCurrentCutUI();
 
-        if (FilmCardRect != null && FilmCardCanvasGroup != null)
-            StartCoroutine(PlayAppearAnimationForCurrentCard());
+        // ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜
+        if (effect != null)
+        {
+            effect.PlayAppearAnimation();
+        }
     }
 
     protected override void OnStepExit()
@@ -199,7 +159,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     }
 
     // =========================================
-    // ÇöÀç ÄÆ Ã£±â & UI °»½Å
+    // í˜„ì¬ ì»· ì°¾ê¸° & UI ê°±ì‹ 
     // =========================================
 
     private int GetCurrentActiveIndex()
@@ -240,27 +200,26 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (FilmIndexLabel != null)
             FilmIndexLabel.text = string.Format("{0} / {1}", idx + 1, cuts.Length);
 
-        if (FilmCardRoot != null)
-            FilmCardRoot.SetActive(true);
-
         if (ErrorRoot != null)
             ErrorRoot.SetActive(false);
     }
 
     // =========================================
-    // ¹öÆ° OnClick
+    // ë²„íŠ¼ OnClick
     // =========================================
 
     public void OnClickCut()
     {
         if (_stepCompleted) return;
 
+        var effect = EffectController;
+        if (effect != null && effect.IsAnimating) return;
+
         int idx = GetCurrentActiveIndex();
         var cuts = FilmCuts;
         if (cuts == null || idx == -1) return;
 
         var cut = cuts[idx];
-
         bool isCorrect = cut.IsThinking;
 
         _actionLogs.Add(new CutActionLog
@@ -273,11 +232,29 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (isCorrect)
         {
             _status[idx] = CutStatus.DELETED;
-            StartCoroutine(PlayCutAnimationAndProceed(idx));
+
+            // ë²„íŠ¼ ë¹„í™œì„±í™”
+            if (CutBtn != null) CutBtn.interactable = false;
+            if (PassBtn != null) PassBtn.interactable = false;
+
+            // ì»· ì• ë‹ˆë©”ì´ì…˜
+            if (effect != null)
+            {
+                effect.PlayCutAnimation(OnCutAnimationComplete);
+            }
+            else
+            {
+                OnCutAnimationComplete();
+            }
         }
         else
         {
-            ShowError("ÀÌ ¹®ÀåÀº '»ç½Ç'ÀÌ¿¡¿ä. Åë°ú½ÃÄÑ º¼±î¿ä?");
+            ShowError("ì´ ì¥ë©´ì€ 'ì‚¬ì‹¤'ì´ì—ìš”. ë³´ì¡´í•´ì•¼ í•˜ì§€ ì•Šì„ê¹Œìš”?");
+
+            if (effect != null)
+            {
+                effect.PlayErrorShake();
+            }
         }
     }
 
@@ -285,12 +262,14 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     {
         if (_stepCompleted) return;
 
+        var effect = EffectController;
+        if (effect != null && effect.IsAnimating) return;
+
         int idx = GetCurrentActiveIndex();
         var cuts = FilmCuts;
         if (cuts == null || idx == -1) return;
 
         var cut = cuts[idx];
-
         bool isCorrect = !cut.IsThinking;
 
         _actionLogs.Add(new CutActionLog
@@ -303,16 +282,76 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (isCorrect)
         {
             _status[idx] = CutStatus.PASSED;
-            StartCoroutine(PlayPassAnimationAndProceed(idx));
+
+            // ë²„íŠ¼ ë¹„í™œì„±í™”
+            if (CutBtn != null) CutBtn.interactable = false;
+            if (PassBtn != null) PassBtn.interactable = false;
+
+            // í†µê³¼ ì• ë‹ˆë©”ì´ì…˜
+            if (effect != null)
+            {
+                effect.PlayPassAnimation(OnPassAnimationComplete);
+            }
+            else
+            {
+                OnPassAnimationComplete();
+            }
         }
         else
         {
-            ShowError("ÀÌ ¹®ÀåÀº '³» »ı°¢' °°¾Æ¿ä. Àß¶ó³» º¼±î¿ä?");
+            ShowError("ì´ ì¥ë©´ì€ 'ë‚´ ìƒê°'ì´ì—ìš”. ì˜ë¼ì•¼ í•˜ì§€ ì•Šì„ê¹Œìš”?");
+
+            if (effect != null)
+            {
+                effect.PlayErrorShake();
+            }
         }
     }
 
     // =========================================
-    // ¿À·ù ¸Ş½ÃÁö
+    // ì• ë‹ˆë©”ì´ì…˜ ì™„ë£Œ ì½œë°±
+    // =========================================
+
+    private void OnCutAnimationComplete()
+    {
+        ProceedToNextCard();
+    }
+
+    private void OnPassAnimationComplete()
+    {
+        ProceedToNextCard();
+    }
+
+    private void ProceedToNextCard()
+    {
+        RefreshCurrentCutUI();
+
+        if (_stepCompleted)
+            return;
+
+        var effect = EffectController;
+
+        // ë‹¤ìŒ ì¹´ë“œ ì¤€ë¹„
+        if (effect != null)
+        {
+            effect.ResetForNextCard();
+            effect.PlayAppearAnimation(OnAppearComplete);
+        }
+        else
+        {
+            OnAppearComplete();
+        }
+    }
+
+    private void OnAppearComplete()
+    {
+        // ë²„íŠ¼ ë‹¤ì‹œ í™œì„±í™”
+        if (CutBtn != null) CutBtn.interactable = true;
+        if (PassBtn != null) PassBtn.interactable = true;
+    }
+
+    // =========================================
+    // ì—ëŸ¬ ë©”ì‹œì§€
     // =========================================
 
     private void ShowError(string msg)
@@ -344,7 +383,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     }
 
     // =========================================
-    // ¿Ï·á Á¶°Ç Ã¼Å© + ¸¶¹«¸®
+    // ì™„ë£Œ ìƒíƒœ ì²´í¬ + ìƒ‰ìƒë³µì›
     // =========================================
 
     private bool AllThinkingCutsDeleted()
@@ -399,266 +438,34 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         _stepCompleted = true;
         _isColorRestored = true;
 
-        if (BeforeColorRoot != null)
-            BeforeColorRoot.SetActive(false);
-        if (ColorRestoreRoot != null)
-            ColorRestoreRoot.SetActive(true);
-
+        // ë²„íŠ¼ ë¹„í™œì„±í™”
         if (CutBtn != null) CutBtn.interactable = false;
         if (PassBtn != null) PassBtn.interactable = false;
 
+        // ìƒ‰ìƒ ë³µì› ì• ë‹ˆë©”ì´ì…˜
+        var effect = EffectController;
+        if (effect != null)
+        {
+            effect.PlayColorRestoreAnimation(OnColorRestoreComplete);
+        }
+        else
+        {
+            OnColorRestoreComplete();
+        }
+
+        Debug.Log("[Problem4_Step2] í•„ë¦„ í¸ì§‘ ë¶„ë¥˜ ì™„ë£Œ");
+    }
+
+    private void OnColorRestoreComplete()
+    {
         SaveFilmEditingAttempt();
 
         if (StepCompletionGate != null)
             StepCompletionGate.MarkOneDone();
-
-        Debug.Log("[Problem4_Step2] ÇÊ¸§ ÆíÁı ½ºÅÜ ¿Ï·á");
     }
 
     // =========================================
-    // Ä«µå µîÀå ¿¬Ãâ
-    // =========================================
-
-    private IEnumerator PlayAppearAnimationForCurrentCard()
-    {
-        var cardRect = FilmCardRect;
-        var canvasGroup = FilmCardCanvasGroup;
-
-        if (cardRect == null || canvasGroup == null)
-            yield break;
-
-        int idx = GetCurrentActiveIndex();
-        if (idx == -1) yield break;
-
-        if (FilmCardRoot != null)
-            FilmCardRoot.SetActive(true);
-
-        if (FilmAppearStart != null)
-            cardRect.anchoredPosition = FilmAppearStart.anchoredPosition;
-        else
-            cardRect.anchoredPosition = _filmCardDefaultPos + new Vector2(-500f, 0f);
-
-        canvasGroup.alpha = 0f;
-
-        float t = 0f;
-        float dur = Mathf.Max(0.01f, AppearDuration);
-        while (t < 1f)
-        {
-            t += Time.deltaTime / dur;
-            float eased = t * t * (3f - 2f * t);
-
-            cardRect.anchoredPosition = Vector2.Lerp(
-                cardRect.anchoredPosition,
-                _filmCardDefaultPos,
-                eased
-            );
-
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, eased);
-
-            yield return null;
-        }
-
-        cardRect.anchoredPosition = _filmCardDefaultPos;
-        canvasGroup.alpha = 1f;
-    }
-
-    // =========================================
-    // CUT ¾Ö´Ï¸ŞÀÌ¼Ç
-    // =========================================
-
-    private IEnumerator PlayCutAnimationAndProceed(int cutIndex)
-    {
-        if (CutBtn != null) CutBtn.interactable = false;
-        if (PassBtn != null) PassBtn.interactable = false;
-
-        var scissorsRect = ScissorsRect;
-        var cardRect = FilmCardRect;
-
-        if (scissorsRect != null && cardRect != null)
-        {
-            scissorsRect.gameObject.SetActive(true);
-
-            Vector2 cardPos = cardRect.anchoredPosition;
-            Vector2 startPos = cardPos + ScissorsOffsetFromCard;
-            Vector2 endPos = cardPos;
-
-            scissorsRect.anchoredPosition = startPos;
-
-            float t = 0f;
-            float dur = Mathf.Max(0.01f, ScissorsMoveDuration);
-            while (t < 1f)
-            {
-                t += Time.deltaTime / dur;
-                float eased = t * t * (3f - 2f * t);
-
-                scissorsRect.anchoredPosition = Vector2.Lerp(startPos, endPos, eased);
-
-                yield return null;
-            }
-
-            scissorsRect.anchoredPosition = endPos;
-            yield return new WaitForSeconds(0.05f);
-        }
-
-        var cardLeftRect = CardLeftRect;
-        var cardRightRect = CardRightRect;
-        var cardLeftCanvas = CardLeftCanvas;
-        var cardRightCanvas = CardRightCanvas;
-        var filmCardRoot = FilmCardRoot;
-        var cardCanvasGroup = FilmCardCanvasGroup;
-
-        if (cardRect != null &&
-            cardLeftRect != null && cardRightRect != null &&
-            cardLeftCanvas != null && cardRightCanvas != null)
-        {
-            Vector2 center = cardRect.anchoredPosition;
-
-            if (filmCardRoot != null)
-                filmCardRoot.SetActive(false);
-
-            cardLeftRect.gameObject.SetActive(true);
-            cardRightRect.gameObject.SetActive(true);
-
-            cardLeftRect.anchoredPosition = center;
-            cardRightRect.anchoredPosition = center;
-
-            cardLeftRect.localRotation = Quaternion.identity;
-            cardRightRect.localRotation = Quaternion.identity;
-
-            cardLeftCanvas.alpha = 1f;
-            cardRightCanvas.alpha = 1f;
-
-            float t2 = 0f;
-            float dur2 = Mathf.Max(0.01f, SplitDuration);
-            while (t2 < 1f)
-            {
-                t2 += Time.deltaTime / dur2;
-                float eased = t2 * t2 * (3f - 2f * t2);
-                float alpha = 1f - eased;
-
-                Vector2 leftPos = center + new Vector2(-SplitHorizontalOffset * eased,
-                                                       -SplitFallDistance * eased);
-                Vector2 rightPos = center + new Vector2(SplitHorizontalOffset * eased,
-                                                        -SplitFallDistance * eased);
-
-                cardLeftRect.anchoredPosition = leftPos;
-                cardRightRect.anchoredPosition = rightPos;
-
-                cardLeftRect.localRotation = Quaternion.Euler(0f, 0f, -SplitRotateAngle * eased);
-                cardRightRect.localRotation = Quaternion.Euler(0f, 0f, SplitRotateAngle * eased);
-
-                cardLeftCanvas.alpha = alpha;
-                cardRightCanvas.alpha = alpha;
-
-                yield return null;
-            }
-
-            cardLeftCanvas.alpha = 0f;
-            cardRightCanvas.alpha = 0f;
-
-            cardLeftRect.gameObject.SetActive(false);
-            cardRightRect.gameObject.SetActive(false);
-        }
-        else
-        {
-            if (cardRect != null && cardCanvasGroup != null)
-            {
-                Vector2 start = cardRect.anchoredPosition;
-                Vector2 end = start + new Vector2(0f, -SplitFallDistance);
-
-                float t = 0f;
-                float dur = Mathf.Max(0.01f, SplitDuration);
-                while (t < 1f)
-                {
-                    t += Time.deltaTime / dur;
-                    float eased = t * t * (3f - 2f * t);
-
-                    cardRect.anchoredPosition = Vector2.Lerp(start, end, eased);
-                    cardCanvasGroup.alpha = 1f - eased;
-
-                    yield return null;
-                }
-            }
-        }
-
-        if (scissorsRect != null)
-            scissorsRect.gameObject.SetActive(false);
-
-        RefreshCurrentCutUI();
-
-        if (_stepCompleted)
-            yield break;
-
-        if (FilmCardRect != null && FilmCardCanvasGroup != null)
-        {
-            FilmCardRoot.SetActive(true);
-            FilmCardCanvasGroup.alpha = 0f;
-
-            yield return StartCoroutine(PlayAppearAnimationForCurrentCard());
-        }
-
-        if (CutBtn != null) CutBtn.interactable = true;
-        if (PassBtn != null) PassBtn.interactable = true;
-    }
-
-    // =========================================
-    // PASS ¾Ö´Ï¸ŞÀÌ¼Ç
-    // =========================================
-
-    private IEnumerator PlayPassAnimationAndProceed(int cutIndex)
-    {
-        if (CutBtn != null) CutBtn.interactable = false;
-        if (PassBtn != null) PassBtn.interactable = false;
-
-        var cardRect = FilmCardRect;
-        var cardCanvasGroup = FilmCardCanvasGroup;
-
-        if (cardRect != null && cardCanvasGroup != null)
-        {
-            Vector2 start = cardRect.anchoredPosition;
-            Vector2 end;
-
-            if (PassTargetRect != null)
-                end = PassTargetRect.anchoredPosition;
-            else
-                end = start + new Vector2(300f, 0f);
-
-            float t = 0f;
-            float dur = Mathf.Max(0.01f, PassMoveDuration);
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime / dur;
-                float eased = t * t * (3f - 2f * t);
-
-                cardRect.anchoredPosition = Vector2.Lerp(start, end, eased);
-                cardCanvasGroup.alpha = Mathf.Lerp(1f, 0f, eased);
-
-                yield return null;
-            }
-
-            cardCanvasGroup.alpha = 0f;
-        }
-
-        RefreshCurrentCutUI();
-
-        if (_stepCompleted)
-            yield break;
-
-        if (FilmCardRect != null && FilmCardCanvasGroup != null)
-        {
-            FilmCardRoot.SetActive(true);
-            FilmCardCanvasGroup.alpha = 0f;
-
-            yield return StartCoroutine(PlayAppearAnimationForCurrentCard());
-        }
-
-        if (CutBtn != null) CutBtn.interactable = true;
-        if (PassBtn != null) PassBtn.interactable = true;
-    }
-
-    // =========================================
-    // Attempt ÀúÀå
+    // Attempt ì €ì¥
     // =========================================
 
     private void SaveFilmEditingAttempt()

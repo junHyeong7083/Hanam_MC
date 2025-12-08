@@ -2,130 +2,219 @@ using UnityEngine;
 
 /// <summary>
 /// Problem3 Step2: Pen write animation
-/// - Moves from left to right simulating writing
-/// - Call Play() when rewriting starts
-/// - Auto-hides after animation completes
+/// - 대기 상태: originPos에서 알파 0.5~1 펄스
+/// - Play() 호출 시: startPoint -> endPoint로 이동
+/// - 완료 후 originPos로 복귀
 /// </summary>
 public class PenWriteAnimation : MonoBehaviour
 {
-    [Header("Animation Settings")]
-    [SerializeField] private float duration = 0.8f;
-    [SerializeField] private float startX = -100f;
-    [SerializeField] private float endX = 400f;
-    [SerializeField] private float yOffset = 100f;
+    [Header("===== 이동 경로 (RectTransform) =====")]
+    [SerializeField] private RectTransform startPoint;
+    [SerializeField] private RectTransform endPoint;
 
-    [Header("Rotation")]
+    [Header("===== 이동 애니메이션 =====")]
+    [SerializeField] private float moveDuration = 0.8f;
+
+    [Header("===== 회전 =====")]
     [SerializeField] private float startRotation = -10f;
     [SerializeField] private float endRotation = 0f;
 
-    [Header("Fade")]
-    [SerializeField] private bool enableFade = true;
-    [SerializeField] private float fadeInRatio = 0.2f;   // 0~0.2: fade in
-    [SerializeField] private float fadeOutStart = 0.8f;  // 0.8~1: fade out
+    [Header("===== 대기 상태 펄스 =====")]
+    [SerializeField] private float idleAlphaMin = 0.5f;
+    [SerializeField] private float idleAlphaMax = 1f;
+    [SerializeField] private float idlePulseSpeed = 2f;
 
-    [Header("Auto Play")]
-    [SerializeField] private bool playOnEnable = true;
+    [Header("===== 이동 중 페이드 =====")]
+    [SerializeField] private bool enableMoveFade = true;
+    [SerializeField] private float fadeInRatio = 0.2f;
+    [SerializeField] private float fadeOutStart = 0.8f;
 
-    // Internal
+    // 상태
+    private enum State { Idle, Playing }
+    private State _state = State.Idle;
+
+    // 내부
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
+    private Vector3 _originPos;  // 펜 아이콘의 원래 위치 (대기 시 위치)
     private float _elapsed;
-    private bool _isPlaying;
-    private Vector2 _originalPosition;
+    private float _idleTime;
+    private bool _initialized;
 
-    private void OnEnable()
+    private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
         _canvasGroup = GetComponent<CanvasGroup>();
 
         if (_canvasGroup == null)
             _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+    }
 
-        _originalPosition = _rectTransform.anchoredPosition;
+    private void OnEnable()
+    {
+        // 최초 Enable 시 현재 위치를 originPos로 저장
+        if (!_initialized && _rectTransform != null)
+        {
+            _originPos = _rectTransform.position;
+            _initialized = true;
+        }
 
-        if (playOnEnable)
-            Play();
-        else
-            ResetState();
+        // 대기 상태로 시작 (originPos에서)
+        _state = State.Idle;
+        _idleTime = 0f;
+
+        if (_rectTransform != null)
+        {
+            _rectTransform.position = _originPos;
+            _rectTransform.localRotation = Quaternion.Euler(0, 0, startRotation);
+        }
     }
 
     private void Update()
     {
-        if (!_isPlaying) return;
+        switch (_state)
+        {
+            case State.Idle:
+                UpdateIdle();
+                break;
 
+            case State.Playing:
+                UpdatePlaying();
+                break;
+        }
+    }
+
+    #region Idle State (originPos에서 알파 펄스)
+
+    private void UpdateIdle()
+    {
+        _idleTime += Time.deltaTime;
+
+        // 사인함수로 알파 펄스 (0.5 ~ 1)
+        float sin = Mathf.Sin(_idleTime * idlePulseSpeed * Mathf.PI);
+        float alpha = Mathf.Lerp(idleAlphaMin, idleAlphaMax, (sin + 1f) * 0.5f);
+
+        if (_canvasGroup != null)
+            _canvasGroup.alpha = alpha;
+    }
+
+    #endregion
+
+    #region Playing State (startPoint -> endPoint 이동)
+
+    private void UpdatePlaying()
+    {
         _elapsed += Time.deltaTime;
-        float t = Mathf.Clamp01(_elapsed / duration);
+        float t = Mathf.Clamp01(_elapsed / moveDuration);
 
-        // Position: left to right
-        float x = Mathf.Lerp(startX, endX, EaseOutQuad(t));
-        _rectTransform.anchoredPosition = new Vector2(x, yOffset);
+        // 위치: startPoint -> endPoint로 이동
+        if (startPoint != null && endPoint != null && _rectTransform != null)
+        {
+            Vector3 startPos = startPoint.position;
+            Vector3 endPos = endPoint.position;
+            _rectTransform.position = Vector3.Lerp(startPos, endPos, EaseOutQuad(t));
+        }
 
-        // Rotation: slight tilt to straight
-        float rot = Mathf.Lerp(startRotation, endRotation, t);
-        _rectTransform.localRotation = Quaternion.Euler(0, 0, rot);
+        // 회전
+        if (_rectTransform != null)
+        {
+            float rot = Mathf.Lerp(startRotation, endRotation, t);
+            _rectTransform.localRotation = Quaternion.Euler(0, 0, rot);
+        }
 
-        // Alpha: fade in -> hold -> fade out
-        if (enableFade && _canvasGroup != null)
+        // 알파: 페이드인 -> 유지 -> 페이드아웃
+        if (enableMoveFade && _canvasGroup != null)
         {
             float alpha;
             if (t < fadeInRatio)
             {
-                // Fade in
                 alpha = t / fadeInRatio;
             }
             else if (t < fadeOutStart)
             {
-                // Hold
                 alpha = 1f;
             }
             else
             {
-                // Fade out
                 alpha = 1f - ((t - fadeOutStart) / (1f - fadeOutStart));
             }
             _canvasGroup.alpha = alpha;
         }
 
-        // Complete
+        // 완료 -> originPos로 복귀, 대기 상태로
         if (t >= 1f)
         {
-            _isPlaying = false;
-            gameObject.SetActive(false);
+            _state = State.Idle;
+            _idleTime = 0f;
+
+            // originPos로 복귀
+            if (_rectTransform != null)
+            {
+                _rectTransform.position = _originPos;
+                _rectTransform.localRotation = Quaternion.Euler(0, 0, startRotation);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Public API
+
+    /// <summary>
+    /// 이동 애니메이션 시작 (startPoint -> endPoint)
+    /// </summary>
+    public void Play()
+    {
+        _state = State.Playing;
+        _elapsed = 0f;
+
+        // startPoint 위치로 이동
+        if (startPoint != null && _rectTransform != null)
+        {
+            _rectTransform.position = startPoint.position;
+        }
+
+        // 초기 회전
+        if (_rectTransform != null)
+        {
+            _rectTransform.localRotation = Quaternion.Euler(0, 0, startRotation);
+        }
+
+        // 초기 알파
+        if (_canvasGroup != null)
+            _canvasGroup.alpha = 0f;
+    }
+
+    /// <summary>
+    /// 즉시 정지, originPos로 복귀
+    /// </summary>
+    public void Stop()
+    {
+        _state = State.Idle;
+        _idleTime = 0f;
+
+        if (_rectTransform != null)
+        {
+            _rectTransform.position = _originPos;
         }
     }
 
     /// <summary>
-    /// Start pen write animation
+    /// 대기 상태로 리셋
     /// </summary>
-    public void Play()
+    public void ResetToIdle()
     {
-        gameObject.SetActive(true);
-        _elapsed = 0f;
-        _isPlaying = true;
+        _state = State.Idle;
+        _idleTime = 0f;
 
-        // Initial state
-        _rectTransform.anchoredPosition = new Vector2(startX, yOffset);
-        _rectTransform.localRotation = Quaternion.Euler(0, 0, startRotation);
-
-        if (_canvasGroup != null)
-            _canvasGroup.alpha = 0f;
+        if (_rectTransform != null)
+        {
+            _rectTransform.position = _originPos;
+            _rectTransform.localRotation = Quaternion.Euler(0, 0, startRotation);
+        }
     }
 
-    /// <summary>
-    /// Stop and hide immediately
-    /// </summary>
-    public void Stop()
-    {
-        _isPlaying = false;
-        gameObject.SetActive(false);
-    }
-
-    private void ResetState()
-    {
-        _isPlaying = false;
-        if (_canvasGroup != null)
-            _canvasGroup.alpha = 0f;
-    }
+    #endregion
 
     private float EaseOutQuad(float t) => 1f - (1f - t) * (1f - t);
 }

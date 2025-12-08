@@ -1,8 +1,12 @@
-﻿using DA_Assets.UI;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Director / Problem4 / Step2
+/// - 필름 컷 분류 (생각 vs 사실)
+/// - 애니메이션은 EffectController에 위임
+/// </summary>
 public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
 {
     [Serializable]
@@ -27,7 +31,6 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     [SerializeField] private FilmCutData[] filmCuts;
 
     [Header("필름 카드 UI")]
-    [SerializeField] private GameObject filmCardRoot;
     [SerializeField] private Text filmSentenceLabel;
     [SerializeField] private Text filmIndexLabel;
 
@@ -35,10 +38,7 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     [SerializeField] private GameObject errorRoot;
     [SerializeField] private Text errorLabel;
     [SerializeField] private string defaultErrorMessage = "다시 생각해보세요!";
-
-    [Header("컬러 복원 연출용 UI")]
-    [SerializeField] private GameObject colorRestoreRoot;
-    [SerializeField] private GameObject beforeColorRoot;
+    [SerializeField] private float errorShowDuration = 1f;
 
     [Header("하단 버튼")]
     [SerializeField] private Button cutBtn;
@@ -47,74 +47,25 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate stepCompletionGate;
 
-    [Header("오류 메시지 유지 시간")]
-    [SerializeField] private float errorShowDuration = 1f;
-
-    [Header("카드 위치/등장 연출")]
-    [SerializeField] private RectTransform filmCardRect;
-    [SerializeField] private CanvasGroup filmCardCanvasGroup;
-    [SerializeField] private RectTransform filmAppearStart;
-    [SerializeField] private float appearDuration = 0.4f;
-
-    [Header("PASS 연출 (통과 카드 이동 위치)")]
-    [SerializeField] private RectTransform passTargetRect;
-    [SerializeField] private float passMoveDuration = 0.5f;
-
-    [Header("가위 연출")]
-    [SerializeField] private RectTransform scissorsRect;
-    [SerializeField] private float scissorsMoveDuration = 0.4f;
-    [SerializeField] private Vector2 scissorsOffsetFromCard = new Vector2(0f, 150f);
-
-    [Header("분할 카드 연출")]
-    [SerializeField] private RectTransform cardLeftRect;
-    [SerializeField] private RectTransform cardRightRect;
-    [SerializeField] private CanvasGroup cardLeftCanvas;
-    [SerializeField] private CanvasGroup cardRightCanvas;
-    [SerializeField] private float splitDuration = 0.6f;
-    [SerializeField] private float splitHorizontalOffset = 120f;
-    [SerializeField] private float splitFallDistance = 200f;
-    [SerializeField] private float splitRotateAngle = 18f;
+    [Header("이펙트 컨트롤러")]
+    [SerializeField] private Problem4_Step2_EffectController effectController;
 
     // ====== 베이스 주입용 override 프로퍼티 ======
 
     protected override IFilmCutData[] FilmCuts => filmCuts;
 
-    protected override GameObject FilmCardRoot => filmCardRoot;
     protected override Text FilmSentenceLabel => filmSentenceLabel;
     protected override Text FilmIndexLabel => filmIndexLabel;
 
     protected override GameObject ErrorRoot => errorRoot;
     protected override Text ErrorLabel => errorLabel;
     protected override string DefaultErrorMessage => defaultErrorMessage;
-
-    protected override GameObject ColorRestoreRoot => colorRestoreRoot;
-    protected override GameObject BeforeColorRoot => beforeColorRoot;
+    protected override float ErrorShowDuration => errorShowDuration;
 
     protected override Button CutBtn => cutBtn;
     protected override Button PassBtn => passBtn;
 
     protected override StepCompletionGate StepCompletionGate => stepCompletionGate;
 
-    protected override float ErrorShowDuration => errorShowDuration;
-
-    protected override RectTransform FilmCardRect => filmCardRect;
-    protected override CanvasGroup FilmCardCanvasGroup => filmCardCanvasGroup;
-    protected override RectTransform FilmAppearStart => filmAppearStart;
-    protected override float AppearDuration => appearDuration;
-
-    protected override RectTransform PassTargetRect => passTargetRect;
-    protected override float PassMoveDuration => passMoveDuration;
-
-    protected override RectTransform ScissorsRect => scissorsRect;
-    protected override float ScissorsMoveDuration => scissorsMoveDuration;
-    protected override Vector2 ScissorsOffsetFromCard => scissorsOffsetFromCard;
-
-    protected override RectTransform CardLeftRect => cardLeftRect;
-    protected override RectTransform CardRightRect => cardRightRect;
-    protected override CanvasGroup CardLeftCanvas => cardLeftCanvas;
-    protected override CanvasGroup CardRightCanvas => cardRightCanvas;
-    protected override float SplitDuration => splitDuration;
-    protected override float SplitHorizontalOffset => splitHorizontalOffset;
-    protected override float SplitFallDistance => splitFallDistance;
-    protected override float SplitRotateAngle => splitRotateAngle;
+    protected override Problem4_Step2_EffectController EffectController => effectController;
 }

@@ -6,7 +6,13 @@ using UnityEngine.UI;
 /// Problem3 Step2: Effect Controller
 /// - 로직에서 이벤트를 받아 이펙트 시퀀스를 관리
 /// - 펜 애니메이션, 텍스트 페이드, 스파클 등 타이밍 조율
-/// - 로직과 애니메이션 분리를 위한 중앙 관리자
+///
+/// 흐름:
+/// 1. 대기: 펜 originPos에서 알파 펄스
+/// 2. 버튼 선택 → PlayRewriteSequence() 호출
+/// 3. 딜레이 후 펜 이동 시작 (startPoint → endPoint)
+/// 4. 펜 이동 완료 → 펜 숨김, 스파클 표시, 텍스트 페이드인
+/// 5. 다음 문항 → 스파클 숨김, 펜 표시 + originPos
 /// </summary>
 public class Problem3_Step2_EffectController : MonoBehaviour
 {
@@ -19,7 +25,8 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     [SerializeField] private CompletionSparkle completionSparkle;
 
     [Header("===== 타이밍 설정 =====")]
-    [SerializeField] private float optionSelectDelay = 0.5f;   // 옵션 선택 후 딜레이
+    [SerializeField] private float optionSelectDelay = 0.5f;
+    [SerializeField] private float penMoveDuration = 0.8f;  // PenWriteAnimation의 moveDuration과 맞춰야 함
     [SerializeField] private float fadeOutDuration = 0.15f;
     [SerializeField] private float fadeInDuration = 0.25f;
 
@@ -38,13 +45,10 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     {
         Idle,
         Delay,
-        FadeOut,
-        FadeIn
+        PenMoving,      // 펜 이동 + 텍스트 페이드아웃
+        ShowSparkle,    // 펜 숨김 + 스파클 표시 + 텍스트 페이드인
     }
 
-    /// <summary>
-    /// 현재 애니메이션 중인지 여부
-    /// </summary>
     public bool IsAnimating => _isAnimating;
 
     private void Update()
@@ -59,12 +63,12 @@ public class Problem3_Step2_EffectController : MonoBehaviour
                 ProcessDelayPhase();
                 break;
 
-            case RewritePhase.FadeOut:
-                ProcessFadeOutPhase();
+            case RewritePhase.PenMoving:
+                ProcessPenMovingPhase();
                 break;
 
-            case RewritePhase.FadeIn:
-                ProcessFadeInPhase();
+            case RewritePhase.ShowSparkle:
+                ProcessShowSparklePhase();
                 break;
         }
     }
@@ -74,8 +78,6 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     /// <summary>
     /// 재작성 애니메이션 시퀀스 시작
     /// </summary>
-    /// <param name="rewrittenText">변경될 텍스트</param>
-    /// <param name="onComplete">완료 콜백</param>
     public void PlayRewriteSequence(string rewrittenText, Action onComplete = null)
     {
         if (_isAnimating) return;
@@ -106,9 +108,19 @@ public class Problem3_Step2_EffectController : MonoBehaviour
         if (sentenceCanvasGroup != null)
             sentenceCanvasGroup.alpha = 1f;
 
-        // 스파클 리셋
+        // 스파클 숨김
         if (completionSparkle != null)
+        {
             completionSparkle.ResetTrigger();
+            completionSparkle.gameObject.SetActive(false);
+        }
+
+        // 펜 다시 표시 + 대기 상태로
+        if (penWriteAnimation != null)
+        {
+            penWriteAnimation.gameObject.SetActive(true);
+            penWriteAnimation.ResetToIdle();
+        }
     }
 
     /// <summary>
@@ -124,6 +136,18 @@ public class Problem3_Step2_EffectController : MonoBehaviour
 
         if (sentenceCanvasGroup != null)
             sentenceCanvasGroup.alpha = 1f;
+
+        // 펜 표시, 스파클 숨김
+        if (penWriteAnimation != null)
+        {
+            penWriteAnimation.gameObject.SetActive(true);
+            penWriteAnimation.ResetToIdle();
+        }
+
+        if (completionSparkle != null)
+        {
+            completionSparkle.gameObject.SetActive(false);
+        }
     }
 
     #endregion
@@ -134,49 +158,62 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     {
         if (_elapsed >= optionSelectDelay)
         {
-            // 펜 애니메이션 시작
+            // 펜 이동 애니메이션 시작
             if (penWriteAnimation != null)
                 penWriteAnimation.Play();
 
-            // 페이드아웃 시작
-            _phase = RewritePhase.FadeOut;
+            _phase = RewritePhase.PenMoving;
             _elapsed = 0f;
         }
     }
 
-    private void ProcessFadeOutPhase()
+    private void ProcessPenMovingPhase()
     {
-        float t = Mathf.Clamp01(_elapsed / fadeOutDuration);
-
-        if (sentenceCanvasGroup != null)
-            sentenceCanvasGroup.alpha = 1f - t;
-
-        if (t >= 1f)
+        // 펜 이동 중에 텍스트 페이드아웃 (펜 이동의 앞부분에서)
+        float fadeOutT = Mathf.Clamp01(_elapsed / fadeOutDuration);
+        if (sentenceCanvasGroup != null && fadeOutT <= 1f)
         {
-            // 페이드아웃 완료 - 텍스트 교체
-            if (sentenceCanvasGroup != null)
-                sentenceCanvasGroup.alpha = 0f;
+            sentenceCanvasGroup.alpha = 1f - fadeOutT;
+        }
 
+        // 펜 이동 완료 시점
+        if (_elapsed >= penMoveDuration)
+        {
+            // 펜 숨김
+            if (penWriteAnimation != null)
+                penWriteAnimation.gameObject.SetActive(false);
+
+            // 텍스트 교체
             if (sentenceText != null)
             {
                 sentenceText.text = _pendingRewrittenText;
                 sentenceText.color = rewrittenTextColor;
             }
 
-            // 페이드인 시작
-            _phase = RewritePhase.FadeIn;
+            if (sentenceCanvasGroup != null)
+                sentenceCanvasGroup.alpha = 0f;
+
+            // 스파클 표시
+            if (completionSparkle != null)
+            {
+                completionSparkle.gameObject.SetActive(true);
+                completionSparkle.Show();
+            }
+
+            _phase = RewritePhase.ShowSparkle;
             _elapsed = 0f;
         }
     }
 
-    private void ProcessFadeInPhase()
+    private void ProcessShowSparklePhase()
     {
-        float t = Mathf.Clamp01(_elapsed / fadeInDuration);
+        // 텍스트 페이드인
+        float fadeInT = Mathf.Clamp01(_elapsed / fadeInDuration);
 
         if (sentenceCanvasGroup != null)
-            sentenceCanvasGroup.alpha = t;
+            sentenceCanvasGroup.alpha = fadeInT;
 
-        if (t >= 1f)
+        if (fadeInT >= 1f)
         {
             // 완료
             if (sentenceCanvasGroup != null)
@@ -185,19 +222,11 @@ public class Problem3_Step2_EffectController : MonoBehaviour
             _isAnimating = false;
             _phase = RewritePhase.Idle;
 
-            // 스파클은 CanvasGroup 알파 감지로 자동 실행됨 (CompletionSparkle)
-
             // 콜백 호출
             _onCompleteCallback?.Invoke();
             _onCompleteCallback = null;
         }
     }
-
-    #endregion
-
-    #region Easing (필요시 사용)
-
-    private float EaseOutQuad(float t) => 1f - (1f - t) * (1f - t);
 
     #endregion
 }
