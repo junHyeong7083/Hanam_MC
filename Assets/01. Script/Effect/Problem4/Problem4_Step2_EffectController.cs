@@ -32,7 +32,7 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     [Header("===== 가위 애니메이션 =====")]
     [SerializeField] private RectTransform scissorsRect;
     [SerializeField] private float scissorsMoveDuration = 0.3f;
-    [SerializeField] private Vector2 scissorsOffset = new Vector2(-150f, 0f);
+    [SerializeField] private Vector2 scissorsOffset = new Vector2(0f, -150f);  // 아래에서 위로
 
     [Header("===== 카드 분리 (컷) =====")]
     [SerializeField] private RectTransform cardLeftRect;

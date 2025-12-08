@@ -142,7 +142,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         // 첫 카드 표시
         RefreshCurrentCutUI();
 
-        // 등장 애니메이션
+        // 등장 애니메이션 (버튼은 이미 활성화됨)
         if (effect != null)
         {
             effect.PlayAppearAnimation();
@@ -212,14 +212,12 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     {
         if (_stepCompleted) return;
 
-        var effect = EffectController;
-        if (effect != null && effect.IsAnimating) return;
-
         int idx = GetCurrentActiveIndex();
         var cuts = FilmCuts;
         if (cuts == null || idx == -1) return;
 
         var cut = cuts[idx];
+        var effect = EffectController;
         bool isCorrect = cut.IsThinking;
 
         _actionLogs.Add(new CutActionLog
@@ -262,14 +260,12 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     {
         if (_stepCompleted) return;
 
-        var effect = EffectController;
-        if (effect != null && effect.IsAnimating) return;
-
         int idx = GetCurrentActiveIndex();
         var cuts = FilmCuts;
         if (cuts == null || idx == -1) return;
 
         var cut = cuts[idx];
+        var effect = EffectController;
         bool isCorrect = !cut.IsThinking;
 
         _actionLogs.Add(new CutActionLog
@@ -335,12 +331,12 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (effect != null)
         {
             effect.ResetForNextCard();
-            effect.PlayAppearAnimation(OnAppearComplete);
+            effect.PlayAppearAnimation();
         }
-        else
-        {
-            OnAppearComplete();
-        }
+
+        // 버튼 바로 활성화 (애니메이션 콜백에 의존하지 않음)
+        if (CutBtn != null) CutBtn.interactable = true;
+        if (PassBtn != null) PassBtn.interactable = true;
     }
 
     private void OnAppearComplete()
