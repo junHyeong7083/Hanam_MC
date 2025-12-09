@@ -29,6 +29,7 @@ public class Director_Problem5_Step2 : Director_Problem5_Step2_Logic
         public Text iconLabel;              // 아이콘 아래 라벨 Text
         public GameObject unrevealedRoot;   // 아직 클릭 안 한 상태의 비주얼
         public GameObject revealedRoot;     // 클릭 완료 후 비주얼
+        public GameObject glowImage;        // 글로우 이미지 (revealed 시 비활성화)
 
         [Header("줌 아웃 장면 설정")]
         [Tooltip("줌 아웃 화면에 보여줄 이모지들 (예: 😤, 💻, 📊)")]
@@ -49,6 +50,7 @@ public class Director_Problem5_Step2 : Director_Problem5_Step2_Logic
         public Text IconLabel => iconLabel;
         public GameObject UnrevealedRoot => unrevealedRoot;
         public GameObject RevealedRoot => revealedRoot;
+        public GameObject GlowImage => glowImage;
     }
 
     [Header("장면 데이터들 (씬에서 아이콘 1:1 대응)")]

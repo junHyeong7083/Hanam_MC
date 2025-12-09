@@ -3,10 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Director / Problem5 / Step2 ·ÎÁ÷ º£ÀÌ½º.
-/// - ¿©·¯ ¿ÀÇØ Àå¸é ¾ÆÀÌÄÜÀ» ÅÍÄ¡ÇØ¼­ "ÁÜ ¾Æ¿ô"ÇØ º¸´Â ½ºÅÜ.
-/// - ¸ðµç Àå¸éÀ» ÇÑ ¹ø¾¿ ¿­¶÷ÇÏ¸é StepCompletionGate¸¦ ÅëÇØ
-///   completeRoot(CTA ¹öÆ° ·çÆ®)¸¦ ÄÑÁØ´Ù.
+/// Director / Problem5 / Step2 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ø¼ï¿½ "ï¿½ï¿½ ï¿½Æ¿ï¿½"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ StepCompletionGateï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+///   completeRoot(CTA ï¿½ï¿½Æ° ï¿½ï¿½Æ®)ï¿½ï¿½ ï¿½ï¿½ï¿½Ø´ï¿½.
 /// </summary>
 public interface IZoomOutSceneData
 {
@@ -21,16 +21,17 @@ public interface IZoomOutSceneData
     Text IconLabel { get; }
     GameObject UnrevealedRoot { get; }
     GameObject RevealedRoot { get; }
+    GameObject GlowImage { get; }
 }
 
 public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 {
-    // ==== ÀÚ½Ä¿¡¼­ ÁÖÀÔÇÒ Ãß»ó ÇÁ·ÎÆÛÆ¼ ====
+    // ==== ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ ====
 
-    [Header("Àå¸é µ¥ÀÌÅÍµé (ÀÚ½Ä ÁÖÀÔ)")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ (ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     protected abstract IZoomOutSceneData[] Scenes { get; }
 
-    [Header("ÁÜ ¾Æ¿ô ¸ð´Þ UI")]
+    [Header("ï¿½ï¿½ ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ UI")]
     protected abstract GameObject ZoomModalRoot { get; }
     protected abstract GameObject ModalCloseUpRoot { get; }
     protected abstract GameObject ModalFullSceneRoot { get; }
@@ -38,19 +39,19 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     protected abstract Text ModalFullSceneEmojisLabel { get; }
     protected abstract Text ModalFullSceneTextLabel { get; }
 
-    [Header("¾Ö´Ï¸ÞÀÌ¼Ç Å¸ÀÌ¹Ö")]
+    [Header("ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ Å¸ï¿½Ì¹ï¿½")]
     protected abstract float ZoomDuration { get; }
     protected abstract float FullSceneHoldDuration { get; }
 
-    [Header("ÁøÇàµµ ÀÎµðÄÉÀÌÅÍ (¿É¼Ç)")]
+    [Header("ï¿½ï¿½ï¿½àµµ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½É¼ï¿½)")]
     protected abstract Image[] ProgressDots { get; }
     protected abstract Color ProgressInactiveColor { get; }
     protected abstract Color ProgressActiveColor { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ® ")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // ==== ³»ºÎ »óÅÂ ====
+    // ==== ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ====
 
     private bool[] _revealedFlags;
     private int _revealedCount;
@@ -68,7 +69,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         var scenes = Scenes;
         if (scenes == null || scenes.Length == 0)
         {
-            Debug.LogWarning("[Problem5_Step2] scenes µ¥ÀÌÅÍ°¡ ºñ¾î ÀÖÀ½");
+            Debug.LogWarning("[Problem5_Step2] scenes ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -78,12 +79,12 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         _currentSceneIndex = -1;
         _isAnimating = false;
 
-        // ¸ð´Þ ÃÊ±âÈ­
+        // ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         if (ZoomModalRoot != null) ZoomModalRoot.SetActive(false);
         if (ModalCloseUpRoot != null) ModalCloseUpRoot.SetActive(false);
         if (ModalFullSceneRoot != null) ModalFullSceneRoot.SetActive(false);
 
-        // ¾ÆÀÌÄÜ ¹öÆ° ¸®½º³Ê ¿¬°á + ÃÊ±â »óÅÂ ¼¼ÆÃ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < scenes.Length; i++)
         {
             int capturedIndex = i;
@@ -110,7 +111,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 
         UpdateProgressDots();
 
-        // Gate: ÀÌ ½ºÅÜ¿¡¼­ "¸ðµç Àå¸é ´Ù ºÃ´Ù" = 1Ä­ Ã¤¿ì´Â ±¸Á¶
+        // Gate: ï¿½ï¿½ ï¿½ï¿½ï¿½Ü¿ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã´ï¿½" = 1Ä­ Ã¤ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
     }
@@ -127,7 +128,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     }
 
     // ======================================================
-    // ¾ÆÀÌÄÜ Å¬¸¯ Ã³¸®
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ Ã³ï¿½ï¿½
     // ======================================================
 
     public void OnClickScene(int index)
@@ -138,7 +139,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         if (scenes == null || index < 0 || index >= scenes.Length) return;
 
         if (_revealedFlags != null && index < _revealedFlags.Length && _revealedFlags[index])
-            return; // ÀÌ¹Ì º» Àå¸é
+            return; // ï¿½Ì¹ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 
         _currentSceneIndex = index;
 
@@ -158,7 +159,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         var scenes = Scenes;
         var scene = scenes[index];
 
-        // 1) ¸ð´Þ ÄÑ°í Å¬·ÎÁî¾÷ »óÅÂ·Î ¼¼ÆÃ
+        // 1) ï¿½ï¿½ï¿½ ï¿½Ñ°ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (ZoomModalRoot != null) ZoomModalRoot.SetActive(true);
 
         if (ModalCloseUpRoot != null) ModalCloseUpRoot.SetActive(true);
@@ -167,11 +168,11 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         if (ModalCloseUpEmojiLabel != null)
             ModalCloseUpEmojiLabel.text = scene.CloseUpEmoji;
 
-        // 2) ÁÜ(Å¬·ÎÁî¾÷) »óÅÂ À¯Áö
+        // 2) ï¿½ï¿½(Å¬ï¿½ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (ZoomDuration > 0f)
             yield return new WaitForSeconds(ZoomDuration);
 
-        // 3) ÀüÃ¼ »óÈ² È­¸éÀ¸·Î ÀüÈ¯
+        // 3) ï¿½ï¿½Ã¼ ï¿½ï¿½È² È­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
         if (ModalCloseUpRoot != null) ModalCloseUpRoot.SetActive(false);
         if (ModalFullSceneRoot != null) ModalFullSceneRoot.SetActive(true);
 
@@ -190,20 +191,22 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         if (FullSceneHoldDuration > 0f)
             yield return new WaitForSeconds(FullSceneHoldDuration);
 
-        // 4) ¸ð´Þ ´Ý±â
+        // 4) ï¿½ï¿½ï¿½ ï¿½Ý±ï¿½
         if (ZoomModalRoot != null) ZoomModalRoot.SetActive(false);
 
-        // 5) Àå¸éÀ» "¿­¶÷ ¿Ï·á" »óÅÂ·Î Ç¥½Ã
+        // 5) ï¿½ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½" ï¿½ï¿½ï¿½Â·ï¿½ Ç¥ï¿½ï¿½
         if (_revealedFlags != null && index < _revealedFlags.Length)
             _revealedFlags[index] = true;
 
         _revealedCount++;
 
-        // ¾ÆÀÌÄÜ ºñÁÖ¾ó °»½Å
+        // ì•„ì´ì½˜ ë¹„ì£¼ì–¼ ì „í™˜
         if (scene.UnrevealedRoot != null)
             scene.UnrevealedRoot.SetActive(false);
         if (scene.RevealedRoot != null)
             scene.RevealedRoot.SetActive(true);
+        if (scene.GlowImage != null)
+            scene.GlowImage.SetActive(false);
 
         UpdateProgressDots();
 
@@ -211,7 +214,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         _currentSceneIndex = -1;
         _zoomRoutine = null;
 
-        // 6) ¸ðµç Àå¸éÀ» ´Ù ºÃ´Ù¸é  Gate ¿Ï·á Ã³¸®
+        // 6) ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã´Ù¸ï¿½  Gate ï¿½Ï·ï¿½ Ã³ï¿½ï¿½
         var allScenes = Scenes;
         if (allScenes != null && _revealedCount >= allScenes.Length)
         {
@@ -224,7 +227,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     }
 
     // ======================================================
-    // ÁøÇàµµ Ã³¸®
+    // ï¿½ï¿½ï¿½àµµ Ã³ï¿½ï¿½
     // ======================================================
 
     private void UpdateProgressDots()
