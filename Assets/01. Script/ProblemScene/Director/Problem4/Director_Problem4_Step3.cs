@@ -6,32 +6,32 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem4 / Step3
-/// - ÀÎ½ºÆåÅÍ¿¡¼­ Áú¹® µ¥ÀÌÅÍ + UI ÂüÁ¶¸¸ µé°í ÀÖ´Â ·¡ÆÛ.
-/// - ½ÇÁ¦ ·ÎÁ÷Àº Director_Problem4_Step3_Logic(ºÎ¸ð)¿¡ ÀÖÀ½.
+/// - ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Director_Problem4_Step3_Logic(ï¿½Î¸ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 /// </summary>
 public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
 {
     [Serializable]
     public class QuestionData : IYesNoQuestionData
     {
-        [Tooltip("Áú¹® ID (·Î±×¿ë, ¿¹: Q1, Q2 µî)")]
+        [Tooltip("ï¿½ï¿½ï¿½ï¿½ ID (ï¿½Î±×¿ï¿½, ï¿½ï¿½: Q1, Q2 ï¿½ï¿½)")]
         public string questionId;
 
         [TextArea]
-        [Tooltip("Áú¹® »ó´Ü¿¡ ³ª¿À´Â ¸ÞÀÎ ¹®Àå (¿¹: 'ÀÌÁ¦ ´Ù½Ã´Â Èæ¹é³í¸®¿¡...')")]
+        [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ü¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: 'ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½Ã´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...')")]
         public string mainText;
 
-        [Tooltip("¸ÞÀÎ ¾Æ·¡ ÇÑ ÁÙÂ¥¸® ¼­ºê ¹®Àå")]
+        [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½ï¿½ ï¿½ï¿½Â¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
         public string submainText;
 
         [TextArea]
-        [Tooltip("¹Ú½º ¾È¿¡ µé¾î°¡´Â ¼­ºê ¹®Àå (¿¹: ¹Ý¹Ú Áú¹® / »õ·Î¿î ½Ã³ª¸®¿À ¹®Àå)")]
+        [Tooltip("ï¿½Ú½ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: ï¿½Ý¹ï¿½ ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
         public string subText;
 
-        [Tooltip("ÀÌ Áú¹®¿¡¼­ '³×' ¹öÆ°ÀÌ Á¤´äÀÌ¸é true, '¾Æ´Ï¿À'°¡ Á¤´äÀÌ¸é false")]
+        [Tooltip("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½' ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ true, 'ï¿½Æ´Ï¿ï¿½'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ false")]
         public bool isYesCorrect;
 
-        // ÀÎÅÍÆäÀÌ½º ±¸Çö
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
         public string QuestionId => questionId;
         public string MainText => mainText;
         public string SubText => subText;
@@ -39,35 +39,39 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
         public bool IsYesCorrect => isYesCorrect;
     }
 
-    [Header("Áú¹® ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private QuestionData[] questions;
 
-    [Header("Áú¹® UI")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ UI")]
     [SerializeField] private GameObject questionRoot;
-    [SerializeField] private Text mainTextLabel;       // »ó´Ü ¼³¸í ÅØ½ºÆ®
-    [SerializeField] private Text subTextLabel;        // ¹Ú½º ¾È Áú¹®/½Ã³ª¸®¿À ÅØ½ºÆ®
-    [SerializeField] private Text submainTextLabel;    // ¸ÞÀÎ ¾Æ·¡ ÇÑ ÁÙ
+    [SerializeField] private Text mainTextLabel;       // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
+    [SerializeField] private Text subTextLabel;        // ï¿½Ú½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
+    [SerializeField] private Text submainTextLabel;    // ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½ï¿½ ï¿½ï¿½
 
-    [Header("¹öÆ°")]
+    [Header("ï¿½ï¿½Æ°")]
     [SerializeField] private Button yesButton;
     [SerializeField] private Button noButton;
 
-    [Header("¿À·ù ¸Þ½ÃÁö")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject errorRoot;
     [SerializeField] private Text errorLabel;
-    [SerializeField] private string defaultErrorMessage = "´Ù½Ã »ý°¢ÇØº¼±î¿ä?";
+    [SerializeField] private string defaultErrorMessage = "ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½?";
     [SerializeField] private float errorShowDuration = 1f;
 
-    [Header("Á¤´ä Echo UI")]
-    [SerializeField] private GameObject answerEchoRoot;   // "³×", "¾Æ´Ï¿À" Àá±ñ º¸¿©ÁÙ ÆÐ³Î
-    [SerializeField] private Text answerEchoLabel;        // ½ÇÁ¦ ÅØ½ºÆ® ¶óº§
+    [Header("ï¿½ï¿½ï¿½ï¿½ Echo UI")]
+    [SerializeField] private GameObject answerEchoRoot;   // "ï¿½ï¿½", "ï¿½Æ´Ï¿ï¿½" ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½
+    [SerializeField] private Text answerEchoLabel;        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½
     [SerializeField] private float answerEchoDuration = 0.8f;
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸")]
     [SerializeField] private StepCompletionGate stepCompletionGate;
 
+    [Header("ì‹œë‚˜ë¦¬ì˜¤ ì¹´ë“œ")]
+    [SerializeField] private GameObject scenarioCardRoot;
+    [SerializeField] private float scenarioDisplayDuration = 3f;
+
     // ==========================
-    // º£ÀÌ½º¿¡ °ª ÁÖÀÔ¿ë override
+    // ë² ì´ìŠ¤ í´ëž˜ìŠ¤ í”„ë¡œí¼í‹° override
     // ==========================
 
     protected override IYesNoQuestionData[] Questions => questions;
@@ -90,6 +94,9 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
     protected override float AnswerEchoDuration => answerEchoDuration;
 
     protected override StepCompletionGate StepCompletionGate => stepCompletionGate;
+
+    protected override GameObject ScenarioCardRoot => scenarioCardRoot;
+    protected override float ScenarioDisplayDuration => scenarioDisplayDuration;
 }
 
 

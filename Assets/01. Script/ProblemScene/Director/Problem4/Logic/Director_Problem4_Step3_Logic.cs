@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Problem4 / Step3 ·ÎÁ÷ º£ÀÌ½º.
-/// - Q1, Q2 µî¿¡ ´ëÇØ '³× / ¾Æ´Ï¿À'·Î ´äÇÏ´Â ½ºÅÜ
-/// - ÀÚ½Ä¿¡¼­ Áú¹® µ¥ÀÌÅÍ + UI¸¦ ÁÖÀÔ.
+/// Problem4 / Step3 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½.
+/// - Q1, Q2 ï¿½î¿¡ ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ / ï¿½Æ´Ï¿ï¿½'ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
+/// - ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 /// </summary>
 public interface IYesNoQuestionData
 {
@@ -23,9 +23,9 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     [Serializable]
     private class QuestionActionLog
     {
-        public string questionId; // ¾î¶² Áú¹®¿¡ ´ëÇÑ ¼±ÅÃÀÎÁö
-        public string answer;     // "yes" ¶Ç´Â "no"
-        public bool wasCorrect;   // Á¤´ä ¿©ºÎ
+        public string questionId; // ï¿½î¶² ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        public string answer;     // "yes" ï¿½Ç´ï¿½ "no"
+        public bool wasCorrect;   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     [Serializable]
@@ -35,39 +35,43 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==========================
-    // ÀÚ½Ä¿¡¼­ ÁÖÀÔÇÒ Ãß»ó ÇÁ·ÎÆÛÆ¼
+    // ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼
     // ==========================
 
-    [Header("Áú¹® ¼³Á¤ (ÀÚ½Ä ÁÖÀÔ)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     protected abstract IYesNoQuestionData[] Questions { get; }
 
-    [Header("Áú¹® UI")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ UI")]
     protected abstract GameObject QuestionRoot { get; }
     protected abstract Text MainTextLabel { get; }
     protected abstract Text SubTextLabel { get; }
     protected abstract Text SubmainTextLabel { get; }
 
-    [Header("¹öÆ°")]
+    [Header("ï¿½ï¿½Æ°")]
     protected abstract Button YesButton { get; }
     protected abstract Button NoButton { get; }
 
-    [Header("¿À·ù ¸Ş½ÃÁö")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½")]
     protected abstract GameObject ErrorRoot { get; }
     protected abstract Text ErrorLabel { get; }
     protected abstract string DefaultErrorMessage { get; }
     protected abstract float ErrorShowDuration { get; }
 
-    [Header("Á¤´ä Echo UI")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ Echo UI")]
     protected abstract GameObject AnswerEchoRoot { get; }
     protected abstract Text AnswerEchoLabel { get; }
     protected abstract float AnswerEchoDuration { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®")]
     protected abstract StepCompletionGate StepCompletionGate { get; }
+
+    [Header("ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½")]
+    protected abstract GameObject ScenarioCardRoot { get; }
+    protected abstract float ScenarioDisplayDuration { get; }
 
 
     // ==========================
-    // ³»ºÎ »óÅÂ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     // ==========================
 
     private int _currentIndex;
@@ -87,10 +91,10 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         if (questions == null || questions.Length == 0)
         {
-            Debug.LogWarning("[Problem4_Step3] questions °¡ ºñ¾î ÀÖÀ½");
+            Debug.LogWarning("[Problem4_Step3] questions ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 
             if (MainTextLabel != null)
-                MainTextLabel.text = "(Áú¹®ÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù)";
+                MainTextLabel.text = "(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½)";
             if (SubTextLabel != null)
                 SubTextLabel.text = "";
 
@@ -131,6 +135,10 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (StepCompletionGate != null)
             StepCompletionGate.ResetGate(1);
 
+        // ì‹œë‚˜ë¦¬ì˜¤ ì¹´ë“œ ìˆ¨ê¹€
+        if (ScenarioCardRoot != null)
+            ScenarioCardRoot.SetActive(false);
+
         ApplyQuestionUI(_currentIndex);
     }
 
@@ -150,7 +158,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==================================================
-    // UI °»½Å
+    // UI ï¿½ï¿½ï¿½ï¿½
     // ==================================================
 
     private void ApplyQuestionUI(int index)
@@ -159,7 +167,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         if (questions == null || index < 0 || index >= questions.Length)
         {
-            Debug.LogWarning("[Problem4_Step3] ApplyQuestionUI: Àß¸øµÈ ÀÎµ¦½º " + index);
+            Debug.LogWarning("[Problem4_Step3] ApplyQuestionUI: ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ " + index);
             return;
         }
 
@@ -185,7 +193,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==================================================
-    // ¹öÆ° Å¬¸¯ Ã³¸®
+    // ï¿½ï¿½Æ° Å¬ï¿½ï¿½ Ã³ï¿½ï¿½
     // ==================================================
 
     public void OnClickYes()
@@ -240,7 +248,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (NoButton != null) NoButton.interactable = false;
 
         if (AnswerEchoLabel != null)
-            AnswerEchoLabel.text = isYes ? "³×" : "¾Æ´Ï¿À";
+            AnswerEchoLabel.text = isYes ? "ï¿½ï¿½" : "ï¿½Æ´Ï¿ï¿½";
 
         if (AnswerEchoRoot != null)
             AnswerEchoRoot.SetActive(true);
@@ -270,7 +278,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==================================================
-    // ¿¡·¯ ¸Ş½ÃÁö
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½
     // ==================================================
 
     private void ShowError(string msg)
@@ -302,7 +310,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==================================================
-    // ¿Ï·á Ã³¸® + Attempt ÀúÀå
+    // ï¿½Ï·ï¿½ Ã³ï¿½ï¿½ + Attempt ï¿½ï¿½ï¿½ï¿½
     // ==================================================
 
     private void CompleteStep()
@@ -312,11 +320,26 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         SaveRebuttalAttempt();
 
+        Debug.Log("[Problem4_Step3] ë°˜ë°• ì§ˆë¬¸ ì™„ë£Œ - ì‹œë‚˜ë¦¬ì˜¤ ì¹´ë“œ ë“±ì¥");
+        _stepCompleted = true;
+
+        // ì‹œë‚˜ë¦¬ì˜¤ ì¹´ë“œ ë“±ì¥ í›„ ëŒ€ê¸° â†’ ë‹¤ìŒ ìŠ¤í…
+        StartCoroutine(ShowScenarioCardAndComplete());
+    }
+
+    private IEnumerator ShowScenarioCardAndComplete()
+    {
+        // ì‹œë‚˜ë¦¬ì˜¤ ì¹´ë“œ ë“±ì¥
+        if (ScenarioCardRoot != null)
+            ScenarioCardRoot.SetActive(true);
+
+        // ëŒ€ê¸°
+        if (ScenarioDisplayDuration > 0f)
+            yield return new WaitForSeconds(ScenarioDisplayDuration);
+
+        // ë‹¤ìŒ ìŠ¤í…ìœ¼ë¡œ
         if (StepCompletionGate != null)
             StepCompletionGate.MarkOneDone();
-
-        Debug.Log("[Problem4_Step3] ¹İ¹Ú Áú¹® ½ºÅÜ ¿Ï·á");
-        _stepCompleted = true;
     }
 
     private void SaveRebuttalAttempt()
@@ -326,7 +349,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             actions = _actionLogs.ToArray()
         };
 
-        // ProblemStepBase¿¡ ±¸ÇöµÈ DB ÀúÀå È£Ãâ
+        // ProblemStepBaseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ DB ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
         SaveAttempt(body);
     }
 }
