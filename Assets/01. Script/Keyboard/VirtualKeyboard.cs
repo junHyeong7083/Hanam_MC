@@ -26,13 +26,15 @@ public class VirtualKeyboard : MonoBehaviour
 
     [Header("===== Shift 버튼 색상 =====")]
     [SerializeField] private Color shiftNormalColor = Color.white;
-    [SerializeField] private Color shiftActiveColor = new Color(1f, 0.54f, 0.24f);
+    [SerializeField] private Color shiftActiveColor = new Color(1f, 0.54f, 0.24f);  // 주황
+    [SerializeField] private Color shiftLockedColor = new Color(1f, 0.3f, 0.3f);    // 빨강 (고정)
 
     [Header("===== 언어 버튼 라벨 =====")]
     [SerializeField] private Text languageButtonLabel;
 
     // 상태
-    private bool _isShiftActive;
+    // Shift 상태: 0=소문자, 1=대문자(임시), 2=대문자(고정)
+    private int _shiftState = 0;
     private bool _isKorean;
 
     // 한글 조합용
@@ -82,18 +84,34 @@ public class VirtualKeyboard : MonoBehaviour
 
     private void InitializeKeys()
     {
-        if (keys == null || keys.Length == 0)
-            keys = GetComponentsInChildren<VirtualKeyboardKey>(true);
+        // 항상 재탐색 (키보드 재생성 대응)
+        keys = GetComponentsInChildren<VirtualKeyboardKey>(true);
 
         foreach (var key in keys)
         {
             if (key != null)
                 key.OnKeyPressed += OnKeyPressed;
         }
+
+        Debug.Log($"[VirtualKeyboard] 키 {keys.Length}개 초기화됨");
     }
 
     private void SetupSpecialKeys()
     {
+        // 특수 키 자동 탐색 (Generator가 만드는 이름: Key_xxxButton)
+        if (shiftButton == null)
+            shiftButton = FindButtonByName("Key_shiftButton");
+        if (backspaceButton == null)
+            backspaceButton = FindButtonByName("Key_backspaceButton");
+        if (spaceButton == null)
+            spaceButton = FindButtonByName("Key_spaceButton");
+        if (enterButton == null)
+            enterButton = FindButtonByName("Key_enterButton");
+        if (languageButton == null)
+            languageButton = FindButtonByName("Key_languageButton");
+
+        Debug.Log($"[VirtualKeyboard] 특수키 - Shift:{shiftButton != null}, Back:{backspaceButton != null}, Space:{spaceButton != null}, Enter:{enterButton != null}, Lang:{languageButton != null}");
+
         if (shiftButton != null)
         {
             shiftButton.onClick.RemoveAllListeners();
@@ -125,6 +143,24 @@ public class VirtualKeyboard : MonoBehaviour
         }
     }
 
+    private Button FindButtonByName(string buttonName)
+    {
+        Transform found = transform.Find(buttonName);
+        if (found == null)
+        {
+            // 자식에서 재귀 검색
+            foreach (Transform child in GetComponentsInChildren<Transform>(true))
+            {
+                if (child.name == buttonName)
+                {
+                    found = child;
+                    break;
+                }
+            }
+        }
+        return found != null ? found.GetComponent<Button>() : null;
+    }
+
     #endregion
 
     #region Key Press Handlers
@@ -133,27 +169,33 @@ public class VirtualKeyboard : MonoBehaviour
     {
         if (targetInputField == null) return;
 
-        string character = key.GetCurrentChar(_isKorean, _isShiftActive);
+        bool isShift = _shiftState > 0;
+        string character = key.GetCurrentChar(_isKorean, isShift);
 
         if (_isKorean)
             ProcessKoreanInput(character);
         else
             InsertCharacter(character);
 
-        // Shift는 한 번 누르면 해제 (Caps Lock이 아님)
-        if (_isShiftActive)
+        // 상태 1(임시)이면 한 글자 입력 후 소문자로
+        if (_shiftState == 1)
         {
-            _isShiftActive = false;
+            _shiftState = 0;
             UpdateShiftVisual();
             UpdateKeyLabels();
         }
+
+        // InputField 포커스 유지 (캐럿 깜빡임)
+        RefocusInputField();
     }
 
     private void OnShiftPressed()
     {
-        _isShiftActive = !_isShiftActive;
+        // 0 → 1 → 2 → 0 순환
+        _shiftState = (_shiftState + 1) % 3;
         UpdateShiftVisual();
         UpdateKeyLabels();
+        RefocusInputField();
     }
 
     private void OnBackspacePressed()
@@ -184,12 +226,15 @@ public class VirtualKeyboard : MonoBehaviour
         {
             DeleteLastCharacter();
         }
+
+        RefocusInputField();
     }
 
     private void OnSpacePressed()
     {
         CommitComposition();
         InsertCharacter(" ");
+        RefocusInputField();
     }
 
     private void OnEnterKeyPressed()
@@ -204,6 +249,7 @@ public class VirtualKeyboard : MonoBehaviour
         _isKorean = !_isKorean;
         UpdateKeyLabels();
         UpdateLanguageButtonLabel();
+        RefocusInputField();
     }
 
     #endregion
@@ -361,6 +407,25 @@ public class VirtualKeyboard : MonoBehaviour
 
     #region Helper Methods
 
+    private void RefocusInputField()
+    {
+        if (targetInputField == null) return;
+        StartCoroutine(RefocusNextFrame());
+    }
+
+    private System.Collections.IEnumerator RefocusNextFrame()
+    {
+        yield return null;  // 다음 프레임 대기
+        if (targetInputField != null)
+        {
+            targetInputField.ActivateInputField();
+            // 캐럿을 텍스트 끝으로 이동 (선택 해제)
+            targetInputField.caretPosition = targetInputField.text.Length;
+            targetInputField.selectionAnchorPosition = targetInputField.text.Length;
+            targetInputField.selectionFocusPosition = targetInputField.text.Length;
+        }
+    }
+
     private void InsertCharacter(string c)
     {
         if (targetInputField == null) return;
@@ -385,19 +450,41 @@ public class VirtualKeyboard : MonoBehaviour
     {
         if (shiftButton == null) return;
 
+        Color targetColor;
+        switch (_shiftState)
+        {
+            case 1:
+                targetColor = shiftActiveColor;   // 주황 (임시 대문자)
+                break;
+            case 2:
+                targetColor = shiftLockedColor;   // 빨강 (고정 대문자)
+                break;
+            default:
+                targetColor = shiftNormalColor;   // 흰색 (소문자)
+                break;
+        }
+
+        // ColorBlock 업데이트
         var colors = shiftButton.colors;
-        colors.normalColor = _isShiftActive ? shiftActiveColor : shiftNormalColor;
-        colors.highlightedColor = colors.normalColor;
-        colors.pressedColor = colors.normalColor;
+        colors.normalColor = targetColor;
+        colors.highlightedColor = targetColor;
+        colors.pressedColor = targetColor;
+        colors.selectedColor = targetColor;
         shiftButton.colors = colors;
+
+        // Image 색상 즉시 적용
+        var image = shiftButton.GetComponent<Image>();
+        if (image != null)
+            image.color = targetColor;
     }
 
     private void UpdateKeyLabels()
     {
+        bool isShift = _shiftState > 0;
         foreach (var key in keys)
         {
             if (key != null)
-                key.UpdateLabel(_isKorean, _isShiftActive);
+                key.UpdateLabel(_isKorean, isShift);
         }
     }
 

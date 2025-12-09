@@ -56,6 +56,41 @@ public class VirtualKeyboardController : MonoBehaviour
             _lastSelectedObject = currentSelected;
             OnSelectionChanged(currentSelected);
         }
+
+        // 키보드 영역 밖 클릭 시 숨김
+        CheckOutsideClick();
+    }
+
+    private void CheckOutsideClick()
+    {
+        // 키보드가 안 보이면 무시
+        if (keyboardContainer == null || !keyboardContainer.activeSelf) return;
+
+        // 클릭/터치 감지
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        // 키보드 컨테이너의 RectTransform
+        RectTransform keyboardRect = keyboardContainer.GetComponent<RectTransform>();
+        if (keyboardRect == null) return;
+
+        // 클릭 위치가 키보드 영역 안인지 확인
+        Vector2 mousePos = Input.mousePosition;
+        if (!RectTransformUtility.RectangleContainsScreenPoint(keyboardRect, mousePos, null))
+        {
+            // InputField 클릭인지 확인 (InputField 클릭 시에는 숨기지 않음)
+            var pointerData = new PointerEventData(EventSystem.current) { position = mousePos };
+            var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, raycastResults);
+
+            foreach (var result in raycastResults)
+            {
+                if (result.gameObject.GetComponent<TMP_InputField>() != null)
+                    return;  // InputField 클릭이면 숨기지 않음
+            }
+
+            // 키보드 밖 클릭 → 숨김
+            HideKeyboard();
+        }
     }
 
     private void OnSelectionChanged(GameObject selected)
