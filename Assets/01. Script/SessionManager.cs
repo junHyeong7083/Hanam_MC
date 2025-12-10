@@ -2,27 +2,27 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// ¾Û Àü¹İÀÇ ·Î±×ÀÎ »óÅÂ/À¯Àú Á¤º¸¸¦ °ü¸®ÇÏ´Â ¼¼¼Ç ¸Å´ÏÀú.
-/// - ·±Å¸ÀÓ ·Î±×ÀÎ ¿©ºÎ(IsSignedIn), ÇöÀç »ç¿ëÀÚ(CurrentUser)
-/// - ·Î±×ÀÎ/·Î±×¾Æ¿ô API
-/// - (¿É¼Ç) °£´Ü º¹¿ø/ÀúÀå (PlayerPrefs ÀÌ¿ë: °³¹ß/µ¥¸ğ¿ë)
+/// ì•± ì „ì²´ì˜ ë¡œê·¸ì¸ ìƒíƒœ/ì„¸ì…˜ ì •ë³´ë¥¼ ê´€ë¦¬í•˜ëŠ” ì„¸ì…˜ ë§¤ë‹ˆì €.
+/// - ëŸ°íƒ€ì„ ë¡œê·¸ì¸ ìƒíƒœ(IsSignedIn), í˜„ì¬ ìœ ì €ì •ë³´(CurrentUser)
+/// - ë¡œê·¸ì¸/ë¡œê·¸ì•„ì›ƒ API
+/// - (ì˜µì…˜) ì„¸ì…˜ ì €ì¥/ë³µì› (PlayerPrefs ì´ìš©: ì„ì‹œ/ê°œë°œìš©)
 /// </summary>
 public class SessionManager : MonoBehaviour
 {
     public static SessionManager Instance { get; private set; }
 
     [Serializable]
-    public class UserSnapshot   // ¿µ¼ÓÈ­¿ë ÃÖ¼Ò ½º³À¼¦ (¹Î°¨Á¤º¸ Á¦¿Ü)
+    public class UserSnapshot   // ì§ë ¬í™”ìš© ìµœì†Œ ë°ì´í„° (ì¸ê²Œì„ìš© ì°¸ì¡°)
     {
         public string Name;
         public string Email;
-        public int Role;      // enum ÀúÀå¿ë int
+        public int Role;      // enum ëŒ€ì‹ ì— int
         public bool IsActive;
     }
 
     public bool IsSignedIn => _currentUser != null;
     public User CurrentUser => _currentUser;
-    public string SessionId { get; private set; }   // ÇÊ¿ä ½Ã »ç¿ë(¼­¹ö ¼¼¼Ç/Æ®·¡Å·)
+    public string SessionId { get; private set; }   // í•„ìš” ì‹œ ì‚¬ìš©(ì„¸ì…˜ ê´€ë¦¬/íŠ¸ë˜í‚¹)
 
     public event Action OnChanged;
 
@@ -35,17 +35,17 @@ public class SessionManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>·Î±×ÀÎ ¼º°ø ½Ã ¼¼¼Ç »óÅÂ ±â·Ï</summary>
+    /// <summary>ë¡œê·¸ì¸ ì„±ê³µ ì‹œ ì„¸ì…˜ ì •ë³´ ì €ì¥</summary>
     public void SignIn(User user, string sessionId = null)
     {
         _currentUser = user;
         SessionId = sessionId ?? System.Guid.NewGuid().ToString("N");
-        Save();             // ÀÚµ¿ º¹¿ø ¿øÄ¡ ¾ÊÀ¸¸é ÁÖ¼® Ã³¸®
+        Save();             // ìë™ ì €ì¥ ìœ„ì¹˜ ë“±ìœ¼ë¡œ ìµœì†Œ ì²˜ë¦¬
         OnChanged?.Invoke();
         Debug.Log($"[Session] Signed in: {_currentUser?.Email}");
     }
 
-    /// <summary>¸í½ÃÀû ·Î±×¾Æ¿ô</summary>
+    /// <summary>ëª…ì‹œì  ë¡œê·¸ì•„ì›ƒ</summary>
     public void SignOut()
     {
         _currentUser = null;
@@ -55,11 +55,11 @@ public class SessionManager : MonoBehaviour
         Debug.Log("[Session] Signed out");
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡ °£´Ü º¹¿ø/ÀúÀå ±¸Çö ¦¡¦¡¦¡¦¡¦¡¦¡
-    const string KeyUser = "session.user";    // PlayerPrefs Å° (µ¥¸ğ/°³¹ß¿ë)
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ ì„¸ì…˜ ì €ì¥/ë³µì› ê´€ë ¨ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    const string KeyUser = "session.user";    // PlayerPrefs í‚¤ (ì„ì‹œ/ê°œë°œìš©)
     const string KeySess = "session.id";
 
-    /// <summary>µğ½ºÅ©¿¡¼­ ¼¼¼ÇÀ» º¹¿ø(ÀÖÀ¸¸é true)</summary>
+    /// <summary>ë””ìŠ¤í¬ì—ì„œ ì„¸ì…˜ì •ë³´ ë³µì›(ì„±ê³µì‹œ true)</summary>
     public bool TryRestore()
     {
         if (!PlayerPrefs.HasKey(KeyUser)) return false;
@@ -90,7 +90,7 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    /// <summary>ÇöÀç ¼¼¼ÇÀ» µğ½ºÅ©¿¡ ÀúÀå</summary>
+    /// <summary>í˜„ì¬ ì„¸ì…˜ì„ ë””ìŠ¤í¬ì— ì €ì¥</summary>
     public void Save()
     {
         if (_currentUser == null) { Clear(); return; }
@@ -106,7 +106,7 @@ public class SessionManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    /// <summary>µğ½ºÅ© ÀúÀå°ª »èÁ¦</summary>
+    /// <summary>ë””ìŠ¤í¬ ì €ì¥ê°’ ì‚­ì œ</summary>
     public void Clear()
     {
         PlayerPrefs.DeleteKey(KeyUser);

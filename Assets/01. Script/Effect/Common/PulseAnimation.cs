@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 범용 펄스(맥박) 애니메이션
@@ -36,17 +37,12 @@ public class PulseAnimation : MonoBehaviour
     [SerializeField] private bool loop = true;
     [SerializeField] private int loopCount = -1; // -1 = 무한, 0 이상 = 해당 횟수만큼
 
-    [Header("Easing")]
-    [SerializeField] private AnimationCurve easingCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-
     // 내부 상태
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
     private Vector3 _baseScale;
     private float _baseAlpha;
-    private bool _isPlaying;
-    private float _time;
-    private int _currentLoopCount;
+    private Sequence _sequence;
 
     private void Awake()
     {
@@ -75,62 +71,78 @@ public class PulseAnimation : MonoBehaviour
         Stop();
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        if (!_isPlaying) return;
-
-        _time += Time.deltaTime;
-        float normalizedTime = (_time % duration) / duration;
-
-        // 0 → 1 → 0 사이클 (sin 곡선)
-        float wave = Mathf.Sin(normalizedTime * Mathf.PI * 2f) * 0.5f + 0.5f;
-        float easedWave = easingCurve.Evaluate(wave);
-
-        ApplyPulse(easedWave);
-
-        // 루프 체크
-        if (!loop && _time >= duration)
-        {
-            _currentLoopCount++;
-            if (loopCount >= 0 && _currentLoopCount >= loopCount)
-            {
-                Stop();
-            }
-        }
+        KillSequence();
     }
 
-    private void ApplyPulse(float t)
+    private void KillSequence()
     {
-        if (pulseType == PulseType.Scale || pulseType == PulseType.Both)
+        _sequence?.Kill();
+        _sequence = null;
+    }
+
+    private void PlayInternal(int loops)
+    {
+        KillSequence();
+
+        _sequence = DOTween.Sequence();
+
+        float halfDuration = duration * 0.5f;
+
+        // Scale 펄스
+        if ((pulseType == PulseType.Scale || pulseType == PulseType.Both) && _rectTransform != null)
         {
-            if (_rectTransform != null)
-            {
-                float scale = Mathf.Lerp(minScale, maxScale, t);
-                _rectTransform.localScale = _baseScale * scale;
-            }
+            // min → max
+            _rectTransform.localScale = _baseScale * minScale;
+            var scaleTween = _rectTransform
+                .DOScale(_baseScale * maxScale, halfDuration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(2, LoopType.Yoyo);
+
+            _sequence.Append(scaleTween);
         }
 
-        if (pulseType == PulseType.Alpha || pulseType == PulseType.Both)
+        // Alpha 펄스
+        if ((pulseType == PulseType.Alpha || pulseType == PulseType.Both) && _canvasGroup != null)
         {
-            if (_canvasGroup != null)
-            {
-                _canvasGroup.alpha = Mathf.Lerp(minAlpha, maxAlpha, t);
-            }
+            _canvasGroup.alpha = minAlpha;
+            var alphaTween = _canvasGroup
+                .DOFade(maxAlpha, halfDuration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(2, LoopType.Yoyo);
+
+            if (pulseType == PulseType.Both)
+                _sequence.Join(alphaTween);
+            else
+                _sequence.Append(alphaTween);
         }
+
+        // 루프 설정
+        if (loops != 0)
+            _sequence.SetLoops(loops);
+
+        // 완료 시 원래 상태로 복원
+        _sequence.OnComplete(() =>
+        {
+            if (_rectTransform != null)
+                _rectTransform.localScale = _baseScale;
+            if (_canvasGroup != null)
+                _canvasGroup.alpha = _baseAlpha;
+        });
     }
 
     #region Public API
 
     public void Play()
     {
-        _isPlaying = true;
-        _time = 0f;
-        _currentLoopCount = 0;
+        int loops = loop ? -1 : (loopCount > 0 ? loopCount : 1);
+        PlayInternal(loops);
     }
 
     public void Stop()
     {
-        _isPlaying = false;
+        KillSequence();
 
         // 원래 상태로 복원
         if (_rectTransform != null)
@@ -145,9 +157,7 @@ public class PulseAnimation : MonoBehaviour
     /// </summary>
     public void PlayTimes(int times)
     {
-        loop = false;
-        loopCount = times;
-        Play();
+        PlayInternal(times);
     }
 
     #endregion

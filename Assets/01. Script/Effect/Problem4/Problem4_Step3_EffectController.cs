@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// Problem4 Step3: Effect Controller
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 /// - 완료 시나리오 카드 등장 (슬라이드 업 + 글로우)
 /// - 완료 스파클
 /// </summary>
-public class Problem4_Step3_EffectController : MonoBehaviour
+public class Problem4_Step3_EffectController : EffectControllerBase
 {
     [Header("===== 스텝 등장 - 필름 카드 =====")]
     [SerializeField] private RectTransform filmCardRect;
@@ -43,53 +44,19 @@ public class Problem4_Step3_EffectController : MonoBehaviour
     [SerializeField] private float glowMinAlpha = 0.3f;
     [SerializeField] private float glowMaxAlpha = 0.6f;
 
-    // 상태
-    private bool _isAnimating;
-    private float _elapsed;
-    private AnimPhase _phase;
-    private Action _onCompleteCallback;
-
-    // 등장 애니메이션용
+    // 기본 위치
     private Vector2 _filmCardDefaultPos;
     private Vector2 _questionPanelDefaultPos;
     private Vector2 _inputPanelDefaultPos;
     private Vector2 _scenarioCardDefaultPos;
     private bool _defaultPosSaved;
 
-    // 글로우 펄스
-    private bool _glowPulsing;
-    private float _glowElapsed;
-
-    private enum AnimPhase
-    {
-        Idle,
-        // 스텝 등장
-        StepAppear_FilmCard,
-        StepAppear_QuestionPanel,
-        StepAppear_InputPanel,
-        // 시나리오 카드
-        ScenarioCardAppear
-    }
-
-    public bool IsAnimating => _isAnimating;
+    // 글로우 펄스용 별도 Tween
+    private Tween _glowPulseTween;
 
     private void Awake()
     {
         SaveDefaultPositions();
-    }
-
-    private void Update()
-    {
-        if (_isAnimating)
-        {
-            _elapsed += Time.deltaTime;
-            ProcessAnimation();
-        }
-
-        if (_glowPulsing)
-        {
-            ProcessGlowPulse();
-        }
     }
 
     #region Public API
@@ -118,7 +85,7 @@ public class Problem4_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void PlayStepAppearAnimation(Action onComplete = null)
     {
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
@@ -126,11 +93,9 @@ public class Problem4_Step3_EffectController : MonoBehaviour
 
         SaveDefaultPositions();
 
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
+        var seq = CreateSequence();
 
-        // 초기 상태: 모두 숨김 + 위치 오프셋
+        // 초기 상태 설정
         if (filmCardRect != null)
         {
             filmCardRect.anchoredPosition = _filmCardDefaultPos + new Vector2(0f, -filmCardSlideDistance);
@@ -152,7 +117,40 @@ public class Problem4_Step3_EffectController : MonoBehaviour
                 inputPanelCanvasGroup.alpha = 0f;
         }
 
-        _phase = AnimPhase.StepAppear_FilmCard;
+        // 1. 필름 카드 등장
+        seq.AppendInterval(filmCardAppearDelay);
+        if (filmCardRect != null)
+        {
+            seq.Append(filmCardRect.DOAnchorPos(_filmCardDefaultPos, filmCardAppearDuration).SetEase(Ease.OutQuad));
+            if (filmCardCanvasGroup != null)
+                seq.Join(filmCardCanvasGroup.DOFade(1f, filmCardAppearDuration));
+        }
+
+        // 2. 질문 패널 등장 (딜레이 계산)
+        float questionDelayFromFilm = questionAppearDelay - filmCardAppearDelay - filmCardAppearDuration;
+        if (questionDelayFromFilm > 0f)
+            seq.AppendInterval(questionDelayFromFilm);
+
+        if (questionPanelRect != null)
+        {
+            seq.Append(questionPanelRect.DOAnchorPos(_questionPanelDefaultPos, questionAppearDuration).SetEase(Ease.OutQuad));
+            if (questionPanelCanvasGroup != null)
+                seq.Join(questionPanelCanvasGroup.DOFade(1f, questionAppearDuration));
+        }
+
+        // 3. 입력 패널 등장 (딜레이 계산)
+        float inputDelayFromQuestion = inputAppearDelay - questionAppearDelay - questionAppearDuration;
+        if (inputDelayFromQuestion > 0f)
+            seq.AppendInterval(inputDelayFromQuestion);
+
+        if (inputPanelRect != null)
+        {
+            seq.Append(inputPanelRect.DOAnchorPos(_inputPanelDefaultPos, inputAppearDuration).SetEase(Ease.OutQuad));
+            if (inputPanelCanvasGroup != null)
+                seq.Join(inputPanelCanvasGroup.DOFade(1f, inputAppearDuration));
+        }
+
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -160,17 +158,13 @@ public class Problem4_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void PlayScenarioCardAppear(Action onComplete = null)
     {
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
         }
 
         SaveDefaultPositions();
-
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
 
         // 초기 상태
         if (scenarioCardRect != null)
@@ -190,7 +184,26 @@ public class Problem4_Step3_EffectController : MonoBehaviour
             scenarioGlowImage.color = c;
         }
 
-        _phase = AnimPhase.ScenarioCardAppear;
+        var seq = CreateSequence();
+
+        // 슬라이드 업 + 페이드인
+        if (scenarioCardRect != null)
+        {
+            seq.Append(scenarioCardRect.DOAnchorPos(_scenarioCardDefaultPos, scenarioAppearDuration).SetEase(Ease.OutQuad));
+            seq.Join(scenarioCardRect.DOScale(1f, scenarioAppearDuration).SetEase(Ease.OutBack));
+        }
+
+        if (scenarioCardCanvasGroup != null)
+            seq.Join(scenarioCardCanvasGroup.DOFade(1f, scenarioAppearDuration).SetEase(Ease.OutQuad));
+
+        // 글로우 페이드인
+        if (scenarioGlowImage != null)
+            seq.Join(scenarioGlowImage.DOFade(glowMinAlpha, scenarioAppearDuration));
+
+        // 글로우 펄스 시작
+        seq.AppendCallback(StartGlowPulse);
+
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -198,7 +211,7 @@ public class Problem4_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void HideScenarioCard()
     {
-        _glowPulsing = false;
+        StopGlowPulse();
 
         if (scenarioCardRect != null)
             scenarioCardRect.gameObject.SetActive(false);
@@ -209,10 +222,8 @@ public class Problem4_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void ResetAll()
     {
-        _isAnimating = false;
-        _glowPulsing = false;
-        _phase = AnimPhase.Idle;
-        _elapsed = 0f;
+        KillCurrentSequence();
+        StopGlowPulse();
 
         HideScenarioCard();
 
@@ -241,175 +252,37 @@ public class Problem4_Step3_EffectController : MonoBehaviour
 
     #endregion
 
-    #region Animation Processing
+    #region Glow Pulse
 
-    private void ProcessAnimation()
-    {
-        switch (_phase)
-        {
-            case AnimPhase.StepAppear_FilmCard:
-                ProcessFilmCardAppear();
-                break;
-            case AnimPhase.StepAppear_QuestionPanel:
-                ProcessQuestionPanelAppear();
-                break;
-            case AnimPhase.StepAppear_InputPanel:
-                ProcessInputPanelAppear();
-                break;
-            case AnimPhase.ScenarioCardAppear:
-                ProcessScenarioCardAppear();
-                break;
-        }
-    }
-
-    private void ProcessFilmCardAppear()
-    {
-        // 딜레이 대기
-        if (_elapsed < filmCardAppearDelay)
-            return;
-
-        float localElapsed = _elapsed - filmCardAppearDelay;
-        float t = Mathf.Clamp01(localElapsed / filmCardAppearDuration);
-        float eased = EaseOutQuad(t);
-
-        if (filmCardRect != null)
-        {
-            Vector2 startPos = _filmCardDefaultPos + new Vector2(0f, -filmCardSlideDistance);
-            filmCardRect.anchoredPosition = Vector2.Lerp(startPos, _filmCardDefaultPos, eased);
-        }
-
-        if (filmCardCanvasGroup != null)
-            filmCardCanvasGroup.alpha = eased;
-
-        if (t >= 1f)
-        {
-            _phase = AnimPhase.StepAppear_QuestionPanel;
-            // elapsed는 계속 누적
-        }
-    }
-
-    private void ProcessQuestionPanelAppear()
-    {
-        // 딜레이 대기
-        if (_elapsed < questionAppearDelay)
-            return;
-
-        float localElapsed = _elapsed - questionAppearDelay;
-        float t = Mathf.Clamp01(localElapsed / questionAppearDuration);
-        float eased = EaseOutQuad(t);
-
-        if (questionPanelRect != null)
-        {
-            Vector2 startPos = _questionPanelDefaultPos + new Vector2(-questionSlideDistance, 0f);
-            questionPanelRect.anchoredPosition = Vector2.Lerp(startPos, _questionPanelDefaultPos, eased);
-        }
-
-        if (questionPanelCanvasGroup != null)
-            questionPanelCanvasGroup.alpha = eased;
-
-        if (t >= 1f)
-        {
-            _phase = AnimPhase.StepAppear_InputPanel;
-        }
-    }
-
-    private void ProcessInputPanelAppear()
-    {
-        // 딜레이 대기
-        if (_elapsed < inputAppearDelay)
-            return;
-
-        float localElapsed = _elapsed - inputAppearDelay;
-        float t = Mathf.Clamp01(localElapsed / inputAppearDuration);
-        float eased = EaseOutQuad(t);
-
-        if (inputPanelRect != null)
-        {
-            Vector2 startPos = _inputPanelDefaultPos + new Vector2(inputSlideDistance, 0f);
-            inputPanelRect.anchoredPosition = Vector2.Lerp(startPos, _inputPanelDefaultPos, eased);
-        }
-
-        if (inputPanelCanvasGroup != null)
-            inputPanelCanvasGroup.alpha = eased;
-
-        if (t >= 1f)
-        {
-            CompleteAnimation();
-        }
-    }
-
-    private void ProcessScenarioCardAppear()
-    {
-        float t = Mathf.Clamp01(_elapsed / scenarioAppearDuration);
-        float eased = EaseOutBack(t);
-
-        if (scenarioCardRect != null)
-        {
-            // 슬라이드 업
-            Vector2 startPos = _scenarioCardDefaultPos + new Vector2(0f, -scenarioSlideDistance);
-            scenarioCardRect.anchoredPosition = Vector2.Lerp(startPos, _scenarioCardDefaultPos, EaseOutQuad(t));
-
-            // 스케일
-            float scale = Mathf.Lerp(scenarioStartScale, 1f, eased);
-            scenarioCardRect.localScale = Vector3.one * scale;
-        }
-
-        if (scenarioCardCanvasGroup != null)
-            scenarioCardCanvasGroup.alpha = EaseOutQuad(t);
-
-        // 글로우 페이드인
-        if (scenarioGlowImage != null)
-        {
-            var c = scenarioGlowImage.color;
-            c.a = Mathf.Lerp(0f, glowMinAlpha, t);
-            scenarioGlowImage.color = c;
-        }
-
-        if (t >= 1f)
-        {
-            // 글로우 펄스 시작
-            _glowPulsing = true;
-            _glowElapsed = 0f;
-
-            CompleteAnimation();
-        }
-    }
-
-    private void ProcessGlowPulse()
+    private void StartGlowPulse()
     {
         if (scenarioGlowImage == null) return;
 
-        _glowElapsed += Time.deltaTime;
+        StopGlowPulse();
 
-        // 사인파로 부드러운 펄스
-        float t = (_glowElapsed % glowPulseDuration) / glowPulseDuration;
-        float pulse = (Mathf.Sin(t * Mathf.PI * 2f) + 1f) * 0.5f; // 0~1 범위
-
-        var c = scenarioGlowImage.color;
-        c.a = Mathf.Lerp(glowMinAlpha, glowMaxAlpha, pulse);
-        scenarioGlowImage.color = c;
+        // 무한 펄스: min → max → min 반복
+        _glowPulseTween = scenarioGlowImage
+            .DOFade(glowMaxAlpha, glowPulseDuration * 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
-    private void CompleteAnimation()
+    private void StopGlowPulse()
     {
-        _isAnimating = false;
-        _phase = AnimPhase.Idle;
-
-        _onCompleteCallback?.Invoke();
-        _onCompleteCallback = null;
+        _glowPulseTween?.Kill();
+        _glowPulseTween = null;
     }
 
-    #endregion
-
-    #region Easing
-
-    private float EaseOutQuad(float t) => 1f - (1f - t) * (1f - t);
-
-    private float EaseOutBack(float t)
+    protected override void OnDisable()
     {
-        const float c1 = 1.70158f;
-        const float c3 = c1 + 1f;
-        return 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
+        base.OnDisable();
+        StopGlowPulse();
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        StopGlowPulse();
     }
 
     #endregion

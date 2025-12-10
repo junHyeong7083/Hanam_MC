@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// Problem4 Step1: Effect Controller
@@ -13,7 +14,7 @@ using UnityEngine;
 /// 3. 활성화 완료 → 완료 스파클 표시
 /// 4. 딜레이 후 → 완료 콜백
 /// </summary>
-public class Problem4_Step1_EffectController : MonoBehaviour
+public class Problem4_Step1_EffectController : EffectControllerBase
 {
     [Header("===== 드롭 인디케이터 =====")]
     [SerializeField] private GameObject dropIndicatorRoot;
@@ -34,54 +35,9 @@ public class Problem4_Step1_EffectController : MonoBehaviour
     [SerializeField] private float instructionFadeOutDuration = 0.2f;
     [SerializeField] private CanvasGroup instructionCanvasGroup;
 
-    // 상태
-    private bool _isAnimating;
-    private float _elapsed;
-    private ActivatePhase _phase;
-    private Action _onCompleteCallback;
+    // 초기 스케일 저장
     private Vector3 _filmBaseScale;
     private bool _filmScaleSaved;
-
-    private enum ActivatePhase
-    {
-        Idle,
-        InstructionFadeOut,
-        ScaleUp,
-        ScaleDown,
-        SparkleDelay,
-        Complete
-    }
-
-    /// <summary>
-    /// 현재 애니메이션 진행 중인지 여부
-    /// </summary>
-    public bool IsAnimating => _isAnimating;
-
-    private void Update()
-    {
-        if (!_isAnimating) return;
-
-        _elapsed += Time.deltaTime;
-
-        switch (_phase)
-        {
-            case ActivatePhase.InstructionFadeOut:
-                ProcessInstructionFadeOut();
-                break;
-
-            case ActivatePhase.ScaleUp:
-                ProcessScaleUp();
-                break;
-
-            case ActivatePhase.ScaleDown:
-                ProcessScaleDown();
-                break;
-
-            case ActivatePhase.SparkleDelay:
-                ProcessSparkleDelay();
-                break;
-        }
-    }
 
     #region Public API
 
@@ -108,11 +64,7 @@ public class Problem4_Step1_EffectController : MonoBehaviour
     /// </summary>
     public void PlayActivateSequence(Action onComplete = null)
     {
-        if (_isAnimating) return;
-
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
+        if (IsAnimating) return;
 
         // 필름 기본 스케일 저장
         if (!_filmScaleSaved && filmVisualRoot != null)
@@ -124,16 +76,35 @@ public class Problem4_Step1_EffectController : MonoBehaviour
         // 드롭 인디케이터 숨김
         HideDropIndicator();
 
-        // 안내 텍스트 페이드아웃 또는 즉시 숨김
+        var seq = CreateSequence();
+
+        // 1. 안내 텍스트 페이드아웃
         if (instructionCanvasGroup != null && instructionFadeOutDuration > 0f)
         {
-            _phase = ActivatePhase.InstructionFadeOut;
+            seq.Append(instructionCanvasGroup.DOFade(0f, instructionFadeOutDuration));
+            seq.AppendCallback(HideInstructionImmediate);
         }
         else
         {
-            HideInstructionImmediate();
-            _phase = ActivatePhase.ScaleUp;
+            seq.AppendCallback(HideInstructionImmediate);
         }
+
+        // 2. 필름 스케일 업/다운 (펀치)
+        if (filmVisualRoot != null)
+        {
+            float halfDuration = activateDuration * 0.5f;
+            seq.Append(filmVisualRoot.DOScale(_filmBaseScale * activateScale, halfDuration).SetEase(Ease.OutQuad));
+            seq.Append(filmVisualRoot.DOScale(_filmBaseScale, halfDuration).SetEase(Ease.InQuad));
+        }
+
+        // 3. 스파클 딜레이 후 표시
+        if (sparkleDelay > 0f)
+            seq.AppendInterval(sparkleDelay);
+
+        seq.AppendCallback(ShowSparkleImmediate);
+
+        // 완료 콜백
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -141,10 +112,7 @@ public class Problem4_Step1_EffectController : MonoBehaviour
     /// </summary>
     public void ResetForNextStep()
     {
-        _isAnimating = false;
-        _phase = ActivatePhase.Idle;
-        _elapsed = 0f;
-        _onCompleteCallback = null;
+        KillCurrentSequence();
 
         // 드롭 인디케이터 숨김
         HideDropIndicator();
@@ -161,8 +129,7 @@ public class Problem4_Step1_EffectController : MonoBehaviour
             filmVisualRoot.localScale = _filmBaseScale;
 
         // 스파클 숨김
-        if (completionSparkle != null)
-            completionSparkle.SetActive(false);
+        HideSparkle();
     }
 
     /// <summary>
@@ -201,102 +168,6 @@ public class Problem4_Step1_EffectController : MonoBehaviour
         if (completionSparkle != null)
             completionSparkle.SetActive(false);
     }
-
-    #endregion
-
-    #region Phase Processing
-
-    private void ProcessInstructionFadeOut()
-    {
-        float t = Mathf.Clamp01(_elapsed / instructionFadeOutDuration);
-
-        if (instructionCanvasGroup != null)
-            instructionCanvasGroup.alpha = 1f - t;
-
-        if (t >= 1f)
-        {
-            HideInstructionImmediate();
-            _phase = ActivatePhase.ScaleUp;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessScaleUp()
-    {
-        float halfDuration = activateDuration * 0.5f;
-        float t = Mathf.Clamp01(_elapsed / halfDuration);
-
-        if (filmVisualRoot != null)
-        {
-            // 사인 곡선으로 부드러운 스케일 업
-            float easedT = EaseOutQuad(t);
-            float scale = Mathf.Lerp(1f, activateScale, easedT);
-            filmVisualRoot.localScale = _filmBaseScale * scale;
-        }
-
-        if (t >= 1f)
-        {
-            _phase = ActivatePhase.ScaleDown;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessScaleDown()
-    {
-        float halfDuration = activateDuration * 0.5f;
-        float t = Mathf.Clamp01(_elapsed / halfDuration);
-
-        if (filmVisualRoot != null)
-        {
-            float easedT = EaseInQuad(t);
-            float scale = Mathf.Lerp(activateScale, 1f, easedT);
-            filmVisualRoot.localScale = _filmBaseScale * scale;
-        }
-
-        if (t >= 1f)
-        {
-            // 필름 스케일 원래대로
-            if (filmVisualRoot != null)
-                filmVisualRoot.localScale = _filmBaseScale;
-
-            // 스파클 딜레이가 있으면 대기
-            if (completionSparkle != null && sparkleDelay > 0f)
-            {
-                _phase = ActivatePhase.SparkleDelay;
-                _elapsed = 0f;
-            }
-            else
-            {
-                ShowSparkleImmediate();
-                CompleteSequence();
-            }
-        }
-    }
-
-    private void ProcessSparkleDelay()
-    {
-        if (_elapsed >= sparkleDelay)
-        {
-            ShowSparkleImmediate();
-            CompleteSequence();
-        }
-    }
-
-    private void CompleteSequence()
-    {
-        _isAnimating = false;
-        _phase = ActivatePhase.Idle;
-
-        _onCompleteCallback?.Invoke();
-        _onCompleteCallback = null;
-    }
-
-    #endregion
-
-    #region Easing Functions
-
-    private float EaseOutQuad(float t) => 1f - (1f - t) * (1f - t);
-    private float EaseInQuad(float t) => t * t;
 
     #endregion
 }

@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using UnityEngine;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 /// <summary>
 /// 회원가입 / 로그인 / 이메일 중복 확인을 담당하는 인증 서비스.
@@ -33,17 +32,18 @@ public class AuthService : IAuthService
         {
             if (_users.HasSuperAdmin()) return;
 
+            var config = AuthConfig.Instance;
             var user = new User
             {
-                Name = "Super Admin",
-                Email = "admin@local",
+                Name = config.DefaultAdminName,
+                Email = config.DefaultAdminEmail,
                 Role = UserRole.SUPERADMIN,
                 IsActive = true,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin1234", BcryptWorkFactor),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(config.DefaultAdminPassword, BcryptWorkFactor),
             };
 
             _users.InsertUser(user);
-            Debug.Log("[AuthService] Default SUPERADMIN created: admin@local / admin1234");
+            Debug.Log($"[AuthService] Default SUPERADMIN created: {config.DefaultAdminEmail}");
         }
         catch (Exception ex)
         {

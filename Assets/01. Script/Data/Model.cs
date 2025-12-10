@@ -17,25 +17,25 @@ public enum StepId
     Step2,
     Step3,
     Step4,
-    Reward,  
+    Reward,
     Extra1,
     Extra2,
 }
 
 public class User
 {
-    // °íÀ¯ ½Äº°ÀÚ
+    // ê³ ìœ  ì‹ë³„ì
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; }
 
-    // ·Î±×ÀÎ½Ã »ç¿ëµÇ´Â ¾ÆÀÌµğ
+    // ë¡œê·¸ì¸ì‹œ ì‚¬ìš©ë˜ëŠ” ì•„ì´ë””
     public string Email { get; set; }
     public string PasswordHash { get; set; }
     public UserRole Role { get; set; } = UserRole.USER;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    // admin °Ë»ö¿ë º¸Á¶ÇÊµå
+    // admin ê²€ìƒ‰ìš© ë³´ì¡°í•„ë“œ
     public string LowerName { get; set; }
     public string NameChosung { get; set; }
 }
@@ -44,21 +44,21 @@ public class ResultDoc
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    // ¸ŞÀÎ Å°: UserId
-    public string UserId { get; set; }     // User.Id ÂüÁ¶
+    // ì™¸ë˜ í‚¤: UserId
+    public string UserId { get; set; }     // User.Id ì°¸ì¡°
 
-    // ThemeÀº stringÀ¸·Î ÀúÀå (¿¹: "Director")
+    // Themeì„ stringìœ¼ë¡œ ì €ì¥ (ì˜ˆ: "Director")
     public string Theme { get; set; }
 
-    // ±âÁ¸ Stage ¡æ ProblemIndex ·Î ³×ÀÌ¹Ö ÅëÀÏ
-    public int ProblemIndex { get; set; }  // 1..10 (¹®Á¦ ¹øÈ£)
+    // ê¸°ì¡´ Stage ë° ProblemIndex ë“± ë ˆì´ë¸” ì €ì¥
+    public int ProblemIndex { get; set; }  // 1..10 (ë¬¸ì œ ë²ˆí˜¸)
 
-    // ¿ä¾à Á¤º¸ (Á¡¼ö, Á¤´ä ºñÀ², °É¸° ½Ã°£ µî)
-    public int Score { get; set; }                 // Á¡¼ö
-    public decimal? CorrectRate { get; set; }      // Á¤´ä ºñÀ² (0~1)
-    public int? DurationSec { get; set; }          // ÀüÃ¼ Ç®ÀÌ ½Ã°£(ÃÊ)
+    // ê²°ê³¼ ì •ë³´ (ì ìˆ˜, ì •ë‹µ ë¹„ìœ¨, ê±¸ë¦° ì‹œê°„ ë“±)
+    public int Score { get; set; }                 // ì ìˆ˜
+    public decimal? CorrectRate { get; set; }      // ì •ë‹µ ë¹„ìœ¨ (0~1)
+    public int? DurationSec { get; set; }          // ì „ì²´ í’€ì´ ì‹œê°„(ì´ˆ)
 
-    // »ó¼¼ ¸ŞÅ¸ Á¤º¸ (¹®Ç×º° ·Î±×, ¿ä¾à JSON µî)
+    // ê¸°íƒ€ ë©”íƒ€ ì •ë³´ (ë””ë²„ê·¸ ë¡œê·¸, ì‘ë‹µ JSON ë“±)
     public string MetaJson { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -70,10 +70,10 @@ public class Problem
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string OwnerEmail { get; set; }
 
-    // Director / Gardener Å×¸¶
+    // Director / Gardener í…Œë§ˆ
     public ProblemTheme Theme { get; set; }
 
-    // Å×¸¶ ¾È¿¡¼­ÀÇ ¹®Á¦ ¹øÈ£ (1..10)
+    // í…Œë§ˆ ì•ˆì—ì„œì˜ ë¬¸ì œ ë²ˆí˜¸ (1..10)
     public int Index { get; set; }
 
     public string Title { get; set; }
@@ -83,13 +83,13 @@ public class Problem
 
 public class InventoryItem
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();          // LiteDB ObjectId ¹®ÀÚ¿­ or Guid
-    public string UserId { get; set; }   // ¼ÒÀ¯ÀÚ
+    public string Id { get; set; } = Guid.NewGuid().ToString();          // LiteDB ObjectId ë¬¸ìì—´ or Guid
+    public string UserId { get; set; }   // ì†Œìœ ì
     public string UserEmail { get; set; }
-    public string ItemId { get; set; }      // "mind_lens" °°Àº ³»ºÎ ID
-    public string ItemName { get; set; }    // "¸¶À½ ·»Áî" (°ü¸®ÀÚ/¸®Æ÷Æ®¿ë)
-    public int ProblemIndex { get; set; }  // ¾î´À ¹®Á¦(1..N)¿¡¼­ ¾ò¾ú´ÂÁö (ÇÊ¿ä ¾øÀ¸¸é null)
-    public ProblemTheme Theme { get; set; } // ¾îµğ ¹®Á¦¿¡¼­ ÁÖ´ÂÁö ¸Ş
+    public string ItemId { get; set; }      // "mind_lens" ê°™ì€ ê³ ìœ  ID
+    public string ItemName { get; set; }    // "ë§ˆìŒ ë Œì¦ˆ" (í‘œì‹œëª…/í”„ë¡ íŠ¸ìš©)
+    public int ProblemIndex { get; set; }  // ì–´ëŠ ë¬¸ì œ(1..N)ì—ì„œ íšë“í–ˆë‚˜ (í•„ìš” ì—†ìœ¼ë©´ null)
+    public ProblemTheme Theme { get; set; } // ì–´ëŠ í…Œë§ˆì—ì„œ íšë“í–ˆë‚˜ ë“±
     public DateTime AcquiredAt { get; set; }
 }
 
@@ -97,13 +97,13 @@ public class SessionRecord
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    // ¸ŞÀÎ Å°: UserId (UserEmailÀº º¸Á¶)
+    // ì™¸ë˜ í‚¤: UserId (UserEmailì€ ì°¸ì¡°)
     public string UserId { get; set; }
     public string UserEmail { get; set; }
 
     public ProblemTheme Theme { get; set; }
 
-    // ÇöÀç ÁøÇà ÁßÀÎ Step Å° (¿¹: "Director_Problem1_Step3")
+    // í˜„ì¬ ì§„í–‰ ì¤‘ì¸ Step í‚¤ (ì˜ˆ: "Director_Problem1_Step3")
     public string CurrentStep { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -116,12 +116,12 @@ public class Attempt
 
     public string SessionId { get; set; }
 
-    // ¸ŞÀÎ Å°: UserId, UserEmailÀº º¸Á¶
+    // ì™¸ë˜ í‚¤: UserId, UserEmailì€ ì°¸ì¡°
     public string UserId { get; set; }
     public string UserEmail { get; set; }
 
-    // ¾î¶² ¹®Á¦¿¡ ´ëÇÑ ½ÃµµÀÎÁö
-    public string Content { get; set; }         // ÅØ½ºÆ®/¿ä¾à JSON µî
+    // ì–´ë–¤ ë¬¸ì œì— ëŒ€í•œ ì‹œë„ì¸ì§€
+    public string Content { get; set; }         // í…ìŠ¤íŠ¸/ì‘ë‹µ JSON ë“±
     public string ProblemId { get; set; }       // Problem.Id
     public ProblemTheme Theme { get; set; }     // Director / Gardener
     public int? ProblemIndex { get; set; }      // 1..10
@@ -139,15 +139,16 @@ public class Feedback
     public float? Score { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
 public class ProblemFlowSummary
 {
-    // ÀÌ ¹®Á¦¸¦ Çª´Â µ¿¾È ½Ãµµ(Attempt)°¡ ¸î ¹ø ÀÖ¾ú´ÂÁö
+    // ì´ ë¬¸ì œë¥¼ í‘¸ëŠ” ë™ì•ˆ ì‹œë„(Attempt)ê°€ ëª‡ ë²ˆ ìˆì—ˆëŠ”ì§€
     public int AttemptCount { get; set; }
 
-    // ¹®Á¦ Ç®ÀÌ¿¡ °É¸° ½Ã°£(ÃÊ). ¾Ë ¼ö ¾øÀ¸¸é null
+    // ì „ì²´ í’€ì´ì— ê±¸ë¦° ì‹œê°„(ì´ˆ). ì•Œ ìˆ˜ ì—†ìœ¼ë©´ null
     public int? DurationSec { get; set; }
 
-    // ÃÖÁ¾ÀûÀ¸·Î ¼º°øÇß´ÂÁö ¿©ºÎ (¿©±â¼­´Â Ç×»ó true·Î ¾²°Ô µÉ °¡´É¼º ³ôÀ½)
+    // ìµœì¢…ì ìœ¼ë¡œ ì„±ê³µí–ˆëŠ”ì§€ ì—¬ë¶€ (ì—¬ê¸°ì„œëŠ” í•­ìƒ trueë¡œ ë‚˜ì˜¬ ìˆ˜ ìˆìœ¼ë‚˜ ì¶”í›„ í™•ì¥)
     public bool Succeeded { get; set; } = true;
 }
 
@@ -160,8 +161,8 @@ public class UserProgress
 
     public void MarkSolved(string themeKey, int problemIndex)
     {
-        // ¿©±â¼­´Â ¿ä¾à Á¤º¸¸¸ °£´ÜÈ÷ °»½ÅÇØµµ µÊ.
-        // (ÇÊ¿äÇÏ¸é ³ªÁß¿¡ Å×¸¶º° Åë°è, ÃÖ±Ù Ç¬ ¹®Á¦ Á¤º¸ µî ´õ ³ÖÀ» ¼ö ÀÖÀ½)
+        // ì—¬ê¸°ì„œëŠ” ë‹¨ìˆœ ì¹´ìš´í„°ë§Œ ì¦ê°€ì‹œì¼œë„ ë¨.
+        // (í•„ìš”í•˜ë©´ ë‚˜ì¤‘ì— í…Œë§ˆë³„ í‘¼ ìˆ˜, ìµœê·¼ í‘¼ ë¬¸ì œ ëª©ë¡ ë“± ë” ì„¸ë¶„í™” í•  ìˆ˜ë„)
 
         TotalSolved++;
         LastSessionAt = DateTime.UtcNow;

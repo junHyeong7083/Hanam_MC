@@ -39,6 +39,8 @@ public class ProblemStepBaseEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("stepKeyConfig"));
         }
 
+
+
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 

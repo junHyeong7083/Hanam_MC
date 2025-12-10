@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 팝업 스프링 애니메이션
@@ -20,8 +21,7 @@ public class PopupSpring : MonoBehaviour
 
     // 내부
     private Vector3 _targetScale;
-    private float _elapsedTime;
-    private bool _isAnimating;
+    private Tween _tween;
 
     private void Awake()
     {
@@ -31,40 +31,37 @@ public class PopupSpring : MonoBehaviour
     private void OnEnable()
     {
         transform.localScale = Vector3.zero;
-        _elapsedTime = -delay;
-        _isAnimating = true;
+        PlayAnimation();
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (!_isAnimating) return;
-
-        _elapsedTime += Time.deltaTime;
-
-        if (_elapsedTime < 0) return;
-
-        float t = Mathf.Clamp01(_elapsedTime / duration);
-
-        // 스프링 커브: 오버슈트 후 정착
-        float scale = SpringEase(t, overshoot);
-        transform.localScale = _targetScale * scale;
-
-        if (t >= 1f)
-        {
-            transform.localScale = _targetScale;
-            _isAnimating = false;
-        }
+        KillTween();
     }
 
-    /// <summary>
-    /// 스프링 이징 (오버슈트 + 감쇠)
-    /// </summary>
-    private float SpringEase(float t, float overshoot)
+    private void OnDestroy()
     {
-        // 간단한 스프링: sin 기반 감쇠 진동
-        float decay = 1f - t;
-        float oscillation = Mathf.Sin(t * Mathf.PI * 2f) * decay * (overshoot - 1f);
-        return t + oscillation * (1f - t);
+        KillTween();
+    }
+
+    private void KillTween()
+    {
+        _tween?.Kill();
+        _tween = null;
+    }
+
+    private void PlayAnimation()
+    {
+        KillTween();
+
+        // DOTween의 OutBack은 overshoot 값을 지원 (기본값 1.70158)
+        // overshoot 1.2는 약간의 오버슈트를 원하므로 OutBack 사용
+        float customOvershoot = (overshoot - 1f) * 10f; // 0.2 → 2.0
+
+        _tween = transform
+            .DOScale(_targetScale, duration)
+            .SetDelay(delay)
+            .SetEase(Ease.OutBack, customOvershoot);
     }
 
     /// <summary>
@@ -72,7 +69,8 @@ public class PopupSpring : MonoBehaviour
     /// </summary>
     public void Play()
     {
-        OnEnable();
+        transform.localScale = Vector3.zero;
+        PlayAnimation();
     }
 
     /// <summary>

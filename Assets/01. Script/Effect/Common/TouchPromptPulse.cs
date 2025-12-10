@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 터치 유도 펄스 애니메이션
@@ -17,7 +18,7 @@ public class TouchPromptPulse : MonoBehaviour
     [SerializeField] private float maxScale = 1.1f;
 
     private Vector3 _originalScale;
-    private float _time;
+    private Tween _tween;
 
     private void Awake()
     {
@@ -26,22 +27,42 @@ public class TouchPromptPulse : MonoBehaviour
 
     private void OnEnable()
     {
-        _time = 0f;
-    }
-
-    private void Update()
-    {
-        _time += Time.deltaTime;
-
-        float normalizedTime = (_time % duration) / duration;
-        float wave = Mathf.Sin(normalizedTime * Mathf.PI * 2f) * 0.5f + 0.5f;  // 0~1
-        float scale = Mathf.Lerp(minScale, maxScale, wave);
-
-        transform.localScale = _originalScale * scale;
+        PlayAnimation();
     }
 
     private void OnDisable()
     {
+        StopAnimation();
         transform.localScale = _originalScale;
+    }
+
+    private void OnDestroy()
+    {
+        KillTween();
+    }
+
+    private void KillTween()
+    {
+        _tween?.Kill();
+        _tween = null;
+    }
+
+    private void PlayAnimation()
+    {
+        KillTween();
+
+        // 시작 스케일 설정
+        transform.localScale = _originalScale * minScale;
+
+        // min → max 펄스 (Yoyo로 왕복)
+        _tween = transform
+            .DOScale(_originalScale * maxScale, duration * 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopAnimation()
+    {
+        KillTween();
     }
 }

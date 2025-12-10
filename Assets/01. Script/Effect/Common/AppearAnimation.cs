@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// 오브젝트 등장 애니메이션
@@ -33,14 +33,13 @@ public class AppearAnimation : MonoBehaviour
     [SerializeField] private float startScale = 0.8f;
 
     [Header("Easing")]
-    [SerializeField] private AnimationCurve easeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private Ease easeType = Ease.OutQuad;
 
     // 내부
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
     private Vector2 _targetPosition;
-    private float _elapsedTime;
-    private bool _isAnimating;
+    private Sequence _sequence;
 
     private void Awake()
     {
@@ -69,8 +68,23 @@ public class AppearAnimation : MonoBehaviour
         if (enableScale)
             _rectTransform.localScale = Vector3.one * startScale;
 
-        _elapsedTime = -delay;  // 딜레이 처리
-        _isAnimating = true;
+        PlayAnimation();
+    }
+
+    private void OnDisable()
+    {
+        KillSequence();
+    }
+
+    private void OnDestroy()
+    {
+        KillSequence();
+    }
+
+    private void KillSequence()
+    {
+        _sequence?.Kill();
+        _sequence = null;
     }
 
     /// <summary>
@@ -88,42 +102,36 @@ public class AppearAnimation : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void PlayAnimation()
     {
-        if (!_isAnimating) return;
+        KillSequence();
 
-        _elapsedTime += Time.deltaTime;
+        _sequence = DOTween.Sequence();
 
-        // 딜레이 중
-        if (_elapsedTime < 0) return;
-
-        float t = Mathf.Clamp01(_elapsedTime / duration);
-        float eased = easeCurve.Evaluate(t);
+        // 딜레이
+        if (delay > 0f)
+            _sequence.AppendInterval(delay);
 
         // 위치 애니메이션
         if (enableSlide)
-        {
-            Vector2 startPos = _targetPosition + GetSlideOffset();
-            _rectTransform.anchoredPosition = Vector2.Lerp(startPos, _targetPosition, eased);
-        }
+            _sequence.Append(_rectTransform.DOAnchorPos(_targetPosition, duration).SetEase(easeType));
 
         // 페이드 애니메이션
         if (enableFade && _canvasGroup != null)
         {
-            _canvasGroup.alpha = eased;
+            if (enableSlide)
+                _sequence.Join(_canvasGroup.DOFade(1f, duration));
+            else
+                _sequence.Append(_canvasGroup.DOFade(1f, duration).SetEase(easeType));
         }
 
         // 스케일 애니메이션
         if (enableScale)
         {
-            float scale = Mathf.Lerp(startScale, 1f, eased);
-            _rectTransform.localScale = Vector3.one * scale;
-        }
-
-        // 완료
-        if (t >= 1f)
-        {
-            _isAnimating = false;
+            if (enableSlide || enableFade)
+                _sequence.Join(_rectTransform.DOScale(1f, duration).SetEase(easeType));
+            else
+                _sequence.Append(_rectTransform.DOScale(1f, duration).SetEase(easeType));
         }
     }
 

@@ -35,8 +35,8 @@ public class ProblemRepository : IProblemRepository
         {
             var col = db.GetCollection<Problem>(CProblems);
             col.EnsureIndex(x => x.Theme);
-            // TODO: Problem에 ProblemIndex 필드가 생기면 theme + index 조합으로 조회하도록 확장
-            return col.FindOne(p => p.Theme == theme);
+            col.EnsureIndex(x => x.Index);
+            return col.FindOne(p => p.Theme == theme && p.Index == index);
         });
     }
 }

@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 아래에서 위로 슬라이드하며 페이드인하는 애니메이션
@@ -18,14 +18,14 @@ public class SlideUpFadeIn : MonoBehaviour
     [SerializeField] private bool playOnEnable = true;
 
     [Header("Easing")]
-    [SerializeField] private AnimationCurve easingCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private Ease easeType = Ease.OutQuad;
 
     // 내부 상태
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
     private Vector2 _basePosition;
     private bool _initialized;
-    private Coroutine _animCoroutine;
+    private Sequence _sequence;
 
     private void Awake()
     {
@@ -53,29 +53,54 @@ public class SlideUpFadeIn : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_animCoroutine != null)
-        {
-            StopCoroutine(_animCoroutine);
-            _animCoroutine = null;
-        }
+        KillSequence();
+    }
+
+    private void OnDestroy()
+    {
+        KillSequence();
+    }
+
+    private void KillSequence()
+    {
+        _sequence?.Kill();
+        _sequence = null;
     }
 
     #region Public API
 
     public void Play()
     {
-        if (_animCoroutine != null)
-            StopCoroutine(_animCoroutine);
+        KillSequence();
 
-        _animCoroutine = StartCoroutine(PlayRoutine());
+        if (_rectTransform == null) return;
+
+        // 시작 상태
+        Vector2 startPos = _basePosition + new Vector2(0, -startOffsetY);
+        _rectTransform.anchoredPosition = startPos;
+
+        if (_canvasGroup != null)
+            _canvasGroup.alpha = 0f;
+
+        _sequence = DOTween.Sequence();
+
+        // 딜레이
+        if (delay > 0f)
+            _sequence.AppendInterval(delay);
+
+        // 슬라이드 업 + 페이드 인
+        _sequence.Append(_rectTransform.DOAnchorPos(_basePosition, duration).SetEase(easeType));
+
+        if (_canvasGroup != null)
+            _sequence.Join(_canvasGroup.DOFade(1f, duration));
     }
 
     public void ResetToStart()
     {
+        KillSequence();
+
         if (_rectTransform != null && _initialized)
-        {
             _rectTransform.anchoredPosition = _basePosition + new Vector2(0, -startOffsetY);
-        }
 
         if (_canvasGroup != null)
             _canvasGroup.alpha = 0f;
@@ -83,55 +108,14 @@ public class SlideUpFadeIn : MonoBehaviour
 
     public void SetToEnd()
     {
+        KillSequence();
+
         if (_rectTransform != null && _initialized)
-        {
             _rectTransform.anchoredPosition = _basePosition;
-        }
 
         if (_canvasGroup != null)
             _canvasGroup.alpha = 1f;
     }
 
     #endregion
-
-    private IEnumerator PlayRoutine()
-    {
-        if (_rectTransform == null) yield break;
-
-        // 시작 상태
-        Vector2 startPos = _basePosition + new Vector2(0, -startOffsetY);
-        Vector2 endPos = _basePosition;
-
-        _rectTransform.anchoredPosition = startPos;
-        if (_canvasGroup != null)
-            _canvasGroup.alpha = 0f;
-
-        // 딜레이
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
-
-        // 애니메이션
-        float t = 0f;
-        float safeDuration = Mathf.Max(0.001f, duration);
-
-        while (t < 1f)
-        {
-            t += Time.deltaTime / safeDuration;
-            float eased = easingCurve.Evaluate(Mathf.Clamp01(t));
-
-            _rectTransform.anchoredPosition = Vector2.Lerp(startPos, endPos, eased);
-
-            if (_canvasGroup != null)
-                _canvasGroup.alpha = eased;
-
-            yield return null;
-        }
-
-        // 최종 상태
-        _rectTransform.anchoredPosition = endPos;
-        if (_canvasGroup != null)
-            _canvasGroup.alpha = 1f;
-
-        _animCoroutine = null;
-    }
 }

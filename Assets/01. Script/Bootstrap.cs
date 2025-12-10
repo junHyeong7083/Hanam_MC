@@ -18,6 +18,9 @@ public class Bootstrap : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
+        // 데이터베이스 인덱스 초기화 (앱 시작 시 한 번만)
+        DatabaseInitializer.InitializeIndexes();
+
         // 바로 GoTo 호출하지 말고, 코루틴에서 SceneNavigator 준비될 때까지 기다리기
         StartCoroutine(InitRoutine());
     }

@@ -51,11 +51,24 @@ public class VirtualKeyboard : MonoBehaviour
     public event Action<string> OnTextChanged;
     public event Action OnEnterPressed;
 
+    // 코루틴 참조 (정리용)
+    private Coroutine _refocusCoroutine;
+
     private void Start()
     {
         InitializeKeys();
         SetupSpecialKeys();
         UpdateKeyLabels();
+    }
+
+    private void OnDisable()
+    {
+        // 코루틴 정리
+        if (_refocusCoroutine != null)
+        {
+            StopCoroutine(_refocusCoroutine);
+            _refocusCoroutine = null;
+        }
     }
 
     #region Public API
@@ -410,7 +423,12 @@ public class VirtualKeyboard : MonoBehaviour
     private void RefocusInputField()
     {
         if (targetInputField == null) return;
-        StartCoroutine(RefocusNextFrame());
+
+        // 기존 코루틴 정리 후 새로 시작
+        if (_refocusCoroutine != null)
+            StopCoroutine(_refocusCoroutine);
+
+        _refocusCoroutine = StartCoroutine(RefocusNextFrame());
     }
 
     private System.Collections.IEnumerator RefocusNextFrame()
@@ -424,6 +442,7 @@ public class VirtualKeyboard : MonoBehaviour
             targetInputField.selectionAnchorPosition = targetInputField.text.Length;
             targetInputField.selectionFocusPosition = targetInputField.text.Length;
         }
+        _refocusCoroutine = null;  // 완료 시 참조 정리
     }
 
     private void InsertCharacter(string c)

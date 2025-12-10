@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// Problem4 Step2: Effect Controller
@@ -15,7 +16,7 @@ using UnityEngine.UI;
 /// 3. 통과: 우측 이동 + 페이드
 /// 4. 완료: 전체 필름 흑백→컬러 전환
 /// </summary>
-public class Problem4_Step2_EffectController : MonoBehaviour
+public class Problem4_Step2_EffectController : EffectControllerBase
 {
     [Header("===== 필름 카드 =====")]
     [SerializeField] private RectTransform filmCardRect;
@@ -32,7 +33,7 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     [Header("===== 가위 애니메이션 =====")]
     [SerializeField] private RectTransform scissorsRect;
     [SerializeField] private float scissorsMoveDuration = 0.3f;
-    [SerializeField] private Vector2 scissorsOffset = new Vector2(0f, -150f);  // 아래에서 위로
+    [SerializeField] private Vector2 scissorsOffset = new Vector2(0f, -150f);
 
     [Header("===== 카드 분리 (컷) =====")]
     [SerializeField] private RectTransform cardLeftRect;
@@ -49,7 +50,7 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     [SerializeField] private float passMoveDuration = 0.35f;
 
     [Header("===== 색상 복원 =====")]
-    [SerializeField] private Image[] filmImages;  // 흑백→컬러 전환할 이미지들
+    [SerializeField] private Image[] filmImages;
     [SerializeField] private Color grayscaleColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     [SerializeField] private Color restoredColor = Color.white;
     [SerializeField] private float colorRestoreDuration = 1.2f;
@@ -62,90 +63,19 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     [SerializeField] private float errorShakeDuration = 0.4f;
     [SerializeField] private float errorShakeAmount = 10f;
 
-    // 상태
-    private bool _isAnimating;
-    private float _elapsed;
-    private AnimPhase _phase;
-    private Action _onCompleteCallback;
-
     // 카드 기본 위치
     private Vector2 _cardDefaultPos;
     private bool _defaultPosSaved;
 
-    // 애니메이션 중간 데이터
-    private Vector2 _animStartPos;
-    private Vector2 _animEndPos;
-    private Vector2 _splitCenterPos;
-
-    private enum AnimPhase
-    {
-        Idle,
-        // 등장
-        AppearSlide,
-        AppearSnap,
-        // 컷
-        ScissorsMove,
-        CardSplit,
-        // 통과
-        PassMove,
-        // 색상 복원
-        ColorRestoreDelay,
-        ColorRestoring,
-        // 에러
-        ErrorShake
-    }
-
-    public bool IsAnimating => _isAnimating;
-
     private void Awake()
     {
-        // 카드 기본 위치 저장
-        if (filmCardRect != null && !_defaultPosSaved)
-        {
-            _cardDefaultPos = filmCardRect.anchoredPosition;
-            _defaultPosSaved = true;
-        }
-    }
-
-    private void Update()
-    {
-        if (!_isAnimating) return;
-
-        _elapsed += Time.deltaTime;
-
-        switch (_phase)
-        {
-            case AnimPhase.AppearSlide:
-                ProcessAppearSlide();
-                break;
-            case AnimPhase.AppearSnap:
-                ProcessAppearSnap();
-                break;
-            case AnimPhase.ScissorsMove:
-                ProcessScissorsMove();
-                break;
-            case AnimPhase.CardSplit:
-                ProcessCardSplit();
-                break;
-            case AnimPhase.PassMove:
-                ProcessPassMove();
-                break;
-            case AnimPhase.ColorRestoreDelay:
-                ProcessColorRestoreDelay();
-                break;
-            case AnimPhase.ColorRestoring:
-                ProcessColorRestoring();
-                break;
-            case AnimPhase.ErrorShake:
-                ProcessErrorShake();
-                break;
-        }
+        SaveDefaultPosition();
     }
 
     #region Public API
 
     /// <summary>
-    /// 카드 기본 위치 저장 (Logic에서 호출)
+    /// 카드 기본 위치 저장
     /// </summary>
     public void SaveDefaultPosition()
     {
@@ -161,36 +91,46 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void PlayAppearAnimation(Action onComplete = null)
     {
-        // 이미 애니메이션 중이면 콜백만 호출
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
         }
 
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
+        SaveDefaultPosition();
 
-        // 시작 위치 설정
-        if (appearStartPoint != null)
-            _animStartPos = appearStartPoint.anchoredPosition;
-        else
-            _animStartPos = _cardDefaultPos + new Vector2(-500f, 0f);
-
-        _animEndPos = _cardDefaultPos;
+        Vector2 startPos = appearStartPoint != null
+            ? appearStartPoint.anchoredPosition
+            : _cardDefaultPos + new Vector2(-500f, 0f);
 
         // 카드 초기화
         if (filmCardRoot != null)
             filmCardRoot.SetActive(true);
 
         if (filmCardRect != null)
-            filmCardRect.anchoredPosition = _animStartPos;
+            filmCardRect.anchoredPosition = startPos;
 
         if (filmCardCanvasGroup != null)
             filmCardCanvasGroup.alpha = 0f;
 
-        _phase = AnimPhase.AppearSlide;
+        var seq = CreateSequence();
+
+        // 1. 슬라이드 + 페이드인
+        if (filmCardRect != null)
+            seq.Append(filmCardRect.DOAnchorPos(_cardDefaultPos, appearDuration).SetEase(Ease.OutQuad));
+
+        if (filmCardCanvasGroup != null)
+            seq.Join(filmCardCanvasGroup.DOFade(1f, appearDuration));
+
+        // 2. 스냅 지터
+        if (filmCardRect != null)
+        {
+            float totalJitterTime = snapJitterDuration * snapJitterCount;
+            seq.Append(filmCardRect.DOShakeAnchorPos(totalJitterTime, snapJitterAmount, 10, 90f, false, true, ShakeRandomnessMode.Harmonic));
+            seq.AppendCallback(() => filmCardRect.anchoredPosition = _cardDefaultPos);
+        }
+
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -198,26 +138,75 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void PlayCutAnimation(Action onComplete = null)
     {
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
         }
 
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
+        var seq = CreateSequence();
+        Vector2 cardPos = filmCardRect != null ? filmCardRect.anchoredPosition : _cardDefaultPos;
 
-        // 가위 시작 위치
-        if (scissorsRect != null && filmCardRect != null)
+        // 1. 가위 등장 + 이동
+        if (scissorsRect != null)
         {
             scissorsRect.gameObject.SetActive(true);
-            _animStartPos = filmCardRect.anchoredPosition + scissorsOffset;
-            _animEndPos = filmCardRect.anchoredPosition;
-            scissorsRect.anchoredPosition = _animStartPos;
+            scissorsRect.anchoredPosition = cardPos + scissorsOffset;
+
+            seq.Append(scissorsRect.DOAnchorPos(cardPos, scissorsMoveDuration).SetEase(Ease.OutQuad));
         }
 
-        _phase = AnimPhase.ScissorsMove;
+        // 2. 메인 카드 숨김 + 분리 카드 표시
+        seq.AppendCallback(() =>
+        {
+            if (filmCardRoot != null)
+                filmCardRoot.SetActive(false);
+
+            if (cardLeftRect != null)
+            {
+                cardLeftRect.gameObject.SetActive(true);
+                cardLeftRect.anchoredPosition = cardPos;
+                cardLeftRect.localRotation = Quaternion.identity;
+            }
+            if (cardRightRect != null)
+            {
+                cardRightRect.gameObject.SetActive(true);
+                cardRightRect.anchoredPosition = cardPos;
+                cardRightRect.localRotation = Quaternion.identity;
+            }
+            if (cardLeftCanvas != null) cardLeftCanvas.alpha = 1f;
+            if (cardRightCanvas != null) cardRightCanvas.alpha = 1f;
+        });
+
+        // 3. 카드 분리 애니메이션
+        if (cardLeftRect != null)
+        {
+            Vector2 leftEndPos = cardPos + new Vector2(-splitHorizontalOffset, -splitFallDistance);
+            seq.Append(cardLeftRect.DOAnchorPos(leftEndPos, splitDuration).SetEase(Ease.InQuad));
+            seq.Join(cardLeftRect.DORotate(new Vector3(0f, 0f, -splitRotateAngle), splitDuration));
+        }
+
+        if (cardRightRect != null)
+        {
+            Vector2 rightEndPos = cardPos + new Vector2(splitHorizontalOffset, -splitFallDistance);
+            seq.Join(cardRightRect.DOAnchorPos(rightEndPos, splitDuration).SetEase(Ease.InQuad));
+            seq.Join(cardRightRect.DORotate(new Vector3(0f, 0f, splitRotateAngle), splitDuration));
+        }
+
+        if (cardLeftCanvas != null)
+            seq.Join(cardLeftCanvas.DOFade(0f, splitDuration));
+        if (cardRightCanvas != null)
+            seq.Join(cardRightCanvas.DOFade(0f, splitDuration));
+
+        // 4. 정리
+        seq.AppendCallback(() =>
+        {
+            if (cardLeftRect != null) cardLeftRect.gameObject.SetActive(false);
+            if (cardRightRect != null) cardRightRect.gameObject.SetActive(false);
+            if (scissorsRect != null) scissorsRect.gameObject.SetActive(false);
+        });
+
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -225,27 +214,26 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void PlayPassAnimation(Action onComplete = null)
     {
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
         }
 
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
+        Vector2 startPos = filmCardRect != null ? filmCardRect.anchoredPosition : _cardDefaultPos;
+        Vector2 endPos = passTargetPoint != null
+            ? passTargetPoint.anchoredPosition
+            : startPos + new Vector2(400f, 0f);
+
+        var seq = CreateSequence();
 
         if (filmCardRect != null)
-        {
-            _animStartPos = filmCardRect.anchoredPosition;
+            seq.Append(filmCardRect.DOAnchorPos(endPos, passMoveDuration).SetEase(Ease.OutQuad));
 
-            if (passTargetPoint != null)
-                _animEndPos = passTargetPoint.anchoredPosition;
-            else
-                _animEndPos = _animStartPos + new Vector2(400f, 0f);
-        }
+        if (filmCardCanvasGroup != null)
+            seq.Join(filmCardCanvasGroup.DOFade(0f, passMoveDuration));
 
-        _phase = AnimPhase.PassMove;
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -253,16 +241,32 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void PlayColorRestoreAnimation(Action onComplete = null)
     {
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
         }
 
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
-        _phase = AnimPhase.ColorRestoreDelay;
+        var seq = CreateSequence();
+
+        // 1. 딜레이
+        if (colorRestoreDelay > 0f)
+            seq.AppendInterval(colorRestoreDelay);
+
+        // 2. 색상 전환
+        if (filmImages != null && filmImages.Length > 0)
+        {
+            foreach (var img in filmImages)
+            {
+                if (img != null)
+                    seq.Join(img.DOColor(restoredColor, colorRestoreDuration).SetEase(Ease.OutQuad));
+            }
+        }
+
+        // 3. 스파클 표시
+        seq.AppendCallback(ShowCompletionSparkle);
+
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -270,20 +274,22 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void PlayErrorShake(Action onComplete = null)
     {
-        if (_isAnimating)
+        if (IsAnimating)
         {
             onComplete?.Invoke();
             return;
         }
 
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
+        var seq = CreateSequence();
 
         if (filmCardRect != null)
-            _animStartPos = filmCardRect.anchoredPosition;
+        {
+            Vector2 originalPos = filmCardRect.anchoredPosition;
+            seq.Append(filmCardRect.DOShakeAnchorPos(errorShakeDuration, new Vector2(errorShakeAmount, 0f), 10, 0f, false, true));
+            seq.AppendCallback(() => filmCardRect.anchoredPosition = originalPos);
+        }
 
-        _phase = AnimPhase.ErrorShake;
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -291,9 +297,7 @@ public class Problem4_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void ResetForNextCard()
     {
-        _isAnimating = false;
-        _phase = AnimPhase.Idle;
-        _elapsed = 0f;
+        KillCurrentSequence();
 
         // 가위 숨김
         if (scissorsRect != null)
@@ -351,7 +355,6 @@ public class Problem4_Step2_EffectController : MonoBehaviour
         {
             completionSparkleRoot.SetActive(true);
 
-            // PopupSpring 있으면 재생
             var springs = completionSparkleRoot.GetComponentsInChildren<PopupSpring>(true);
             foreach (var spring in springs)
             {
@@ -368,233 +371,6 @@ public class Problem4_Step2_EffectController : MonoBehaviour
         if (completionSparkleRoot != null)
             completionSparkleRoot.SetActive(false);
     }
-
-    #endregion
-
-    #region Animation Processing
-
-    private void ProcessAppearSlide()
-    {
-        float t = Mathf.Clamp01(_elapsed / appearDuration);
-        float eased = EaseOutQuad(t);
-
-        if (filmCardRect != null)
-            filmCardRect.anchoredPosition = Vector2.Lerp(_animStartPos, _animEndPos, eased);
-
-        if (filmCardCanvasGroup != null)
-            filmCardCanvasGroup.alpha = eased;
-
-        if (t >= 1f)
-        {
-            // 스냅 단계로
-            _phase = AnimPhase.AppearSnap;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessAppearSnap()
-    {
-        // Jitter 효과 (프레임 스냅 느낌)
-        float totalJitterTime = snapJitterDuration * snapJitterCount;
-        float t = _elapsed / totalJitterTime;
-
-        if (filmCardRect != null && t < 1f)
-        {
-            // 감쇠하는 jitter
-            float decay = 1f - t;
-            float jitterX = Mathf.Sin(_elapsed * 50f) * snapJitterAmount * decay;
-            float jitterY = Mathf.Cos(_elapsed * 40f) * snapJitterAmount * 0.5f * decay;
-
-            filmCardRect.anchoredPosition = _cardDefaultPos + new Vector2(jitterX, jitterY);
-        }
-
-        if (t >= 1f)
-        {
-            // 최종 위치 고정
-            if (filmCardRect != null)
-                filmCardRect.anchoredPosition = _cardDefaultPos;
-
-            CompleteAnimation();
-        }
-    }
-
-    private void ProcessScissorsMove()
-    {
-        float t = Mathf.Clamp01(_elapsed / scissorsMoveDuration);
-        float eased = EaseOutQuad(t);
-
-        if (scissorsRect != null)
-            scissorsRect.anchoredPosition = Vector2.Lerp(_animStartPos, _animEndPos, eased);
-
-        if (t >= 1f)
-        {
-            // 카드 분리 시작
-            _splitCenterPos = filmCardRect != null ? filmCardRect.anchoredPosition : _cardDefaultPos;
-
-            // 메인 카드 숨김
-            if (filmCardRoot != null)
-                filmCardRoot.SetActive(false);
-
-            // 분리 카드 표시
-            if (cardLeftRect != null)
-            {
-                cardLeftRect.gameObject.SetActive(true);
-                cardLeftRect.anchoredPosition = _splitCenterPos;
-                cardLeftRect.localRotation = Quaternion.identity;
-            }
-            if (cardRightRect != null)
-            {
-                cardRightRect.gameObject.SetActive(true);
-                cardRightRect.anchoredPosition = _splitCenterPos;
-                cardRightRect.localRotation = Quaternion.identity;
-            }
-            if (cardLeftCanvas != null)
-                cardLeftCanvas.alpha = 1f;
-            if (cardRightCanvas != null)
-                cardRightCanvas.alpha = 1f;
-
-            _phase = AnimPhase.CardSplit;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessCardSplit()
-    {
-        float t = Mathf.Clamp01(_elapsed / splitDuration);
-        float eased = EaseInQuad(t);  // 가속하면서 떨어짐
-
-        float alpha = 1f - eased;
-
-        if (cardLeftRect != null)
-        {
-            Vector2 pos = _splitCenterPos + new Vector2(
-                -splitHorizontalOffset * eased,
-                -splitFallDistance * eased
-            );
-            cardLeftRect.anchoredPosition = pos;
-            cardLeftRect.localRotation = Quaternion.Euler(0f, 0f, -splitRotateAngle * eased);
-        }
-
-        if (cardRightRect != null)
-        {
-            Vector2 pos = _splitCenterPos + new Vector2(
-                splitHorizontalOffset * eased,
-                -splitFallDistance * eased
-            );
-            cardRightRect.anchoredPosition = pos;
-            cardRightRect.localRotation = Quaternion.Euler(0f, 0f, splitRotateAngle * eased);
-        }
-
-        if (cardLeftCanvas != null)
-            cardLeftCanvas.alpha = alpha;
-        if (cardRightCanvas != null)
-            cardRightCanvas.alpha = alpha;
-
-        if (t >= 1f)
-        {
-            // 분리 카드 숨김
-            if (cardLeftRect != null)
-                cardLeftRect.gameObject.SetActive(false);
-            if (cardRightRect != null)
-                cardRightRect.gameObject.SetActive(false);
-
-            // 가위 숨김
-            if (scissorsRect != null)
-                scissorsRect.gameObject.SetActive(false);
-
-            CompleteAnimation();
-        }
-    }
-
-    private void ProcessPassMove()
-    {
-        float t = Mathf.Clamp01(_elapsed / passMoveDuration);
-        float eased = EaseOutQuad(t);
-
-        if (filmCardRect != null)
-            filmCardRect.anchoredPosition = Vector2.Lerp(_animStartPos, _animEndPos, eased);
-
-        if (filmCardCanvasGroup != null)
-            filmCardCanvasGroup.alpha = 1f - eased;
-
-        if (t >= 1f)
-        {
-            CompleteAnimation();
-        }
-    }
-
-    private void ProcessColorRestoreDelay()
-    {
-        if (_elapsed >= colorRestoreDelay)
-        {
-            _phase = AnimPhase.ColorRestoring;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessColorRestoring()
-    {
-        float t = Mathf.Clamp01(_elapsed / colorRestoreDuration);
-        float eased = EaseOutQuad(t);
-
-        // 모든 필름 이미지 색상 전환
-        if (filmImages != null)
-        {
-            Color currentColor = Color.Lerp(grayscaleColor, restoredColor, eased);
-
-            foreach (var img in filmImages)
-            {
-                if (img != null)
-                    img.color = currentColor;
-            }
-        }
-
-        if (t >= 1f)
-        {
-            // 스파클 표시
-            ShowCompletionSparkle();
-            CompleteAnimation();
-        }
-    }
-
-    private void ProcessErrorShake()
-    {
-        float t = Mathf.Clamp01(_elapsed / errorShakeDuration);
-
-        if (filmCardRect != null)
-        {
-            // 감쇠하는 좌우 흔들림
-            float decay = 1f - t;
-            float shakeX = Mathf.Sin(_elapsed * 40f) * errorShakeAmount * decay;
-
-            filmCardRect.anchoredPosition = _animStartPos + new Vector2(shakeX, 0f);
-        }
-
-        if (t >= 1f)
-        {
-            // 원래 위치로
-            if (filmCardRect != null)
-                filmCardRect.anchoredPosition = _animStartPos;
-
-            CompleteAnimation();
-        }
-    }
-
-    private void CompleteAnimation()
-    {
-        _isAnimating = false;
-        _phase = AnimPhase.Idle;
-
-        _onCompleteCallback?.Invoke();
-        _onCompleteCallback = null;
-    }
-
-    #endregion
-
-    #region Easing
-
-    private float EaseOutQuad(float t) => 1f - (1f - t) * (1f - t);
-    private float EaseInQuad(float t) => t * t;
 
     #endregion
 }

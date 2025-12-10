@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// 텍스트 투명도 펄스 애니메이션
@@ -19,15 +20,12 @@ public class TextOpacityPulse : MonoBehaviour
     [SerializeField] private bool playOnEnable = true;
 
     // 내부 상태
-    private Text _text;
     private Graphic _graphic; // Image, Text 등 모든 UI 요소 지원
     private Color _baseColor;
-    private bool _isPlaying;
-    private float _time;
+    private Tween _tween;
 
     private void Awake()
     {
-        _text = GetComponent<Text>();
         _graphic = GetComponent<Graphic>();
 
         if (_graphic != null)
@@ -45,33 +43,40 @@ public class TextOpacityPulse : MonoBehaviour
         Stop();
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        if (!_isPlaying || _graphic == null) return;
+        KillTween();
+    }
 
-        _time += Time.deltaTime;
-        float normalizedTime = (_time % duration) / duration;
-
-        // 0 → 1 → 0 사이클
-        float wave = Mathf.Sin(normalizedTime * Mathf.PI * 2f) * 0.5f + 0.5f;
-        float alpha = Mathf.Lerp(minOpacity, maxOpacity, wave);
-
-        Color c = _baseColor;
-        c.a = alpha;
-        _graphic.color = c;
+    private void KillTween()
+    {
+        _tween?.Kill();
+        _tween = null;
     }
 
     #region Public API
 
     public void Play()
     {
-        _isPlaying = true;
-        _time = 0f;
+        KillTween();
+
+        if (_graphic == null) return;
+
+        // 시작 알파 설정
+        Color c = _baseColor;
+        c.a = minOpacity;
+        _graphic.color = c;
+
+        // min → max 펄스 (Yoyo로 왕복)
+        _tween = _graphic
+            .DOFade(maxOpacity, duration * 0.5f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
     public void Stop()
     {
-        _isPlaying = false;
+        KillTween();
 
         // 원래 색상 복원
         if (_graphic != null)

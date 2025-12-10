@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// Problem3 Step3: Effect Controller
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 /// - 힌트 페이드, 정답 효과, 문제 등장 애니메이션 등
 /// - 로직과 애니메이션 분리를 위한 중앙 관리자
 /// </summary>
-public class Problem3_Step3_EffectController : MonoBehaviour
+public class Problem3_Step3_EffectController : EffectControllerBase
 {
     [Header("===== 힌트 UI =====")]
     [SerializeField] private GameObject hintRoot;
@@ -27,39 +28,13 @@ public class Problem3_Step3_EffectController : MonoBehaviour
     [SerializeField] private CanvasGroup questionCanvasGroup;
     [SerializeField] private float questionFadeInDuration = 0.3f;
 
-    // 상태
-    private bool _isHintAnimating;
-    private float _hintElapsed;
-    private HintPhase _hintPhase;
-    private Action _onHintComplete;
-
-    private bool _isQuestionAnimating;
-    private float _questionElapsed;
-
-    private enum HintPhase
-    {
-        Idle,
-        Showing,
-        FadingOut
-    }
+    // 힌트용 별도 시퀀스 (문제 등장과 독립적으로 동작)
+    private Sequence _hintSequence;
 
     /// <summary>
-    /// 현재 힌트 애니메이션 중인지 여부
+    /// 힌트 애니메이션 중인지 여부
     /// </summary>
-    public bool IsHintAnimating => _isHintAnimating;
-
-    private void Update()
-    {
-        if (_isHintAnimating)
-        {
-            ProcessHintAnimation();
-        }
-
-        if (_isQuestionAnimating)
-        {
-            ProcessQuestionFadeIn();
-        }
-    }
+    public bool IsHintAnimating => _hintSequence != null && _hintSequence.IsActive() && _hintSequence.IsPlaying();
 
     #region Public API
 
@@ -68,9 +43,10 @@ public class Problem3_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void PlayHintSequence(string hintText, Action onComplete = null)
     {
-        if (_isHintAnimating) return;
+        if (IsHintAnimating) return;
 
-        _onHintComplete = onComplete;
+        // 기존 힌트 시퀀스 종료
+        _hintSequence?.Kill();
 
         // 힌트 텍스트 설정
         if (hintLabel != null)
@@ -84,10 +60,23 @@ public class Problem3_Step3_EffectController : MonoBehaviour
         if (hintCanvasGroup != null)
             hintCanvasGroup.alpha = 1f;
 
-        // 애니메이션 시작
-        _isHintAnimating = true;
-        _hintElapsed = 0f;
-        _hintPhase = HintPhase.Showing;
+        // 시퀀스 생성
+        _hintSequence = DOTween.Sequence();
+
+        // 1. 표시 시간 대기
+        _hintSequence.AppendInterval(hintShowDuration);
+
+        // 2. 페이드아웃
+        if (hintCanvasGroup != null)
+            _hintSequence.Append(hintCanvasGroup.DOFade(0f, hintFadeDuration));
+
+        // 3. 완료 시 숨김
+        _hintSequence.OnComplete(() =>
+        {
+            if (hintRoot != null)
+                hintRoot.SetActive(false);
+            onComplete?.Invoke();
+        });
     }
 
     /// <summary>
@@ -95,8 +84,8 @@ public class Problem3_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void HideHintImmediate()
     {
-        _isHintAnimating = false;
-        _hintPhase = HintPhase.Idle;
+        _hintSequence?.Kill();
+        _hintSequence = null;
 
         if (hintCanvasGroup != null)
             hintCanvasGroup.alpha = 0f;
@@ -110,34 +99,39 @@ public class Problem3_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void PlayCorrectEffect(RectTransform targetButton = null)
     {
-        if (correctSparkleEffect != null)
+        if (correctSparkleEffect == null) return;
+
+        // 타겟 버튼이 있으면 그 위치로 이동
+        if (targetButton != null)
         {
-            // 타겟 버튼이 있으면 그 위치로 이동
-            if (targetButton != null)
-            {
-                correctSparkleEffect.position = targetButton.position;
-            }
+            correctSparkleEffect.position = targetButton.position;
+        }
 
-            correctSparkleEffect.gameObject.SetActive(true);
+        correctSparkleEffect.gameObject.SetActive(true);
 
-            // 자동 숨김 (duration 후)
-            if (correctEffectDuration > 0f)
-            {
-                Invoke(nameof(HideCorrectEffect), correctEffectDuration);
-            }
+        // 자동 숨김 (duration 후)
+        if (correctEffectDuration > 0f)
+        {
+            DOVirtual.DelayedCall(correctEffectDuration, HideCorrectEffect);
         }
     }
 
     /// <summary>
     /// 문제 등장 페이드인
     /// </summary>
-    public void PlayQuestionAppear()
+    public void PlayQuestionAppear(Action onComplete = null)
     {
-        if (questionCanvasGroup == null) return;
+        if (questionCanvasGroup == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
 
         questionCanvasGroup.alpha = 0f;
-        _isQuestionAnimating = true;
-        _questionElapsed = 0f;
+
+        var seq = CreateSequence();
+        seq.Append(questionCanvasGroup.DOFade(1f, questionFadeInDuration));
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -145,7 +139,7 @@ public class Problem3_Step3_EffectController : MonoBehaviour
     /// </summary>
     public void ShowQuestionImmediate()
     {
-        _isQuestionAnimating = false;
+        KillCurrentSequence();
 
         if (questionCanvasGroup != null)
             questionCanvasGroup.alpha = 1f;
@@ -162,61 +156,26 @@ public class Problem3_Step3_EffectController : MonoBehaviour
 
     #endregion
 
-    #region Animation Processing
-
-    private void ProcessHintAnimation()
-    {
-        _hintElapsed += Time.deltaTime;
-
-        switch (_hintPhase)
-        {
-            case HintPhase.Showing:
-                // 표시 시간 대기
-                if (_hintElapsed >= hintShowDuration)
-                {
-                    _hintPhase = HintPhase.FadingOut;
-                    _hintElapsed = 0f;
-                }
-                break;
-
-            case HintPhase.FadingOut:
-                // 페이드아웃
-                float t = Mathf.Clamp01(_hintElapsed / hintFadeDuration);
-
-                if (hintCanvasGroup != null)
-                    hintCanvasGroup.alpha = 1f - t;
-
-                if (t >= 1f)
-                {
-                    // 완료
-                    HideHintImmediate();
-                    _onHintComplete?.Invoke();
-                    _onHintComplete = null;
-                }
-                break;
-        }
-    }
-
-    private void ProcessQuestionFadeIn()
-    {
-        _questionElapsed += Time.deltaTime;
-        float t = Mathf.Clamp01(_questionElapsed / questionFadeInDuration);
-
-        if (questionCanvasGroup != null)
-            questionCanvasGroup.alpha = t;
-
-        if (t >= 1f)
-        {
-            _isQuestionAnimating = false;
-            if (questionCanvasGroup != null)
-                questionCanvasGroup.alpha = 1f;
-        }
-    }
+    #region Private
 
     private void HideCorrectEffect()
     {
         if (correctSparkleEffect != null)
             correctSparkleEffect.gameObject.SetActive(false);
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        _hintSequence?.Kill();
+        _hintSequence = null;
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        _hintSequence?.Kill();
+        _hintSequence = null;
     }
 
     #endregion

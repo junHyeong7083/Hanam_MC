@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// Problem3 Step2: Effect Controller
@@ -14,7 +15,7 @@ using UnityEngine.UI;
 /// 4. 펜 이동 완료 → 펜 숨김, 스파클 표시, 텍스트 페이드인
 /// 5. 다음 문항 → 스파클 숨김, 펜 표시 + originPos
 /// </summary>
-public class Problem3_Step2_EffectController : MonoBehaviour
+public class Problem3_Step2_EffectController : EffectControllerBase
 {
     [Header("===== 텍스트 페이드 대상 =====")]
     [SerializeField] private CanvasGroup sentenceCanvasGroup;
@@ -26,7 +27,7 @@ public class Problem3_Step2_EffectController : MonoBehaviour
 
     [Header("===== 타이밍 설정 =====")]
     [SerializeField] private float optionSelectDelay = 0.5f;
-    [SerializeField] private float penMoveDuration = 0.8f;  // PenWriteAnimation의 moveDuration과 맞춰야 함
+    [SerializeField] private float penMoveDuration = 0.8f;
     [SerializeField] private float fadeOutDuration = 0.15f;
     [SerializeField] private float fadeInDuration = 0.25f;
 
@@ -34,44 +35,8 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     [SerializeField] private Color originalTextColor = new Color(0.24f, 0.18f, 0.14f);
     [SerializeField] private Color rewrittenTextColor = new Color(1f, 0.54f, 0.24f);
 
-    // 상태
-    private bool _isAnimating;
-    private float _elapsed;
-    private RewritePhase _phase;
+    // 대기 중인 텍스트
     private string _pendingRewrittenText;
-    private Action _onCompleteCallback;
-
-    private enum RewritePhase
-    {
-        Idle,
-        Delay,
-        PenMoving,      // 펜 이동 + 텍스트 페이드아웃
-        ShowSparkle,    // 펜 숨김 + 스파클 표시 + 텍스트 페이드인
-    }
-
-    public bool IsAnimating => _isAnimating;
-
-    private void Update()
-    {
-        if (!_isAnimating) return;
-
-        _elapsed += Time.deltaTime;
-
-        switch (_phase)
-        {
-            case RewritePhase.Delay:
-                ProcessDelayPhase();
-                break;
-
-            case RewritePhase.PenMoving:
-                ProcessPenMovingPhase();
-                break;
-
-            case RewritePhase.ShowSparkle:
-                ProcessShowSparklePhase();
-                break;
-        }
-    }
 
     #region Public API
 
@@ -80,13 +45,62 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void PlayRewriteSequence(string rewrittenText, Action onComplete = null)
     {
-        if (_isAnimating) return;
+        if (IsAnimating) return;
 
         _pendingRewrittenText = rewrittenText;
-        _onCompleteCallback = onComplete;
-        _isAnimating = true;
-        _elapsed = 0f;
-        _phase = RewritePhase.Delay;
+
+        var seq = CreateSequence();
+
+        // 1. 딜레이
+        seq.AppendInterval(optionSelectDelay);
+
+        // 2. 펜 이동 시작 + 텍스트 페이드아웃 (동시)
+        seq.AppendCallback(() =>
+        {
+            if (penWriteAnimation != null)
+                penWriteAnimation.Play();
+        });
+
+        if (sentenceCanvasGroup != null)
+            seq.Append(sentenceCanvasGroup.DOFade(0f, fadeOutDuration));
+        else
+            seq.AppendInterval(fadeOutDuration);
+
+        // 나머지 펜 이동 시간 대기
+        float remainingPenTime = penMoveDuration - fadeOutDuration;
+        if (remainingPenTime > 0f)
+            seq.AppendInterval(remainingPenTime);
+
+        // 3. 펜 숨김 + 텍스트 교체 + 스파클 표시
+        seq.AppendCallback(() =>
+        {
+            // 펜 숨김
+            if (penWriteAnimation != null)
+                penWriteAnimation.gameObject.SetActive(false);
+
+            // 텍스트 교체
+            if (sentenceText != null)
+            {
+                sentenceText.text = _pendingRewrittenText;
+                sentenceText.color = rewrittenTextColor;
+            }
+
+            // 스파클 표시
+            if (completionSparkle != null)
+            {
+                completionSparkle.gameObject.SetActive(true);
+                completionSparkle.Show();
+            }
+        });
+
+        // 4. 텍스트 페이드인
+        if (sentenceCanvasGroup != null)
+            seq.Append(sentenceCanvasGroup.DOFade(1f, fadeInDuration));
+        else
+            seq.AppendInterval(fadeInDuration);
+
+        // 완료 콜백
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     /// <summary>
@@ -94,11 +108,8 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void ResetForNextStep()
     {
-        _isAnimating = false;
-        _phase = RewritePhase.Idle;
-        _elapsed = 0f;
+        KillCurrentSequence();
         _pendingRewrittenText = null;
-        _onCompleteCallback = null;
 
         // 텍스트 색상 원래대로
         if (sentenceText != null)
@@ -128,6 +139,8 @@ public class Problem3_Step2_EffectController : MonoBehaviour
     /// </summary>
     public void ShowOriginalTextImmediate(string originalText)
     {
+        KillCurrentSequence();
+
         if (sentenceText != null)
         {
             sentenceText.text = originalText;
@@ -147,84 +160,6 @@ public class Problem3_Step2_EffectController : MonoBehaviour
         if (completionSparkle != null)
         {
             completionSparkle.gameObject.SetActive(false);
-        }
-    }
-
-    #endregion
-
-    #region Phase Processing
-
-    private void ProcessDelayPhase()
-    {
-        if (_elapsed >= optionSelectDelay)
-        {
-            // 펜 이동 애니메이션 시작
-            if (penWriteAnimation != null)
-                penWriteAnimation.Play();
-
-            _phase = RewritePhase.PenMoving;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessPenMovingPhase()
-    {
-        // 펜 이동 중에 텍스트 페이드아웃 (펜 이동의 앞부분에서)
-        float fadeOutT = Mathf.Clamp01(_elapsed / fadeOutDuration);
-        if (sentenceCanvasGroup != null && fadeOutT <= 1f)
-        {
-            sentenceCanvasGroup.alpha = 1f - fadeOutT;
-        }
-
-        // 펜 이동 완료 시점
-        if (_elapsed >= penMoveDuration)
-        {
-            // 펜 숨김
-            if (penWriteAnimation != null)
-                penWriteAnimation.gameObject.SetActive(false);
-
-            // 텍스트 교체
-            if (sentenceText != null)
-            {
-                sentenceText.text = _pendingRewrittenText;
-                sentenceText.color = rewrittenTextColor;
-            }
-
-            if (sentenceCanvasGroup != null)
-                sentenceCanvasGroup.alpha = 0f;
-
-            // 스파클 표시
-            if (completionSparkle != null)
-            {
-                completionSparkle.gameObject.SetActive(true);
-                completionSparkle.Show();
-            }
-
-            _phase = RewritePhase.ShowSparkle;
-            _elapsed = 0f;
-        }
-    }
-
-    private void ProcessShowSparklePhase()
-    {
-        // 텍스트 페이드인
-        float fadeInT = Mathf.Clamp01(_elapsed / fadeInDuration);
-
-        if (sentenceCanvasGroup != null)
-            sentenceCanvasGroup.alpha = fadeInT;
-
-        if (fadeInT >= 1f)
-        {
-            // 완료
-            if (sentenceCanvasGroup != null)
-                sentenceCanvasGroup.alpha = 1f;
-
-            _isAnimating = false;
-            _phase = RewritePhase.Idle;
-
-            // 콜백 호출
-            _onCompleteCallback?.Invoke();
-            _onCompleteCallback = null;
         }
     }
 
