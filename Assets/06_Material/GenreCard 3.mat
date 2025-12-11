@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: OuterGlow 6
+  m_Name: GenreCard 3
   m_Shader: {fileID: 4800000, guid: 70ac9d649cec25c4489f0d4759b1170d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -102,7 +102,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
-    - _CircleRadius: 0.219
+    - _CircleRadius: 0.086
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _ColorMask: 15
@@ -118,15 +118,15 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _GlowIntensity: 2.23
-    - _GlowSize: 0.389
+    - _GlowIntensity: 0.29
+    - _GlowSize: 1.416
     - _GlowSoftness: 1
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PulseMax: 0.475
-    - _PulseMin: 0.21
-    - _PulseSpeed: 0.54
+    - _PulseMax: 0.78
+    - _PulseMin: 0.407
+    - _PulseSpeed: 3.44
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
@@ -146,7 +146,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GlowColor: {r: 0.9811321, g: 0.8317243, b: 0.50445, a: 1}
+    - _GlowColor: {r: 0.8117648, g: 0.40000004, b: 0.8352942, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
