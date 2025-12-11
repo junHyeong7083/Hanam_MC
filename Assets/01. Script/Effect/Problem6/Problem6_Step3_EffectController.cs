@@ -306,74 +306,6 @@ public class Problem6_Step3_EffectController : EffectControllerBase
 
     #endregion
 
-    #region Completion Effect
-
-    /// <summary>
-    /// 완료 축하 이펙트
-    /// </summary>
-    public void PlayCompletionEffect(Action onComplete = null)
-    {
-        StopBreathingAnimation();
-
-        var seq = CreateSequence();
-
-        // 완료 이펙트 루트 활성화
-        if (completionEffectRoot != null)
-            completionEffectRoot.SetActive(true);
-
-        // 스파클 방사형 퍼짐
-        if (completionSparkles != null && completionSparkles.Length > 0)
-        {
-            for (int i = 0; i < completionSparkles.Length; i++)
-            {
-                if (completionSparkles[i] == null) continue;
-
-                int index = i;
-                float angle = (i * Mathf.PI * 2f) / completionSparkles.Length;
-                Vector2 targetPos = new Vector2(
-                    Mathf.Cos(angle) * completionSparkleRadius,
-                    Mathf.Sin(angle) * completionSparkleRadius
-                );
-
-                // 초기 상태
-                completionSparkles[index].gameObject.SetActive(true);
-                completionSparkles[index].localScale = Vector3.zero;
-                completionSparkles[index].anchoredPosition = Vector2.zero;
-
-                // 스케일: 0 → 1 → 0
-                seq.Insert(0f, completionSparkles[index]
-                    .DOScale(1f, completionSparkleDuration * 0.5f)
-                    .SetEase(Ease.OutQuad));
-
-                seq.Insert(completionSparkleDuration * 0.5f, completionSparkles[index]
-                    .DOScale(0f, completionSparkleDuration * 0.5f)
-                    .SetEase(Ease.InQuad));
-
-                // 위치: 중심에서 바깥으로
-                seq.Insert(0f, completionSparkles[index]
-                    .DOAnchorPos(targetPos, completionSparkleDuration)
-                    .SetEase(Ease.OutQuad));
-
-                // 숨김
-                seq.InsertCallback(completionSparkleDuration, () =>
-                {
-                    if (completionSparkles[index] != null)
-                        completionSparkles[index].gameObject.SetActive(false);
-                });
-            }
-        }
-
-        seq.OnComplete(() =>
-        {
-            if (completionEffectRoot != null)
-                completionEffectRoot.SetActive(false);
-
-            onComplete?.Invoke();
-        });
-    }
-
-    #endregion
-
     #region Reset
 
     /// <summary>
@@ -417,19 +349,6 @@ public class Problem6_Step3_EffectController : EffectControllerBase
 
         if (stepCardCanvasGroup != null)
             stepCardCanvasGroup.alpha = 1f;
-
-        // 완료 이펙트 숨김
-        if (completionEffectRoot != null)
-            completionEffectRoot.SetActive(false);
-
-        if (completionSparkles != null)
-        {
-            foreach (var sparkle in completionSparkles)
-            {
-                if (sparkle != null)
-                    sparkle.gameObject.SetActive(false);
-            }
-        }
     }
 
     #endregion
