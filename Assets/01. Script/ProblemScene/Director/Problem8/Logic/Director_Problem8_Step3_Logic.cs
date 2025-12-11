@@ -76,6 +76,9 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
     private bool _isRecording;
     private float _recordingStartTime;
 
+    // 파생 클래스에서 선택된 액션 접근용
+    protected ActionItem SelectedAction => _selectedAction;
+
     // =========================
     // ProblemStepBase 구현
     // =========================
