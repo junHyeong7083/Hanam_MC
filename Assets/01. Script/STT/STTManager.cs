@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -8,38 +9,53 @@ using UnityEngine;
 namespace STT
 {
     /// <summary>
-    /// Vosk 기반 음성 인식 매니저 (싱글톤)
+    /// Whisper 기반 음성 인식 매니저 (싱글톤)
+    ///
+    /// 사용법:
+    /// 1. StartRecording() - 녹음 시작
+    /// 2. StopRecording() - 녹음 종료 + 음성 인식
+    /// 3. OnFinalResult 이벤트로 결과 수신
     /// </summary>
     public class STTManager : MonoBehaviour
     {
         public static STTManager Instance { get; private set; }
 
-        [Header("Settings")]
-        [SerializeField] private string modelFolderName = "vosk-model-small-ko-0.22";
+        [Header("모델 설정")]
+        [SerializeField] private string modelFileName = "ggml-base.bin";
+        [SerializeField] private string language = "ko";
+
+        [Header("녹음 설정")]
         [SerializeField] private int sampleRate = 16000;
-        [SerializeField] private float maxRecordingTime = 10f;
+        [SerializeField] private float maxRecordingTime = 30f;
+
+        [Header("Whisper 설정")]
+        [SerializeField] private int numThreads = 4;
+        [SerializeField] private bool translate = false;
 
         [Header("Debug")]
         [SerializeField] private bool showDebugLogs = true;
 
-        // Vosk 핸들
-        private IntPtr _model = IntPtr.Zero;
-        private IntPtr _recognizer = IntPtr.Zero;
+        // Whisper 핸들
+        private IntPtr _ctx = IntPtr.Zero;
 
         // 마이크 관련
         private AudioClip _micClip;
         private string _micDevice;
         private bool _isRecording;
-        private int _lastSamplePos;
+        private List<float> _recordedSamples = new List<float>();
+
+        // 처리 상태
+        private bool _isProcessing;
 
         // 이벤트
-        public event Action<string> OnPartialResult;
+        public event Action<string> OnPartialResult;  // Whisper는 실시간 지원 안함, 호환성용
         public event Action<string> OnFinalResult;
         public event Action<string> OnError;
 
         // 상태
-        public bool IsInitialized => _model != IntPtr.Zero && _recognizer != IntPtr.Zero;
+        public bool IsInitialized => _ctx != IntPtr.Zero;
         public bool IsRecording => _isRecording;
+        public bool IsProcessing => _isProcessing;
 
         private void Awake()
         {
@@ -54,7 +70,7 @@ namespace STT
 
         private IEnumerator Start()
         {
-            yield return StartCoroutine(InitializeVosk());
+            yield return StartCoroutine(InitializeWhisper());
         }
 
         private void OnDestroy()
@@ -65,18 +81,15 @@ namespace STT
         }
 
         /// <summary>
-        /// Vosk 모델 초기화
+        /// Whisper 모델 초기화
         /// </summary>
-        private IEnumerator InitializeVosk()
+        private IEnumerator InitializeWhisper()
         {
-            // 로그 레벨 설정 (0: 에러만)
-            VoskWrapper.vosk_set_log_level(showDebugLogs ? 0 : -1);
+            string modelPath = Path.Combine(Application.streamingAssetsPath, "WhisperModels", modelFileName);
 
-            string modelPath = Path.Combine(Application.streamingAssetsPath, modelFolderName);
-
-            if (!Directory.Exists(modelPath))
+            if (!File.Exists(modelPath))
             {
-                string error = $"[STT] 모델 폴더를 찾을 수 없습니다: {modelPath}";
+                string error = $"[STT] 모델 파일을 찾을 수 없습니다: {modelPath}";
                 Debug.LogError(error);
                 OnError?.Invoke(error);
                 yield break;
@@ -92,8 +105,8 @@ namespace STT
             {
                 try
                 {
-                    _model = VoskWrapper.vosk_model_new(modelPath);
-                    if (_model == IntPtr.Zero)
+                    _ctx = WhisperWrapper.whisper_init_from_file(modelPath);
+                    if (_ctx == IntPtr.Zero)
                     {
                         loadError = "모델 로드 실패";
                     }
@@ -120,16 +133,6 @@ namespace STT
                 yield break;
             }
 
-            // Recognizer 생성
-            _recognizer = VoskWrapper.vosk_recognizer_new(_model, sampleRate);
-            if (_recognizer == IntPtr.Zero)
-            {
-                string error = "Recognizer 생성 실패";
-                Debug.LogError($"[STT] {error}");
-                OnError?.Invoke(error);
-                yield break;
-            }
-
             // 마이크 디바이스 확인
             if (Microphone.devices.Length == 0)
             {
@@ -144,7 +147,7 @@ namespace STT
         }
 
         /// <summary>
-        /// 음성 인식 시작
+        /// 녹음 시작
         /// </summary>
         public void StartRecording()
         {
@@ -160,20 +163,25 @@ namespace STT
                 return;
             }
 
-            // Recognizer 리셋
-            VoskWrapper.vosk_recognizer_reset(_recognizer);
+            if (_isProcessing)
+            {
+                Log("이전 녹음 처리 중입니다");
+                return;
+            }
+
+            // 녹음 데이터 초기화
+            _recordedSamples.Clear();
 
             // 마이크 녹음 시작
-            _micClip = Microphone.Start(_micDevice, true, Mathf.CeilToInt(maxRecordingTime), sampleRate);
-            _lastSamplePos = 0;
+            _micClip = Microphone.Start(_micDevice, false, Mathf.CeilToInt(maxRecordingTime), sampleRate);
             _isRecording = true;
 
-            StartCoroutine(ProcessAudio());
+            StartCoroutine(RecordAudio());
             Log("녹음 시작");
         }
 
         /// <summary>
-        /// 음성 인식 중지 및 최종 결과 반환
+        /// 녹음 중지 및 음성 인식 시작
         /// </summary>
         public void StopRecording()
         {
@@ -181,67 +189,43 @@ namespace STT
                 return;
 
             _isRecording = false;
+
+            // 녹음 중지
+            int lastPos = Microphone.GetPosition(_micDevice);
             Microphone.End(_micDevice);
 
-            // 최종 결과 가져오기
-            IntPtr resultPtr = VoskWrapper.vosk_recognizer_final_result(_recognizer);
-            string resultJson = Marshal.PtrToStringAnsi(resultPtr);
-            string text = ParseResultText(resultJson);
+            // 녹음된 데이터 가져오기
+            if (_micClip != null && lastPos > 0)
+            {
+                float[] samples = new float[lastPos];
+                _micClip.GetData(samples, 0);
+                _recordedSamples.AddRange(samples);
+            }
 
-            Log($"최종 결과: {text}");
-            OnFinalResult?.Invoke(text);
+            Log($"녹음 종료. 샘플 수: {_recordedSamples.Count}");
+
+            // 음성 인식 시작
+            StartCoroutine(ProcessAudio());
         }
 
         /// <summary>
-        /// 실시간 오디오 처리 코루틴
+        /// 녹음 중 오디오 데이터 수집
         /// </summary>
-        private IEnumerator ProcessAudio()
+        private IEnumerator RecordAudio()
         {
-            float[] floatBuffer = new float[1024];
-            short[] shortBuffer = new short[1024];
+            int lastPos = 0;
 
             while (_isRecording)
             {
                 int currentPos = Microphone.GetPosition(_micDevice);
-                if (currentPos < _lastSamplePos)
-                    currentPos += _micClip.samples;
 
-                int samplesToRead = currentPos - _lastSamplePos;
-                if (samplesToRead > 0)
+                if (currentPos > lastPos)
                 {
-                    // 버퍼 크기 조정
-                    if (samplesToRead > floatBuffer.Length)
-                    {
-                        floatBuffer = new float[samplesToRead];
-                        shortBuffer = new short[samplesToRead];
-                    }
-
-                    // 오디오 데이터 읽기
-                    _micClip.GetData(floatBuffer, _lastSamplePos % _micClip.samples);
-
-                    // float -> short 변환 (16-bit PCM)
-                    for (int i = 0; i < samplesToRead; i++)
-                    {
-                        shortBuffer[i] = (short)(floatBuffer[i] * 32767f);
-                    }
-
-                    // Vosk에 전달
-                    int result = VoskWrapper.vosk_recognizer_accept_waveform_s(_recognizer, shortBuffer, samplesToRead);
-
-                    // 중간 결과 가져오기
-                    if (result == 0)
-                    {
-                        IntPtr partialPtr = VoskWrapper.vosk_recognizer_partial_result(_recognizer);
-                        string partialJson = Marshal.PtrToStringAnsi(partialPtr);
-                        string partialText = ParsePartialText(partialJson);
-
-                        if (!string.IsNullOrEmpty(partialText))
-                        {
-                            OnPartialResult?.Invoke(partialText);
-                        }
-                    }
-
-                    _lastSamplePos = currentPos % _micClip.samples;
+                    int samplesToRead = currentPos - lastPos;
+                    float[] samples = new float[samplesToRead];
+                    _micClip.GetData(samples, lastPos);
+                    _recordedSamples.AddRange(samples);
+                    lastPos = currentPos;
                 }
 
                 yield return null;
@@ -249,71 +233,115 @@ namespace STT
         }
 
         /// <summary>
-        /// 최종 결과 JSON 파싱
+        /// Whisper로 음성 인식
         /// </summary>
-        private string ParseResultText(string json)
+        private IEnumerator ProcessAudio()
         {
-            // {"text" : "인식된 텍스트"}
+            if (_recordedSamples.Count == 0)
+            {
+                OnFinalResult?.Invoke("");
+                yield break;
+            }
+
+            _isProcessing = true;
+            Log("음성 인식 처리 중...");
+
+            string result = "";
+            bool processComplete = false;
+
+            // 별도 스레드에서 Whisper 처리
+            Thread processThread = new Thread(() =>
+            {
+                try
+                {
+                    result = RunWhisper(_recordedSamples.ToArray());
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[STT] Whisper 처리 오류: {e.Message}");
+                    result = "";
+                }
+                processComplete = true;
+            });
+
+            processThread.Start();
+
+            // 처리 대기
+            while (!processComplete)
+            {
+                yield return null;
+            }
+
+            _isProcessing = false;
+
+            Log($"인식 결과: {result}");
+            OnFinalResult?.Invoke(result);
+        }
+
+        /// <summary>
+        /// Whisper API 호출
+        /// </summary>
+        private string RunWhisper(float[] samples)
+        {
+            // Whisper 파라미터 설정
+            WhisperFullParams wparams = WhisperWrapper.whisper_full_default_params(
+                WhisperSamplingStrategy.WHISPER_SAMPLING_GREEDY);
+
+            wparams.n_threads = numThreads;
+            wparams.translate = translate;
+            wparams.print_special = false;
+            wparams.print_progress = false;
+            wparams.print_realtime = false;
+            wparams.print_timestamps = false;
+            wparams.single_segment = false;
+
+            // 언어 설정
+            IntPtr langPtr = Marshal.StringToHGlobalAnsi(language);
+            wparams.language = langPtr;
+
             try
             {
-                int startIndex = json.IndexOf("\"text\"") + 9;
-                int endIndex = json.LastIndexOf("\"");
-                if (startIndex > 8 && endIndex > startIndex)
+                // float 배열을 네이티브 메모리로 복사
+                int size = samples.Length * sizeof(float);
+                IntPtr samplesPtr = Marshal.AllocHGlobal(size);
+                Marshal.Copy(samples, 0, samplesPtr, samples.Length);
+
+                try
                 {
-                    return json.Substring(startIndex, endIndex - startIndex).Trim();
+                    // Whisper 실행
+                    int ret = WhisperWrapper.whisper_full(_ctx, wparams, samplesPtr, samples.Length);
+
+                    if (ret != 0)
+                    {
+                        Debug.LogError($"[STT] whisper_full 실패: {ret}");
+                        return "";
+                    }
+
+                    // 결과 가져오기
+                    int nSegments = WhisperWrapper.whisper_full_n_segments(_ctx);
+                    string fullText = "";
+
+                    for (int i = 0; i < nSegments; i++)
+                    {
+                        IntPtr textPtr = WhisperWrapper.whisper_full_get_segment_text(_ctx, i);
+                        if (textPtr != IntPtr.Zero)
+                        {
+                            string segment = Marshal.PtrToStringAnsi(textPtr);
+                            fullText += segment;
+                        }
+                    }
+
+                    return fullText.Trim();
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(samplesPtr);
                 }
             }
-            catch { }
-            return "";
-        }
-
-        /// <summary>
-        /// 중간 결과 JSON 파싱
-        /// </summary>
-        private string ParsePartialText(string json)
-        {
-            // {"partial" : "인식 중인 텍스트"}
-            try
+            finally
             {
-                int startIndex = json.IndexOf("\"partial\"") + 12;
-                int endIndex = json.LastIndexOf("\"");
-                if (startIndex > 11 && endIndex > startIndex)
-                {
-                    return json.Substring(startIndex, endIndex - startIndex).Trim();
-                }
+                Marshal.FreeHGlobal(langPtr);
             }
-            catch { }
-            return "";
-        }
-
-        /// <summary>
-        /// 특정 키워드만 인식하도록 문법 설정 (선택적)
-        /// </summary>
-        public void SetGrammar(string[] keywords)
-        {
-            if (_recognizer != IntPtr.Zero)
-            {
-                VoskWrapper.vosk_recognizer_free(_recognizer);
-            }
-
-            string grammar = "[\"" + string.Join("\", \"", keywords) + "\", \"[unk]\"]";
-            _recognizer = VoskWrapper.vosk_recognizer_new_grm(_model, sampleRate, grammar);
-
-            Log($"문법 설정: {grammar}");
-        }
-
-        /// <summary>
-        /// 문법 해제 (자유 인식 모드)
-        /// </summary>
-        public void ClearGrammar()
-        {
-            if (_recognizer != IntPtr.Zero)
-            {
-                VoskWrapper.vosk_recognizer_free(_recognizer);
-            }
-
-            _recognizer = VoskWrapper.vosk_recognizer_new(_model, sampleRate);
-            Log("자유 인식 모드로 전환");
         }
 
         /// <summary>
@@ -327,16 +355,10 @@ namespace STT
                 Microphone.End(_micDevice);
             }
 
-            if (_recognizer != IntPtr.Zero)
+            if (_ctx != IntPtr.Zero)
             {
-                VoskWrapper.vosk_recognizer_free(_recognizer);
-                _recognizer = IntPtr.Zero;
-            }
-
-            if (_model != IntPtr.Zero)
-            {
-                VoskWrapper.vosk_model_free(_model);
-                _model = IntPtr.Zero;
+                WhisperWrapper.whisper_free(_ctx);
+                _ctx = IntPtr.Zero;
             }
         }
 
@@ -344,6 +366,24 @@ namespace STT
         {
             if (showDebugLogs)
                 Debug.Log($"[STT] {message}");
+        }
+
+        // ===== 호환성 메서드 (Vosk API 호환) =====
+
+        /// <summary>
+        /// 문법 설정 (Whisper는 지원 안함 - 무시)
+        /// </summary>
+        public void SetGrammar(string[] keywords)
+        {
+            Log("Whisper는 키워드 제한을 지원하지 않습니다");
+        }
+
+        /// <summary>
+        /// 문법 해제 (Whisper는 지원 안함 - 무시)
+        /// </summary>
+        public void ClearGrammar()
+        {
+            // 무시
         }
     }
 }
