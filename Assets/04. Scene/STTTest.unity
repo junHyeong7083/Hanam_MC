@@ -332,6 +332,57 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &410817166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 410817168}
+  - component: {fileID: 410817167}
+  m_Layer: 0
+  m_Name: STTMANAGER (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &410817167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410817166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5479a6831812d8a4aa5ac3164cae9bda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelFileName: ggml-small.bin
+  language: ko
+  sampleRate: 16000
+  maxRecordingTime: 30
+  numThreads: 4
+  translate: 0
+  showDebugLogs: 1
+--- !u!4 &410817168
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410817166}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 874.21234, y: 720.9495, z: -8.135117}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &893537737
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,6 +434,15 @@ MonoBehaviour:
   maxRecordingTime: 10
   idleColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
   recordingColor: {r: 1, g: 0.3, b: 0.3, a: 1}
+  testKeywords:
+  - "\uC704\uC2A4\uD37C"
+  - "\uAC00\uB098\uB2E4\uB77C"
+  - "\uC720\uB2C8\uD2F0"
+  - "\uB098\uB294 \uD560 \uC218 \uC788\uB2E4"
+  - "\uB300\uD559\uC6D0 \uB54C\uB824\uCE58\uACE0 \uC2F6\uB2E4"
+  - "\uC88B\uC544"
+  - "\uC2EB\uC5B4"
+  matchThreshold: 0.5
 --- !u!1 &985838267
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,7 +556,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 205}
+  m_AnchoredPosition: {x: 0, y: 358}
   m_SizeDelta: {x: 1186.3, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1234187145
@@ -815,7 +875,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 84}
+  m_AnchoredPosition: {x: 0, y: 113}
   m_SizeDelta: {x: 1186.3, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1469015516
@@ -1047,3 +1107,4 @@ SceneRoots:
   - {fileID: 1300529243}
   - {fileID: 1276894058}
   - {fileID: 893537739}
+  - {fileID: 410817168}

@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.UI;
 public class LevelSelectPanelAnimator : MonoBehaviour
 {
-    [SerializeField] private RectTransform[] buttons;
+    [SerializeField] private RectTransform[] ProblemPanels;
     [Header("애니메이션 설정")]
     [SerializeField] private float startOffsetY = -120f;  // 아래에서 얼마나 올라올지
     [SerializeField] private float duration = 0.35f;      // 한 버튼이 올라오는 시간
@@ -16,12 +16,12 @@ public class LevelSelectPanelAnimator : MonoBehaviour
     private Coroutine _introRoutine;
     void Awake()
     {
-        _originalPos = new Vector2[buttons.Length];
-        _canvasGroups = new CanvasGroup[buttons.Length];
+        _originalPos = new Vector2[ProblemPanels.Length];
+        _canvasGroups = new CanvasGroup[ProblemPanels.Length];
 
-        for (int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < ProblemPanels.Length; i++)
         {
-            var rt = buttons[i];
+            var rt = ProblemPanels[i];
             _originalPos[i] = rt.anchoredPosition;
 
             var cg = rt.GetComponent<CanvasGroup>();
@@ -44,14 +44,14 @@ public class LevelSelectPanelAnimator : MonoBehaviour
             _introRoutine = null;
         }
         StopAllCoroutines(); 
-        if (buttons == null || _originalPos == null || _canvasGroups == null)
+        if (ProblemPanels == null || _originalPos == null || _canvasGroups == null)
             return;
 
-        for (int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < ProblemPanels.Length; i++)
         {
-            if (buttons[i] == null) continue;
+            if (ProblemPanels[i] == null) continue;
 
-            var rt = buttons[i];
+            var rt = ProblemPanels[i];
             rt.anchoredPosition = _originalPos[i];
 
             var cg = _canvasGroups[i];
@@ -72,9 +72,9 @@ public class LevelSelectPanelAnimator : MonoBehaviour
     private IEnumerator PlayIntroRoutine()
     {
         // 초기 상태 세팅: 아래로 내리고 투명하게
-        for (int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < ProblemPanels.Length; i++)
         {
-            var rt = buttons[i];
+            var rt = ProblemPanels[i];
             var cg = _canvasGroups[i];
 
             rt.anchoredPosition = _originalPos[i] + new Vector2(0f, startOffsetY);
@@ -82,9 +82,9 @@ public class LevelSelectPanelAnimator : MonoBehaviour
         }
 
         // 순차적으로 버튼 애니메이션 시작
-        for (int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < ProblemPanels.Length; i++)
         {
-            StartCoroutine(AnimateSingle(buttons[i], _canvasGroups[i], _originalPos[i]));
+            StartCoroutine(AnimateSingle(ProblemPanels[i], _canvasGroups[i], _originalPos[i]));
             yield return new WaitForSecondsRealtime(interval);
         }
     }

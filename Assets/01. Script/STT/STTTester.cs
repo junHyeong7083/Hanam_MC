@@ -23,6 +23,10 @@ namespace STT
         [SerializeField] private Color idleColor = new Color(0.3f, 0.3f, 0.3f);
         [SerializeField] private Color recordingColor = new Color(1f, 0.3f, 0.3f);
 
+        [Header("키워드 매칭 테스트")]
+        [SerializeField] private string[] testKeywords = { "위스퍼", "가나다라", "유니티" };
+        [SerializeField] private float matchThreshold = 0.5f;
+
         private bool _isRecording;
 
         private void Start()
@@ -150,8 +154,15 @@ namespace STT
             }
             else
             {
-                UpdateUI("인식 완료!", text);
-                Debug.Log($"[STT 테스트] 최종 결과: {text}");
+                // 키워드 매칭 - 항상 가장 가까운 키워드 반환
+                var (matchedKeyword, similarity) = KeywordMatcher.FindBestMatch(text, testKeywords);
+
+                string matchResult = $"인식: \"{text}\"\n" +
+                    $"결과: \"{matchedKeyword}\" ({similarity * 100:F0}%)";
+
+                UpdateUI("인식 완료!", matchResult);
+
+                Debug.Log($"[STT 테스트] 인식: {text} → 결과: {matchedKeyword} ({similarity * 100:F0}%)");
             }
         }
 

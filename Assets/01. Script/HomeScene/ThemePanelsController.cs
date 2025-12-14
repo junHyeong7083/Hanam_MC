@@ -99,7 +99,7 @@ public class ThemePanelsController : MonoBehaviour
     /// 특정 테마 패널 하나에 대해
     /// - 이미 푼 문제 목록 조회
     /// - 순차 제한 / 전체 오픈 규칙 적용
-    /// - UI에 반영
+    /// - UI에 반영 (완료 상태 포함)
     /// </summary>
     void RefreshSinglePanel(ThemePanelBinding entry)
     {
@@ -115,9 +115,9 @@ public class ThemePanelsController : MonoBehaviour
         int totalProblems = Mathf.Max(1, entry.totalProblems);
 
         var res = DataService.Instance.Progress.FetchSolvedProblemIndexes(currentUser.Email, theme);
-        int[] solved = (res.Ok && res.Value != null) ? res.Value : Array.Empty<int>();
+        int[] solvedIndexes = (res.Ok && res.Value != null) ? res.Value : Array.Empty<int>();
 
-        var solvedSet = new HashSet<int>(solved);
+        var solvedSet = new HashSet<int>(solvedIndexes);
         bool allSolved = false;
 
         if (totalProblems > 0)
@@ -128,6 +128,13 @@ public class ThemePanelsController : MonoBehaviour
         }
 
         bool[] unlocked = new bool[totalProblems + 1]; // 1 기반
+        bool[] solved = new bool[totalProblems + 1];   // 1 기반 - 완료 상태
+
+        // 완료 상태 배열 생성
+        for (int i = 1; i <= totalProblems; i++)
+        {
+            solved[i] = solvedSet.Contains(i);
+        }
 
         int nextIndex = -1;
         if (!allSolved)
@@ -158,7 +165,8 @@ public class ThemePanelsController : MonoBehaviour
             }
         }
 
-        entry.panel.ApplyUnlockState(unlocked);
+        // 완료 상태 포함하여 UI 적용
+        entry.panel.ApplyProblemState(unlocked, solved);
     }
 
     /// <summary>

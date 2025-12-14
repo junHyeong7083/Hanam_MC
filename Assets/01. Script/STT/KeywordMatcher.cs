@@ -48,6 +48,7 @@ namespace STT
 
         /// <summary>
         /// 텍스트와 키워드의 유사도 계산 (0.0 ~ 1.0)
+        /// 한글은 자모 분해하여 더 정확한 유사도 계산
         /// </summary>
         public static float CalculateSimilarity(string text, string keyword)
         {
@@ -64,12 +65,64 @@ namespace STT
             if (text.Contains(keyword)) return 0.9f;
             if (keyword.Contains(text)) return 0.8f;
 
-            // Levenshtein Distance 기반 유사도
-            int distance = LevenshteinDistance(text, keyword);
-            int maxLength = Math.Max(text.Length, keyword.Length);
+            // 자모 분해하여 비교 (한글 음성 인식 개선)
+            string textJamo = DecomposeToJamo(text);
+            string keywordJamo = DecomposeToJamo(keyword);
+
+            int distance = LevenshteinDistance(textJamo, keywordJamo);
+            int maxLength = Math.Max(textJamo.Length, keywordJamo.Length);
 
             return 1f - (float)distance / maxLength;
         }
+
+        /// <summary>
+        /// 한글을 자모로 분해 (예: "유니티" → "ㅇㅠㄴㅣㅌㅣ")
+        /// </summary>
+        private static string DecomposeToJamo(string text)
+        {
+            var result = new System.Text.StringBuilder();
+
+            foreach (char c in text)
+            {
+                if (c >= 0xAC00 && c <= 0xD7A3) // 한글 음절 범위
+                {
+                    int syllable = c - 0xAC00;
+                    int cho = syllable / (21 * 28);
+                    int jung = (syllable % (21 * 28)) / 28;
+                    int jong = syllable % 28;
+
+                    result.Append(CHO[cho]);
+                    result.Append(JUNG[jung]);
+                    if (jong > 0)
+                        result.Append(JONG[jong]);
+                }
+                else
+                {
+                    result.Append(c);
+                }
+            }
+
+            return result.ToString();
+        }
+
+        // 초성 (19개)
+        private static readonly char[] CHO = {
+            'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ',
+            'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+        };
+
+        // 중성 (21개)
+        private static readonly char[] JUNG = {
+            'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ',
+            'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'
+        };
+
+        // 종성 (28개, 0번은 없음)
+        private static readonly char[] JONG = {
+            '\0', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ',
+            'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ',
+            'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+        };
 
         /// <summary>
         /// 가장 유사한 키워드 찾기

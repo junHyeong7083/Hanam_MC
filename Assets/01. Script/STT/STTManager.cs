@@ -21,7 +21,7 @@ namespace STT
         public static STTManager Instance { get; private set; }
 
         [Header("모델 설정")]
-        [SerializeField] private string modelFileName = "ggml-base.bin";
+        [SerializeField] private string modelFileName = "ggml-small.bin";
         [SerializeField] private string language = "ko";
 
         [Header("녹음 설정")]
