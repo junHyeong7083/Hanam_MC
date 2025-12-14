@@ -93,10 +93,8 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         // MicIndicator 이벤트 구독
         if (MicIndicator != null)
         {
-            MicIndicator.OnKeywordAMatched -= OnSTTThought;
-            MicIndicator.OnKeywordBMatched -= OnSTTFact;
-            MicIndicator.OnKeywordAMatched += OnSTTThought;
-            MicIndicator.OnKeywordBMatched += OnSTTFact;
+            MicIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
+            MicIndicator.OnKeywordMatched += OnSTTKeywordMatched;
             MicIndicator.SetRecording(false);
         }
 
@@ -115,8 +113,14 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         DestroyCurrentFilmCard();
     }
 
-    private void OnSTTThought() => HandleSort(true);
-    private void OnSTTFact() => HandleSort(false);
+    // STT 키워드 매칭 결과 처리
+    // index 0 = 생각, index 1 = 사실 (인스펙터에서 순서대로 설정)
+    private void OnSTTKeywordMatched(int index)
+    {
+        // 0번 인덱스 = 생각(Thought), 1번 인덱스 = 사실(Fact)
+        bool isThought = (index == 0);
+        HandleSort(isThought);
+    }
 
     protected override void OnApplyCardToUI(int logicalIndex)
     {

@@ -19,13 +19,11 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private float pulseSpeed = 3f;
 
     [Header("STT 키워드")]
-    [SerializeField] private string[] keywordsA = { "생각", "의견", "느낌", "추측" };
-    [SerializeField] private string[] keywordsB = { "사실", "팩트", "실제", "진짜" };
+    [SerializeField] private string[] keywords;  // 각 키워드 (인덱스로 구분)
+    [SerializeField] private float matchThreshold = 0.3f;
 
-    /// <summary>키워드A 매칭 시 발생 (예: "생각")</summary>
-    public event Action OnKeywordAMatched;
-    /// <summary>키워드B 매칭 시 발생 (예: "사실")</summary>
-    public event Action OnKeywordBMatched;
+    /// <summary>키워드 매칭 시 발생 (매칭된 키워드의 인덱스)</summary>
+    public event Action<int> OnKeywordMatched;
     /// <summary>매칭 실패 시 발생</summary>
     public event Action<string> OnNoMatch;
 
@@ -104,26 +102,38 @@ public class MicRecordingIndicator : MonoBehaviour
 
         Debug.Log($"[MicRecordingIndicator] STT 인식 결과: {result}");
 
-        // 키워드 매칭
-        var (keywordA, scoreA) = KeywordMatcher.FindBestMatch(result, keywordsA);
-        var (keywordB, scoreB) = KeywordMatcher.FindBestMatch(result, keywordsB);
-
-        Debug.Log($"[MicRecordingIndicator] A점수: {scoreA:F2} ({keywordA}), B점수: {scoreB:F2} ({keywordB})");
-
-        // 더 높은 점수를 가진 쪽으로 분류
-        if (scoreA > scoreB && scoreA >= 0.3f)
+        if (keywords == null || keywords.Length == 0)
         {
-            Debug.Log($"[MicRecordingIndicator] → 키워드A 매칭: {keywordA}");
-            OnKeywordAMatched?.Invoke();
+            Debug.LogWarning("[MicRecordingIndicator] 키워드가 설정되지 않았습니다");
+            OnNoMatch?.Invoke(result);
+            return;
         }
-        else if (scoreB >= 0.3f)
+
+        // 각 키워드와 비교해서 가장 높은 점수 찾기
+        int bestIndex = -1;
+        float bestScore = 0f;
+
+        for (int i = 0; i < keywords.Length; i++)
         {
-            Debug.Log($"[MicRecordingIndicator] → 키워드B 매칭: {keywordB}");
-            OnKeywordBMatched?.Invoke();
+            float score = KeywordMatcher.CalculateSimilarity(result, keywords[i]);
+            Debug.Log($"[MicRecordingIndicator] [{i}] {keywords[i]}: {score:F2}");
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestIndex = i;
+            }
+        }
+
+        // 임계값 이상이면 매칭 성공
+        if (bestIndex >= 0 && bestScore >= matchThreshold)
+        {
+            Debug.Log($"[MicRecordingIndicator] → 매칭 성공: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
+            OnKeywordMatched?.Invoke(bestIndex);
         }
         else
         {
-            Debug.Log($"[MicRecordingIndicator] 매칭 실패 (A: {scoreA:F2}, B: {scoreB:F2})");
+            Debug.Log($"[MicRecordingIndicator] 매칭 실패 (최고 점수: {bestScore:F2})");
             OnNoMatch?.Invoke(result);
         }
     }

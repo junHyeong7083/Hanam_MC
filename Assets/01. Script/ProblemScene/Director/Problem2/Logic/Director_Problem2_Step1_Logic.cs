@@ -4,16 +4,16 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Director / Problem2 / Step1 °øÅë ·ÎÁ÷ º£ÀÌ½º.
-/// - µå·Ó ¹Ú½º + µå·¡±× ¾ÆÀÌÅÛ + ÀÎÆ®·Î ¾Ö´Ï¸ŞÀÌ¼Ç + °ÔÀÌÆ® Ã³¸®.
-/// - ½ÇÁ¦ ½ºÅÜ ½ºÅ©¸³Æ®(Director_Problem2_Step1)´Â
-///   ¿©±â¼­ ¿ä±¸ÇÏ´Â ÇÁ·ÎÆÛÆ¼µé¸¸ SerializeField·Î ¹ÙÀÎµùÇØ¼­ ³Ñ°ÜÁØ´Ù.
+/// Director / Problem2 / Step1 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½.
+/// - ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ + ï¿½å·¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ + ï¿½ï¿½ï¿½ï¿½Æ® Ã³ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®(Director_Problem2_Step1)ï¿½ï¿½
+///   ï¿½ï¿½ï¿½â¼­ ï¿½ä±¸ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½é¸¸ SerializeFieldï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ï¿½Ø¼ï¿½ ï¿½Ñ°ï¿½ï¿½Ø´ï¿½.
 /// </summary>
 public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 {
-    // ====== ÀÚ½Ä¿¡¼­ ÁÖÀÔÇÒ ÇÁ·ÎÆÛÆ¼µé ======
+    // ====== ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ======
 
-    [Header("Drop Box ¿µ¿ª (°øÅë ÄÄÆ÷³ÍÆ®)")]
+    [Header("Drop Box ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®)")]
     protected abstract UIDropBoxArea DropBoxArea { get; }
 
     [Header("Items")]
@@ -26,7 +26,7 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     protected abstract Image IconImageBackground { get; }
     protected abstract Image IconImage { get; }
 
-    // ===== µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç¿ë ·çÆ® =====
+    // ===== ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼Ç¿ï¿½ ï¿½ï¿½Æ® =====
     [Header("Intro Animation Roots")]
     protected abstract RectTransform LeftEnterRoot { get; }
     protected abstract RectTransform RightEnterRoot { get; }
@@ -37,10 +37,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     protected abstract float RightStartOffsetX { get; }
     protected abstract float IntroDelay { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ® (Next ¹öÆ°¿ë)")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (Next ï¿½ï¿½Æ°ï¿½ï¿½)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // ===== ³»ºÎ Ä³½Ã =====
+    // ===== ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ =====
     private bool _leftInit;
     private bool _rightInit;
     private Vector2 _leftBasePos;
@@ -48,27 +48,28 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     private CanvasGroup _leftCg;
     private CanvasGroup _rightCg;
 
-    // ÃÖÁ¾ µå·ÓµÈ ¾ÆÀÌÅÛ(¼±ÅÃµÈ Àå¸é)
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½)
     private Director_Problem2_DragItem _selectedItem;
-    // ÇÑ ¹ø µå·Ó ¼º°øÇß´ÂÁö (°ÔÀÌÆ® Áßº¹ È£Ãâ ¹æÁö)
+    // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ßºï¿½ È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     private bool _isCompleted;
 
     // =========================================
-    // ProblemStepBase ±¸Çö
+    // ProblemStepBase ï¿½ï¿½ï¿½ï¿½
     // =========================================
     protected override void OnStepEnter()
     {
+        Debug.Log("[Step1] OnStepEnter í˜¸ì¶œë¨");
         InitState();
         StartCoroutine(PlayIntroAnimationRoutine());
     }
 
     protected override void OnStepExit()
     {
-        // ÇÊ¿äÇÏ¸é ¿©±â¼­ »óÅÂ Á¤¸®
+        // ï¿½Ê¿ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     // =========================================
-    // ÃÊ±âÈ­ / ÀÎÆ®·Î ¾Ö´Ï¸ŞÀÌ¼Ç
+    // ï¿½Ê±ï¿½È­ / ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½
     // =========================================
 
     private void InitState()
@@ -83,16 +84,20 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         var icon = IconImage;
         var gate = CompletionGate;
 
-        // µå·Ó ¹Ú½º ¿Ü°û¼±/»óÅÂ ÃÊ±âÈ­
+        Debug.Log($"[Step1] InitState - dropBoxArea={dropBoxArea != null}, dragItems={dragItems?.Length ?? 0}ê°œ");
+
+        // ë“œë¡­ ë°•ìŠ¤ ì´ˆê¸°í™”
         if (dropBoxArea != null)
             dropBoxArea.ResetVisual();
+        else
+            Debug.LogWarning("[Step1] dropBoxAreaê°€ null! ì¸ìŠ¤í™í„°ì—ì„œ í• ë‹¹í•˜ì„¸ìš”.");
 
-        // °á°ú ÆĞ³Î(¼³¸í ±Û + ¹öÆ°µé) ¼û±â±â
+        // ê²°ê³¼ íŒ¨ë„ ìˆ¨ê¸°ê¸°
         if (resultPanelRoot != null)
             resultPanelRoot.SetActive(false);
 
-        // ¾ÆÀÌÅÛ ¿øÀ§Ä¡/ºñÁÖ¾ó ÃÊ±âÈ­
-        if (dragItems != null)
+        // ë“œë˜ê·¸ ì•„ì´í…œ ì´ˆê¸°í™”
+        if (dragItems != null && dragItems.Length > 0)
         {
             foreach (var item in dragItems)
             {
@@ -100,22 +105,27 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
                 {
                     item.ResetToOriginalState();
                     item.SetStepController(this);
+                    Debug.Log($"[Step1] SetStepController í˜¸ì¶œ: {item.name}");
                 }
             }
         }
+        else
+        {
+            Debug.LogWarning("[Step1] dragItemsê°€ nullì´ê±°ë‚˜ ë¹„ì–´ìˆìŒ! ì¸ìŠ¤í™í„°ì—ì„œ í• ë‹¹í•˜ì„¸ìš”.");
+        }
 
-        // µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç¿ë ·çÆ® ÃÊ±â À§Ä¡/¾ËÆÄ ¼¼ÆÃ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼Ç¿ï¿½ ï¿½ï¿½Æ® ï¿½Ê±ï¿½ ï¿½ï¿½Ä¡/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         InitIntroRoot(LeftEnterRoot, ref _leftInit, ref _leftBasePos, LeftStartOffsetX, ref _leftCg);
         InitIntroRoot(RightEnterRoot, ref _rightInit, ref _rightBasePos, RightStartOffsetX, ref _rightCg);
 
-        // ¾ÆÀÌÄÜ/¹è°æ ÃÊ±â »óÅÂ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (iconBg != null)
             iconBg.gameObject.SetActive(true);
 
         if (icon != null)
             icon.gameObject.SetActive(true);
 
-        // ¿Ï·á °ÔÀÌÆ® ÃÊ±âÈ­ (µå·Ó ¼º°ø 1¹øÀÌ¸é ¿Ï·á)
+        // ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ê±ï¿½È­ (ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ï·ï¿½)
         if (gate != null)
             gate.ResetGate(1);
     }
@@ -214,7 +224,7 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     }
 
     // ====================================================
-    //   DragItem ¿¡¼­ Äİ¹éÀ¸·Î ºÒ¸®´Â API
+    //   DragItem ï¿½ï¿½ï¿½ï¿½ ï¿½İ¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ API
     // ====================================================
 
     public void NotifyDragBegin(Director_Problem2_DragItem item)
@@ -227,7 +237,11 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     public void NotifyDragging(Director_Problem2_DragItem item, PointerEventData eventData)
     {
         var dropBoxArea = DropBoxArea;
-        if (dropBoxArea == null) return;
+        if (dropBoxArea == null)
+        {
+            Debug.LogWarning("[Step1] NotifyDragging: dropBoxAreaê°€ null!");
+            return;
+        }
 
         dropBoxArea.UpdateHighlight(eventData);
     }
@@ -235,11 +249,17 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     public void NotifyDragEnd(Director_Problem2_DragItem item, PointerEventData eventData)
     {
         var dropBoxArea = DropBoxArea;
-        if (dropBoxArea == null) return;
+        if (dropBoxArea == null)
+        {
+            Debug.LogWarning("[Step1] NotifyDragEnd: dropBoxAreaê°€ null!");
+            return;
+        }
 
         dropBoxArea.SetOutlineVisible(false);
 
         bool isOver = dropBoxArea.IsPointerOver(eventData);
+        Debug.Log($"[Step1] NotifyDragEnd - isOver={isOver}, position={eventData.position}");
+
         if (isOver)
         {
             OnItemDroppedIntoBox(item);

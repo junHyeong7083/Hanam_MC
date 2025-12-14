@@ -15,10 +15,13 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
         public int id;          // 1..N (�ν����Ϳ��� �ο�)
         [TextArea]
         public string text;     // ��: "��뵵 �������� ���� �־�"
+        [Tooltip("STT 인식용 키워드 (비어있으면 text 자체를 사용)")]
+        public string[] keywords;  // STT 매칭용 키워드
 
         // �������̽� ���� (���� ���̽����� �б������ ���)
         int IDirectorProblem2PerspectiveOption.Id => id;
         string IDirectorProblem2PerspectiveOption.Text => text;
+        string[] IDirectorProblem2PerspectiveOption.Keywords => keywords;
     }
 
     [Header("���� ����")]
@@ -32,9 +35,9 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
 
     [Header("�� ī�� UI (NG / OK)")]
     [SerializeField] private Text sceneText;                // ī�� �ȿ� �� ���� �ؽ�Ʈ
-    [SerializeField] private GameObject ngBadgeRoot;        // "NG" ���� ������Ʈ
-    [SerializeField] private GameObject okBadgeRoot;        // "OK" ���� ������Ʈ
-    [SerializeField] private RectTransform sceneCardRect;
+    [SerializeField] private RectTransform sceneCardRect;   // NG ī�� (�ø� �� ��)
+    [SerializeField] private GameObject okSceneCard;        // OK ī�� (�ø� �� Ŵ)
+    [SerializeField] private Text okSceneText;              // OK ī�� �ؽ�Ʈ
 
     [Header("ī�� �ø� ������Ʈ ")]
     [SerializeField] private CardFlip cardFlip;
@@ -68,9 +71,9 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override bool OverwriteSceneTextOnReset => overwriteSceneTextOnReset;
 
     protected override Text SceneText => sceneText;
-    protected override GameObject NgBadgeRoot => ngBadgeRoot;
-    protected override GameObject OkBadgeRoot => okBadgeRoot;
     protected override RectTransform SceneCardRect => sceneCardRect;
+    protected override GameObject OkSceneCard => okSceneCard;
+    protected override Text OkSceneText => okSceneText;
 
     protected override CardFlip CardFlip => cardFlip;
 

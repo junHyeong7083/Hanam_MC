@@ -3,20 +3,20 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// Problem2 / Step1 ¿¡¼­ »ç¿ëÇÏ´Â µå·¡±× °¡´ÉÇÑ Àå¸é ¾ÆÀÌÅÛ.
-/// - ´©¸£°í ²ø¸é ¸¶¿ì½º¸¦ µû¶ó ¿òÁ÷ÀÓ.
-/// - µå·¡±× Áß¿¡´Â ¿ø·¡ ÀÚ¸®¿¡´Â °í½ºÆ®(¹İÅõ¸í) ÀÌ¹ÌÁö°¡ ³²°í,
-///   ½ÇÁ¦·Î ¿òÁ÷ÀÌ´Â °Ç ÀÌ RectTransform.
-/// - µå·¡±× Á¾·á ½Ã Step1 ÄÁÆ®·Ñ·¯¿¡°Ô µå·Ó °á°ú¸¦ ³Ñ±è.
+/// Problem2 / Step1 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½å·¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½å·¡ï¿½ï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½,
+///   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ ï¿½ï¿½ RectTransform.
+/// - ï¿½å·¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Step1 ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 
     [Header("UI References")]
-    [SerializeField] private Image itemImage;     // ½ÇÁ¦·Î ¿òÁ÷ÀÌ´Â ÀÌ¹ÌÁö
-    [SerializeField] private Image ghostImage;    // ¿ø·¡ ÀÚ¸®¿¡ ³²´Â ¹İÅõ¸í °í½ºÆ®
-    [SerializeField] private Canvas rootCanvas;   // ÃÖ»óÀ§ Canvas (UI ÁÂÇ¥ °è»ê¿ë)
+    [SerializeField] private Image itemImage;     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½
+    [SerializeField] private Image ghostImage;    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
+    [SerializeField] private Canvas rootCanvas;   // ï¿½Ö»ï¿½ï¿½ï¿½ Canvas (UI ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½)
 
     private RectTransform _rect;
     private Director_Problem2_Step1_Logic _stepController;
@@ -36,7 +36,7 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
         if (itemImage != null)
             _originalAlpha = itemImage.color.a;
 
-        // °í½ºÆ®°¡ ÁöÁ¤µÅ ÀÖÀ¸¸é ½ÃÀÛ ½Ã¿¡´Â ¼û°ÜµÎ±â
+        // ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÜµÎ±ï¿½
         if (ghostImage != null)
         {
             ghostImage.gameObject.SetActive(false);
@@ -45,7 +45,7 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
 
     private void OnEnable()
     {
-        // Ã¹ Enable ½ÃÁ¡¿¡ ¿ø·¡ À§Ä¡ ÀúÀå
+        // Ã¹ Enable ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
         if (!_initializedPos)
         {
             _originalAnchoredPos = _rect.anchoredPosition;
@@ -59,7 +59,7 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
     }
 
     /// <summary>
-    /// ¿ÜºÎ¿¡¼­ ÀüÃ¼ »óÅÂ ÃÊ±âÈ­ ½Ã È£Ãâ.
+    /// ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ È£ï¿½ï¿½.
     /// </summary>
     public void ResetToOriginalState()
     {
@@ -86,11 +86,11 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
     {
         if (ghostImage == null) return;
 
-        // °í½ºÆ® ½ºÇÁ¶óÀÌÆ®¸¦ ¿øº»°ú µ¿ÀÏÇÏ°Ô ¸ÂÃß°í
+        // ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ß°ï¿½
         ghostImage.sprite = itemImage != null ? itemImage.sprite : ghostImage.sprite;
 
         var c = ghostImage.color;
-        c.a = 0.35f; // ¹İÅõ¸í Á¤µµ
+        c.a = 0.35f; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         ghostImage.color = c;
 
         ghostImage.gameObject.SetActive(true);
@@ -103,8 +103,8 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
     }
 
     /// <summary>
-    /// µå·¡±× ¹Ú½º Áß¾ÓÀ¸·Î ½º³À
-    /// (µå·Ó ¼º°ø ½Ã Step1¿¡¼­ È£Ãâ)
+    /// ï¿½å·¡ï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ß¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    /// (ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Step1ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½)
     /// </summary>
     public void SnapToDropBoxCenter(RectTransform dropBox)
     {
@@ -112,26 +112,30 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
 
         _rect.position = dropBox.position;
 
-        // µå·ÓÀÌ ¿Ï·áµÇ¸é °í½ºÆ®´Â ±»ÀÌ ³²±æ ÇÊ¿ä ¾ø´Ù°í º¸°í ¼û±è
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         HideGhost();
 
-        // ÇÊ¿äÇÏ¸é ¿©±â¼­ ¾ÆÀÌÅÛÀ» ´Ù½Ã ¿ÏÀü ºÒÅõ¸íÀ¸·Î
+        // ï¿½Ê¿ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         RestoreOriginalAlpha();
     }
 
     // =======================
-    //   Drag ÀÌº¥Æ® ±¸ÇöºÎ
+    //   Drag ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     // =======================
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        Debug.Log($"[DragItem] OnBeginDrag - _stepController={(_stepController != null ? "OK" : "NULL")}");
+
         if (_stepController != null)
             _stepController.NotifyDragBegin(this);
+        else
+            Debug.LogWarning("[DragItem] _stepControllerê°€ null! SetStepControllerê°€ í˜¸ì¶œë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
 
-        // 1) µå·¡±× ½ÃÀÛÇÒ ¶§ ¿ø·¡ ÀÚ¸®¿¡´Â ¹İÅõ¸í °í½ºÆ®¸¦ ÄÑ°í
+        // 1) ë“œë˜ê·¸ ì‹œì‘í•˜ë©´ ì›ë˜ ìë¦¬ì—ëŠ” ê³ ìŠ¤íŠ¸ ì´ë¯¸ì§€ë¥¼ ì¼¬
         ShowGhost();
 
-        // 2) µå·¡±×µÇ´Â ¾ÆÀÌÅÛÀº ¿ÏÀü ºÒÅõ¸í
+        // 2) ë“œë˜ê·¸ë˜ëŠ” ì•„ì´í…œì€ ì™„ì „ ë¶ˆíˆ¬ëª…
         if (itemImage != null)
         {
             var c = itemImage.color;
@@ -144,7 +148,7 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
     {
         if (rootCanvas == null)
         {
-            Debug.LogWarning("[Director_Problem2_DragItem] rootCanvas°¡ ¼³Á¤µÇ¾î ÀÖÁö ¾ÊÀ½");
+            Debug.LogWarning("[DragItem] rootCanvasê°€ ì„¤ì •ë˜ì§€ ì•ŠìŒ! ì¸ìŠ¤í™í„°ì—ì„œ rootCanvasë¥¼ í• ë‹¹í•˜ì„¸ìš”.");
             return;
         }
 
@@ -163,13 +167,17 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
 
         if (_stepController != null)
             _stepController.NotifyDragging(this, eventData);
+        else
+            Debug.LogWarning("[DragItem] OnDrag: _stepControllerê°€ null!");
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        Debug.Log($"[DragItem] OnEndDrag - _stepController={(_stepController != null ? "OK" : "NULL")}");
+
         if (_stepController != null)
             _stepController.NotifyDragEnd(this, eventData);
-        // µå·Ó ¼º°ø ¿©ºÎ¿¡ µû¶ó ½ÇÁ¦ À§Ä¡/°í½ºÆ® Á¤¸®´Â
-        // Step1¿¡¼­ ReturnToOriginalPosition() ¶Ç´Â SnapToDropBoxCenter()¸¦ È£ÃâÇÏ¸é¼­ Ã³¸®µÊ.
+        else
+            Debug.LogWarning("[DragItem] OnEndDrag: _stepControllerê°€ null! ë“œë¡­ì´ ì²˜ë¦¬ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
     }
 }

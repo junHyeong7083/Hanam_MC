@@ -155,6 +155,68 @@ namespace STT
         }
 
         /// <summary>
+        /// 옵션 배열에서 STT 텍스트와 가장 일치하는 옵션의 인덱스 반환
+        /// </summary>
+        /// <param name="sttText">STT 인식 결과</param>
+        /// <param name="options">옵션 배열 (각 옵션은 keywords 배열 또는 text를 가짐)</param>
+        /// <param name="getKeywords">옵션에서 키워드 배열을 가져오는 함수</param>
+        /// <param name="getText">옵션에서 텍스트를 가져오는 함수 (키워드가 없을 때 사용)</param>
+        /// <param name="threshold">최소 유사도 임계값 (기본 0.5)</param>
+        /// <returns>매칭된 인덱스 (-1이면 매칭 실패)</returns>
+        public static int FindBestMatchingOptionIndex<T>(
+            string sttText,
+            T[] options,
+            Func<T, string[]> getKeywords,
+            Func<T, string> getText,
+            float threshold = 0.5f)
+        {
+            if (string.IsNullOrEmpty(sttText) || options == null || options.Length == 0)
+                return -1;
+
+            int bestIndex = -1;
+            float bestSimilarity = 0f;
+
+            for (int i = 0; i < options.Length; i++)
+            {
+                var option = options[i];
+                var keywords = getKeywords(option);
+
+                // 키워드가 있으면 키워드로, 없으면 텍스트로 매칭
+                string[] matchTargets = (keywords != null && keywords.Length > 0)
+                    ? keywords
+                    : new[] { getText(option) };
+
+                var (_, similarity) = FindBestMatch(sttText, matchTargets);
+
+                if (similarity > bestSimilarity)
+                {
+                    bestSimilarity = similarity;
+                    bestIndex = i;
+                }
+            }
+
+            // 임계값 이상일 때만 반환
+            return bestSimilarity >= threshold ? bestIndex : -1;
+        }
+
+        /// <summary>
+        /// IDirectorProblem2PerspectiveOption 배열에서 STT 텍스트와 가장 일치하는 옵션의 인덱스 반환
+        /// </summary>
+        public static int FindBestMatchingPerspectiveIndex(
+            string sttText,
+            IDirectorProblem2PerspectiveOption[] options,
+            float threshold = 0.5f)
+        {
+            return FindBestMatchingOptionIndex(
+                sttText,
+                options,
+                opt => opt.Keywords,
+                opt => opt.Text,
+                threshold
+            );
+        }
+
+        /// <summary>
         /// Levenshtein Distance 계산
         /// </summary>
         private static int LevenshteinDistance(string s, string t)

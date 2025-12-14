@@ -37,19 +37,34 @@ public class UIDropBoxArea : MonoBehaviour
         if (area == null || eventData == null)
             return false;
 
+        // Screen Space - Overlay 캔버스에서는 camera가 null이어야 함
+        // pressEventCamera가 null이면 그대로 null 사용 (Overlay 캔버스)
+        Camera cam = eventData.pressEventCamera;
+
         return RectTransformUtility.RectangleContainsScreenPoint(
             area,
             eventData.position,
-            eventData.pressEventCamera
+            cam
         );
     }
 
-    /// <summary>�巡�� �߿� ���� ��/�ۿ� ���� �ܰ��� On/Off</summary>
+    /// <summary>드래그 중에 영역 안/밖에 따라 외곽선 On/Off</summary>
     public void UpdateHighlight(PointerEventData eventData)
     {
-        if (outline == null) return;
+        if (outline == null)
+        {
+            Debug.LogWarning("[UIDropBoxArea] outline이 할당되지 않았습니다");
+            return;
+        }
+
+        if (area == null)
+        {
+            Debug.LogWarning("[UIDropBoxArea] area가 할당되지 않았습니다");
+            return;
+        }
 
         bool over = IsPointerOver(eventData);
+        Debug.Log($"[UIDropBoxArea] UpdateHighlight - over={over}, pos={eventData.position}");
         outline.SetActive(over);
     }
 

@@ -105,6 +105,7 @@ public class GlowEffect : MonoBehaviour
             }
         }
 
+
         // 스케일 + 알파 동시 처리 (더 정확한 방식)
         if (scaleAxis != ScaleAxis.None && useAlpha && _canvasGroup != null && _rectTransform != null)
         {

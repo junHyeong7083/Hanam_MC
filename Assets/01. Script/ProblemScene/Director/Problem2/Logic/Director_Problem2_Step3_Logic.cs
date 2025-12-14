@@ -13,6 +13,7 @@ public interface IDirectorProblem2PerspectiveOption
 {
     int Id { get; }
     string Text { get; }
+    string[] Keywords { get; }  // STT 매칭용 키워드 (null이면 Text 사용)
 }
 public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 {
@@ -41,9 +42,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
     [Header("�� ī�� UI (NG / OK)")]
     protected abstract Text SceneText { get; }
-    protected abstract GameObject NgBadgeRoot { get; }
-    protected abstract GameObject OkBadgeRoot { get; }
     protected abstract RectTransform SceneCardRect { get; }
+    protected abstract GameObject OkSceneCard { get; }
+    protected abstract Text OkSceneText { get; }
 
     [Header("ī�� �ø� ������Ʈ")]
     protected abstract CardFlip CardFlip { get; }
@@ -89,6 +90,16 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         Debug.Log("[Step3] OnStepEnter ȣ��");
         ResetState();
 
+        // MicIndicator STT 이벤트 구독
+        var indicator = MicIndicator;
+        if (indicator != null)
+        {
+            indicator.OnKeywordMatched -= OnSTTKeywordMatched;
+            indicator.OnKeywordMatched += OnSTTKeywordMatched;
+            indicator.OnNoMatch -= OnSTTNoMatch;
+            indicator.OnNoMatch += OnSTTNoMatch;
+        }
+
         var gate = CompletionGate;
         if (gate != null)
         {
@@ -99,7 +110,13 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
     protected override void OnStepExit()
     {
-        // �ʿ��ϸ� ���� ����
+        // MicIndicator 이벤트 구독 해제
+        var indicator = MicIndicator;
+        if (indicator != null)
+        {
+            indicator.OnKeywordMatched -= OnSTTKeywordMatched;
+            indicator.OnNoMatch -= OnSTTNoMatch;
+        }
     }
 
     // ==========================
@@ -118,8 +135,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         var stepRoot = StepRoot;
         var summaryPanelRoot = SummaryPanelRoot;
         var sceneText = SceneText;
-        var ngBadgeRoot = NgBadgeRoot;
-        var okBadgeRoot = OkBadgeRoot;
         var perspectiveButtonsRoot = PerspectiveButtonsRoot;
         var micButtonRoot = MicButtonRoot;
         var perspectiveTexts = PerspectiveTexts;
@@ -137,8 +152,11 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             sceneText.text = NgSentence;
         }
 
-        if (ngBadgeRoot != null) ngBadgeRoot.SetActive(true);
-        if (okBadgeRoot != null) okBadgeRoot.SetActive(false);
+        // ī�� ���� (NG ī�� ǥ��, OK ī�� ����)
+        var sceneCardRect = SceneCardRect;
+        var okSceneCard = OkSceneCard;
+        if (sceneCardRect != null) sceneCardRect.gameObject.SetActive(true);
+        if (okSceneCard != null) okSceneCard.SetActive(false);
 
         if (perspectiveButtonsRoot != null)
             perspectiveButtonsRoot.SetActive(true);
@@ -271,14 +289,65 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             indicator.ToggleRecording();
 
         Debug.Log($"[Step3] _isRecording={_isRecording}");
+        // STT 결과는 OnSTTKeywordMatched에서 처리
+    }
 
-        // false�� �� ���� = ���� ������ ����
-        if (!_isRecording)
+    /// <summary>
+    /// STT 키워드 매칭 결과 처리
+    /// </summary>
+    private void OnSTTKeywordMatched(int matchedIndex)
+    {
+        Debug.Log($"[Step3] OnSTTKeywordMatched: index={matchedIndex}");
+
+        if (_isFinished)
+        {
+            Debug.Log("[Step3] 이미 완료 상태");
+            return;
+        }
+
+        if (_selected == null)
+        {
+            Debug.LogWarning("[Step3] 선택된 관점이 없음");
+            return;
+        }
+
+        // 선택한 관점의 인덱스 찾기
+        var perspectives = Perspectives;
+        int selectedIndex = -1;
+        for (int i = 0; i < perspectives.Length; i++)
+        {
+            if (perspectives[i] == _selected)
+            {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        Debug.Log($"[Step3] 선택된 관점 인덱스: {selectedIndex}, STT 매칭 인덱스: {matchedIndex}");
+
+        // 매칭된 인덱스가 선택한 관점과 일치하면 플립 실행
+        if (matchedIndex == selectedIndex)
         {
             _hasRecordedAnswer = true;
-            Debug.Log("[Step3] ���� ���� �� PlayRefilmCompleteSequence ����");
+            _isRecording = false;
+            Debug.Log("[Step3] STT 매칭 성공! PlayRefilmCompleteSequence 시작");
             StartCoroutine(PlayRefilmCompleteSequence());
         }
+        else
+        {
+            Debug.Log($"[Step3] STT 매칭 불일치 - 선택: {selectedIndex}, 인식: {matchedIndex}");
+            // 필요시 다시 녹음하도록 안내
+        }
+    }
+
+    /// <summary>
+    /// STT 매칭 실패 처리
+    /// </summary>
+    private void OnSTTNoMatch(string sttResult)
+    {
+        Debug.Log($"[Step3] OnSTTNoMatch: STT 결과가 키워드와 일치하지 않습니다. 결과: {sttResult}");
+        // 매칭 실패 시 플립하지 않음 - 사용자가 다시 녹음할 수 있음
+        _isRecording = false;
     }
 
     // ==========================
@@ -336,16 +405,17 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             yield return StartCoroutine(cardFlip.PlayFlipRoutine());
         }
 
-        // OK �������� �ؽ�Ʈ ��ü
-        var sceneText = SceneText;
-        if (sceneText != null && _selected != null)
-            sceneText.text = _selected.Text;
+        // OK ī�忡 ���õ� ������ �ؽ�Ʈ ����
+        var okSceneText = OkSceneText;
+        if (okSceneText != null && _selected != null)
+            okSceneText.text = _selected.Text;
 
-        var ngBadgeRoot = NgBadgeRoot;
-        var okBadgeRoot = OkBadgeRoot;
+        // ī�� ��ü: NG ī�� ���� OK ī�� Ŵ
+        var sceneCardRect = SceneCardRect;
+        var okSceneCard = OkSceneCard;
 
-        if (ngBadgeRoot != null) ngBadgeRoot.SetActive(false);
-        if (okBadgeRoot != null) okBadgeRoot.SetActive(true);
+        if (sceneCardRect != null) sceneCardRect.gameObject.SetActive(false);
+        if (okSceneCard != null) okSceneCard.SetActive(true);
 
         // �ø� �Ϸ� �� ���� ������
         _isFinished = true;
