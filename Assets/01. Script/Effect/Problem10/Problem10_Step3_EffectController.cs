@@ -49,9 +49,8 @@ public class Problem10_Step3_EffectController : EffectControllerBase
     [SerializeField] private RectTransform feedbackCardRect;
     [SerializeField] private CanvasGroup feedbackCardCanvasGroup;
 
-    // 루프 트윈들
+    // 루프 트윈
     private Tween _micPulseTween;
-    private Tween _posterGlowTween;
 
     #region Public API - 인트로 화면
 
@@ -236,9 +235,6 @@ public class Problem10_Step3_EffectController : EffectControllerBase
             seq.Insert(0.5f, finalPosterRect
                 .DOScale(1f, 0.5f)
                 .SetEase(Ease.OutQuad));
-
-            // 글로우 펄스 시작
-            seq.InsertCallback(1f, StartPosterGlow);
         }
 
         // 4. 어시스턴트 피드백 슬라이드 업 (딜레이 0.8초)
@@ -257,32 +253,7 @@ public class Problem10_Step3_EffectController : EffectControllerBase
         seq.OnComplete(() => onComplete?.Invoke());
     }
 
-    private void StartPosterGlow()
-    {
-        StopPosterGlow();
-
-        if (posterGlowRect == null) return;
-
-        posterGlowRect.gameObject.SetActive(true);
-        _posterGlowTween = posterGlowRect
-            .DOScale(1.05f, 1f)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1, LoopType.Yoyo)
-            .From(Vector3.one);
-    }
-
-    private void StopPosterGlow()
-    {
-        _posterGlowTween?.Kill();
-        _posterGlowTween = null;
-
-        if (posterGlowRect != null)
-        {
-            DOTween.Kill(posterGlowRect);
-            posterGlowRect.localScale = Vector3.one;
-        }
-    }
-
+ 
     #endregion
 
     #region Reset
@@ -294,7 +265,6 @@ public class Problem10_Step3_EffectController : EffectControllerBase
     {
         KillCurrentSequence();
         StopRecordingAnimation();
-        StopPosterGlow();
 
         // 포스터 프리뷰 리셋
         if (posterPreviewRect != null)
@@ -348,13 +318,6 @@ public class Problem10_Step3_EffectController : EffectControllerBase
             finalPosterRect.localScale = Vector3.one;
         }
 
-        if (posterGlowRect != null)
-        {
-            DOTween.Kill(posterGlowRect);
-            posterGlowRect.localScale = Vector3.one;
-            posterGlowRect.gameObject.SetActive(false);
-        }
-
         if (feedbackCardCanvasGroup != null)
         {
             DOTween.Kill(feedbackCardRect);
@@ -369,13 +332,12 @@ public class Problem10_Step3_EffectController : EffectControllerBase
     {
         base.OnDisable();
         StopRecordingAnimation();
-        StopPosterGlow();
+     
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         StopRecordingAnimation();
-        StopPosterGlow();
     }
 }

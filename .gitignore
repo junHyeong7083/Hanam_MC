@@ -67,3 +67,8 @@ ServerData/
 # =========================
 *.blend1
 InitTestScene*.unity*
+
+# =========================
+# STT 모델 (용량 큼 - 별도 다운로드 필요)
+# =========================
+[Aa]ssets/StreamingAssets/vosk-model*/
