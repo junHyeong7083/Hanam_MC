@@ -5,13 +5,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Problem1 / Step3 Àü¿ë °øÅë º£ÀÌ½º
-/// - ·£´ý Ä«µå ½ÃÄö½º(RandomCardSequenceStepBase)¸¦ ±â¹ÝÀ¸·Î
-///   "»ý°¢/»ç½Ç" ÅëÀ¸·Î ºÐ·ù + ·Î±× ÀúÀå + ¿ä¾à ÆÐ³Î ÀüÈ¯±îÁö
-///   ÀüºÎ ¿©±â¼­ Ã³¸®.
-/// - ½ÇÁ¦ Step ½ºÅ©¸³Æ®´Â
-///   - ÇÊµå(films, ÄÁÅ×ÀÌ³Ê, ¹öÆ° µî)¸¸ SerializeField·Î µé°í ÀÖ°í
-///   - ÀÌ º£ÀÌ½ºÀÇ Ãß»ó ÇÁ·ÎÆÛÆ¼µéÀ» override ÇØ¼­ ¸ÅÇÎ¸¸ ÇØÁØ´Ù.
+/// Problem1 / Step3 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½
+/// - ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(RandomCardSequenceStepBase)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+///   "ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð·ï¿½ + ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½
+///   ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¼­ Ã³ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ Step ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½
+///   - ï¿½Êµï¿½(films, ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½, ï¿½ï¿½Æ° ï¿½ï¿½)ï¿½ï¿½ SerializeFieldï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½
+///   - ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ override ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½Ø´ï¿½.
 /// </summary>
 public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 {
@@ -20,8 +20,8 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     {
         public int filmId;
         public string text;
-        public string correctType;   // "»ý°¢" / "»ç½Ç" (¿ø·¡ Å¸ÀÔ)
-        public string chosenType;    // "»ý°¢" / "»ç½Ç" (»ç¿ëÀÚ ¼±ÅÃ)
+        public string correctType;   // "ï¿½ï¿½ï¿½ï¿½" / "ï¿½ï¿½ï¿½" (ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½)
+        public string chosenType;    // "ï¿½ï¿½ï¿½ï¿½" / "ï¿½ï¿½ï¿½" (ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     }
 
     [Serializable]
@@ -30,21 +30,21 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         public SortLogEntry[] items;
     }
 
-    // ====== ÀÚ½ÄÀÌ Ã¤¿öÁÙ Ãß»ó ÇÁ·ÎÆÛÆ¼µé ======
+    // ====== ï¿½Ú½ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ======
 
-    /// <summary>ÀüÃ¼ ÇÊ¸§ °³¼ö</summary>
+    /// <summary>ï¿½ï¿½Ã¼ ï¿½Ê¸ï¿½ ï¿½ï¿½ï¿½ï¿½</summary>
     protected abstract int FilmCount { get; }
 
-    /// <summary>index¿¡ ÇØ´çÇÏ´Â ÇÊ¸§ÀÇ ID</summary>
+    /// <summary>indexï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½Ê¸ï¿½ï¿½ï¿½ ID</summary>
     protected abstract int GetFilmId(int index);
 
-    /// <summary>index¿¡ ÇØ´çÇÏ´Â ÇÊ¸§ÀÇ ÅØ½ºÆ®</summary>
+    /// <summary>indexï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½Ê¸ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®</summary>
     protected abstract string GetFilmText(int index);
 
-    /// <summary>index¿¡ ÇØ´çÇÏ´Â ÇÊ¸§ÀÌ '»ý°¢' ¹®ÀåÀÎÁö ¿©ºÎ</summary>
+    /// <summary>indexï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½Ê¸ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½</summary>
     protected abstract bool IsFilmThought(int index);
 
-    // --- UI ¹ÙÀÎµù¿ë Ãß»ó ÇÁ·ÎÆÛÆ¼µé ---
+    // --- UI ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ ---
 
     protected abstract RectTransform CurrentFilmRoot { get; }
     protected abstract GameObject CurrentFilmPrefab { get; }
@@ -62,23 +62,23 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     protected abstract GameObject StepRoot { get; }
     protected abstract GameObject SummaryPanelRoot { get; }
 
-    // ====== ³»ºÎ »óÅÂ ======
+    // ====== ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ======
     private GameObject _currentFilmInstance;
     private Director_Problem1_Step3_FilmCardAnimator _currentFilmAnimator;
 
     private bool _isAdvancing;
 
-    // "ÀÌ¹Ì ÇÑ ¹ø ºÐ·ùµÈ ÇÊ¸§ÀÎÁö" È®ÀÎ¿ë
+    // "ï¿½Ì¹ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ð·ï¿½ï¿½ï¿½ ï¿½Ê¸ï¿½ï¿½ï¿½ï¿½ï¿½" È®ï¿½Î¿ï¿½
     private readonly HashSet<int> _sortedFilmIds = new HashSet<int>();
 
-    // »ý°¢/»ç½Ç Åë¿¡ µé¾î°£ Ç×¸ñµé (UI °»½Å¿ë)
+    // ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ ï¿½ë¿¡ ï¿½ï¿½î°£ ï¿½×¸ï¿½ï¿½ (UI ï¿½ï¿½ï¿½Å¿ï¿½)
     private readonly List<SortLogEntry> _thoughtEntries = new List<SortLogEntry>();
     private readonly List<SortLogEntry> _factEntries = new List<SortLogEntry>();
 
-    // DB ÀúÀå¿ë ÀüÃ¼ ·Î±×
+    // DB ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Î±ï¿½
     private readonly List<SortLogEntry> _logs = new List<SortLogEntry>();
 
-    // ====== RandomCardSequenceStepBase ±¸ÇöºÎ ======
+    // ====== RandomCardSequenceStepBase ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ======
 
     protected override int CardCount => FilmCount;
 
@@ -89,6 +89,16 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         _thoughtEntries.Clear();
         _factEntries.Clear();
         _logs.Clear();
+
+        // MicIndicator ì´ë²¤íŠ¸ êµ¬ë…
+        if (MicIndicator != null)
+        {
+            MicIndicator.OnKeywordAMatched -= OnSTTThought;
+            MicIndicator.OnKeywordBMatched -= OnSTTFact;
+            MicIndicator.OnKeywordAMatched += OnSTTThought;
+            MicIndicator.OnKeywordBMatched += OnSTTFact;
+            MicIndicator.SetRecording(false);
+        }
 
         ClearContainer(ThoughtsContainer);
         ClearContainer(FactsContainer);
@@ -104,6 +114,9 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         DestroyCurrentFilmCard();
     }
+
+    private void OnSTTThought() => HandleSort(true);
+    private void OnSTTFact() => HandleSort(false);
 
     protected override void OnApplyCardToUI(int logicalIndex)
     {
@@ -134,12 +147,12 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
     protected override void OnCardProcessed(int logicalIndex)
     {
-        // °³º° Ä«µå Ã³¸® ÈÄ Æ¯º°ÇÑ Ãß°¡Ã³¸® ¾øÀ½.
+        // ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
     }
 
     protected override void OnAllCardsProcessed()
     {
-        // ¸ðµç ÇÊ¸§ ºÐ·ù ¿Ï·á ½Ã:
+        // ï¿½ï¿½ï¿½ ï¿½Ê¸ï¿½ ï¿½Ð·ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½:
         if (AnswerButtonsRoot != null)
             AnswerButtonsRoot.SetActive(false);
 
@@ -147,7 +160,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             SummaryButtonRoot.SetActive(true);
     }
 
-    // ====== ³»ºÎ À¯Æ¿ ======
+    // ====== ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¿ ======
 
     private void ClearContainer(Transform t)
     {
@@ -210,10 +223,10 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             uiText.text = text;
     }
 
-    // ====== ¹öÆ°¿ë °ø°³ ¸Þ¼­µå ======
+    // ====== ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ======
 
-    public void OnClickSortThought() => HandleSort(true);   // '»ý°¢' ¹öÆ°
-    public void OnClickSortFact() => HandleSort(false);     // '»ç½Ç' ¹öÆ°
+    public void OnClickSortThought() => HandleSort(true);   // 'ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½Æ°
+    public void OnClickSortFact() => HandleSort(false);     // 'ï¿½ï¿½ï¿½' ï¿½ï¿½Æ°
 
     private void HandleSort(bool userChoseThought)
     {
@@ -232,8 +245,8 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         {
             _sortedFilmIds.Add(filmId);
 
-            string correctType = isThought ? "»ý°¢" : "»ç½Ç";
-            string chosenType = userChoseThought ? "»ý°¢" : "»ç½Ç";
+            string correctType = isThought ? "ï¿½ï¿½ï¿½ï¿½" : "ï¿½ï¿½ï¿½";
+            string chosenType = userChoseThought ? "ï¿½ï¿½ï¿½ï¿½" : "ï¿½ï¿½ï¿½";
 
             var entry = new SortLogEntry
             {
@@ -267,7 +280,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         _isAdvancing = false;
 
-        // ÇöÀç Ä«µå ¿Ï·á ¡æ ´ÙÀ½ Ä«µå or ÀüÃ¼ ¿Ï·á
+        // ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ or ï¿½ï¿½Ã¼ ï¿½Ï·ï¿½
         CompleteCurrentCard();
     }
 
@@ -292,7 +305,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     {
         if (_logs.Count == 0)
         {
-            Debug.Log("[Problem1_ThoughtFactSortStepBase] ÀúÀåÇÒ ·Î±×°¡ ¾ø¾î DB ÀúÀå ½ºÅµ");
+            Debug.Log("[Problem1_ThoughtFactSortStepBase] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î±×°ï¿½ ï¿½ï¿½ï¿½ï¿½ DB ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Åµ");
             return;
         }
 

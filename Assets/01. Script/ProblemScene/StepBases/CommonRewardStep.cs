@@ -190,6 +190,9 @@ public class CommonRewardStep : ProblemStepBase
     /// </summary>
     private IEnumerator PlayItemRoutine(SequenceItem item)
     {
+        if (item == null || item.root == null)
+            yield break;
+
         float duration = Mathf.Max(0.001f, item.duration);
         float t = 0f;
 
@@ -208,6 +211,10 @@ public class CommonRewardStep : ProblemStepBase
 
         while (t < duration)
         {
+            // 오브젝트가 파괴되었으면 종료
+            if (item.root == null)
+                yield break;
+
             t += Time.deltaTime;
             float x = Mathf.Clamp01(t / duration);
             float ease = Mathf.SmoothStep(0f, 1f, x);
@@ -246,10 +253,13 @@ public class CommonRewardStep : ProblemStepBase
             yield return null;
         }
 
-        // 최종값 보정
-        item.root.anchoredPosition = endPos;
-        if (item.useScale)
-            item.root.localScale = endScale;
+        // 최종값 보정 (파괴되지 않았을 때만)
+        if (item.root != null)
+        {
+            item.root.anchoredPosition = endPos;
+            if (item.useScale)
+                item.root.localScale = endScale;
+        }
         if (item.canvasGroup != null)
             item.canvasGroup.alpha = 1f;
     }

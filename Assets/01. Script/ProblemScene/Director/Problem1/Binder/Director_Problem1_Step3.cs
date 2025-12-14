@@ -39,7 +39,7 @@ public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
     [SerializeField] private GameObject binItemPrefab;       // 한 줄짜리 카드 프리팹
     [SerializeField] private float sortAdvanceDelay = 0.6f;  // 선택 후 잠깐 기다리는 시간
 
-    [Header("마이크 이펙트 (선택사항)")]
+    [Header("마이크")]
     [SerializeField] private MicRecordingIndicator micIndicator;
 
     [Header("패널 전환")]

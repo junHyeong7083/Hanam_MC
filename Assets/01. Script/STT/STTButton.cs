@@ -18,6 +18,7 @@ namespace STT
     /// - 기존 MicRecordingIndicator 대신 이 컴포넌트 사용
     /// - 기존 코드에서 MicIndicator.ToggleRecording() → 그대로 동작
     /// </summary>
+    /// 
     public class STTButton : MonoBehaviour
     {
         [Header("UI 참조")]

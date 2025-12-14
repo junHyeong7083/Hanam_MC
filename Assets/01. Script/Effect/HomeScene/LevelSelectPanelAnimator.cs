@@ -14,6 +14,7 @@ public class LevelSelectPanelAnimator : MonoBehaviour
     private Vector2[] _originalPos;
     private CanvasGroup[] _canvasGroups;
     private Coroutine _introRoutine;
+
     void Awake()
     {
         _originalPos = new Vector2[ProblemPanels.Length];

@@ -14,9 +14,9 @@ public class UIDropBoxArea : MonoBehaviour
     [Header("���̶���Ʈ(�ܰ���)")]
     [SerializeField] private GameObject outline;
 
-    private void Awake()
+    private void OnEnable()
     {
-        // 시작 시 outline 숨김
+        // Step 활성화 시 outline 숨김
         if (outline != null)
             outline.SetActive(false);
     }
