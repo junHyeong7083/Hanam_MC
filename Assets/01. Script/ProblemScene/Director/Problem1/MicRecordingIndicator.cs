@@ -18,9 +18,21 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private float pulseAmplitude = 0.05f;
     [SerializeField] private float pulseSpeed = 3f;
 
+    [Header("이미지 스왑 모드 (스프라이트가 설정되면 색상 대신 스프라이트 변경)")]
+    [SerializeField] private Sprite idleSprite;
+    [SerializeField] private Sprite recordingSprite;
+
     [Header("STT 키워드")]
     [SerializeField] private string[] keywords;  // 각 키워드 (인덱스로 구분)
     [SerializeField] private float matchThreshold = 0.3f;
+
+    /// <summary>
+    /// 키워드를 동적으로 설정 (문제별로 다른 키워드 사용 시)
+    /// </summary>
+    public void SetKeywords(string[] newKeywords)
+    {
+        keywords = newKeywords;
+    }
 
     /// <summary>키워드 매칭 시 발생 (매칭된 키워드의 인덱스)</summary>
     public event Action<int> OnKeywordMatched;
@@ -37,7 +49,7 @@ public class MicRecordingIndicator : MonoBehaviour
         if (backgroundImage == null)
             backgroundImage = GetComponent<Image>();
 
-        ApplyColor();
+        ApplyVisual();
     }
 
     private void Update()
@@ -79,14 +91,14 @@ public class MicRecordingIndicator : MonoBehaviour
             STTManager.Instance.StartRecording();
         }
 
-        ApplyColor();
+        ApplyVisual();
     }
 
     public void SetRecording(bool value)
     {
         _recording = value;
         _isSTTRecording = value;
-        ApplyColor();
+        ApplyVisual();
     }
 
     private void HandleSTTResult(string result)
@@ -150,9 +162,18 @@ public class MicRecordingIndicator : MonoBehaviour
         _recording = false;
     }
 
-    private void ApplyColor()
+    private void ApplyVisual()
     {
-        if (backgroundImage != null)
+        if (backgroundImage == null) return;
+
+        // 스프라이트가 설정되어 있으면 스프라이트 스왑, 아니면 색상 변경
+        if (idleSprite != null && recordingSprite != null)
+        {
+            backgroundImage.sprite = _recording ? recordingSprite : idleSprite;
+        }
+        else
+        {
             backgroundImage.color = _recording ? recordingColor : idleColor;
+        }
     }
 }

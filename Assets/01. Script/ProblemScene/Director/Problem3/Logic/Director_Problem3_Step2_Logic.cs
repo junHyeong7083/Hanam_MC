@@ -29,22 +29,23 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     protected abstract Button[] OptionButtons { get; }
     protected abstract Text[] OptionLabels { get; }
 
-    [Header("옵션 색상")]
-    protected abstract Color OptionNormalColor { get; }
-    protected abstract Color OptionSelectedColor { get; }
-    protected abstract Color OptionDisabledColor { get; }
+    [Header("옵션 버튼 이미지 (인덱스별)")]
+    protected abstract Image[] OptionButtonImages { get; }      // 버튼의 Image 컴포넌트
+    protected abstract Sprite[] OptionNormalSprites { get; }    // 기본 상태 스프라이트
+    protected abstract Sprite[] OptionSelectedSprites { get; }  // 선택 상태 스프라이트
+    protected abstract GameObject[] OptionSelectedMarkers { get; } // 선택 시 체크 마커
+
+    [Header("넘버링 이미지 (인덱스별)")]
+    protected abstract Image[] NumberingImages { get; }         // 넘버링 Image 컴포넌트
+    protected abstract Sprite[] NumberingNormalSprites { get; } // 기본 상태 넘버링 스프라이트
+    protected abstract Sprite[] NumberingSelectedSprites { get; } // 선택 상태 넘버링 스프라이트
 
     [Header("상단 진행도 점들 (옵션)")]
-    protected abstract Image[] ProgressDots { get; }
-    protected abstract Color ProgressDoneColor { get; }
-    protected abstract Color ProgressCurrentColor { get; }
-    protected abstract Color ProgressPendingColor { get; }
+    protected abstract GameObject[] ProgressDots { get; }
 
     [Header("하단 네비게이션 버튼")]
-    protected abstract GameObject NextButtonRoot { get; }
-    protected abstract Text NextButtonLabel { get; }
-    protected abstract string MiddleStepLabel { get; }
-    protected abstract string LastStepLabel { get; }
+    protected abstract GameObject NextProblemButton { get; }  // 다음문제 버튼 (중간 단계용)
+    protected abstract GameObject NextStepButton { get; }     // 다음스텝 버튼 (마지막 단계용)
 
     [Header("완료 게이트 (옵션)")]
     protected abstract StepCompletionGate CompletionGate { get; }
@@ -132,23 +133,11 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (dots == null || dots.Length == 0)
             return;
 
+        // 현재 인덱스만 활성화, 나머지는 비활성화
         for (int i = 0; i < dots.Length; i++)
         {
-            var img = dots[i];
-            if (img == null) continue;
-
-            if (i < _currentIndex)
-            {
-                img.color = ProgressDoneColor;
-            }
-            else if (i == _currentIndex)
-            {
-                img.color = ProgressCurrentColor;
-            }
-            else
-            {
-                img.color = ProgressPendingColor;
-            }
+            if (dots[i] != null)
+                dots[i].SetActive(i == _currentIndex);
         }
     }
 
@@ -180,6 +169,11 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         var options = (step.Options != null) ? step.Options : Array.Empty<string>();
 
         var optionLabels = OptionLabels;
+        var optionImages = OptionButtonImages;
+        var normalSprites = OptionNormalSprites;
+        var markers = OptionSelectedMarkers;
+        var numberingImages = NumberingImages;
+        var numberingNormalSprites = NumberingNormalSprites;
 
         for (int i = 0; i < optionButtons.Length; i++)
         {
@@ -195,14 +189,32 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
                 if (active)
                 {
                     btn.interactable = true;
-                    if (btn.targetGraphic != null)
-                        btn.targetGraphic.color = OptionNormalColor;
+
+                    // 기본 스프라이트로 초기화
+                    if (optionImages != null && i < optionImages.Length && optionImages[i] != null &&
+                        normalSprites != null && i < normalSprites.Length && normalSprites[i] != null)
+                    {
+                        optionImages[i].sprite = normalSprites[i];
+                    }
+
+                    // 넘버링 이미지도 기본 스프라이트로 초기화
+                    if (numberingImages != null && i < numberingImages.Length && numberingImages[i] != null &&
+                        numberingNormalSprites != null && i < numberingNormalSprites.Length && numberingNormalSprites[i] != null)
+                    {
+                        numberingImages[i].sprite = numberingNormalSprites[i];
+                    }
                 }
             }
 
             if (active && label != null)
             {
                 label.text = options[i];
+            }
+
+            // 마커 숨기기
+            if (markers != null && i < markers.Length && markers[i] != null)
+            {
+                markers[i].SetActive(false);
             }
         }
 
@@ -220,16 +232,15 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
                      _currentIndex < _stepCompleted.Length &&
                      _stepCompleted[_currentIndex]);
 
-        if (NextButtonRoot != null)
-            NextButtonRoot.SetActive(show);
-
-        if (!show) return;
-
         bool isLast = (_currentIndex == Steps.Length - 1);
-        if (NextButtonLabel != null)
-        {
-            NextButtonLabel.text = isLast ? LastStepLabel : MiddleStepLabel;
-        }
+
+        // 중간 단계: 다음문제 버튼만 표시
+        // 마지막 단계: 다음스텝 버튼만 표시
+        if (NextProblemButton != null)
+            NextProblemButton.SetActive(show && !isLast);
+
+        if (NextStepButton != null)
+            NextStepButton.SetActive(show && isLast);
     }
 
     // =============================
@@ -288,6 +299,14 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         var step = steps[_currentIndex];
         int optionCount = (step.Options != null) ? step.Options.Length : 0;
 
+        var optionImages = OptionButtonImages;
+        var normalSprites = OptionNormalSprites;
+        var selectedSprites = OptionSelectedSprites;
+        var markers = OptionSelectedMarkers;
+        var numberingImages = NumberingImages;
+        var numberingNormalSprites = NumberingNormalSprites;
+        var numberingSelectedSprites = NumberingSelectedSprites;
+
         for (int i = 0; i < optionButtons.Length; i++)
         {
             var btn = optionButtons[i];
@@ -304,13 +323,36 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
             // 한 번 선택하면 다시 못 누르도록 전부 비활성화
             btn.interactable = false;
 
-            var g = btn.targetGraphic;
-            if (g != null)
+            // 선택된 버튼은 선택 스프라이트로, 나머지는 기본 스프라이트 유지
+            if (optionImages != null && i < optionImages.Length && optionImages[i] != null)
             {
-                if (isSelected)
-                    g.color = OptionSelectedColor;
-                else
-                    g.color = OptionDisabledColor;
+                if (isSelected && selectedSprites != null && i < selectedSprites.Length && selectedSprites[i] != null)
+                {
+                    optionImages[i].sprite = selectedSprites[i];
+                }
+                else if (normalSprites != null && i < normalSprites.Length && normalSprites[i] != null)
+                {
+                    optionImages[i].sprite = normalSprites[i];
+                }
+            }
+
+            // 넘버링 이미지도 선택 여부에 따라 스프라이트 변경
+            if (numberingImages != null && i < numberingImages.Length && numberingImages[i] != null)
+            {
+                if (isSelected && numberingSelectedSprites != null && i < numberingSelectedSprites.Length && numberingSelectedSprites[i] != null)
+                {
+                    numberingImages[i].sprite = numberingSelectedSprites[i];
+                }
+                else if (numberingNormalSprites != null && i < numberingNormalSprites.Length && numberingNormalSprites[i] != null)
+                {
+                    numberingImages[i].sprite = numberingNormalSprites[i];
+                }
+            }
+
+            // 선택된 버튼에만 마커 표시
+            if (markers != null && i < markers.Length && markers[i] != null)
+            {
+                markers[i].SetActive(isSelected);
             }
         }
     }

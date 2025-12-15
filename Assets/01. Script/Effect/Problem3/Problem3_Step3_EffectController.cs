@@ -28,6 +28,15 @@ public class Problem3_Step3_EffectController : EffectControllerBase
     [SerializeField] private CanvasGroup questionCanvasGroup;
     [SerializeField] private float questionFadeInDuration = 0.3f;
 
+    [Header("===== 정답 시 드롭 애니메이션 =====")]
+    [SerializeField] private RectTransform dropImage;
+    [SerializeField] private float dropStartOffsetY = 500f;   // 화면 위에서 시작할 오프셋
+    [SerializeField] private float dropDuration = 0.6f;
+    [SerializeField] private Ease dropEase = Ease.OutBounce;
+
+    private Vector2 _dropImageOriginalPos;
+    private bool _dropImagePosInitialized;
+
     // 힌트용 별도 시퀀스 (문제 등장과 독립적으로 동작)
     private Sequence _hintSequence;
 
@@ -117,6 +126,53 @@ public class Problem3_Step3_EffectController : EffectControllerBase
     }
 
     /// <summary>
+    /// 정답 시 이미지 드롭 애니메이션 재생
+    /// - 위에서 아래로 떨어지는 효과
+    /// </summary>
+    public void PlayDropAnimation(Action onComplete = null)
+    {
+        if (dropImage == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        // 원래 위치 저장 (최초 1회)
+        if (!_dropImagePosInitialized)
+        {
+            _dropImageOriginalPos = dropImage.anchoredPosition;
+            _dropImagePosInitialized = true;
+        }
+
+        // 시작 위치 설정 (원래 위치 + 오프셋)
+        var startPos = _dropImageOriginalPos + new Vector2(0f, dropStartOffsetY);
+        dropImage.anchoredPosition = startPos;
+
+        // 활성화
+        dropImage.gameObject.SetActive(true);
+
+        // 드롭 애니메이션
+        dropImage.DOAnchorPosY(_dropImageOriginalPos.y, dropDuration)
+            .SetEase(dropEase)
+            .OnComplete(() => onComplete?.Invoke());
+    }
+
+    /// <summary>
+    /// 드롭 이미지 숨기기 및 위치 리셋
+    /// </summary>
+    public void HideDropImage()
+    {
+        if (dropImage != null)
+        {
+            dropImage.gameObject.SetActive(false);
+            if (_dropImagePosInitialized)
+            {
+                dropImage.anchoredPosition = _dropImageOriginalPos;
+            }
+        }
+    }
+
+    /// <summary>
     /// 문제 등장 페이드인
     /// </summary>
     public void PlayQuestionAppear(Action onComplete = null)
@@ -152,6 +208,7 @@ public class Problem3_Step3_EffectController : EffectControllerBase
     {
         HideHintImmediate();
         HideCorrectEffect();
+        HideDropImage();
     }
 
     #endregion

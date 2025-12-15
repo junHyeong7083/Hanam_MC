@@ -242,8 +242,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uC798\uD558\uC168\uC5B4\uC694, \uAC10\uB3C5\uB2D8!\n\uCCAB \uCD2C\uC601\uC744
-    \uB9C8\uCCE4\uC2B5\uB2C8\uB2E4"
+  m_Text: "\"\uBAA8\uB4E0 \uC7A5\uBA74\uC5D0\uB294 \uC8FC\uC778\uACF5\uC758 \uAC15\uC810\uC774
+    \uC228\uC5B4 \uC788\uC5B4\uC694.\n\uB2E4\uC74C \uC7A5\uBA74\uB3C4 \uD568\uAED8
+    \uBC1D\uD600\uBD10\uC694!\""
 --- !u!1 &4251120346712503275
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,6 +590,7 @@ GameObject:
   - component: {fileID: 5214444610462409017}
   - component: {fileID: 6829281718133034841}
   - component: {fileID: 8223763057976574325}
+  - component: {fileID: 7140779077519676158}
   m_Layer: 5
   m_Name: NextButton
   m_TagString: Untagged
@@ -726,6 +728,22 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
 --- !u!114 &8223763057976574325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7458706567542063781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverScale: 1.08
+  animationSpeed: 10
+  enableMoveX: 0
+  moveXDistance: 10
+--- !u!114 &7140779077519676158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -888,13 +906,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   summaryDescriptions:
   - icon: {fileID: 21300000, guid: 2cf683d995171274faf04ce2344a4fc3, type: 3}
-    description: "\uC790\uB3D9\uC801 \uC0AC\uACE0\uAC00 \uAC10\uC815 \uC870\uBA85\uC5D0
-      \uC601\uD5A5\uC744 \uC900\uB2E4"
+    description: "\uC5B4\uB5A4 \uACBD\uD5D8\uC5D0\uB3C4 \uC228\uACA8\uC9C4 \uC758\uBBF8\uAC00
+      \uC788\uB2E4"
   - icon: {fileID: 21300000, guid: a4a19b56456c3814392718c9df26324e, type: 3}
-    description: "\uB2E4\uB978 \uAD00\uC810\uC73C\uB85C \uC7AC\uCD2C\uC601\uD558\uBA74
-      \uC7A5\uBA74\uC744 \uBC14\uAFC0 \uC218 \uC788\uB2E4"
+    description: "'\uACF5\uBC31\uAE30'\uB3C4 \uB098\uC758 \uC2A4\uD1A0\uB9AC\uC5D0
+      \uC911\uC694\uD55C \uC7A5\uBA74\uC774\uB2E4"
   - icon: {fileID: 21300000, guid: c704346be359a4143a276d598637a302, type: 3}
-    description: "'\uC0DD\uAC01'\uC740 \uD3B8\uC9D1 \uAC00\uB2A5\uD558\uB2E4"
+    description: "\uC8FC\uC778\uACF5\uC758 \uAC15\uC810\uC740 \uB2E4\uC74C \uC7A5\uBA74\uC744
+      \uBC1D\uD78C"
   linePrefab: {fileID: 3544180910543454279, guid: 09bb0cc8543e6ff44b47208d8cc420e7, type: 3}
   linesRoot: {fileID: 4648796620412215934}
   lineConfigs:

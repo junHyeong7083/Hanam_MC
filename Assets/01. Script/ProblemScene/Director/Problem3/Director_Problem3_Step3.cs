@@ -18,12 +18,15 @@ public class Director_Problem3_Step3
         public string[] options;
         public int correctIndex;
         public string[] wrongHints;
+        [Tooltip("STT 매칭용 키워드 (옵션 인덱스별)")]
+        public string[] keywords;
 
         public string Id => id;
         public string QuestionText => questionText;
         public string[] Options => options;
         public int CorrectIndex => correctIndex;
         public string[] WrongHints => wrongHints;
+        public string[] Keywords => keywords;
     }
 
     [Header("문제 배열 데이터")]
@@ -41,6 +44,9 @@ public class Director_Problem3_Step3
 
     [Header("정답 시 숨길 루트 (옵션)")]
     [SerializeField] private GameObject hideRootOnCorrect;
+
+    [Header("마이크 STT (옵션)")]
+    [SerializeField] private MicRecordingIndicator micIndicator;
 
     [Header("비활성/선택 색상")]
     [SerializeField] private Color disabledColor = new Color(1f, 1f, 1f, 0.4f);
@@ -62,7 +68,21 @@ public class Director_Problem3_Step3
         return questions[index];
     }
 
-    // ====== 이펙트 컨트롤러 사용하도록 Override ======
+    // ====== STT + 이펙트 Override ======
+
+    protected override void OnStepEnter()
+    {
+        base.OnStepEnter();
+
+        // MicIndicator STT 이벤트 구독
+        if (micIndicator != null)
+        {
+            micIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
+            micIndicator.OnKeywordMatched += OnSTTKeywordMatched;
+            micIndicator.OnNoMatch -= OnSTTNoMatch;
+            micIndicator.OnNoMatch += OnSTTNoMatch;
+        }
+    }
 
     protected override void HandleWrong(int optionIndex)
     {
@@ -97,6 +117,19 @@ public class Director_Problem3_Step3
                     buttonRect = btn.GetComponent<RectTransform>();
             }
             effectController.PlayCorrectEffect(buttonRect);
+
+            // 드롭 애니메이션 재생 (위에서 아래로 떨어지는 효과)
+            effectController.PlayDropAnimation();
+        }
+
+        // 모든 옵션 버튼 숨기기
+        if (optionButtons != null)
+        {
+            foreach (var btn in optionButtons)
+            {
+                if (btn != null)
+                    btn.gameObject.SetActive(false);
+            }
         }
 
         // 베이스 로직 실행 (버튼 색상 변경, Gate 완료 등)
@@ -114,6 +147,21 @@ public class Director_Problem3_Step3
         // 베이스 로직 실행
         base.ApplyQuestionUI(index, q);
 
+        // MicIndicator에 현재 문제의 키워드 설정
+        if (micIndicator != null && q != null)
+        {
+            var keywords = q.Keywords;
+            if (keywords != null && keywords.Length > 0)
+            {
+                micIndicator.SetKeywords(keywords);
+            }
+            else
+            {
+                // 키워드가 없으면 옵션 텍스트를 키워드로 사용
+                micIndicator.SetKeywords(q.Options);
+            }
+        }
+
         // 문제 등장 애니메이션 (옵션)
         if (effectController != null)
         {
@@ -125,11 +173,59 @@ public class Director_Problem3_Step3
     {
         base.OnStepExit();
 
+        // MicIndicator 이벤트 구독 해제
+        if (micIndicator != null)
+        {
+            micIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
+            micIndicator.OnNoMatch -= OnSTTNoMatch;
+        }
+
         // 이펙트 컨트롤러 정리
         if (effectController != null)
         {
             effectController.HideHintImmediate();
         }
+    }
+
+    // ====== STT 이벤트 핸들러 ======
+
+    /// <summary>
+    /// STT 키워드 매칭 성공 시 호출
+    /// </summary>
+    private void OnSTTKeywordMatched(int matchedIndex)
+    {
+        Debug.Log($"[Problem3_Step3] STT 매칭: index={matchedIndex}");
+
+        if (_stepCompleted) return;
+
+        var q = GetQuestion(_currentQuestionIndex);
+        if (q == null) return;
+
+        int correctIndex = q.CorrectIndex;
+        bool isCorrect = (matchedIndex == correctIndex);
+
+        // Attempt 로그
+        OnQuestionAttempted(q, matchedIndex, isCorrect);
+
+        if (isCorrect)
+        {
+            Debug.Log("[Problem3_Step3] STT로 정답!");
+            HandleCorrect(matchedIndex);
+        }
+        else
+        {
+            Debug.Log($"[Problem3_Step3] STT 오답: 정답={correctIndex}, 인식={matchedIndex}");
+            HandleWrong(matchedIndex);
+        }
+    }
+
+    /// <summary>
+    /// STT 매칭 실패 시 호출
+    /// </summary>
+    private void OnSTTNoMatch(string sttResult)
+    {
+        Debug.Log($"[Problem3_Step3] STT 매칭 실패: {sttResult}");
+        // 매칭 실패 시에는 아무것도 하지 않음 - 사용자가 다시 녹음하거나 버튼 클릭 가능
     }
 
     // ====== 유틸리티 ======
