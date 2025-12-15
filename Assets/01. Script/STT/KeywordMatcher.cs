@@ -55,8 +55,12 @@ namespace STT
             if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(keyword))
                 return 0f;
 
-            text = text.ToLower().Trim();
-            keyword = keyword.ToLower().Trim();
+            // 정규화: 소문자 + 구두점 제거 + 공백 정리
+            text = NormalizeText(text);
+            keyword = NormalizeText(keyword);
+
+            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(keyword))
+                return 0f;
 
             // 완전 일치
             if (text == keyword) return 1f;
@@ -64,6 +68,14 @@ namespace STT
             // 포함 여부
             if (text.Contains(keyword)) return 0.9f;
             if (keyword.Contains(text)) return 0.8f;
+
+            // 단어 단위로 분리해서 키워드와 일치하는 단어가 있는지 확인
+            string[] words = text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var word in words)
+            {
+                if (word == keyword) return 0.95f;  // 단어 완전 일치
+                if (word.Contains(keyword)) return 0.85f;
+            }
 
             // 자모 분해하여 비교 (한글 음성 인식 개선)
             string textJamo = DecomposeToJamo(text);
@@ -73,6 +85,45 @@ namespace STT
             int maxLength = Math.Max(textJamo.Length, keywordJamo.Length);
 
             return 1f - (float)distance / maxLength;
+        }
+
+        /// <summary>
+        /// 텍스트 정규화: 소문자 변환, 구두점 제거, 공백 정리
+        /// </summary>
+        private static string NormalizeText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "";
+
+            var sb = new System.Text.StringBuilder();
+
+            foreach (char c in text)
+            {
+                // 한글, 영문, 숫자, 공백만 유지
+                if ((c >= 0xAC00 && c <= 0xD7A3) ||  // 한글 음절
+                    (c >= 0x3131 && c <= 0x318E) ||  // 한글 자모
+                    (c >= 'a' && c <= 'z') ||
+                    (c >= 'A' && c <= 'Z') ||
+                    (c >= '0' && c <= '9') ||
+                    c == ' ')
+                {
+                    sb.Append(c);
+                }
+                else if (c == '.' || c == ',' || c == '!' || c == '?' || c == '\n' || c == '\r')
+                {
+                    // 구두점은 공백으로 대체
+                    sb.Append(' ');
+                }
+            }
+
+            // 연속 공백 제거 및 트림
+            string result = sb.ToString().ToLower();
+            while (result.Contains("  "))
+            {
+                result = result.Replace("  ", " ");
+            }
+
+            return result.Trim();
         }
 
         /// <summary>

@@ -65850,7 +65850,7 @@ MonoBehaviour:
   idleSprite: {fileID: 21300000, guid: b6aa675d1c8a5f04d95246b3bcecc608, type: 3}
   recordingSprite: {fileID: 21300000, guid: 0f40a597e29f78d4eb3114d9e379765c, type: 3}
   keywords:
-  - "\uB124\uB124\uB124\uB124\uB124\uB124"
+  - "\uB124 "
   - "\uC544\uB2C8\uC694"
   matchThreshold: 0.3
 --- !u!1 &1531513323

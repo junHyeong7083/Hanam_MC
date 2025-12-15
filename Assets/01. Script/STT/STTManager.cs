@@ -21,7 +21,7 @@ namespace STT
         public static STTManager Instance { get; private set; }
 
         [Header("모델 설정")]
-        [SerializeField] private string modelFileName = "ggml-small.bin";
+        [SerializeField] private string modelFileName = "ggml-tiny.bin";
         [SerializeField] private string language = "ko";
 
         [Header("녹음 설정")]
@@ -35,6 +35,11 @@ namespace STT
         [Header("Debug")]
         [SerializeField] private bool showDebugLogs = true;
 
+        [Header("실시간 처리 설정")]
+        [SerializeField] private bool enableRealtimeProcessing = true;
+        [SerializeField] private float realtimeProcessInterval = 1.0f;  // 청크 처리 간격 (초)
+        [SerializeField] private int minSamplesForProcessing = 8000;    // 최소 샘플 수 (0.5초)
+
         // Whisper 핸들
         private IntPtr _ctx = IntPtr.Zero;
 
@@ -44,11 +49,20 @@ namespace STT
         private bool _isRecording;
         private List<float> _recordedSamples = new List<float>();
 
+        // 실시간 처리 관련
+        private int _lastProcessedSampleCount;
+        private bool _isRealtimeProcessing;
+        private string _lastPartialResult = "";
+        private Coroutine _realtimeProcessCoroutine;
+
         // 처리 상태
         private bool _isProcessing;
 
+        // 스레드 동기화 (Whisper context 동시 접근 방지)
+        private readonly object _whisperLock = new object();
+
         // 이벤트
-        public event Action<string> OnPartialResult;  // Whisper는 실시간 지원 안함, 호환성용
+        public event Action<string> OnPartialResult;  // 실시간 처리 결과
         public event Action<string> OnFinalResult;
         public event Action<string> OnError;
 
@@ -171,12 +185,21 @@ namespace STT
 
             // 녹음 데이터 초기화
             _recordedSamples.Clear();
+            _lastProcessedSampleCount = 0;
+            _lastPartialResult = "";
 
             // 마이크 녹음 시작
             _micClip = Microphone.Start(_micDevice, false, Mathf.CeilToInt(maxRecordingTime), sampleRate);
             _isRecording = true;
 
             StartCoroutine(RecordAudio());
+
+            // 실시간 처리 시작
+            if (enableRealtimeProcessing)
+            {
+                _realtimeProcessCoroutine = StartCoroutine(RealtimeProcessAudio());
+            }
+
             Log("녹음 시작");
         }
 
@@ -189,6 +212,13 @@ namespace STT
                 return;
 
             _isRecording = false;
+
+            // 실시간 처리 코루틴 중지
+            if (_realtimeProcessCoroutine != null)
+            {
+                StopCoroutine(_realtimeProcessCoroutine);
+                _realtimeProcessCoroutine = null;
+            }
 
             // 녹음 중지
             int lastPos = Microphone.GetPosition(_micDevice);
@@ -203,6 +233,15 @@ namespace STT
             }
 
             Log($"녹음 종료. 샘플 수: {_recordedSamples.Count}");
+
+            // 실시간 처리에서 이미 결과가 있으면 즉시 반환
+            if (enableRealtimeProcessing && !string.IsNullOrEmpty(_lastPartialResult))
+            {
+                Log($"실시간 처리 결과 사용: {_lastPartialResult}");
+                _isProcessing = false;
+                OnFinalResult?.Invoke(_lastPartialResult);
+                return;
+            }
 
             // 음성 인식 시작
             StartCoroutine(ProcessAudio());
@@ -230,6 +269,75 @@ namespace STT
 
                 yield return null;
             }
+        }
+
+        /// <summary>
+        /// 실시간 청크 기반 음성 인식
+        /// </summary>
+        private IEnumerator RealtimeProcessAudio()
+        {
+            Log("실시간 처리 시작");
+
+            while (_isRecording)
+            {
+                yield return new WaitForSeconds(realtimeProcessInterval);
+
+                // 녹음 중이 아니면 종료
+                if (!_isRecording) break;
+
+                // 이미 처리 중이면 스킵
+                if (_isRealtimeProcessing) continue;
+
+                // 처리할 샘플이 충분한지 확인
+                int currentSampleCount = _recordedSamples.Count;
+                if (currentSampleCount < minSamplesForProcessing) continue;
+
+                // 새로운 샘플이 없으면 스킵
+                if (currentSampleCount <= _lastProcessedSampleCount) continue;
+
+                // 현재까지의 샘플 복사
+                float[] samplesToProcess = _recordedSamples.ToArray();
+                _lastProcessedSampleCount = currentSampleCount;
+
+                // 별도 스레드에서 처리
+                _isRealtimeProcessing = true;
+                string result = "";
+                bool processComplete = false;
+
+                Thread processThread = new Thread(() =>
+                {
+                    try
+                    {
+                        result = RunWhisper(samplesToProcess);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"[STT] 실시간 처리 오류: {e.Message}");
+                        result = "";
+                    }
+                    processComplete = true;
+                });
+
+                processThread.Start();
+
+                // 처리 완료 대기 (녹음 중인 동안만)
+                while (!processComplete && _isRecording)
+                {
+                    yield return null;
+                }
+
+                _isRealtimeProcessing = false;
+
+                // 결과가 있으면 이벤트 발생
+                if (!string.IsNullOrEmpty(result))
+                {
+                    _lastPartialResult = result;
+                    Log($"실시간 결과: {result}");
+                    OnPartialResult?.Invoke(result);
+                }
+            }
+
+            Log("실시간 처리 종료");
         }
 
         /// <summary>
@@ -279,68 +387,78 @@ namespace STT
         }
 
         /// <summary>
-        /// Whisper API 호출
+        /// Whisper API 호출 (스레드 안전)
         /// </summary>
         private string RunWhisper(float[] samples)
         {
-            // Whisper 파라미터 설정
-            WhisperFullParams wparams = WhisperWrapper.whisper_full_default_params(
-                WhisperSamplingStrategy.WHISPER_SAMPLING_GREEDY);
-
-            wparams.n_threads = numThreads;
-            wparams.translate = translate;
-            wparams.print_special = false;
-            wparams.print_progress = false;
-            wparams.print_realtime = false;
-            wparams.print_timestamps = false;
-            wparams.single_segment = false;
-
-            // 언어 설정
-            IntPtr langPtr = Marshal.StringToHGlobalAnsi(language);
-            wparams.language = langPtr;
-
-            try
+            // 동시 접근 방지 락
+            lock (_whisperLock)
             {
-                // float 배열을 네이티브 메모리로 복사
-                int size = samples.Length * sizeof(float);
-                IntPtr samplesPtr = Marshal.AllocHGlobal(size);
-                Marshal.Copy(samples, 0, samplesPtr, samples.Length);
+                if (_ctx == IntPtr.Zero)
+                {
+                    Debug.LogWarning("[STT] Whisper context가 유효하지 않습니다");
+                    return "";
+                }
+
+                // Whisper 파라미터 설정
+                WhisperFullParams wparams = WhisperWrapper.whisper_full_default_params(
+                    WhisperSamplingStrategy.WHISPER_SAMPLING_GREEDY);
+
+                wparams.n_threads = numThreads;
+                wparams.translate = translate;
+                wparams.print_special = false;
+                wparams.print_progress = false;
+                wparams.print_realtime = false;
+                wparams.print_timestamps = false;
+                wparams.single_segment = false;
+
+                // 언어 설정
+                IntPtr langPtr = Marshal.StringToHGlobalAnsi(language);
+                wparams.language = langPtr;
 
                 try
                 {
-                    // Whisper 실행
-                    int ret = WhisperWrapper.whisper_full(_ctx, wparams, samplesPtr, samples.Length);
+                    // float 배열을 네이티브 메모리로 복사
+                    int size = samples.Length * sizeof(float);
+                    IntPtr samplesPtr = Marshal.AllocHGlobal(size);
+                    Marshal.Copy(samples, 0, samplesPtr, samples.Length);
 
-                    if (ret != 0)
+                    try
                     {
-                        Debug.LogError($"[STT] whisper_full 실패: {ret}");
-                        return "";
-                    }
+                        // Whisper 실행
+                        int ret = WhisperWrapper.whisper_full(_ctx, wparams, samplesPtr, samples.Length);
 
-                    // 결과 가져오기
-                    int nSegments = WhisperWrapper.whisper_full_n_segments(_ctx);
-                    string fullText = "";
-
-                    for (int i = 0; i < nSegments; i++)
-                    {
-                        IntPtr textPtr = WhisperWrapper.whisper_full_get_segment_text(_ctx, i);
-                        if (textPtr != IntPtr.Zero)
+                        if (ret != 0)
                         {
-                            string segment = Marshal.PtrToStringAnsi(textPtr);
-                            fullText += segment;
+                            Debug.LogError($"[STT] whisper_full 실패: {ret}");
+                            return "";
                         }
-                    }
 
-                    return fullText.Trim();
+                        // 결과 가져오기
+                        int nSegments = WhisperWrapper.whisper_full_n_segments(_ctx);
+                        string fullText = "";
+
+                        for (int i = 0; i < nSegments; i++)
+                        {
+                            IntPtr textPtr = WhisperWrapper.whisper_full_get_segment_text(_ctx, i);
+                            if (textPtr != IntPtr.Zero)
+                            {
+                                string segment = Marshal.PtrToStringAnsi(textPtr);
+                                fullText += segment;
+                            }
+                        }
+
+                        return fullText.Trim();
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(samplesPtr);
+                    }
                 }
                 finally
                 {
-                    Marshal.FreeHGlobal(samplesPtr);
+                    Marshal.FreeHGlobal(langPtr);
                 }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(langPtr);
             }
         }
 
@@ -349,16 +467,36 @@ namespace STT
         /// </summary>
         private void Cleanup()
         {
+            // 녹음 중지
             if (_isRecording)
             {
                 _isRecording = false;
                 Microphone.End(_micDevice);
             }
 
-            if (_ctx != IntPtr.Zero)
+            // 실시간 처리 코루틴 중지
+            if (_realtimeProcessCoroutine != null)
             {
-                WhisperWrapper.whisper_free(_ctx);
-                _ctx = IntPtr.Zero;
+                StopCoroutine(_realtimeProcessCoroutine);
+                _realtimeProcessCoroutine = null;
+            }
+
+            // 처리 완료 대기 (최대 2초)
+            int waitCount = 0;
+            while ((_isProcessing || _isRealtimeProcessing) && waitCount < 20)
+            {
+                Thread.Sleep(100);
+                waitCount++;
+            }
+
+            // Whisper context 정리 (락 사용)
+            lock (_whisperLock)
+            {
+                if (_ctx != IntPtr.Zero)
+                {
+                    WhisperWrapper.whisper_free(_ctx);
+                    _ctx = IntPtr.Zero;
+                }
             }
         }
 

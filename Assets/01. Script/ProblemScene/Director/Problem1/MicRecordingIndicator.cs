@@ -43,6 +43,10 @@ public class MicRecordingIndicator : MonoBehaviour
     private Vector3 _baseScale;
     private bool _isSTTRecording;
 
+    // 실시간 매칭 캐시
+    private int _cachedMatchIndex = -1;
+    private float _cachedMatchScore = 0f;
+
     private void Awake()
     {
         _baseScale = transform.localScale;
@@ -79,15 +83,40 @@ public class MicRecordingIndicator : MonoBehaviour
             // 녹음 중지 및 인식 시작
             _isSTTRecording = false;
             _recording = false;
-            STTManager.Instance.OnFinalResult -= HandleSTTResult;
-            STTManager.Instance.OnFinalResult += HandleSTTResult;
-            STTManager.Instance.StopRecording();
+
+            // 실시간 처리 이벤트 해제
+            STTManager.Instance.OnPartialResult -= HandlePartialResult;
+
+            // 캐시된 실시간 결과가 있으면 즉시 사용
+            if (_cachedMatchIndex >= 0)
+            {
+                Debug.Log($"[MicRecordingIndicator] 캐시된 실시간 결과 사용: [{_cachedMatchIndex}] {keywords[_cachedMatchIndex]} ({_cachedMatchScore:F2})");
+                int matchIndex = _cachedMatchIndex;
+                _cachedMatchIndex = -1;
+                _cachedMatchScore = 0f;
+                STTManager.Instance.StopRecording();
+                OnKeywordMatched?.Invoke(matchIndex);
+            }
+            else
+            {
+                // 캐시된 결과가 없으면 기존 방식대로 최종 결과 대기
+                STTManager.Instance.OnFinalResult -= HandleSTTResult;
+                STTManager.Instance.OnFinalResult += HandleSTTResult;
+                STTManager.Instance.StopRecording();
+            }
         }
         else
         {
             // 녹음 시작
             _isSTTRecording = true;
             _recording = true;
+            _cachedMatchIndex = -1;
+            _cachedMatchScore = 0f;
+
+            // 실시간 처리 이벤트 구독
+            STTManager.Instance.OnPartialResult -= HandlePartialResult;
+            STTManager.Instance.OnPartialResult += HandlePartialResult;
+
             STTManager.Instance.StartRecording();
         }
 
@@ -99,6 +128,42 @@ public class MicRecordingIndicator : MonoBehaviour
         _recording = value;
         _isSTTRecording = value;
         ApplyVisual();
+    }
+
+    /// <summary>
+    /// 실시간 부분 결과 처리 - 키워드 매칭하여 캐시
+    /// </summary>
+    private void HandlePartialResult(string result)
+    {
+        if (string.IsNullOrEmpty(result)) return;
+
+        Debug.Log($"[MicRecordingIndicator] 실시간 결과 수신: {result}");
+
+        if (keywords == null || keywords.Length == 0) return;
+
+        // 각 키워드와 비교해서 가장 높은 점수 찾기
+        int bestIndex = -1;
+        float bestScore = 0f;
+
+        for (int i = 0; i < keywords.Length; i++)
+        {
+            float score = KeywordMatcher.CalculateSimilarity(result, keywords[i]);
+            Debug.Log($"[MicRecordingIndicator] 실시간 [{i}] {keywords[i]}: {score:F2}");
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestIndex = i;
+            }
+        }
+
+        // 임계값 이상이고, 이전 캐시보다 점수가 높으면 업데이트
+        if (bestIndex >= 0 && bestScore >= matchThreshold && bestScore > _cachedMatchScore)
+        {
+            _cachedMatchIndex = bestIndex;
+            _cachedMatchScore = bestScore;
+            Debug.Log($"[MicRecordingIndicator] 실시간 매칭 캐시 업데이트: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
+        }
     }
 
     private void HandleSTTResult(string result)
@@ -153,13 +218,19 @@ public class MicRecordingIndicator : MonoBehaviour
     private void OnDisable()
     {
         // 정리
-        if (_isSTTRecording && STTManager.Instance != null)
+        if (STTManager.Instance != null)
         {
-            STTManager.Instance.StopRecording();
+            if (_isSTTRecording)
+            {
+                STTManager.Instance.StopRecording();
+            }
             STTManager.Instance.OnFinalResult -= HandleSTTResult;
+            STTManager.Instance.OnPartialResult -= HandlePartialResult;
         }
         _isSTTRecording = false;
         _recording = false;
+        _cachedMatchIndex = -1;
+        _cachedMatchScore = 0f;
     }
 
     private void ApplyVisual()
