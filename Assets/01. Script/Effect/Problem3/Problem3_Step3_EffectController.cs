@@ -20,10 +20,6 @@ public class Problem3_Step3_EffectController : EffectControllerBase
     [SerializeField] private float hintShowDuration = 1.5f;
     [SerializeField] private float hintFadeDuration = 0.4f;
 
-    [Header("===== 정답 효과 =====")]
-    [SerializeField] private RectTransform correctSparkleEffect;
-    [SerializeField] private float correctEffectDuration = 0.5f;
-
     [Header("===== 문제 등장 (옵션) =====")]
     [SerializeField] private CanvasGroup questionCanvasGroup;
     [SerializeField] private float questionFadeInDuration = 0.3f;
@@ -101,28 +97,6 @@ public class Problem3_Step3_EffectController : EffectControllerBase
 
         if (hintRoot != null)
             hintRoot.SetActive(false);
-    }
-
-    /// <summary>
-    /// 정답 선택 시 효과 재생 (선택된 버튼 위치에 표시)
-    /// </summary>
-    public void PlayCorrectEffect(RectTransform targetButton = null)
-    {
-        if (correctSparkleEffect == null) return;
-
-        // 타겟 버튼이 있으면 그 위치로 이동
-        if (targetButton != null)
-        {
-            correctSparkleEffect.position = targetButton.position;
-        }
-
-        correctSparkleEffect.gameObject.SetActive(true);
-
-        // 자동 숨김 (duration 후)
-        if (correctEffectDuration > 0f)
-        {
-            DOVirtual.DelayedCall(correctEffectDuration, HideCorrectEffect);
-        }
     }
 
     /// <summary>
@@ -207,19 +181,12 @@ public class Problem3_Step3_EffectController : EffectControllerBase
     public void ResetForNextQuestion()
     {
         HideHintImmediate();
-        HideCorrectEffect();
         HideDropImage();
     }
 
     #endregion
 
     #region Private
-
-    private void HideCorrectEffect()
-    {
-        if (correctSparkleEffect != null)
-            correctSparkleEffect.gameObject.SetActive(false);
-    }
 
     protected override void OnDisable()
     {

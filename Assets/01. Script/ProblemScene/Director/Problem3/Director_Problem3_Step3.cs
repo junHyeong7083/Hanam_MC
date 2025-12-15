@@ -48,15 +48,12 @@ public class Director_Problem3_Step3
     [Header("마이크 STT (옵션)")]
     [SerializeField] private MicRecordingIndicator micIndicator;
 
-    [Header("비활성/선택 색상")]
-    [SerializeField] private Color disabledColor = new Color(1f, 1f, 1f, 0.4f);
-
     // ====== 베이스로 전달할 프로퍼티 ======
     protected override GameObject HintRoot => hintRoot;
     protected override Text HintLabel => hintLabel;
     protected override CanvasGroup HintCanvasGroup => hintCanvasGroup;
     protected override GameObject HideRootOnCorrect => hideRootOnCorrect;
-    protected override Color DisabledColor => disabledColor;
+    protected override Color DisabledColor => Color.white; // 사용 안함
     protected override int QuestionCount => questions != null ? questions.Length : 0;
     protected override float HintShowDuration => hintShowDuration;
     protected override float HintFadeDuration => hintFadeDuration;
@@ -106,19 +103,9 @@ public class Director_Problem3_Step3
 
     protected override void HandleCorrect(int optionIndex)
     {
-        // 정답 효과 재생 (선택된 버튼 위치에)
+        // 드롭 애니메이션 재생 (위에서 아래로 떨어지는 효과)
         if (effectController != null)
         {
-            RectTransform buttonRect = null;
-            if (optionButtons != null && optionIndex >= 0 && optionIndex < optionButtons.Length)
-            {
-                var btn = optionButtons[optionIndex];
-                if (btn != null)
-                    buttonRect = btn.GetComponent<RectTransform>();
-            }
-            effectController.PlayCorrectEffect(buttonRect);
-
-            // 드롭 애니메이션 재생 (위에서 아래로 떨어지는 효과)
             effectController.PlayDropAnimation();
         }
 
@@ -132,8 +119,16 @@ public class Director_Problem3_Step3
             }
         }
 
-        // 베이스 로직 실행 (버튼 색상 변경, Gate 완료 등)
-        base.HandleCorrect(optionIndex);
+        // 정답 시 숨길 루트 처리
+        if (hideRootOnCorrect != null)
+            hideRootOnCorrect.SetActive(false);
+
+        // Gate 완료
+        if (completionGate != null)
+            completionGate.MarkOneDone();
+
+        // 다음 문제 또는 스텝 완료
+        GoNextQuestionOrFinish();
     }
 
     protected override void ApplyQuestionUI(int index, Question q)

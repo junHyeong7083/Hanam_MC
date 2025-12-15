@@ -69,6 +69,11 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     protected abstract GameObject ScenarioCardRoot { get; }
     protected abstract float ScenarioDisplayDuration { get; }
 
+    [Header("버튼 이미지 (Echo와 반대 동작)")]
+    protected abstract GameObject ButtonImageRoot { get; }
+
+    [Header("마이크 STT (옵션)")]
+    protected abstract MicRecordingIndicator MicIndicator { get; }
 
     // ==========================
     // ���� ����
@@ -139,6 +144,20 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (ScenarioCardRoot != null)
             ScenarioCardRoot.SetActive(false);
 
+        // 버튼 이미지 표시
+        if (ButtonImageRoot != null)
+            ButtonImageRoot.SetActive(true);
+
+        // MicIndicator STT 이벤트 구독
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnKeywordMatched += OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
+            mic.OnNoMatch += OnSTTNoMatch;
+        }
+
         ApplyQuestionUI(_currentIndex);
     }
 
@@ -154,6 +173,14 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         {
             StopCoroutine(_answerEchoRoutine);
             _answerEchoRoutine = null;
+        }
+
+        // MicIndicator 이벤트 구독 해제
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
         }
     }
 
@@ -248,16 +275,24 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (NoButton != null) NoButton.interactable = false;
 
         if (AnswerEchoLabel != null)
-            AnswerEchoLabel.text = isYes ? "��" : "�ƴϿ�";
+            AnswerEchoLabel.text = isYes ? "예" : "아니오";
 
+        // Echo 표시 시 버튼 이미지 숨김
         if (AnswerEchoRoot != null)
             AnswerEchoRoot.SetActive(true);
+
+        if (ButtonImageRoot != null)
+            ButtonImageRoot.SetActive(false);
 
         if (AnswerEchoDuration > 0f)
             yield return new WaitForSeconds(AnswerEchoDuration);
 
+        // Echo 숨김 시 버튼 이미지 표시
         if (AnswerEchoRoot != null)
             AnswerEchoRoot.SetActive(false);
+
+        if (ButtonImageRoot != null)
+            ButtonImageRoot.SetActive(true);
 
         var questions = Questions;
 
@@ -307,6 +342,34 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             ErrorRoot.SetActive(false);
 
         _errorRoutine = null;
+    }
+
+    // ==================================================
+    // STT 이벤트 핸들러
+    // ==================================================
+
+    /// <summary>
+    /// STT 키워드 매칭 성공 시 호출
+    /// index 0 = "예", index 1 = "아니오"
+    /// </summary>
+    protected void OnSTTKeywordMatched(int matchedIndex)
+    {
+        Debug.Log($"[Problem4_Step3] STT 매칭: index={matchedIndex}");
+
+        if (_stepCompleted) return;
+
+        // index 0 = "예" → true, index 1 = "아니오" → false
+        bool isYes = (matchedIndex == 0);
+        HandleAnswer(isYes);
+    }
+
+    /// <summary>
+    /// STT 매칭 실패 시 호출
+    /// </summary>
+    protected void OnSTTNoMatch(string sttResult)
+    {
+        Debug.Log($"[Problem4_Step3] STT 매칭 실패: {sttResult}");
+        // 매칭 실패 시에는 아무것도 하지 않음 - 사용자가 다시 녹음하거나 버튼 클릭 가능
     }
 
     // ==================================================

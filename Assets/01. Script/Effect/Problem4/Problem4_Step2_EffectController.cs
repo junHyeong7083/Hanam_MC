@@ -56,12 +56,16 @@ public class Problem4_Step2_EffectController : EffectControllerBase
     [SerializeField] private float colorRestoreDuration = 1.2f;
     [SerializeField] private float colorRestoreDelay = 0.3f;
 
-    [Header("===== 완료 스파클 =====")]
-    [SerializeField] private GameObject completionSparkleRoot;
-
     [Header("===== 에러 효과 =====")]
     [SerializeField] private float errorShakeDuration = 0.4f;
     [SerializeField] private float errorShakeAmount = 10f;
+
+    [Header("===== 완료 이미지 팝업 =====")]
+    [SerializeField] private float popMinScale = 0.3f;
+    [SerializeField] private float popMaxScale = 1.2f;
+    [SerializeField] private float popFinishScale = 1f;
+    [SerializeField] private float popGrowDuration = 0.2f;
+    [SerializeField] private float popShrinkDuration = 0.15f;
 
     // 카드 기본 위치
     private Vector2 _cardDefaultPos;
@@ -263,9 +267,6 @@ public class Problem4_Step2_EffectController : EffectControllerBase
             }
         }
 
-        // 3. 스파클 표시
-        seq.AppendCallback(ShowCompletionSparkle);
-
         seq.OnComplete(() => onComplete?.Invoke());
     }
 
@@ -347,29 +348,29 @@ public class Problem4_Step2_EffectController : EffectControllerBase
     }
 
     /// <summary>
-    /// 스파클 표시
+    /// 완료 이미지 팝업 애니메이션 (min → max → finish)
     /// </summary>
-    public void ShowCompletionSparkle()
+    public void PlayCompletionPopup(RectTransform target, Action onComplete = null)
     {
-        if (completionSparkleRoot != null)
+        if (target == null)
         {
-            completionSparkleRoot.SetActive(true);
-
-            var springs = completionSparkleRoot.GetComponentsInChildren<PopupSpring>(true);
-            foreach (var spring in springs)
-            {
-                spring.Play();
-            }
+            onComplete?.Invoke();
+            return;
         }
-    }
 
-    /// <summary>
-    /// 스파클 숨김
-    /// </summary>
-    public void HideCompletionSparkle()
-    {
-        if (completionSparkleRoot != null)
-            completionSparkleRoot.SetActive(false);
+        // 시작 스케일 설정
+        target.localScale = Vector3.one * popMinScale;
+        target.gameObject.SetActive(true);
+
+        var seq = DOTween.Sequence();
+
+        // min → max (빠르게 커짐)
+        seq.Append(target.DOScale(popMaxScale, popGrowDuration).SetEase(Ease.OutQuad));
+
+        // max → finish (살짝 줄어들며 안정)
+        seq.Append(target.DOScale(popFinishScale, popShrinkDuration).SetEase(Ease.OutBack));
+
+        seq.OnComplete(() => onComplete?.Invoke());
     }
 
     #endregion

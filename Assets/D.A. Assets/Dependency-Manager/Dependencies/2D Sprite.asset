@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: DA_Assets.Shared.Editor::DA_Assets.DM.DependencyItem
   TypeAndAssembly: UnityEditor.U2D.Sprites.SpriteDataProviderFactories, Unity.2D.Sprite.Editor
   ScriptingDefineSymbol: U2D_SPRITE_EXISTS
-  isEnabled: 0
-  scriptPath: Not found
+  isEnabled: 1
+  scriptPath: Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll
   disabledManually: 0

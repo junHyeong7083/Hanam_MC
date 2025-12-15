@@ -61,12 +61,6 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     protected abstract Text FilmSentenceLabel { get; }
     protected abstract Text FilmIndexLabel { get; }
 
-    [Header("에러 메세지 UI")]
-    protected abstract GameObject ErrorRoot { get; }
-    protected abstract Text ErrorLabel { get; }
-    protected abstract string DefaultErrorMessage { get; }
-    protected abstract float ErrorShowDuration { get; }
-
     [Header("하단 버튼")]
     protected abstract Button CutBtn { get; }
     protected abstract Button PassBtn { get; }
@@ -77,6 +71,16 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     [Header("이펙트 컨트롤러")]
     protected abstract Problem4_Step2_EffectController EffectController { get; }
 
+    [Header("오답 표시 UI")]
+    protected abstract GameObject ErrorRoot { get; }
+
+    [Header("완료 시 UI")]
+    protected abstract GameObject HideObjectOnComplete { get; }
+    protected abstract RectTransform ShowImageOnComplete { get; }
+    protected abstract Text CompletionLabel { get; }
+    protected abstract string CompletionText { get; }
+    protected virtual float CompletionDelayDuration => 4f;
+
     // ======================
     // 내부 상태
     // ======================
@@ -84,7 +88,6 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     private CutStatus[] _status;
     private bool _isColorRestored;
     private bool _stepCompleted;
-    private Coroutine _errorRoutine;
     private readonly List<CutActionLog> _actionLogs = new List<CutActionLog>();
 
     // =========================================
@@ -118,18 +121,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         {
             effect.SaveDefaultPosition();
             effect.SetGrayscale();
-            effect.HideCompletionSparkle();
             effect.ResetForNextCard();
         }
-
-        // 에러 UI 숨김
-        if (_errorRoutine != null)
-        {
-            StopCoroutine(_errorRoutine);
-            _errorRoutine = null;
-        }
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(false);
 
         // 버튼 활성화
         if (CutBtn != null) CutBtn.interactable = true;
@@ -151,11 +144,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 
     protected override void OnStepExit()
     {
-        if (_errorRoutine != null)
-        {
-            StopCoroutine(_errorRoutine);
-            _errorRoutine = null;
-        }
+        // 필요시 정리 로직 추가
     }
 
     // =========================================
@@ -247,7 +236,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         }
         else
         {
-            ShowError("이 장면은 '사실'이에요. 보존해야 하지 않을까요?");
+            if (ErrorRoot != null)
+                ErrorRoot.SetActive(true);
 
             if (effect != null)
             {
@@ -295,7 +285,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         }
         else
         {
-            ShowError("이 장면은 '내 생각'이에요. 잘라야 하지 않을까요?");
+            if (ErrorRoot != null)
+                ErrorRoot.SetActive(true);
 
             if (effect != null)
             {
@@ -337,45 +328,6 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         // 버튼 바로 활성화 (애니메이션 콜백에 의존하지 않음)
         if (CutBtn != null) CutBtn.interactable = true;
         if (PassBtn != null) PassBtn.interactable = true;
-    }
-
-    private void OnAppearComplete()
-    {
-        // 버튼 다시 활성화
-        if (CutBtn != null) CutBtn.interactable = true;
-        if (PassBtn != null) PassBtn.interactable = true;
-    }
-
-    // =========================================
-    // 에러 메시지
-    // =========================================
-
-    private void ShowError(string msg)
-    {
-        if (string.IsNullOrEmpty(msg))
-            msg = DefaultErrorMessage;
-
-        if (ErrorLabel != null)
-            ErrorLabel.text = msg;
-
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(true);
-
-        if (_errorRoutine != null)
-            StopCoroutine(_errorRoutine);
-
-        if (ErrorShowDuration > 0f)
-            _errorRoutine = StartCoroutine(HideErrorAfterDelay());
-    }
-
-    private IEnumerator HideErrorAfterDelay()
-    {
-        yield return new WaitForSeconds(ErrorShowDuration);
-
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(false);
-
-        _errorRoutine = null;
     }
 
     // =========================================
@@ -455,6 +407,41 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     private void OnColorRestoreComplete()
     {
         SaveFilmEditingAttempt();
+
+        // 완료 시 UI 처리
+        if (HideObjectOnComplete != null)
+            HideObjectOnComplete.SetActive(false);
+
+        // 텍스트 설정
+        if (CompletionLabel != null && !string.IsNullOrEmpty(CompletionText))
+            CompletionLabel.text = CompletionText;
+
+        // 팝업 애니메이션으로 이미지 등장
+        var effect = EffectController;
+        if (ShowImageOnComplete != null && effect != null)
+        {
+            effect.PlayCompletionPopup(ShowImageOnComplete);
+        }
+        else if (ShowImageOnComplete != null)
+        {
+            ShowImageOnComplete.gameObject.SetActive(true);
+        }
+
+        // 지연 후 Gate 완료
+        if (CompletionDelayDuration > 0f)
+        {
+            StartCoroutine(DelayedGateComplete());
+        }
+        else
+        {
+            if (StepCompletionGate != null)
+                StepCompletionGate.MarkOneDone();
+        }
+    }
+
+    private IEnumerator DelayedGateComplete()
+    {
+        yield return new WaitForSeconds(CompletionDelayDuration);
 
         if (StepCompletionGate != null)
             StepCompletionGate.MarkOneDone();

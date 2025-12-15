@@ -70,6 +70,12 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
     [SerializeField] private GameObject scenarioCardRoot;
     [SerializeField] private float scenarioDisplayDuration = 3f;
 
+    [Header("버튼 이미지 (Echo와 반대 동작)")]
+    [SerializeField] private GameObject buttonImageRoot;
+
+    [Header("마이크 STT (옵션)")]
+    [SerializeField] private MicRecordingIndicator micIndicator;
+
     // ==========================
     // 베이스 클래스 프로퍼티 override
     // ==========================
@@ -97,6 +103,10 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
 
     protected override GameObject ScenarioCardRoot => scenarioCardRoot;
     protected override float ScenarioDisplayDuration => scenarioDisplayDuration;
+
+    protected override GameObject ButtonImageRoot => buttonImageRoot;
+
+    protected override MicRecordingIndicator MicIndicator => micIndicator;
 }
 
 
