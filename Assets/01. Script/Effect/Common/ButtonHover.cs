@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// 버튼 호버 애니메이션
 /// - 마우스/터치 호버 시 스케일 확대
 /// - 선택적으로 X축 이동 가능
+/// - 선택적으로 Outline 켜기/끄기
 /// - PointerEnter/Exit 이벤트 사용
 ///
 /// [사용처]
@@ -22,6 +24,9 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] private bool enableMoveX = false;
     [SerializeField] private float moveXDistance = 10f;
 
+    [Header("===== Outline (옵션) =====")]
+    [SerializeField] private Outline outline;
+
     // 내부
     private RectTransform _rectTransform;
     private Vector3 _originalScale;
@@ -29,12 +34,15 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private bool _isHovering;
     private bool _isInteractable = true;
 
-    private void Awake()
+    private void OnEnable()
     {
         _originalScale = transform.localScale;
         _rectTransform = GetComponent<RectTransform>();
         if (_rectTransform != null)
             _originalPosition = _rectTransform.anchoredPosition;
+
+        // Outline 초기에 끄기
+        if (outline != null) outline.enabled = false;
     }
 
     private void Update()
@@ -60,12 +68,16 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (_isInteractable)
+        {
             _isHovering = true;
+            if (outline != null) outline.enabled = true;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         _isHovering = false;
+        if (outline != null) outline.enabled = false;
     }
 
     /// <summary>
@@ -79,6 +91,7 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             _isHovering = false;
             transform.localScale = _originalScale;
             ResetPosition();
+            if (outline != null) outline.enabled = false;
         }
     }
 
@@ -106,5 +119,6 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (_originalScale != Vector3.zero)
             transform.localScale = _originalScale;
         ResetPosition();
+        if (outline != null) outline.enabled = false;
     }
 }

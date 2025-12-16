@@ -5,25 +5,19 @@ using STT;
 
 /// <summary>
 /// 마이크 버튼 + STT 통합 컴포넌트
-/// - 녹음 시각 피드백 (색상 변경, 펄스)
+/// - 녹음 시각 피드백 (Sprite 교체)
 /// - STT 녹음/인식
 /// - 키워드 매칭 후 이벤트 발생
 /// </summary>
 public class MicRecordingIndicator : MonoBehaviour
 {
     [Header("시각 피드백")]
-    [SerializeField] private Image backgroundImage;
-    [SerializeField] private Color idleColor = new Color(0.49f, 0.35f, 0.27f);
-    [SerializeField] private Color recordingColor = new Color(1f, 0.54f, 0.24f);
-    [SerializeField] private float pulseAmplitude = 0.05f;
-    [SerializeField] private float pulseSpeed = 3f;
-
-    [Header("이미지 스왑 모드 (스프라이트가 설정되면 색상 대신 스프라이트 변경)")]
+    [SerializeField] private Image targetImage;
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite recordingSprite;
 
     [Header("STT 키워드")]
-    [SerializeField] private string[] keywords;  // 각 키워드 (인덱스로 구분)
+    [SerializeField] private string[] keywords;
     [SerializeField] private float matchThreshold = 0.3f;
 
     /// <summary>
@@ -40,51 +34,53 @@ public class MicRecordingIndicator : MonoBehaviour
     public event Action<string> OnNoMatch;
 
     private bool _recording;
-    private Vector3 _baseScale;
     private bool _isSTTRecording;
 
     // 실시간 매칭 캐시
     private int _cachedMatchIndex = -1;
     private float _cachedMatchScore = 0f;
 
-    private void Awake()
+    private void OnEnable()
     {
-        _baseScale = transform.localScale;
-        if (backgroundImage == null)
-            backgroundImage = GetComponent<Image>();
-
+        // 상태 초기화 (혹시 이전 상태가 남아있을 경우 대비)
+        _recording = false;
+        _isSTTRecording = false;
         ApplyVisual();
-    }
-
-    private void Update()
-    {
-        if (!_recording)
-        {
-            // ���� ũ��� õõ�� ����
-            transform.localScale = Vector3.Lerp(transform.localScale, _baseScale, 10f * Time.deltaTime);
-            return;
-        }
-
-        // ���� ���� �� �޽�
-        float s = 1f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmplitude;
-        transform.localScale = _baseScale * s;
     }
 
     public void ToggleRecording()
     {
+        Debug.Log($"[MicRecordingIndicator] ToggleRecording 호출 - 현재 상태: _recording={_recording}, _isSTTRecording={_isSTTRecording}");
+
+        // 녹음 시작/중지 결정
+        bool startRecording = !_isSTTRecording;
+
+        // 상태 업데이트 및 비주얼 즉시 반영
+        _recording = startRecording;
+        _isSTTRecording = startRecording;
+        Debug.Log($"[MicRecordingIndicator] 상태 변경 후: _recording={_recording}, startRecording={startRecording}");
+        ApplyVisual();
+
+        // STT 사용 불가능하면 비주얼만 토글하고 종료
         if (STTManager.Instance == null || !STTManager.Instance.IsInitialized)
         {
             Debug.LogWarning("[MicRecordingIndicator] STTManager가 초기화되지 않았습니다");
             return;
         }
 
-        if (_isSTTRecording)
+        if (startRecording)
         {
-            // 녹음 중지 및 인식 시작
-            _isSTTRecording = false;
-            _recording = false;
+            // 녹음 시작
+            _cachedMatchIndex = -1;
+            _cachedMatchScore = 0f;
 
-            // 실시간 처리 이벤트 해제
+            STTManager.Instance.OnPartialResult -= HandlePartialResult;
+            STTManager.Instance.OnPartialResult += HandlePartialResult;
+            STTManager.Instance.StartRecording();
+        }
+        else
+        {
+            // 녹음 중지
             STTManager.Instance.OnPartialResult -= HandlePartialResult;
 
             // 캐시된 실시간 결과가 있으면 즉시 사용
@@ -99,28 +95,12 @@ public class MicRecordingIndicator : MonoBehaviour
             }
             else
             {
-                // 캐시된 결과가 없으면 기존 방식대로 최종 결과 대기
+                // 캐시된 결과가 없으면 최종 결과 대기
                 STTManager.Instance.OnFinalResult -= HandleSTTResult;
                 STTManager.Instance.OnFinalResult += HandleSTTResult;
                 STTManager.Instance.StopRecording();
             }
         }
-        else
-        {
-            // 녹음 시작
-            _isSTTRecording = true;
-            _recording = true;
-            _cachedMatchIndex = -1;
-            _cachedMatchScore = 0f;
-
-            // 실시간 처리 이벤트 구독
-            STTManager.Instance.OnPartialResult -= HandlePartialResult;
-            STTManager.Instance.OnPartialResult += HandlePartialResult;
-
-            STTManager.Instance.StartRecording();
-        }
-
-        ApplyVisual();
     }
 
     public void SetRecording(bool value)
@@ -235,16 +215,9 @@ public class MicRecordingIndicator : MonoBehaviour
 
     private void ApplyVisual()
     {
-        if (backgroundImage == null) return;
-
-        // 스프라이트가 설정되어 있으면 스프라이트 스왑, 아니면 색상 변경
-        if (idleSprite != null && recordingSprite != null)
+        if (targetImage != null)
         {
-            backgroundImage.sprite = _recording ? recordingSprite : idleSprite;
-        }
-        else
-        {
-            backgroundImage.color = _recording ? recordingColor : idleColor;
+            targetImage.sprite = _recording ? recordingSprite : idleSprite;
         }
     }
 }

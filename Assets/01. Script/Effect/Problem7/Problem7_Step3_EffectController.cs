@@ -52,6 +52,11 @@ public class Problem7_Step3_EffectController : EffectControllerBase
     [SerializeField] private float textPulseMaxScale = 1.08f;
     [SerializeField] private float textPulseDuration = 1f;
 
+    [Header("===== 녹음 중 - 카메라 쉐이크 =====")]
+    [SerializeField] private RectTransform shakeTargetRect;
+    [SerializeField] private float shakeStrength = 3f;
+    [SerializeField] private float shakeDuration = 0.5f;
+
     [Header("===== 결과 화면 - 캐릭터 =====")]
     [SerializeField] private RectTransform resultCharacterRect;
     [SerializeField] private float characterSlideDistance = 50f;
@@ -84,7 +89,9 @@ public class Problem7_Step3_EffectController : EffectControllerBase
     private Tween _recordingGlowScaleTween;
     private Tween _recordingGlowAlphaTween;
     private Tween _textPulseTween;
+    private Tween _shakeTween;
     private Tween _characterBounceTween;
+    private Vector2 _shakeOriginalPos;
 
     #region Public API - 대사 선택
 
@@ -277,6 +284,15 @@ public class Problem7_Step3_EffectController : EffectControllerBase
                 .SetLoops(-1, LoopType.Yoyo)
                 .From(Vector3.one * textPulseMinScale);
         }
+
+        // 카메라 쉐이크 (약하게 반복)
+        if (shakeTargetRect != null)
+        {
+            _shakeOriginalPos = shakeTargetRect.anchoredPosition;
+            _shakeTween = shakeTargetRect
+                .DOShakeAnchorPos(shakeDuration, shakeStrength, 10, 90f, false, true, ShakeRandomnessMode.Harmonic)
+                .SetLoops(-1, LoopType.Restart);
+        }
     }
 
     /// <summary>
@@ -289,12 +305,14 @@ public class Problem7_Step3_EffectController : EffectControllerBase
         _recordingGlowScaleTween?.Kill();
         _recordingGlowAlphaTween?.Kill();
         _textPulseTween?.Kill();
+        _shakeTween?.Kill();
 
         _megaphoneWobbleTween = null;
         _megaphoneScaleTween = null;
         _recordingGlowScaleTween = null;
         _recordingGlowAlphaTween = null;
         _textPulseTween = null;
+        _shakeTween = null;
 
         if (_waveRingTweens != null)
         {
@@ -318,6 +336,10 @@ public class Problem7_Step3_EffectController : EffectControllerBase
         // 녹음 글로우 숨김
         if (recordingGlowRect != null)
             recordingGlowRect.gameObject.SetActive(false);
+
+        // 쉐이크 위치 복원
+        if (shakeTargetRect != null)
+            shakeTargetRect.anchoredPosition = _shakeOriginalPos;
     }
 
     #endregion

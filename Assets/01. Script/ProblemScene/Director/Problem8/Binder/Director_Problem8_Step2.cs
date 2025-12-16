@@ -29,6 +29,9 @@ public class Director_Problem8_Step2 : Director_Problem8_Step2_Logic
     [SerializeField] private GameObject fillImageRoot;
     [SerializeField] private Image fillImage;
 
+    [Header("===== 선택 안내 텍스트 이미지 =====")]
+    [SerializeField] private GameObject selectTextImage;
+
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override SceneCardItem[] SceneCards => sceneCards;
     protected override SlotItem[] Slots => slots;
@@ -38,4 +41,5 @@ public class Director_Problem8_Step2 : Director_Problem8_Step2_Logic
 
     protected override GameObject FillImageRoot => fillImageRoot;
     protected override Image FillImage => fillImage;
+    protected override GameObject SelectTextImage => selectTextImage;
 }

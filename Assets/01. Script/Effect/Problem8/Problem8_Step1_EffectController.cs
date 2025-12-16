@@ -44,14 +44,6 @@ public class Problem8_Step1_EffectController : EffectControllerBase
     [SerializeField] private float badgeMaxScale = 1.1f;
     [SerializeField] private float badgePulseDuration = 1.5f;
 
-    [Header("===== NEW 뱃지 글로우 =====")]
-    [SerializeField] private RectTransform badgeGlowRect;
-    [SerializeField] private CanvasGroup badgeGlowCanvasGroup;
-    [SerializeField] private float glowMinScale = 1f;
-    [SerializeField] private float glowMaxScale = 1.5f;
-    [SerializeField] private float glowMinAlpha = 0.3f;
-    [SerializeField] private float glowMaxAlpha = 0.6f;
-
     [Header("===== 스토리보드 클릭 애니메이션 =====")]
     [SerializeField] private float flipDuration = 1.5f;
     [SerializeField] private float flipScaleMax = 1.2f;
@@ -64,8 +56,6 @@ public class Problem8_Step1_EffectController : EffectControllerBase
     private Tween _promptPulseTween;
     private Tween _floatTween;
     private Tween _badgeScaleTween;
-    private Tween _glowScaleTween;
-    private Tween _glowAlphaTween;
     private Vector2 _storyboardBasePos;
     private bool _initialized;
 
@@ -182,26 +172,6 @@ public class Problem8_Step1_EffectController : EffectControllerBase
                 .SetLoops(-1, LoopType.Yoyo)
                 .From(Vector3.one * badgeMinScale);
         }
-
-        // NEW 뱃지 글로우: scale [1, 1.5], alpha [0.6, 0.3]
-        if (badgeGlowRect != null)
-        {
-            badgeGlowRect.gameObject.SetActive(true);
-            _glowScaleTween = badgeGlowRect
-                .DOScale(glowMaxScale, promptPulseDuration * 0.5f)
-                .SetEase(Ease.InOutSine)
-                .SetLoops(-1, LoopType.Yoyo)
-                .From(Vector3.one * glowMinScale);
-        }
-
-        if (badgeGlowCanvasGroup != null)
-        {
-            badgeGlowCanvasGroup.alpha = glowMaxAlpha;
-            _glowAlphaTween = badgeGlowCanvasGroup
-                .DOFade(glowMinAlpha, promptPulseDuration * 0.5f)
-                .SetEase(Ease.InOutSine)
-                .SetLoops(-1, LoopType.Yoyo);
-        }
     }
 
     /// <summary>
@@ -212,37 +182,15 @@ public class Problem8_Step1_EffectController : EffectControllerBase
         _promptPulseTween?.Kill();
         _floatTween?.Kill();
         _badgeScaleTween?.Kill();
-        _glowScaleTween?.Kill();
-        _glowAlphaTween?.Kill();
 
         _promptPulseTween = null;
         _floatTween = null;
         _badgeScaleTween = null;
-        _glowScaleTween = null;
-        _glowAlphaTween = null;
     }
 
     #endregion
 
     #region Public API - 스토리보드 클릭
-
-    /// <summary>
-    /// 스토리보드 호버
-    /// </summary>
-    public void PlayStoryboardHover()
-    {
-        if (storyboardRect == null) return;
-        storyboardRect.DOScale(1.02f, 0.1f).SetEase(Ease.OutQuad);
-    }
-
-    /// <summary>
-    /// 스토리보드 호버 해제
-    /// </summary>
-    public void PlayStoryboardUnhover()
-    {
-        if (storyboardRect == null) return;
-        storyboardRect.DOScale(1f, 0.1f).SetEase(Ease.OutQuad);
-    }
 
     /// <summary>
     /// 스토리보드 클릭 (플립 애니메이션)
@@ -261,8 +209,6 @@ public class Problem8_Step1_EffectController : EffectControllerBase
         // NEW 뱃지 숨김
         if (newBadgeRect != null)
             newBadgeRect.gameObject.SetActive(false);
-        if (badgeGlowRect != null)
-            badgeGlowRect.gameObject.SetActive(false);
 
         var seq = DOTween.Sequence();
 
@@ -362,18 +308,6 @@ public class Problem8_Step1_EffectController : EffectControllerBase
             DOTween.Kill(newBadgeRect);
             newBadgeRect.localScale = Vector3.one;
             newBadgeRect.gameObject.SetActive(true);
-        }
-
-        if (badgeGlowRect != null)
-        {
-            DOTween.Kill(badgeGlowRect);
-            badgeGlowRect.gameObject.SetActive(true);
-        }
-
-        if (badgeGlowCanvasGroup != null)
-        {
-            DOTween.Kill(badgeGlowCanvasGroup);
-            badgeGlowCanvasGroup.alpha = glowMaxAlpha;
         }
 
         // 확인 메시지 리셋

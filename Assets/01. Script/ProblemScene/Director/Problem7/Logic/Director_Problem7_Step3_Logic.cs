@@ -20,6 +20,8 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         public string id;       // DB 저장용 ID (예: "d1", "d2", "d3")
         public string text;     // 대사 텍스트 (예: "지금까지 정말 잘 버텨왔어")
         public Button button;   // 버튼 참조
+        public GameObject micIcon;    // 선택 시 표시할 마이크 아이콘 (왼쪽)
+        public GameObject checkIcon;  // 선택 시 표시할 체크 아이콘 (오른쪽)
     }
 
     // =========================
@@ -119,6 +121,18 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         if (IntroRoot != null) IntroRoot.SetActive(false);
         if (SelectDialogueRoot != null) SelectDialogueRoot.SetActive(false);
         if (RecordingRoot != null) RecordingRoot.SetActive(false);
+
+        // 모든 선택지 아이콘 비활성화
+        var dialogues = DialogueChoices;
+        if (dialogues != null)
+        {
+            foreach (var choice in dialogues)
+            {
+                if (choice == null) continue;
+                if (choice.micIcon != null) choice.micIcon.SetActive(false);
+                if (choice.checkIcon != null) choice.checkIcon.SetActive(false);
+            }
+        }
 
         // 녹음 버튼 초기 비활성화
         if (RecordButton != null)
@@ -277,15 +291,20 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
     protected virtual void OnDialogueSelectedVisual(DialogueItem selected)
     {
-        // 기본: 선택된 버튼 하이라이트
         var dialogues = DialogueChoices;
         if (dialogues == null) return;
 
         foreach (var choice in dialogues)
         {
-            if (choice?.button == null) continue;
-            // 선택되지 않은 버튼은 그대로 두고, 선택된 버튼만 강조
-            // (파생 클래스에서 더 정교한 효과 추가 가능)
+            if (choice == null) continue;
+
+            bool isSelected = choice == selected;
+
+            // 선택된 항목의 아이콘만 활성화, 나머지는 비활성화
+            if (choice.micIcon != null)
+                choice.micIcon.SetActive(isSelected);
+            if (choice.checkIcon != null)
+                choice.checkIcon.SetActive(isSelected);
         }
     }
 

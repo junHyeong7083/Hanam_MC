@@ -101,13 +101,15 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     protected abstract GameObject FillImageRoot { get; }
     protected abstract Image FillImage { get; }
 
+    [Header("선택 안내 텍스트 이미지 (완료 시 숨김)")]
+    protected abstract GameObject SelectTextImage { get; }
+
     #endregion
 
     #region Virtual Config
 
     protected virtual float GhostAlpha => 0.5f;             // 드래그 중 Ghost 알파값
     protected virtual float ReturnDuration => 0.3f;         // 원위치 복귀 시간
-    protected virtual float CompleteDelay => 5.0f;          // (이전용, 지금은 안 씀)
     protected virtual float FillDuration => 1.0f;           // 모든 슬롯 채운 뒤 FillImage 0→1까지 걸리는 시간(초)
 
     #endregion
@@ -117,7 +119,6 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     private HashSet<string> _placedCardIds;
     private List<CardPlacementDto> _placements;
     private float _stepStartTime;
-    private Coroutine _completeRoutine;
     private Coroutine _fillRoutine;
     private bool _isComplete;
 
@@ -160,12 +161,6 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     {
         base.OnStepExit();
 
-        if (_completeRoutine != null)
-        {
-            StopCoroutine(_completeRoutine);
-            _completeRoutine = null;
-        }
-
         if (_fillRoutine != null)
         {
             StopCoroutine(_fillRoutine);
@@ -194,12 +189,6 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
                 if (slot.filledState != null)
                     slot.filledState.SetActive(false);
-
-                if (slot.filledText != null)
-                    slot.filledText.text = string.Empty;
-
-                if (slot.filledImage != null)
-                    slot.filledImage.sprite = null;
             }
         }
 
@@ -423,20 +412,44 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
         var slots = Slots;
         if (slots == null) return null;
 
+        SlotItem closestSlot = null;
+        float closestDistance = float.MaxValue;
+
         foreach (var slot in slots)
         {
-            if (slot?.dropArea == null) continue;
+            if (slot == null) continue;
+
+            // 이미 채워진 슬롯은 건너뛰기
+            if (_slotToCard.ContainsKey(slot.slotIndex)) continue;
+
+            // dropArea가 없거나 비활성화면 slotRoot 사용
+            RectTransform checkArea = slot.dropArea;
+            if (checkArea == null || !checkArea.gameObject.activeInHierarchy)
+            {
+                checkArea = slot.slotRoot?.GetComponent<RectTransform>();
+            }
+            if (checkArea == null) continue;
 
             if (RectTransformUtility.RectangleContainsScreenPoint(
-                slot.dropArea,
+                checkArea,
                 eventData.position,
                 eventData.pressEventCamera))
             {
-                return slot;
+                // 슬롯 중심을 스크린 좌표로 변환 후 거리 계산
+                Vector2 slotScreenCenter = RectTransformUtility.WorldToScreenPoint(
+                    eventData.pressEventCamera,
+                    checkArea.position);
+                float distance = Vector2.Distance(eventData.position, slotScreenCenter);
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestSlot = slot;
+                }
             }
         }
 
-        return null;
+        return closestSlot;
     }
 
     // =========================
@@ -481,28 +494,21 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     {
         if (slot.emptyState != null) slot.emptyState.SetActive(false);
         if (slot.filledState != null) slot.filledState.SetActive(true);
-        if (slot.filledText != null) slot.filledText.text = card.text;
-
-        if (slot.filledImage != null && card.draggableCanvasGroup != null)
-        {
-            var draggableImage = card.draggableCanvasGroup.GetComponent<Image>();
-            if (draggableImage != null)
-                slot.filledImage.sprite = draggableImage.sprite;
-        }
     }
 
     private void HideCard(SceneCardItem card)
     {
-        if (card.ghostCanvasGroup != null)
-            card.ghostCanvasGroup.alpha = 0f;
+        // 카드 전체 비활성화
+        if (card.cardRoot != null)
+            card.cardRoot.SetActive(false);
 
+        // draggable을 원래 부모로 되돌림 (나중에 다시 사용할 경우 대비)
         if (card.draggableCanvasGroup != null)
         {
             var draggableRect = card.draggableCanvasGroup.GetComponent<RectTransform>();
             if (draggableRect != null)
             {
                 draggableRect.SetParent(_draggableOriginalParent, true);
-                draggableRect.gameObject.SetActive(false);
             }
         }
     }
@@ -554,6 +560,9 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
             if (CardSelectionRoot != null)
                 CardSelectionRoot.SetActive(false);
+
+            if (SelectTextImage != null)
+                SelectTextImage.SetActive(false);
 
             OnAllCardsPlacedVisual();
 

@@ -20,6 +20,7 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
         public string id;       // DB 저장용 ID (예: "cool", "anxious")
         public string label;    // 표시용 라벨 (예: "쿨한 척", "사실은 불안했어")
         public Button button;   // 버튼 참조
+        public GameObject clickImage;  // 선택 시 표시할 이미지
     }
 
     // =========================
@@ -119,6 +120,27 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
         if (IntroRoot != null) IntroRoot.SetActive(false);
         if (SelectMaskRoot != null) SelectMaskRoot.SetActive(false);
         if (SelectFeelingRoot != null) SelectFeelingRoot.SetActive(false);
+
+        // 모든 clickImage 초기화 (비활성화)
+        var masks = MaskChoices;
+        if (masks != null)
+        {
+            foreach (var choice in masks)
+            {
+                if (choice?.clickImage != null)
+                    choice.clickImage.SetActive(false);
+            }
+        }
+
+        var feelings = FeelingChoices;
+        if (feelings != null)
+        {
+            foreach (var choice in feelings)
+            {
+                if (choice?.clickImage != null)
+                    choice.clickImage.SetActive(false);
+            }
+        }
 
         // 버튼 리스너 등록
         RegisterListeners();
@@ -294,8 +316,16 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
         foreach (var choice in masks)
         {
-            if (choice?.button != null)
+            if (choice == null) continue;
+
+            bool isSelected = choice == selected;
+
+            if (choice.button != null)
                 choice.button.interactable = false;
+
+            // 선택된 항목의 clickImage만 활성화
+            if (choice.clickImage != null)
+                choice.clickImage.SetActive(isSelected);
         }
     }
 
@@ -307,8 +337,16 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
         foreach (var choice in feelings)
         {
-            if (choice?.button != null)
+            if (choice == null) continue;
+
+            bool isSelected = choice == selected;
+
+            if (choice.button != null)
                 choice.button.interactable = false;
+
+            // 선택된 항목의 clickImage만 활성화
+            if (choice.clickImage != null)
+                choice.clickImage.SetActive(isSelected);
         }
     }
 }

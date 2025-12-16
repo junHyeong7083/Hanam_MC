@@ -8,7 +8,6 @@ using DG.Tweening;
 /// - 인트로 카드 등장
 /// - 슬롯 채워질 때 애니메이션 (바운스, 글로우, 체크마크)
 /// - 완료 시 연결선 애니메이션
-/// - 최종 화면 (필름 스트립, 스파클, 버튼)
 /// </summary>
 public class Problem8_Step2_EffectController : EffectControllerBase
 {
@@ -50,22 +49,6 @@ public class Problem8_Step2_EffectController : EffectControllerBase
     [Header("===== 최종 화면 =====")]
     [SerializeField] private GameObject finalPictureRoot;
     [SerializeField] private CanvasGroup finalPictureCanvasGroup;
-
-    [Header("===== 최종 화면 - 메인 콘텐츠 =====")]
-    [SerializeField] private RectTransform finalIconRect;
-    [SerializeField] private RectTransform finalTitleRect;
-    [SerializeField] private CanvasGroup finalTitleCanvasGroup;
-    [SerializeField] private RectTransform finalSubtitleRect;
-    [SerializeField] private CanvasGroup finalSubtitleCanvasGroup;
-    [SerializeField] private float finalSlideDistance = 50f;
-    [SerializeField] private float finalAppearDuration = 0.5f;
-
-    [Header("===== 최종 화면 - 버튼 =====")]
-    [SerializeField] private RectTransform continueButtonRect;
-    [SerializeField] private CanvasGroup continueButtonCanvasGroup;
-
-    [Header("===== 최종 화면 - 하단 텍스트 =====")]
-    [SerializeField] private CanvasGroup bottomTextCanvasGroup;
 
     // 힌트 배지 트윈들
     private Tween[] _hintBadgeTweens;
@@ -313,7 +296,7 @@ public class Problem8_Step2_EffectController : EffectControllerBase
 
         var seq = CreateSequence();
 
-        // 1. 전체 페이드 인 + 스케일
+        // 전체 페이드 인 + 스케일
         if (finalPictureCanvasGroup != null)
         {
             finalPictureCanvasGroup.alpha = 0f;
@@ -321,61 +304,9 @@ public class Problem8_Step2_EffectController : EffectControllerBase
             if (finalRect != null)
             {
                 finalRect.localScale = Vector3.one * 0.95f;
-                seq.Append(finalRect.DOScale(1f, finalAppearDuration).SetEase(Ease.OutQuad));
+                seq.Append(finalRect.DOScale(1f, 0.5f).SetEase(Ease.OutQuad));
             }
-            seq.Join(finalPictureCanvasGroup.DOFade(1f, finalAppearDuration));
-        }
-
-        // 2. 아이콘 등장 (딜레이 0.3초)
-        if (finalIconRect != null)
-        {
-            finalIconRect.localScale = Vector3.zero;
-            seq.Insert(0.3f, finalIconRect
-                .DOScale(1f, finalAppearDuration)
-                .SetEase(Ease.OutBack, 2f));
-        }
-
-        // 3. 타이틀 슬라이드 업 + 페이드
-        if (finalTitleRect != null && finalTitleCanvasGroup != null)
-        {
-            Vector2 basePos = finalTitleRect.anchoredPosition;
-            finalTitleRect.anchoredPosition = basePos + Vector2.down * finalSlideDistance;
-            finalTitleCanvasGroup.alpha = 0f;
-
-            seq.Insert(0.3f, finalTitleRect
-                .DOAnchorPos(basePos, finalAppearDuration)
-                .SetEase(Ease.OutQuad));
-            seq.Insert(0.3f, finalTitleCanvasGroup.DOFade(1f, finalAppearDuration));
-        }
-
-        // 4. 서브타이틀
-        if (finalSubtitleRect != null && finalSubtitleCanvasGroup != null)
-        {
-            finalSubtitleCanvasGroup.alpha = 0f;
-            seq.Insert(0.5f, finalSubtitleCanvasGroup.DOFade(1f, finalAppearDuration));
-        }
-
-        // 5. 버튼 스프링 등장 (딜레이 0.6초)
-        if (continueButtonRect != null)
-        {
-            continueButtonRect.localScale = Vector3.zero;
-
-            if (continueButtonCanvasGroup != null)
-                continueButtonCanvasGroup.alpha = 0f;
-
-            seq.Insert(0.6f, continueButtonRect
-                .DOScale(1f, finalAppearDuration)
-                .SetEase(Ease.OutBack, 2f));
-
-            if (continueButtonCanvasGroup != null)
-                seq.Insert(0.6f, continueButtonCanvasGroup.DOFade(1f, finalAppearDuration));
-        }
-
-        // 6. 하단 텍스트 (딜레이 1초)
-        if (bottomTextCanvasGroup != null)
-        {
-            bottomTextCanvasGroup.alpha = 0f;
-            seq.Insert(1f, bottomTextCanvasGroup.DOFade(1f, finalAppearDuration));
+            seq.Join(finalPictureCanvasGroup.DOFade(1f, 0.5f));
         }
 
         seq.OnComplete(() => onComplete?.Invoke());
@@ -440,31 +371,6 @@ public class Problem8_Step2_EffectController : EffectControllerBase
         {
             DOTween.Kill(finalPictureCanvasGroup);
             finalPictureCanvasGroup.alpha = 0f;
-        }
-
-        if (finalIconRect != null)
-        {
-            DOTween.Kill(finalIconRect);
-            finalIconRect.localScale = Vector3.zero;
-        }
-
-        if (finalTitleCanvasGroup != null)
-        {
-            DOTween.Kill(finalTitleRect);
-            DOTween.Kill(finalTitleCanvasGroup);
-            finalTitleCanvasGroup.alpha = 0f;
-        }
-
-        if (continueButtonRect != null)
-        {
-            DOTween.Kill(continueButtonRect);
-            continueButtonRect.localScale = Vector3.zero;
-        }
-
-        if (bottomTextCanvasGroup != null)
-        {
-            DOTween.Kill(bottomTextCanvasGroup);
-            bottomTextCanvasGroup.alpha = 0f;
         }
     }
 

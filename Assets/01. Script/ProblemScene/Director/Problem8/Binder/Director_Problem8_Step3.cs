@@ -15,6 +15,7 @@ public class Director_Problem8_Step3 : Director_Problem8_Step3_Logic
     [Header("===== 녹음 화면 =====")]
     [SerializeField] private GameObject recordingRoot;
     [SerializeField] private Button recordButton;
+    [SerializeField] private MicRecordingIndicator micIndicator;
 
     [Header("===== 결과 화면 =====")]
     [SerializeField] private GameObject resultRoot;
@@ -31,30 +32,19 @@ public class Director_Problem8_Step3 : Director_Problem8_Step3_Logic
     protected override ActionItem[] ActionChoices => actionChoices;
     protected override GameObject RecordingRoot => recordingRoot;
     protected override Button RecordButton => recordButton;
+    protected override MicRecordingIndicator MicIndicator => micIndicator;
     protected override GameObject ResultRoot => resultRoot;
     protected override Text ResultText => resultText;
     protected override StepCompletionGate CompletionGateRef => completionGate;
 
     // ----- 시각 효과 연결 -----
-    protected override void OnRecordingStarted()
-    {
-        base.OnRecordingStarted();
-
-        // 녹음 시작 시 StatusArea 등장 + 선택한 액션 텍스트 표시
-        if (effectController != null && SelectedAction != null)
-        {
-            effectController.StartRecordingAnimation(SelectedAction.text);
-        }
-    }
-
     protected override void OnRecordingEnded()
     {
         base.OnRecordingEnded();
 
-        // 녹음 종료 시 녹음 애니메이션 정지 + 결과 화면 애니메이션
+        // 녹음 종료 시 결과 화면 애니메이션
         if (effectController != null)
         {
-            effectController.StopRecordingAnimation();
             effectController.PlayResultAnimation();
         }
     }

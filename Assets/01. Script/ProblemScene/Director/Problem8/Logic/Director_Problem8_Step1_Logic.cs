@@ -46,6 +46,9 @@ public abstract class Director_Problem8_Step1_Logic : ProblemStepBase
             gate.ResetGate(1);
 
         RegisterListeners();
+
+        // 인트로 시각 효과
+        OnStepEnterVisual();
     }
 
     protected override void OnStepExit()
@@ -119,6 +122,11 @@ public abstract class Director_Problem8_Step1_Logic : ProblemStepBase
     // =========================
     // 시각 효과 (파생 클래스에서 override 가능)
     // =========================
+
+    protected virtual void OnStepEnterVisual()
+    {
+        // 스텝 진입 시 효과 (파생 클래스에서 override)
+    }
 
     protected virtual void OnStoryboardClickedVisual()
     {

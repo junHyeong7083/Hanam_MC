@@ -21,6 +21,9 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
         public string text;     // 대사 텍스트 (예: "워크넷 사이트 둘러보는 장면")
         public Button button;   // 버튼 참조
         public Text label;      // 텍스트 표시용 (text 값이 동적으로 매핑됨)
+        public GameObject normalIcon;   // 평소 아이콘 (클릭 전)
+        public GameObject clickIcon;    // 클릭 시 아이콘
+        public GameObject markerIcon;   // 클릭 시 마커 아이콘
     }
 
     // =========================
@@ -54,6 +57,7 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
     [Header("녹음 화면")]
     protected abstract GameObject RecordingRoot { get; }
     protected abstract Button RecordButton { get; }
+    protected abstract MicRecordingIndicator MicIndicator { get; }
 
     [Header("결과 화면")]
     protected abstract GameObject ResultRoot { get; }
@@ -121,14 +125,21 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
         if (RecordingRoot != null) RecordingRoot.SetActive(false);
         if (ResultRoot != null) ResultRoot.SetActive(false);
 
-        // 액션 텍스트 동적 매핑
+        // 액션 텍스트 동적 매핑 + 아이콘 초기화
         var actions = ActionChoices;
         if (actions != null)
         {
             foreach (var choice in actions)
             {
-                if (choice?.label != null && !string.IsNullOrEmpty(choice.text))
+                if (choice == null) continue;
+
+                if (choice.label != null && !string.IsNullOrEmpty(choice.text))
                     choice.label.text = choice.text;
+
+                // 아이콘 초기 상태: normalIcon만 보임
+                if (choice.normalIcon != null) choice.normalIcon.SetActive(true);
+                if (choice.clickIcon != null) choice.clickIcon.SetActive(false);
+                if (choice.markerIcon != null) choice.markerIcon.SetActive(false);
             }
         }
     }
@@ -150,11 +161,19 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
             }
         }
 
-        // 녹음 버튼
+        // 녹음 버튼 → MicRecordingIndicator 토글
         if (RecordButton != null)
         {
             RecordButton.onClick.RemoveAllListeners();
             RecordButton.onClick.AddListener(OnRecordButtonClicked);
+        }
+
+        // MicRecordingIndicator 이벤트 구독
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched += OnMicRecordingComplete;
+            mic.OnNoMatch += OnMicRecordingNoMatch;
         }
     }
 
@@ -169,6 +188,14 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
 
         if (RecordButton != null)
             RecordButton.onClick.RemoveAllListeners();
+
+        // MicRecordingIndicator 이벤트 해제
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnMicRecordingComplete;
+            mic.OnNoMatch -= OnMicRecordingNoMatch;
+        }
     }
 
     // =========================
@@ -193,49 +220,89 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
     {
         if (_selectedAction == null) return;
 
-        if (!_isRecording)
+        // 콜백에서 _isRecording이 변경될 수 있으므로 미리 저장
+        bool wasRecording = _isRecording;
+
+        var mic = MicIndicator;
+        if (mic != null)
         {
-            // 녹음 시작
-            _isRecording = true;
-            _recordingStartTime = Time.time;
-            OnRecordingStarted();
+            if (!wasRecording)
+            {
+                // 녹음 시작
+                _isRecording = true;
+                _recordingStartTime = Time.time;
+                mic.ToggleRecording();
+                OnRecordingStarted();
+            }
+            else
+            {
+                // 녹음 중지 (콜백에서 CompleteRecording 호출됨)
+                mic.ToggleRecording();
+            }
         }
         else
         {
-            // 녹음 완료
-            _isRecording = false;
-            float recordingDuration = Time.time - _recordingStartTime;
-            OnRecordingEnded();
-
-            // DB 저장
-            var body = new ActionAttemptDto
+            // MicIndicator 없으면 기존 로직
+            if (!wasRecording)
             {
-                selectedAction = new SelectedActionDto
-                {
-                    id = _selectedAction?.id,
-                    text = _selectedAction?.text
-                },
-                recordingDuration = recordingDuration
-            };
-            SaveAttempt(body);
-
-            // SelectActionRoot, RecordingRoot 숨기고 ResultRoot 표시
-            if (SelectActionRoot != null)
-                SelectActionRoot.SetActive(false);
-            if (RecordingRoot != null)
-                RecordingRoot.SetActive(false);
-            if (ResultRoot != null)
-                ResultRoot.SetActive(true);
-
-            // 결과 텍스트 매핑
-            if (ResultText != null && _selectedAction != null)
-                ResultText.text = $"좋아요! '{_selectedAction.text}'는 정말 훌륭한 첫 장면이에요.";
-
-            // 3초 후 자동 완료
-            if (_completeRoutine != null)
-                StopCoroutine(_completeRoutine);
-            _completeRoutine = StartCoroutine(CompleteAfterDelay());
+                _isRecording = true;
+                _recordingStartTime = Time.time;
+                OnRecordingStarted();
+            }
+            else
+            {
+                CompleteRecording();
+            }
         }
+    }
+
+    private void OnMicRecordingComplete(int keywordIndex)
+    {
+        if (!_isRecording) return;
+        CompleteRecording();
+    }
+
+    private void OnMicRecordingNoMatch(string result)
+    {
+        if (!_isRecording) return;
+        // 매칭 실패해도 녹음은 완료 처리
+        CompleteRecording();
+    }
+
+    private void CompleteRecording()
+    {
+        _isRecording = false;
+        float recordingDuration = Time.time - _recordingStartTime;
+        OnRecordingEnded();
+
+        // DB 저장
+        var body = new ActionAttemptDto
+        {
+            selectedAction = new SelectedActionDto
+            {
+                id = _selectedAction?.id,
+                text = _selectedAction?.text
+            },
+            recordingDuration = recordingDuration
+        };
+        SaveAttempt(body);
+
+        // SelectActionRoot, RecordingRoot 숨기고 ResultRoot 표시
+        if (SelectActionRoot != null)
+            SelectActionRoot.SetActive(false);
+        if (RecordingRoot != null)
+            RecordingRoot.SetActive(false);
+        if (ResultRoot != null)
+            ResultRoot.SetActive(true);
+
+        // 결과 텍스트 매핑
+        if (ResultText != null && _selectedAction != null)
+            ResultText.text = $"좋아요! '{_selectedAction.text}'는 정말 훌륭한 첫 장면이에요.";
+
+        // 3초 후 자동 완료
+        if (_completeRoutine != null)
+            StopCoroutine(_completeRoutine);
+        _completeRoutine = StartCoroutine(CompleteAfterDelay());
     }
 
     // =========================
@@ -260,7 +327,24 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
 
     protected virtual void OnActionSelectedVisual(ActionItem selected)
     {
-        // 선택된 액션 강조 (파생 클래스에서 override)
+        var actions = ActionChoices;
+        if (actions == null) return;
+
+        foreach (var choice in actions)
+        {
+            if (choice == null) continue;
+
+            bool isSelected = choice == selected;
+
+            // 선택된 항목: normalIcon 숨기고, clickIcon + markerIcon 표시
+            // 비선택 항목: normalIcon만 표시
+            if (choice.normalIcon != null)
+                choice.normalIcon.SetActive(!isSelected);
+            if (choice.clickIcon != null)
+                choice.clickIcon.SetActive(isSelected);
+            if (choice.markerIcon != null)
+                choice.markerIcon.SetActive(isSelected);
+        }
     }
 
     protected virtual void OnRecordingStarted()

@@ -24,6 +24,9 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
     [Header("===== 완료 게이트 (CompleteRoot에 Result 화면 연결) =====")]
     [SerializeField] private StepCompletionGate completionGate;
 
+    [Header("===== 이펙트 컨트롤러 =====")]
+    [SerializeField] private Problem7_Step3_EffectController effectController;
+
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override GameObject IntroRoot => introRoot;
     protected override Button IntroNextButton => introNextButton;
@@ -35,4 +38,26 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
     protected override GameObject RecordingRoot => recordingRoot;
 
     protected override StepCompletionGate CompletionGateRef => completionGate;
+
+    // ----- 시각 효과 연결 -----
+    protected override void OnRecordingStarted()
+    {
+        base.OnRecordingStarted();
+
+        if (effectController != null)
+        {
+            effectController.StartRecordingAnimation();
+        }
+    }
+
+    protected override void OnRecordingEnded()
+    {
+        base.OnRecordingEnded();
+
+        if (effectController != null)
+        {
+            effectController.StopRecordingAnimation();
+            effectController.PlayResultAnimation();
+        }
+    }
 }
