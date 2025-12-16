@@ -37,18 +37,23 @@ public class PopupImageDisplay : MonoBehaviour
     [Header("===== 자동 시작 =====")]
     [SerializeField] private bool playOnEnable = false;
 
-    [Header("===== 종료 시 비활성화 =====")]
-    [Tooltip("체크하면 애니메이션 종료 후 GameObject를 비활성화")]
-    [SerializeField] private bool deactivateOnComplete = false;
-
     private Sequence _sequence;
     private bool _isShowing;
+    private Vector3 _baseScale;
+    private bool _baseScaleCaptured;
 
     public bool IsShowing => _isShowing;
     public RectTransform TargetRect => targetRect;
 
     private void OnEnable()
     {
+        // 최초 1회만 베이스 스케일 캡처
+        if (targetRect != null && !_baseScaleCaptured)
+        {
+            _baseScale = targetRect.localScale;
+            _baseScaleCaptured = true;
+        }
+
         if (playOnEnable)
             Show();
     }
@@ -69,31 +74,43 @@ public class PopupImageDisplay : MonoBehaviour
         KillSequence();
         _isShowing = true;
 
+        // 베이스 스케일이 없으면 현재 스케일 사용
+        Vector3 baseScale = _baseScaleCaptured ? _baseScale : targetRect.localScale;
+
         // 초기 상태: skipGrowAnimation이면 maxScale에서 시작, 아니면 minScale에서 시작
-        float startScale = skipGrowAnimation ? maxScale : minScale;
-        targetRect.localScale = Vector3.one * startScale;
+        float startScaleRatio = skipGrowAnimation ? maxScale : minScale;
+        targetRect.localScale = baseScale * startScaleRatio;
         targetRect.gameObject.SetActive(true);
 
+        // 알파 초기화 (useFade면 0으로 시작)
         if (canvasGroup != null)
             canvasGroup.alpha = useFade ? 0f : 1f;
 
         _sequence = DOTween.Sequence();
 
-        // 페이드인 (옵션)
-        if (useFade && canvasGroup != null && fadeInDuration > 0f)
-            _sequence.Append(canvasGroup.DOFade(1f, fadeInDuration));
+        // 페이드인 (옵션) - fadeInDuration이 0이면 즉시 1로 설정
+        if (useFade && canvasGroup != null)
+        {
+            if (fadeInDuration > 0f)
+                _sequence.Append(canvasGroup.DOFade(1f, fadeInDuration));
+            else
+                canvasGroup.alpha = 1f; // 즉시 보이게
+        }
 
-        // 스케일 애니메이션
+        // 스케일 애니메이션 (baseScale 기준으로 계산)
+        Vector3 maxScaleVec = baseScale * maxScale;
+        Vector3 finalScaleVec = baseScale * finalScale;
+
         if (skipGrowAnimation)
         {
             // max → final만 재생
-            _sequence.Append(targetRect.DOScale(finalScale, shrinkDuration).SetEase(Ease.OutQuad));
+            _sequence.Append(targetRect.DOScale(finalScaleVec, shrinkDuration).SetEase(Ease.OutQuad));
         }
         else
         {
             // min → max → final 순서로 재생
-            _sequence.Append(targetRect.DOScale(maxScale, growDuration).SetEase(Ease.OutBack));
-            _sequence.Append(targetRect.DOScale(finalScale, shrinkDuration).SetEase(Ease.OutQuad));
+            _sequence.Append(targetRect.DOScale(maxScaleVec, growDuration).SetEase(Ease.OutBack));
+            _sequence.Append(targetRect.DOScale(finalScaleVec, shrinkDuration).SetEase(Ease.OutQuad));
         }
 
         // displayDuration > 0 이면 대기 시간 추가
@@ -107,15 +124,12 @@ public class PopupImageDisplay : MonoBehaviour
         {
             _isShowing = false;
 
-            if (deactivateOnComplete)
+            // stayVisible=true가 아닌 경우 숨김 처리
+            if (!stayVisible)
             {
-                // 비활성화 옵션이면 즉시 비활성화
-                gameObject.SetActive(false);
-            }
-            else if (!stayVisible)
-            {
-                // stayVisible이 아니면 숨김 처리
                 HideImmediate();
+                // 전체 GameObject 비활성화 (targetRect만 숨기면 부모는 남아있음)
+                gameObject.SetActive(false);
             }
 
             onComplete?.Invoke();
@@ -162,7 +176,9 @@ public class PopupImageDisplay : MonoBehaviour
 
         if (targetRect != null)
         {
-            targetRect.localScale = Vector3.zero;
+            // 원래 스케일로 복원 (다음 Show() 호출 시 정상 동작을 위해)
+            if (_baseScaleCaptured)
+                targetRect.localScale = _baseScale;
             targetRect.gameObject.SetActive(false);
         }
 

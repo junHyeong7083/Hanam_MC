@@ -18,7 +18,7 @@ public class Director_Problem6_Step3 : Director_Problem6_Step3_Logic
         public float DurationSeconds => durationSeconds;
     }
 
-    [Header("ÀÌ¿Ï ´Ü°è ¸ñ·Ï")]
+    [Header("ì´ì™„ ë‹¨ê³„ ëª©ë¡")]
     [SerializeField] private RelaxationStepData[] steps;
 
     [Header("UI Root")]
@@ -26,22 +26,25 @@ public class Director_Problem6_Step3 : Director_Problem6_Step3_Logic
     [SerializeField] private GameObject playingRoot;
     [SerializeField] private GameObject pausedRoot;
 
-    [Header("ÅØ½ºÆ® / ÁøÇàµµ UI")]
+    [Header("í…ìŠ¤íŠ¸ / ì§„í–‰ë„ UI")]
     [SerializeField] private Text stepCounterLabel;
     [SerializeField] private Text stepTitleLabel;
     [SerializeField] private Text stepInstructionLabel;
     [SerializeField] private Image progressFillImage;
 
-    [Header("È£Èí ¿ø ¾Ö´Ï¸ÞÀÌ¼Ç ·çÆ® (¿É¼Ç)")]
+    [Header("í˜¸í¡ ì› ì• ë‹ˆë©”ì´ì…˜ ë£¨íŠ¸ (ì˜µì…˜)")]
     [SerializeField] private GameObject breathingCircleRoot;
 
-    [Header("ÄÁÆ®·Ñ ¹öÆ°µé")]
+    [Header("ì»¨íŠ¸ë¡¤ ë²„íŠ¼ë“¤")]
     [SerializeField] private Button startButton;
     [SerializeField] private Button pauseButton;
     [SerializeField] private Button resumeButton;
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸")]
     [SerializeField] private StepCompletionGate completionGate;
+
+    [Header("ì´íŽ™íŠ¸ ì»¨íŠ¸ë¡¤ëŸ¬")]
+    [SerializeField] private Problem6_Step3_EffectController effectController;
 
     protected override IRelaxationStepData[] Steps => steps;
 
@@ -61,4 +64,6 @@ public class Director_Problem6_Step3 : Director_Problem6_Step3_Logic
     protected override Button ResumeButton => resumeButton;
 
     protected override StepCompletionGate CompletionGate => completionGate;
+
+    protected override Problem6_Step3_EffectController EffectController => effectController;
 }

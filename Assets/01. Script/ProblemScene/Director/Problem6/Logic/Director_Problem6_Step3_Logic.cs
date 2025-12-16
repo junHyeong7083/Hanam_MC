@@ -47,6 +47,9 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
     [Header("완료 게이트")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
+    [Header("이펙트 컨트롤러")]
+    protected abstract Problem6_Step3_EffectController EffectController { get; }
+
     [Header("완료 후 약간의 딜레이 (초)")]
     protected virtual float CompleteDelaySeconds => 2.0f;
 
@@ -200,6 +203,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         // Playing -> Paused
         SetRootActive(PlayingRoot, false);
         SetRootActive(PausedRoot, true);
+
+        // 호흡 애니메이션 일시정지
+        if (EffectController != null)
+            EffectController.PauseBreathingAnimation();
     }
 
     public void OnClickResume()
@@ -213,6 +220,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         // Paused -> Playing
         SetRootActive(PlayingRoot, true);
         SetRootActive(PausedRoot, false);
+
+        // 호흡 애니메이션 재개
+        if (EffectController != null)
+            EffectController.ResumeBreathingAnimation();
     }
 
     // ===== 메인 루프 =====
@@ -221,6 +232,7 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
     {
         var steps = Steps;
         int total = steps.Length;
+        var effect = EffectController;
 
         while (_currentStepIndex < total)
         {
@@ -231,6 +243,15 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             ApplyStepUI(step, _currentStepIndex, total);
             _currentStepElapsed = 0f;
             SetProgress(0f);
+
+            // 카드 팝인 애니메이션
+            if (effect != null)
+                effect.PlayCardPopIn();
+
+            // 호흡 단계(3~5)면 호흡 애니메이션 시작
+            bool isBreathingStep = step.Id >= 3 && step.Id <= 5;
+            if (isBreathingStep && effect != null)
+                effect.StartBreathingAnimation();
 
             // duration 동안 진행 (일시정지 시에는 시간 멈춤)
             while (_currentStepElapsed < duration)
@@ -246,6 +267,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
 
                 yield return null;
             }
+
+            // 호흡 애니메이션 정지
+            if (isBreathingStep && effect != null)
+                effect.StopBreathingAnimation();
 
             // 다음 단계로
             _currentStepIndex++;

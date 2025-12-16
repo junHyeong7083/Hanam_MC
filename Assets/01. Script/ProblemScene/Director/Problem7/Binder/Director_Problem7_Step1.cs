@@ -16,9 +16,6 @@ public class Director_Problem7_Step1 : Director_Problem7_Step1_Logic
     [Header("활성화 연출용 비주얼 루트 (스케일 튕김 대상)")]
     [SerializeField] private RectTransform megaphoneTargetVisualRoot;
 
-    [Header("NG 모니터 루트 (드롭 전 표시)")]
-    [SerializeField] private GameObject ngMonitorRoot;
-
     [Header("완료 게이트 (CompleteRoot에 활성화 패널 연결)")]
     [SerializeField] private StepCompletionGate completionGate;
 
@@ -27,5 +24,4 @@ public class Director_Problem7_Step1 : Director_Problem7_Step1_Logic
     protected override GameObject MegaphoneDropIndicatorRoot => megaphoneDropIndicatorRoot;
     protected override RectTransform MegaphoneTargetVisualRoot => megaphoneTargetVisualRoot;
     protected override StepCompletionGate StepCompletionGateRef => completionGate;
-    protected override GameObject NGMonitorRoot => ngMonitorRoot;
 }
