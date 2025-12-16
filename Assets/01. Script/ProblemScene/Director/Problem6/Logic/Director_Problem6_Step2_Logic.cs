@@ -16,21 +16,27 @@ public class StressCardSlot
     public Text labelText;         // 카드 안 텍스트
     public Text categoryText;      // 카테고리 텍스트
     public Image backgroundImage;  // 카드 배경 Image (색 바꿀 대상)
+
+    [Header("아이콘 (선택 상태에 따라 스프라이트 변경)")]
+    public Image iconImage;            // 아이콘 이미지
+    public Sprite[] iconSprites;       // [0]=선택 전, [1]=선택 후
+
+    [Header("선택 시 표시")]
+    public GameObject glowImage;       // 글로우 이미지 (선택 시 ON)
+    public GameObject selectImage;     // 선택 이미지 (선택 시 ON)
 }
 
 [Serializable]
 public class StudioLightSlot
 {
-    [Header("조명 이미지 (한 장으로 처리)")]
-    public Image image;
+    [Header("조명 이미지 (기본 상태, 깜빡임)")]
+    public GameObject defaultImage;
 
-    [Header("불안정(깜빡) 상태 색상")]
-    public Color unstableColor = new Color(1f, 0.54f, 0.24f, 0.7f);   // 대충 #FF8A3D
+    [Header("클릭 이미지 (선택 시 표시)")]
+    public GameObject clickedImage;
 
-    [Header("안정(고정) 상태 색상")]
-    public Color stableColor = new Color(1f, 0.84f, 0f, 1f);         // 대충 #FFD700
-
-    [Header("깜빡임 설정")]
+    [Header("깜빡임 설정 (CanvasGroup 사용)")]
+    public CanvasGroup defaultCanvasGroup;
     public float flickerSpeed = 2f;
     [Range(0f, 1f)] public float minAlpha = 0.2f;
     [Range(0f, 1f)] public float maxAlpha = 1f;
@@ -126,7 +132,14 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
         for (int i = 0; i < lights.Length; i++)
         {
-            lights[i].phaseOffset = UnityEngine.Random.Range(0f, 10f);
+            var slot = lights[i];
+            slot.phaseOffset = UnityEngine.Random.Range(0f, 10f);
+
+            // 초기 상태: 기본 이미지 ON, 클릭 이미지 OFF
+            if (slot.defaultImage != null)
+                slot.defaultImage.SetActive(true);
+            if (slot.clickedImage != null)
+                slot.clickedImage.SetActive(false);
         }
     }
 
@@ -168,16 +181,30 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
             int index = i;
             var slot = cards[i];
 
-            // 텍스트 세팅
+            // 텍스트 세팅 (선택 전: 검은색)
             if (slot.labelText != null)
+            {
                 slot.labelText.text = slot.label;
+                slot.labelText.color = Color.black;
+            }
 
             if (slot.categoryText != null)
+            {
                 slot.categoryText.text = slot.category;
+                slot.categoryText.color = Color.black;
+            }
 
-            // 색 초기화
+            // 선택 전: backgroundImage ON, glow/select OFF
             if (slot.backgroundImage != null)
-                slot.backgroundImage.color = CardNormalColor;
+                slot.backgroundImage.gameObject.SetActive(true);
+            if (slot.glowImage != null)
+                slot.glowImage.SetActive(false);
+            if (slot.selectImage != null)
+                slot.selectImage.SetActive(false);
+
+            // 아이콘 스프라이트 초기화 (선택 전 상태)
+            if (slot.iconImage != null && slot.iconSprites != null && slot.iconSprites.Length >= 1)
+                slot.iconImage.sprite = slot.iconSprites[0];
 
             // 버튼 리스너
             if (slot.button != null)
@@ -229,7 +256,7 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         UpdateCardVisuals();
         UpdateLightsVisual();
         UpdateProgressLabel();
-        TryOpenGateOnce();   // 여기서는 Gate만 열고, DB는 안 건드림
+        UpdateGateState();   // 선택 개수에 따라 Gate 열기/닫기
     }
 
     private void UpdateCardVisuals()
@@ -242,8 +269,24 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
             var slot = cards[i];
             bool isSelected = _selectedFlags != null && _selectedFlags[i];
 
+            // 선택 시: backgroundImage OFF, glow/select ON
+            // 미선택 시: backgroundImage ON, glow/select OFF
             if (slot.backgroundImage != null)
-                slot.backgroundImage.color = isSelected ? CardSelectedColor : CardNormalColor;
+                slot.backgroundImage.gameObject.SetActive(!isSelected);
+            if (slot.glowImage != null)
+                slot.glowImage.SetActive(isSelected);
+            if (slot.selectImage != null)
+                slot.selectImage.SetActive(isSelected);
+
+            // 텍스트 색상: 선택 시 흰색, 미선택 시 검은색
+            if (slot.labelText != null)
+                slot.labelText.color = isSelected ? Color.white : Color.black;
+            if (slot.categoryText != null)
+                slot.categoryText.color = isSelected ? Color.white : Color.black;
+
+            // 아이콘 스프라이트 변경 (선택 전/후)
+            if (slot.iconImage != null && slot.iconSprites != null && slot.iconSprites.Length >= 2)
+                slot.iconImage.sprite = isSelected ? slot.iconSprites[1] : slot.iconSprites[0];
         }
     }
 
@@ -256,7 +299,7 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     }
 
     // =========================================================
-    // 조명: Image 한 장으로 깜빡임/안정화
+    // 조명: 기본 이미지 깜빡임 / 클릭 이미지 표시
     // =========================================================
 
     private void UpdateLightsVisual()
@@ -271,44 +314,58 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         for (int i = 0; i < lights.Length; i++)
         {
             var slot = lights[i];
-            var img = slot.image;
-            if (img == null) continue;
 
             if (i < stabilizedLights)
             {
-                // 안정 상태: stableColor + alpha=1
-                Color c = slot.stableColor;
-                c.a = 1f;
-                img.color = c;
+                // 안정 상태 (선택됨): 기본 이미지 OFF, 클릭 이미지 ON
+                if (slot.defaultImage != null)
+                    slot.defaultImage.SetActive(false);
+                if (slot.clickedImage != null)
+                    slot.clickedImage.SetActive(true);
             }
             else
             {
-                // 불안정 상태: sin 기반으로 alpha 깜빡
-                float phase = time * slot.flickerSpeed + slot.phaseOffset;
-                float sin = (Mathf.Sin(phase) + 1f) * 0.5f;   // 0~1
-                float alpha = Mathf.Lerp(slot.minAlpha, slot.maxAlpha, sin);
+                // 불안정 상태: 기본 이미지 ON + 깜빡임, 클릭 이미지 OFF
+                if (slot.defaultImage != null)
+                    slot.defaultImage.SetActive(true);
+                if (slot.clickedImage != null)
+                    slot.clickedImage.SetActive(false);
 
-                Color c = slot.unstableColor;
-                c.a = alpha;
-                img.color = c;
+                // 깜빡임 (CanvasGroup alpha)
+                if (slot.defaultCanvasGroup != null)
+                {
+                    float phase = time * slot.flickerSpeed + slot.phaseOffset;
+                    float sin = (Mathf.Sin(phase) + 1f) * 0.5f;   // 0~1
+                    float alpha = Mathf.Lerp(slot.minAlpha, slot.maxAlpha, sin);
+                    slot.defaultCanvasGroup.alpha = alpha;
+                }
             }
         }
     }
 
     // =========================================================
-    // Gate 완료 (한 번만, DB는 여기서 X)
+    // Gate 상태 업데이트 (선택 개수에 따라 열기/닫기)
     // =========================================================
 
-    private void TryOpenGateOnce()
+    private void UpdateGateState()
     {
-        if (_gateCompleted) return;
-        if (_selectedCount < MinSelectCount) return;
-
         var gate = StepCompletionGateRef;
-        if (gate != null)
-            gate.MarkOneDone();   // completeRoot ON
+        if (gate == null) return;
 
-        _gateCompleted = true;
+        bool shouldBeCompleted = _selectedCount >= MinSelectCount;
+
+        if (shouldBeCompleted && !_gateCompleted)
+        {
+            // 최소 개수 이상 선택됨 → Gate 열기
+            gate.MarkOneDone();
+            _gateCompleted = true;
+        }
+        else if (!shouldBeCompleted && _gateCompleted)
+        {
+            // 최소 개수 미만으로 내려감 → Gate 닫기
+            gate.MarkOneUndone();
+            _gateCompleted = false;
+        }
     }
 
     // =========================================================

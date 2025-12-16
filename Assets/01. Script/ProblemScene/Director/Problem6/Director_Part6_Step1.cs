@@ -2,36 +2,38 @@ using UnityEngine;
 
 /// <summary>
 /// Director / Problem6 / Step1
-/// - ÀÎ½ºÆåÅÍ¿¡¼­ UI ÂüÁ¶¸¸ µé°í ÀÖ´Â ·¡ÆÛ.
-/// - ½ÇÁ¦ ·ÎÁ÷Àº Director_Problem6_Step1_Logic(ºÎ¸ð)¿¡ ÀÖÀ½.
+/// - ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Director_Problem6_Step1_Logic(ï¿½Î¸ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 /// </summary>
 public class Director_Problem6_Step1 : Director_Problem6_Step1_Logic
 {
-    [Header("ÀÇÀÚ µå·Ó Å¸°Ù ¿µ¿ª (ºó °ø°£ ¹Ú½º)")]
-    [SerializeField] private RectTransform emptySpaceRect;        // TSÀÇ emptySpaceRef
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½)")]
+    [SerializeField] private RectTransform emptySpaceRect;        // TSï¿½ï¿½ emptySpaceRef
 
-    [Header("µå·Ó ÀÎµðÄÉÀÌÅÍ (µå·¡±× Áß Å×µÎ¸® ¹Ú½º)")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½å·¡ï¿½ï¿½ ï¿½ï¿½ ï¿½×µÎ¸ï¿½ ï¿½Ú½ï¿½)")]
     [SerializeField] private GameObject dropIndicatorRoot;
 
-    [Header("È°¼ºÈ­ ¿¬Ãâ¿ë ºñÁÖ¾ó ·çÆ® (½ºÄÉÀÏ Æ¨±æ ´ë»ó)")]
-    [SerializeField] private RectTransform chairTargetVisualRoot; // ¹Ú½º ÀüÃ¼ or ¾ÈÂÊ Ä«µå
+    [Header("È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ö¾ï¿½ ï¿½ï¿½Æ® (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½)")]
+    [SerializeField] private RectTransform chairTargetVisualRoot; // ï¿½Ú½ï¿½ ï¿½ï¿½Ã¼ or ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½
 
-    [Header("¾È³» ÅØ½ºÆ® ·çÆ®")]
-    [SerializeField] private GameObject instructionRoot;          // "ÀÇÀÚ¸¦ µå·¡±×ÇØ¼­ ¿Ã·ÁÁÖ¼¼¿ä"
+    [Header("ï¿½È³ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½Æ®")]
+    [SerializeField] private GameObject instructionRoot;          // "ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½å·¡ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ã·ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½"
 
-    [Header("¹Ú½º ¾È ¾ÆÀÌÄÜ ·çÆ®")]
-    [SerializeField] private GameObject emptyIconRoot;            // ÅÖ ºó °ø°£ ¾ÆÀÌÄÜ + ÅØ½ºÆ® ¹­À½
-    [SerializeField] private GameObject chairPlacedIconRoot;      // ÀÇÀÚ + ½ºÆÄÅ¬ ¹­À½ (ÃÊ±â ºñÈ°¼º)
+    [Header("ë“œë¡­ ì™„ë£Œ ì‹œ ë“±ìž¥")]
+    [SerializeField] private GameObject chairPlacedIconRoot;      // ì˜ìž ì•„ì´ì½˜
+    [SerializeField] private GameObject glowImage;                // ê¸€ë¡œìš° ì´ë¯¸ì§€
+    [SerializeField] private GameObject sparkleImage;             // ìŠ¤íŒŒí´ ì´ë¯¸ì§€
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // ----- ºÎ¸ð Ãß»ó ÇÁ·ÎÆÛÆ¼ ±¸Çö -----
+    // ----- ï¿½Î¸ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ -----
     protected override RectTransform ChairDropTargetRect => emptySpaceRect;
     protected override GameObject ChairDropIndicatorRoot => dropIndicatorRoot;
     protected override RectTransform ChairTargetVisualRoot => chairTargetVisualRoot;
     protected override GameObject InstructionRootObject => instructionRoot;
     protected override StepCompletionGate StepCompletionGateRef => completionGate;
-    protected override GameObject EmptyIconRoot => emptyIconRoot;
     protected override GameObject ChairPlacedIconRoot => chairPlacedIconRoot;
+    protected override GameObject GlowImage => glowImage;
+    protected override GameObject SparkleImage => sparkleImage;
 }

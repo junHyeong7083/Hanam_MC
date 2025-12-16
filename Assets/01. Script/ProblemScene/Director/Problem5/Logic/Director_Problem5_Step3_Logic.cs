@@ -61,13 +61,8 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
     [Header("선택지 (자식 주입)")]
     protected abstract IDialogueOptionData[] Options { get; }
 
-    [Header("NPC / 상대 캐릭터 UI")]
-    protected abstract Text NpcEmojiLabel { get; }
-    protected abstract GameObject NpcWaitingRoot { get; }
+    [Header("NPC 응답 UI")]
     protected abstract GameObject NpcResponseRoot { get; }
-
-    [Header("NPC 반응 대사 (텍스트는 인스펙터에서 설정)")]
-    protected abstract Text NpcResponseTextLabel { get; }
 
     [Header("선택지 피드백 UI")]
     protected abstract GameObject FeedbackRoot { get; }
@@ -78,14 +73,12 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
     protected abstract Color OptionHealthyColor { get; }
     protected abstract Color OptionWrongColor { get; }
 
-    [Header("마이크 입력 UI")]
-    protected abstract Button MicButton { get; }
-    protected abstract GameObject MicRecordingIndicatorRoot { get; }
+    [Header("마이크 STT")]
+    protected abstract MicRecordingIndicator MicIndicator { get; }
 
     [Header("타이밍 설정")]
     protected abstract float OptionSelectDelay { get; }          // 1.5f
     protected abstract float NpcResponseDelay { get; }           // 1.0f
-    protected abstract float VoiceRecognitionDuration { get; }   // 2.0f
 
     [Header("완료 게이트 (StepCompletionGate)")]
     protected abstract StepCompletionGate CompletionGate { get; }
@@ -94,17 +87,19 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
     protected abstract float WrongFeedbackShowDuration { get; }        // 예: 1.0
     protected abstract GameObject FeedbackNextButtonRoot { get; }      // FeedbackRoot 안 "다음" 버튼 루트
 
+    [Header("정답 이미지 연출")]
+    protected abstract GameObject OriginalAnswerImage { get; }         // 기존 이미지 (정답 시 숨김)
+    protected abstract PopupImageDisplay CorrectAnswerPopup { get; }   // 정답 이미지 (PopupImageDisplay)
+
     // ===== 내부 상태 =====
 
     private int _selectedIndex = -1;
     private bool _hasAnswered;     // 정답 맞춘 뒤엔 true → 더 이상 입력 X
-    private bool _isRecording;
     private bool _npcResponded;
     private string _inputMode = "button"; // "button" or "voice"
 
     private Coroutine _optionRoutine;
     private Coroutine _npcRoutine;
-    private Coroutine _voiceRoutine;
 
     // 클릭 히스토리용
     private readonly List<ClickLogEntry> _clickLogList = new List<ClickLogEntry>();
@@ -123,7 +118,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
         _selectedIndex = -1;
         _hasAnswered = false;
-        _isRecording = false;
+        //_isRecording = false;
         _npcResponded = false;
         _inputMode = "button";
 
@@ -131,12 +126,8 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         _clickLogList.Clear();
         _stepStartTime = Time.time;
 
-        // NPC 초기 상태
-        if (NpcWaitingRoot != null) NpcWaitingRoot.SetActive(true);
+        // NPC 응답 초기 상태
         if (NpcResponseRoot != null) NpcResponseRoot.SetActive(false);
-
-        if (NpcEmojiLabel != null)
-            NpcEmojiLabel.text = "😐";
 
         // 피드백 영역 비활성화
         if (FeedbackRoot != null)
@@ -146,9 +137,11 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         if (FeedbackNextButtonRoot != null)
             FeedbackNextButtonRoot.SetActive(false);
 
-        // 마이크 인디케이터 끄기
-        if (MicRecordingIndicatorRoot != null)
-            MicRecordingIndicatorRoot.SetActive(false);
+        // 정답 이미지 초기화
+        if (OriginalAnswerImage != null)
+            OriginalAnswerImage.SetActive(true);
+        if (CorrectAnswerPopup != null)
+            CorrectAnswerPopup.ResetToInitial();
 
         // 버튼 리스너, 색상 초기화
         for (int i = 0; i < options.Length; i++)
@@ -169,12 +162,23 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
             SetOptionVisual(idx, false, false);
         }
 
-        // 마이크 버튼
-        if (MicButton != null)
+        // MicIndicator STT 설정
+        var mic = MicIndicator;
+        if (mic != null)
         {
-            MicButton.onClick.RemoveAllListeners();
-            MicButton.onClick.AddListener(OnClickMic);
-            MicButton.interactable = true;
+            // 옵션 텍스트를 키워드로 설정
+            var keywordList = new List<string>();
+            foreach (var opt in options)
+            {
+                keywordList.Add(opt.Text);
+            }
+            mic.SetKeywords(keywordList.ToArray());
+
+            // 이벤트 구독
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnKeywordMatched += OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
+            mic.OnNoMatch += OnSTTNoMatch;
         }
 
         // 게이트 리셋: 이 스텝은 "1번 완료"만 채우면 끝
@@ -188,11 +192,17 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
         if (_optionRoutine != null) StopCoroutine(_optionRoutine);
         if (_npcRoutine != null) StopCoroutine(_npcRoutine);
-        if (_voiceRoutine != null) StopCoroutine(_voiceRoutine);
 
         _optionRoutine = null;
         _npcRoutine = null;
-        _voiceRoutine = null;
+
+        // MicIndicator 이벤트 구독 해제
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
+        }
     }
 
     // ===== 선택지 시각 업데이트 =====
@@ -269,7 +279,6 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
     public void OnClickOption(int index)
     {
         if (_hasAnswered) return;   // 이미 정답 맞췄으면 끝
-        if (_isRecording) return;   // 녹음 중에는 막기
 
         var options = Options;
         if (options == null || index < 0 || index >= options.Length) return;
@@ -314,10 +323,14 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
             _hasAnswered = true;
             _npcResponded = true;
 
-            // NPC 대기 → 반응으로 즉시 전환
-            if (NpcWaitingRoot != null) NpcWaitingRoot.SetActive(false);
+            // 정답 이미지 연출: 기존 이미지 숨기고 정답 이미지 팝업
+            if (OriginalAnswerImage != null)
+                OriginalAnswerImage.SetActive(false);
+            if (CorrectAnswerPopup != null)
+                CorrectAnswerPopup.Show();
+
+            // NPC 응답 표시
             if (NpcResponseRoot != null) NpcResponseRoot.SetActive(true);
-            if (NpcEmojiLabel != null) NpcEmojiLabel.text = "😊";
 
             // 게이트 완료 (요약 버튼 있는 쪽 StepCompletionGate completeRoot가 켜짐)
             if (CompletionGate != null)
@@ -351,69 +364,30 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
     }
 
 
-    // ===== 마이크(음성) 흐름 =====
+    // ===== STT 이벤트 핸들러 =====
 
-    public void OnClickMic()
+    /// <summary>
+    /// STT 키워드 매칭 성공 시 호출
+    /// matchedIndex = 옵션 배열의 인덱스
+    /// </summary>
+    protected void OnSTTKeywordMatched(int matchedIndex)
     {
+        Debug.Log($"[Problem5_Step3] STT 매칭: index={matchedIndex}");
+
         if (_hasAnswered) return;
-        if (_isRecording) return;
 
+        // voice 모드로 설정하고 해당 옵션 선택
         _inputMode = "voice";
-
-        if (_voiceRoutine != null)
-        {
-            StopCoroutine(_voiceRoutine);
-            _voiceRoutine = null;
-        }
-
-        _voiceRoutine = StartCoroutine(VoiceFlow());
+        OnClickOption(matchedIndex);
     }
 
-    private IEnumerator VoiceFlow()
+    /// <summary>
+    /// STT 매칭 실패 시 호출
+    /// </summary>
+    protected void OnSTTNoMatch(string sttResult)
     {
-        _isRecording = true;
-
-        if (MicRecordingIndicatorRoot != null)
-            MicRecordingIndicatorRoot.SetActive(true);
-
-        if (MicButton != null)
-            MicButton.interactable = false;
-
-        float dur = Mathf.Max(0f, VoiceRecognitionDuration);
-        if (dur > 0f)
-            yield return new WaitForSeconds(dur);
-
-        _isRecording = false;
-
-        if (MicRecordingIndicatorRoot != null)
-            MicRecordingIndicatorRoot.SetActive(false);
-
-        int correctIndex = FindCorrectOptionIndex();
-        if (correctIndex >= 0)
-        {
-            // _inputMode = "voice" 상태로 OnClickOption 호출 → 클릭 로그에도 voice로 남음
-            OnClickOption(correctIndex);
-        }
-        else
-        {
-            Debug.LogWarning("[Problem5_Step3] 정답(IsCorrect) 옵션을 찾을 수 없습니다.");
-        }
-
-        _voiceRoutine = null;
-    }
-
-    private int FindCorrectOptionIndex()
-    {
-        var options = Options;
-        if (options == null) return -1;
-
-        for (int i = 0; i < options.Length; i++)
-        {
-            if (options[i].IsCorrect)
-                return i;
-        }
-
-        return -1;
+        Debug.Log($"[Problem5_Step3] STT 매칭 실패: {sttResult}");
+        // 매칭 실패 시에는 아무것도 하지 않음 - 사용자가 다시 녹음하거나 버튼 클릭 가능
     }
 
     // ===== NPC 반응 흐름 =====
@@ -426,11 +400,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
         _npcResponded = true;
 
-        if (NpcWaitingRoot != null) NpcWaitingRoot.SetActive(false);
         if (NpcResponseRoot != null) NpcResponseRoot.SetActive(true);
-
-        if (NpcEmojiLabel != null)
-            NpcEmojiLabel.text = "😊";
 
         OnNpcResponseShown();
 

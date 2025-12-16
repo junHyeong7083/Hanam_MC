@@ -361,13 +361,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5479a6831812d8a4aa5ac3164cae9bda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelFileName: ggml-small.bin
+  modelFileName: ggml-tiny.bin
   language: ko
   sampleRate: 16000
   maxRecordingTime: 30
   numThreads: 4
   translate: 0
   showDebugLogs: 1
+  enableRealtimeProcessing: 1
+  realtimeProcessInterval: 1
+  minSamplesForProcessing: 8000
 --- !u!4 &410817168
 Transform:
   m_ObjectHideFlags: 0

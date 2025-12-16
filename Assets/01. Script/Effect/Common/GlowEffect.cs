@@ -41,14 +41,21 @@ public class GlowEffect : MonoBehaviour
     private CanvasGroup _canvasGroup;
     private Vector3 _baseScale;
     private Sequence _sequence;
+    private bool _baseScaleCaptured;
 
     private void OnEnable()
     {
-        _rectTransform = GetComponent<RectTransform>();
-        _canvasGroup = GetComponent<CanvasGroup>();
+        if (_rectTransform == null)
+            _rectTransform = GetComponent<RectTransform>();
+        if (_canvasGroup == null)
+            _canvasGroup = GetComponent<CanvasGroup>();
 
-        if (_rectTransform != null)
+        // 최초 1회만 베이스 스케일 캡처
+        if (_rectTransform != null && !_baseScaleCaptured)
+        {
             _baseScale = _rectTransform.localScale;
+            _baseScaleCaptured = true;
+        }
 
         if (playOnEnable)
             Play();
@@ -149,18 +156,18 @@ public class GlowEffect : MonoBehaviour
     }
 
     /// <summary>
-    /// 축에 따른 타겟 스케일 계산
+    /// 축에 따른 타겟 스케일 계산 (baseScale * value)
     /// </summary>
     private Vector3 GetTargetScale(float value)
     {
         switch (scaleAxis)
         {
             case ScaleAxis.X:
-                return new Vector3(value, _baseScale.y, _baseScale.z);
+                return new Vector3(_baseScale.x * value, _baseScale.y, _baseScale.z);
             case ScaleAxis.Y:
-                return new Vector3(_baseScale.x, value, _baseScale.z);
+                return new Vector3(_baseScale.x, _baseScale.y * value, _baseScale.z);
             case ScaleAxis.XY:
-                return new Vector3(value, value, _baseScale.z);
+                return new Vector3(_baseScale.x * value, _baseScale.y * value, _baseScale.z);
             default:
                 return _baseScale;
         }

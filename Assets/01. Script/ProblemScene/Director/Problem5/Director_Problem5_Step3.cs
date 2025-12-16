@@ -4,36 +4,36 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Part5 / Step3
-/// - ÀÎ½ºÆåÅÍ¿¡¼­ ¼±ÅÃÁö/¹öÆ°/UI ÂüÁ¶¸¸ µé°í ÀÖ´Â ·¡ÆÛ.
-/// - ½ÇÁ¦ Çàµ¿/»óÅÂ¸Ó½ÅÀº Director_Problem5_Step3_Logic ÂÊ¿¡¼­ Ã³¸®.
+/// - ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½Æ°/UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿/ï¿½ï¿½ï¿½Â¸Ó½ï¿½ï¿½ï¿½ Director_Problem5_Step3_Logic ï¿½Ê¿ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 /// </summary>
 public class Director_Problem5_Step3 : Director_Problem5_Step3_Logic
 {
     [Serializable]
     public class DialogueOptionData : IDialogueOptionData
     {
-        [Tooltip("¿É¼Ç ID (·Î±×¿ë)")]
+        [Tooltip("ï¿½É¼ï¿½ ID (ï¿½Î±×¿ï¿½)")]
         public int id = 1;
 
         [TextArea]
-        [Tooltip("È­¸é¿¡ Ç¥½ÃµÉ ´ë»ç ÅØ½ºÆ®")]
+        [Tooltip("È­ï¿½é¿¡ Ç¥ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®")]
         public string text;
 
-        [Tooltip("´ë»ç Å¸ÀÔ (È¸ÇÇÇü / °Ç°­ / µµÀüÀû)")]
+        [Tooltip("ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ (È¸ï¿½ï¿½ï¿½ï¿½ / ï¿½Ç°ï¿½ / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
         public DialogueOptionType type = DialogueOptionType.Avoidant;
 
         [TextArea]
-        [Tooltip("¼±ÅÃ ÈÄ º¸¿©ÁÙ ÇÇµå¹é ¹®±¸")]
+        [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Çµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
         public string feedback;
 
-        [Tooltip("ÀÌ ¿É¼ÇÀÌ Á¤´ä(°Ç°­ÇÑ ´ë»ç)ÀÎÁö ¿©ºÎ")]
+        [Tooltip("ï¿½ï¿½ ï¿½É¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Ç°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
         public bool isCorrect = false;
 
-        [Header("UI ÂüÁ¶")]
-        public Button button;   // Å¬¸¯ ¹öÆ° (Ä«µå ÀüÃ¼)
-        public Text label;      // ¹öÆ° ¾È ÅØ½ºÆ®
+        [Header("UI ï¿½ï¿½ï¿½ï¿½")]
+        public Button button;   // Å¬ï¿½ï¿½ ï¿½ï¿½Æ° (Ä«ï¿½ï¿½ ï¿½ï¿½Ã¼)
+        public Text label;      // ï¿½ï¿½Æ° ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
 
-        // ==== ÀÎÅÍÆäÀÌ½º ±¸Çö ====
+        // ==== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ ====
         public int Id => id;
         public string Text => text;
         public DialogueOptionType Type => type;
@@ -44,51 +44,45 @@ public class Director_Problem5_Step3 : Director_Problem5_Step3_Logic
         public Text Label => label;
     }
 
-    [Header("¼±ÅÃÁöµé")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private DialogueOptionData[] options;
 
-    [Header("NPC / »ó´ë Ä³¸¯ÅÍ UI")]
-    [SerializeField] private Text npcEmojiLabel;
-    [SerializeField] private GameObject npcWaitingRoot;
+    [Header("NPC ì‘ë‹µ UI")]
     [SerializeField] private GameObject npcResponseRoot;
 
-    [Header("NPC ¹ÝÀÀ ´ë»ç")]
-    [SerializeField] private Text npcResponseTextLabel;
-
-    [Header("¼±ÅÃÁö ÇÇµå¹é UI")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Çµï¿½ï¿½ UI")]
     [SerializeField] private GameObject feedbackRoot;
     [SerializeField] private Text feedbackLabel;
 
-    [Header("»ö»ó ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private Color optionNormalColor = Color.white;
     [SerializeField] private Color optionHealthyColor = Color.green;
     [SerializeField] private Color optionWrongColor = Color.red;
 
-    [Header("¸¶ÀÌÅ© ÀÔ·Â UI")]
-    [SerializeField] private Button micButton;
-    [SerializeField] private GameObject micRecordingIndicatorRoot;
+    [Header("ë§ˆì´í¬ STT")]
+    [SerializeField] private MicRecordingIndicator micIndicator;
 
-    [Header("Å¸ÀÌ¹Ö ¼³Á¤")]
+    [Header("Å¸ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float optionSelectDelay = 1.5f;
     [SerializeField] private float npcResponseDelay = 1.0f;
-    [SerializeField] private float voiceRecognitionDuration = 2.0f;
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    [Header("¿À´ä ÇÇµå¹é ¿¬Ãâ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½Çµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private Image wrongFeedbackImage;
     [SerializeField] private float wrongFeedbackImageHeightOnWrong = -300f;
     [SerializeField] private float wrongFeedbackShowDuration = 1.0f;
     [SerializeField] private GameObject feedbackNextButtonRoot;
-    // ===== º£ÀÌ½º¿¡ °ª ÁÖÀÔ¿ë override =====
+
+    [Header("ì •ë‹µ ì´ë¯¸ì§€ ì—°ì¶œ")]
+    [SerializeField] private GameObject originalAnswerImage;
+    [SerializeField] private PopupImageDisplay correctAnswerPopup;
+    // ===== ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ô¿ï¿½ override =====
 
     protected override IDialogueOptionData[] Options => options;
 
-    protected override Text NpcEmojiLabel => npcEmojiLabel;
-    protected override GameObject NpcWaitingRoot => npcWaitingRoot;
     protected override GameObject NpcResponseRoot => npcResponseRoot;
-    protected override Text NpcResponseTextLabel => npcResponseTextLabel;
 
     protected override GameObject FeedbackRoot => feedbackRoot;
     protected override Text FeedbackLabel => feedbackLabel;
@@ -98,12 +92,10 @@ public class Director_Problem5_Step3 : Director_Problem5_Step3_Logic
     protected override Color OptionHealthyColor => optionHealthyColor;
     protected override Color OptionWrongColor => optionWrongColor;
 
-    protected override Button MicButton => micButton;
-    protected override GameObject MicRecordingIndicatorRoot => micRecordingIndicatorRoot;
+    protected override MicRecordingIndicator MicIndicator => micIndicator;
 
     protected override float OptionSelectDelay => optionSelectDelay;
     protected override float NpcResponseDelay => npcResponseDelay;
-    protected override float VoiceRecognitionDuration => voiceRecognitionDuration;
 
     protected override StepCompletionGate CompletionGate => completionGate;
 
@@ -111,4 +103,7 @@ public class Director_Problem5_Step3 : Director_Problem5_Step3_Logic
     protected override float WrongFeedbackShowDuration => wrongFeedbackShowDuration;
 
     protected override GameObject FeedbackNextButtonRoot => feedbackNextButtonRoot;
+
+    protected override GameObject OriginalAnswerImage => originalAnswerImage;
+    protected override PopupImageDisplay CorrectAnswerPopup => correctAnswerPopup;
 }

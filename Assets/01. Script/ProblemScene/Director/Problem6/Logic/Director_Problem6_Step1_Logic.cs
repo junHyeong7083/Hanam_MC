@@ -2,59 +2,70 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Director / Problem6 / Step1 ·ÎÁ÷ º£ÀÌ½º
-/// - ÀÎº¥Åä¸®¿¡¼­ 'ÈŞ½Ä¿ë °¨µ¶ ÀÇÀÚ'¸¦ µå·Ó ¹Ú½º ±ÙÃ³¿¡ ³õÀ¸¸é
-///   ¹Ú½º ¾È ¾ÆÀÌÄÜÀÌ ºñ¾îÀÖ´ø »óÅÂ¿¡¼­ ÀÇÀÚ ¾ÆÀÌÄÜÀ¸·Î ¹Ù²î°í,
-///   Àá½Ã ÈÄ Gate ¿Ï·á.
+/// Director / Problem6 / Step1 ë¡œì§ ë² ì´ìŠ¤
+/// - ì¸ë²¤í† ë¦¬ì—ì„œ 'íœ´ì‹ìš© ì˜ì'ë¥¼ ë¹ˆ ë°•ìŠ¤ ì˜ì—­ì— ë“œë¡­í•˜ë©´
+///   ë°•ìŠ¤ ë‚´ ì•„ì´ì½˜ì´ ë¹ˆ ìƒíƒœì—ì„œ ì˜ì ì•„ì´ì½˜ìœ¼ë¡œ ë°”ë€Œê³ ,
+///   ì™„ë£Œ í›„ Gate ì™„ë£Œ.
 /// </summary>
 public abstract class Director_Problem6_Step1_Logic : InventoryDropTargetStepBase
 {
-    // ----- ÆÄ»ı Å¬·¡½º(¾À ·¡ÆÛ)¿¡¼­ ³Ñ°ÜÁÙ UI ÂüÁ¶µé -----
+    // ----- íŒŒìƒ í´ë˜ìŠ¤ì—ì„œ ë„˜ê²¨ì¤„ UI í”„ë¡œí¼í‹° -----
     protected abstract RectTransform ChairDropTargetRect { get; }
     protected abstract GameObject ChairDropIndicatorRoot { get; }
     protected abstract RectTransform ChairTargetVisualRoot { get; }
     protected abstract GameObject InstructionRootObject { get; }
     protected abstract StepCompletionGate StepCompletionGateRef { get; }
 
-    protected abstract GameObject EmptyIconRoot { get; }        // "ÅÖ ºó °ø°£" »óÅÂ
-    protected abstract GameObject ChairPlacedIconRoot { get; }  // ÀÇÀÚ + ½ºÆÄÅ¬ »óÅÂ
+    protected abstract GameObject ChairPlacedIconRoot { get; }         // ì˜ì ì•„ì´ì½˜ (ë“œë¡­ ì™„ë£Œ ì‹œ í™œì„±í™”)
+    protected abstract GameObject GlowImage { get; }                   // ê¸€ë¡œìš° ì´ë¯¸ì§€ (ë“œë¡­ ì™„ë£Œ ì‹œ í™œì„±í™”)
+    protected abstract GameObject SparkleImage { get; }                // ìŠ¤íŒŒí´ ì´ë¯¸ì§€ (ë“œë¡­ ì™„ë£Œ ì‹œ í™œì„±í™”)
 
-    // InventoryDropTargetStepBase ¿¡ ÁÖÀÔ
+    // InventoryDropTargetStepBase ì†ì„± ì—°ê²°
     protected override RectTransform DropTargetRect => ChairDropTargetRect;
     protected override GameObject DropIndicatorRoot => ChairDropIndicatorRoot;
     protected override RectTransform TargetVisualRoot => ChairTargetVisualRoot;
     protected override GameObject InstructionRoot => InstructionRootObject;
     protected override StepCompletionGate CompletionGate => StepCompletionGateRef;
 
-    // TS ±âÁØ °ªµé
+    // TS ê¸°ì¤€ ì„¤ì •
     protected override float DropRadius => 250f;      // distance < 250
-    protected override float ActivateScale => 1.02f;  // »ìÂ¦¸¸ Æ¢°Ô
+    protected override float ActivateScale => 1.02f;  // ì‚´ì§ íŠ€ì–´ì˜¤ë¦„
     protected override float ActivateDuration => 0.5f;
     protected override float DelayBeforeComplete => 2.5f; // setTimeout 2500ms
 
     /// <summary>
-    /// ½ºÅÜ ÁøÀÔ ½Ã: ±âº» »óÅÂ ¼Â¾÷
+    /// ìŠ¤í… ì§„ì… ì‹œ: ê¸°ë³¸ ìƒíƒœ ì„¸íŒ…
     /// </summary>
     protected override void OnStepEnterExtra()
     {
-        // º£ÀÌ½º¿¡¼­ indicator/instruction/scale ¸®¼ÂÀº ÀÌ¹Ì ÇØÁÜ.
-        if (EmptyIconRoot != null) EmptyIconRoot.SetActive(true);
-        if (ChairPlacedIconRoot != null) ChairPlacedIconRoot.SetActive(false);
+        // ë“œë¡­ ì¸ë””ì¼€ì´í„° ìˆ¨ê¹€ (í™•ì‹¤íˆ)
+        if (ChairDropIndicatorRoot != null)
+            ChairDropIndicatorRoot.SetActive(false);
+
+        // ë“œë¡­ ì™„ë£Œ ì‹œ ë“±ì¥í•  ê²ƒë“¤ ìˆ¨ê¹€
+        if (ChairPlacedIconRoot != null)
+            ChairPlacedIconRoot.SetActive(false);
+        if (GlowImage != null)
+            GlowImage.SetActive(false);
+        if (SparkleImage != null)
+            SparkleImage.SetActive(false);
     }
 
     /// <summary>
-    /// µå·Ó ¼º°ø ½Ã: ÀÎº¥Åä¸® ¾ÆÀÌÄÜ Ã³¸® + ¹Ú½º ¾È ¾ÆÀÌÄÜ ±³Ã¼
+    /// ë“œë¡­ ì„±ê³µ ì‹œ: ì¸ë²¤í† ë¦¬ ì•„ì´í…œ ì²˜ë¦¬ + ë°•ìŠ¤ ë‚´ ì•„ì´ì½˜ êµì²´
     /// </summary>
     protected override void OnDropSuccess(StepInventoryItem item, PointerEventData eventData)
     {
-        // 1) ±âº» Ã³¸® ( È°¼ºÈ­ ÄÚ·çÆ¾)
+        // 1) ê¸°ë³¸ ì²˜ë¦¬ (í™œì„±í™” ì½”ë£¨í‹´)
         base.OnDropSuccess(item, eventData);
 
-        // 2) ¹Ú½º ¾È placeholder ¡æ ÀÇÀÚ ¾ÆÀÌÄÜÀ¸·Î ±³Ã¼
-        if (EmptyIconRoot != null) EmptyIconRoot.SetActive(false);
-        if (ChairPlacedIconRoot != null) ChairPlacedIconRoot.SetActive(true);
-        // ½ºÆÄÅ¬/ºû È¿°ú´Â ChairPlacedIconRoot ¾È¿¡ ³Ö°í
-        // OnEnable ½Ã ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ıµÇ°Ô ÇØµÎ¸é µÊ.
+        // 2) ë“œë¡­ ì™„ë£Œ ì‹œ 3ê°œ ë“±ì¥: chairPlacedIconRoot, glowImage, sparkleImage
+        if (ChairPlacedIconRoot != null)
+            ChairPlacedIconRoot.SetActive(true);
+        if (GlowImage != null)
+            GlowImage.SetActive(true);
+        if (SparkleImage != null)
+            SparkleImage.SetActive(true);
     }
 
 }

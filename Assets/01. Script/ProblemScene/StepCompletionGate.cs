@@ -3,39 +3,39 @@ using UnityEngine.UI;
 
 public class StepCompletionGate : MonoBehaviour
 {
-    [Header("ÁøÇàµµ ¹Ù »ç¿ë ¿©ºÎ")]
+    [Header("ì§„í–‰ë„ ë°” ì‚¬ìš© ì—¬ë¶€")]
     [SerializeField] private bool useProgressFill = false;
 
-    [Header("ÁøÇàµµ Fill ÀÌ¹ÌÁö (¿É¼Ç)")]
+    [Header("ì§„í–‰ë„ Fill ì´ë¯¸ì§€ (ì˜µì…˜)")]
     [SerializeField] private Image progressFillImage;
 
-    [Header("Complete Root »ç¿ë ¿©ºÎ")]
+    [Header("Complete Root ì‚¬ìš© ì—¬ë¶€")]
     [SerializeField] private bool useCompleteRoot = true;
 
-    [Header("´ÙÀ½ ½ºÅÜÀ¸·Î ³Ñ¾î°¡±â ¹öÆ° ·çÆ® (Complete Root)")]
+    [Header("ë‹¤ìŒ ìŠ¤í…ìœ¼ë¡œ ë„˜ì–´ê°€ëŠ” ë²„íŠ¼ ë£¨íŠ¸ (Complete Root)")]
     [SerializeField] private GameObject completeRoot;
 
-    [Header("ÀÚµ¿ ÁøÇà¿ë StepFlowController (useCompleteRoot=false ÀÏ ¶§ »ç¿ë)")]
+    [Header("ìë™ ë„˜ê¹€ìš© StepFlowController (useCompleteRoot=false ì¼ ë•Œ ì‚¬ìš©)")]
     [SerializeField] private StepFlowController stepFlowController;
 
-    [Header("Hide Root »ç¿ë ¿©ºÎ")]
+    [Header("Hide Root ì‚¬ìš© ì—¬ë¶€")]
     [SerializeField] private bool useHideRoot = true;
 
-    [Header("CompleteRoot°¡ ÄÑÁú ¶§ ¼û±æ ·çÆ® (¿É¼Ç)")]
+    [Header("CompleteRootê°€ ë³´ì¼ ë•Œ ìˆ¨ê¸¸ ë£¨íŠ¸ (ì˜µì…˜)")]
     [SerializeField] private GameObject hideRoot;
 
     private int _totalCount;
     private int _currentCount;
 
     private bool _initialized;
-    private bool _autoNextFired;   // ÀÚµ¿ ÁøÇà ÇÑ ¹ø¸¸ È£ÃâÇÏ±â À§ÇÑ ÇÃ·¡±×
+    private bool _autoNextFired;   // ìë™ ë„˜ê¹€ í•œ ë²ˆë§Œ í˜¸ì¶œí•˜ê¸° ìœ„í•œ í”Œë˜ê·¸
 
     private void OnEnable()
     {
-        // »õ·Î ÄÑÁú ¶§ ÀÚµ¿ ÁøÇà ÇÃ·¡±× ¸®¼Â
+        // í™œì„±í™” ì‹œ ìë™ ë„˜ê¹€ í”Œë˜ê·¸ ë¦¬ì…‹
         _autoNextFired = false;
 
-        // ÀÌ ÄÄÆ÷³ÍÆ®°¡ Ã³À½ ÄÑÁú ¶§ ÇÑ ¹ø ±âº» »óÅÂ Àû¿ë
+        // ì´ ì»´í¬ë„ŒíŠ¸ê°€ ì²˜ìŒ í™œì„±í™”ë  ë•Œ í•œ ë²ˆ ê¸°ë³¸ ìƒíƒœ ì ìš©
         if (!_initialized)
         {
             Apply();
@@ -48,8 +48,8 @@ public class StepCompletionGate : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÌ ½ºÅÜ¿¡¼­ "ÃÑ ¸î °³¸¦ Ã¤¿ì¸é ¿Ï·á·Î º¼Áö" ¼Â¾÷
-    /// ex) ÇÊ¸§ 4°³¸é ResetGate(4)
+    /// ê° ìŠ¤í…ì—ì„œ "ëª‡ ê°œ ì¡°ê±´ ì±„ìš°ë©´ ì™„ë£Œì¸ì§€ ì„¤ì •"
+    /// ex) í•„ë“œ 4ê°œë©´ ResetGate(4)
     /// </summary>
     public void ResetGate(int total)
     {
@@ -60,8 +60,8 @@ public class StepCompletionGate : MonoBehaviour
     }
 
     /// <summary>
-    /// »õ·Î¿î Ç×¸ñÀÌ "Ã³À½À¸·Î" ¿Ï·áµÇ¾úÀ» ¶§ ÇÑ ¹ø¸¸ È£Ãâ
-    /// ex) ¾ÆÁ÷ ¾È ´­·¶´ø ÇÊ¸§À» Å¬¸¯ÇßÀ» ¶§
+    /// ìƒˆë¡œìš´ í•­ëª©ì´ "ì²˜ìŒìœ¼ë¡œ" ì™„ë£Œë˜ì—ˆì„ ë•Œ í•œ ë²ˆì”© í˜¸ì¶œ
+    /// ex) ë¹ˆì¹¸ ì¤‘ í•˜ë‚˜ì˜ í•„ë“œê°€ í´ë¦­ë˜ì—ˆì„ ë•Œ
     /// </summary>
     public void MarkOneDone()
     {
@@ -72,14 +72,26 @@ public class StepCompletionGate : MonoBehaviour
         Apply();
     }
 
+    /// <summary>
+    /// ì™„ë£Œ ìƒíƒœë¥¼ í•˜ë‚˜ ë˜ëŒë¦¼ (ì„ íƒ í•´ì œ ë“±)
+    /// </summary>
+    public void MarkOneUndone()
+    {
+        if (_totalCount <= 0)
+            return;
+
+        _currentCount = Mathf.Clamp(_currentCount - 1, 0, _totalCount);
+        Apply();
+    }
+
     private void Apply()
     {
-        // 1) ÁøÇàµµ °è»ê
+        // 1) ì§„í–‰ë„ ê³„ì‚°
         float progress = (_totalCount > 0)
             ? (float)_currentCount / _totalCount
             : 0f;
 
-        // 2) ÁøÇàµµ ¹Ù ¾÷µ¥ÀÌÆ® (ÀÖÀ¸¸é¸¸ + »ç¿ë ¿É¼Ç µû¶ó)
+        // 2) ì§„í–‰ë„ ë°” ì—…ë°ì´íŠ¸ (ì‚¬ìš©í• ë•Œë§Œ + ì˜µì…˜ ì²´í¬)
         if (progressFillImage != null)
         {
             progressFillImage.gameObject.SetActive(useProgressFill);
@@ -88,23 +100,23 @@ public class StepCompletionGate : MonoBehaviour
                 progressFillImage.fillAmount = progress;
         }
 
-        // 3) ¿Ï·á ¿©ºÎ
+        // 3) ì™„ë£Œ ì—¬ë¶€
         bool completed = (_totalCount > 0 && _currentCount >= _totalCount);
 
-        // 4) ÇÔ²² ¼û±â°í ½ÍÀº ·çÆ® Ã³¸® (ÀÖÀ¸¸é¸¸ + ¿É¼Ç Ã¼Å©)
+        // 4) í•¨ê»˜ ìˆ¨ê²¨ì§ˆ ë£¨íŠ¸ ì²˜ë¦¬ (ì‚¬ìš©í• ë•Œë§Œ + ì˜µì…˜ ì²´í¬)
         if (useHideRoot && hideRoot != null)
             hideRoot.SetActive(!completed);
 
-        // 5) ¿Ï·á Ã³¸®
+        // 5) ì™„ë£Œ ì²˜ë¦¬
         if (useCompleteRoot)
         {
-            // ¹öÆ°À¸·Î Á¦¾îÇÏ´Â ¸ğµå: CompleteRoot È°¼º/ºñÈ°¼º¸¸
+            // ë²„íŠ¼ìœ¼ë¡œ ì§„í–‰í•˜ëŠ” ë°©ì‹: CompleteRoot í™œì„±/ë¹„í™œì„±í™”
             if (completeRoot != null)
                 completeRoot.SetActive(completed);
         }
         else
         {
-            // ÀÚµ¿À¸·Î ´ÙÀ½ ½ºÅÜÀ¸·Î ³Ñ¾î°¡´Â ¸ğµå
+            // ìë™ìœ¼ë¡œ ë‹¤ìŒ ìŠ¤í…ìœ¼ë¡œ ë„˜ì–´ê°€ëŠ” ë°©ì‹
             if (completed && !_autoNextFired && stepFlowController != null)
             {
                 _autoNextFired = true;

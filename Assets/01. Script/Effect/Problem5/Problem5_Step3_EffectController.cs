@@ -12,7 +12,6 @@ public class Problem5_Step3_EffectController : EffectControllerBase
 {
     [Header("===== NPC 캐릭터 =====")]
     [SerializeField] private RectTransform npcCharacterRect;
-    [SerializeField] private GameObject npcGlowImage;
     [SerializeField] private float characterPulseDuration = 0.5f;
     [SerializeField] private float characterPulseScale = 1.05f;
 
@@ -63,10 +62,6 @@ public class Problem5_Step3_EffectController : EffectControllerBase
 
         SaveInitialState();
 
-        // 글로우 활성화
-        if (npcGlowImage != null)
-            npcGlowImage.SetActive(true);
-
         // 응답 버블 초기 상태 (아래에서 시작, 투명)
         if (npcResponseRect != null)
             npcResponseRect.anchoredPosition = _npcResponseBasePos + Vector2.down * responseSlideUpDistance;
@@ -115,9 +110,6 @@ public class Problem5_Step3_EffectController : EffectControllerBase
 
         if (npcCharacterRect != null && _initialized)
             npcCharacterRect.localScale = _npcCharacterBaseScale;
-
-        if (npcGlowImage != null)
-            npcGlowImage.SetActive(false);
 
         if (npcResponseRect != null && _initialized)
             npcResponseRect.anchoredPosition = _npcResponseBasePos;
