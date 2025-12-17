@@ -181,7 +181,9 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     /// </summary>
     protected virtual void OnDropSuccess(StepInventoryItem item, PointerEventData eventData)
     {
-        //item.HideIconKeepGhost();
+        // 드롭 성공 후 다시 드래그 못하게 비활성화
+        item?.SetDraggable(false);
+
         StartCoroutine(HandleActivatedRoutine());
     }
 
