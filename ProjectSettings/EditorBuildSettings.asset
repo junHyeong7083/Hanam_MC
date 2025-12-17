@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/04. Scene/Bootstrap.unity
+    guid: 6a1193346c0e8d94ea30de04542bbf2c
+  - enabled: 1
     path: Assets/04. Scene/RegisterScene.unity
     guid: 09a3b133a584ec84eb8575d841b1e49d
   - enabled: 1
@@ -14,9 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/04. Scene/ProblemScene.unity
     guid: ac7d2c02ad3064048b7522a861a446a8
-  - enabled: 1
-    path: Assets/04. Scene/ResultScene.unity
-    guid: c0c9cf5984553364480f0c208736b7f8
   - enabled: 1
     path: Assets/04. Scene/ResultScene.unity
     guid: c0c9cf5984553364480f0c208736b7f8

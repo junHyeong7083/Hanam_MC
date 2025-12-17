@@ -18,7 +18,14 @@ public class UIDropBoxArea : MonoBehaviour
     {
         // Step 활성화 시 outline 숨김
         if (outline != null)
+        {
             outline.SetActive(false);
+            Debug.Log($"[UIDropBoxArea] OnEnable - outline 숨김 처리됨");
+        }
+        else
+        {
+            Debug.LogWarning("[UIDropBoxArea] OnEnable - outline이 null!");
+        }
     }
 
     /// <summary>�ʱ� ���·� ���� (���� ����)</summary>
@@ -72,6 +79,7 @@ public class UIDropBoxArea : MonoBehaviour
     public void SetOutlineVisible(bool visible)
     {
         if (outline == null) return;
+        Debug.Log($"[UIDropBoxArea] SetOutlineVisible({visible}) 호출됨");
         outline.SetActive(visible);
     }
 }
