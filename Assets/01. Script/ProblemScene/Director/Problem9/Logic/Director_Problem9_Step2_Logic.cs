@@ -59,11 +59,6 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         public Text choiceTextA;
         public Text choiceTextB;
         public Text choiceTextC;
-
-        [Header("선택지 라벨")]
-        public Text choiceLabelA;
-        public Text choiceLabelB;
-        public Text choiceLabelC;
     }
 
     [Serializable]
@@ -74,7 +69,9 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
 
         [Header("다음/다시시도 버튼")]
         public Button actionButton;
-        public Text actionButtonText;
+
+        [Header("완료 버튼 (OkResultUI 전용)")]
+        public Button endButton;
     }
 
     [Serializable]
@@ -157,6 +154,10 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         if (gate != null)
             gate.ResetGate(Scenarios.Length);
 
+        // 버튼 초기 상태 (endButton 숨김)
+        if (OkResultUIRef?.endButton != null)
+            OkResultUIRef.endButton.gameObject.SetActive(false);
+
         // 초기 화면 설정
         ShowScenarioScreen();
         UpdateProgressDots();
@@ -201,11 +202,23 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
                 if (OkResultUIRef.responseText != null)
                     OkResultUIRef.responseText.text = data.okResponse;
 
-                // 버튼 텍스트: 마지막이면 "연습 완료", 아니면 "다음 장면"
-                if (OkResultUIRef.actionButtonText != null)
+                // 마지막 시나리오면 endButton 표시, 아니면 actionButton 표시
+                bool isLast = _currentScenarioIndex >= Scenarios.Length - 1;
+                if (isLast)
                 {
-                    bool isLast = _currentScenarioIndex >= Scenarios.Length - 1;
-                    OkResultUIRef.actionButtonText.text = isLast ? "연습 완료" : "다음 장면";
+                    // 마지막: endButton 활성화, actionButton 비활성화
+                    if (OkResultUIRef.actionButton != null)
+                        OkResultUIRef.actionButton.gameObject.SetActive(false);
+                    if (OkResultUIRef.endButton != null)
+                        OkResultUIRef.endButton.gameObject.SetActive(true);
+                }
+                else
+                {
+                    // 진행 중: actionButton 활성화, endButton 비활성화
+                    if (OkResultUIRef.actionButton != null)
+                        OkResultUIRef.actionButton.gameObject.SetActive(true);
+                    if (OkResultUIRef.endButton != null)
+                        OkResultUIRef.endButton.gameObject.SetActive(false);
                 }
             }
         }
@@ -220,9 +233,6 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
             {
                 if (NgResultUIRef.responseText != null)
                     NgResultUIRef.responseText.text = data.ngResponse;
-
-                if (NgResultUIRef.actionButtonText != null)
-                    NgResultUIRef.actionButtonText.text = "다시 시도하기";
             }
         }
 
@@ -244,21 +254,18 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         // 선택지 업데이트
         if (data.choices != null && data.choices.Length >= 3)
         {
-            ApplyChoiceToUI(ui.choiceTextA, ui.choiceLabelA, data.choices[0]);
-            ApplyChoiceToUI(ui.choiceTextB, ui.choiceLabelB, data.choices[1]);
-            ApplyChoiceToUI(ui.choiceTextC, ui.choiceLabelC, data.choices[2]);
+            ApplyChoiceToUI(ui.choiceTextA, data.choices[0]);
+            ApplyChoiceToUI(ui.choiceTextB, data.choices[1]);
+            ApplyChoiceToUI(ui.choiceTextC, data.choices[2]);
         }
     }
 
-    private void ApplyChoiceToUI(Text textUI, Text labelUI, ChoiceData choice)
+    private void ApplyChoiceToUI(Text textUI, ChoiceData choice)
     {
         if (choice == null) return;
 
         if (textUI != null)
             textUI.text = choice.text;
-
-        if (labelUI != null)
-            labelUI.text = choice.label;
     }
 
     private void UpdateProgressDots()
@@ -323,6 +330,12 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
             OkResultUIRef.actionButton.onClick.AddListener(OnOkActionClicked);
         }
 
+        if (OkResultUIRef?.endButton != null)
+        {
+            OkResultUIRef.endButton.onClick.RemoveAllListeners();
+            OkResultUIRef.endButton.onClick.AddListener(OnOkActionClicked);
+        }
+
         if (NgResultUIRef?.actionButton != null)
         {
             NgResultUIRef.actionButton.onClick.RemoveAllListeners();
@@ -341,6 +354,7 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         }
 
         OkResultUIRef?.actionButton?.onClick.RemoveAllListeners();
+        OkResultUIRef?.endButton?.onClick.RemoveAllListeners();
         NgResultUIRef?.actionButton?.onClick.RemoveAllListeners();
     }
 
@@ -375,6 +389,14 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
             answeredAt = DateTime.UtcNow
         });
 
+        // 정답일 때 Gate 완료 처리 (OkResultUI의 버튼에서 하지 않음)
+        if (isCorrect)
+        {
+            var gate = CompletionGateRef;
+            if (gate != null)
+                gate.MarkOneDone();
+        }
+
         // 결과 화면 표시
         ShowResultScreen(isCorrect);
     }
@@ -383,28 +405,15 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
     {
         bool isLastScenario = _currentScenarioIndex >= Scenarios.Length - 1;
 
-        // 마지막 시나리오면 모든 화면 숨기기 (completeRoot가 표시될 예정)
-        if (isLastScenario)
-        {
-            if (ScenarioRoot != null) ScenarioRoot.SetActive(false);
-            if (OkResultRoot != null) OkResultRoot.SetActive(false);
-            if (NgResultRoot != null) NgResultRoot.SetActive(false);
-        }
-
-        // Gate 완료 처리
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.MarkOneDone();
-
         if (!isLastScenario)
         {
-            // 다음 시나리오
+            // 다음 시나리오로 이동
             _currentScenarioIndex++;
             _attemptCount = 0;
             UpdateProgressDots();
             ShowScenarioScreen();
         }
-        // else: 마지막 시나리오 → Gate에서 자동으로 completeRoot 표시
+        // else: 마지막 시나리오 → endButton은 인스펙터에서 NextStep 연결
     }
 
     private void OnNgActionClicked()

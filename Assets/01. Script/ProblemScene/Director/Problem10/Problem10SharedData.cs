@@ -9,6 +9,7 @@ using UnityEngine;
 public class Problem10SharedData : ScriptableObject
 {
     [Header("===== Step2에서 선택한 장르 =====")]
+    public int selectedGenreIndex;
     public string selectedGenreId;
     public string selectedGenreName;
     public string selectedGenreEmoji;
@@ -21,6 +22,7 @@ public class Problem10SharedData : ScriptableObject
     /// <summary>데이터 초기화</summary>
     public void Clear()
     {
+        selectedGenreIndex = -1;
         selectedGenreId = "";
         selectedGenreName = "";
         selectedGenreEmoji = "";
@@ -30,8 +32,9 @@ public class Problem10SharedData : ScriptableObject
     }
 
     /// <summary>Step2에서 장르 선택 시 호출</summary>
-    public void SetSelectedGenre(string id, string name, string emoji, string description)
+    public void SetSelectedGenre(int index, string id, string name, string emoji, string description)
     {
+        selectedGenreIndex = index;
         selectedGenreId = id;
         selectedGenreName = name;
         selectedGenreEmoji = emoji;

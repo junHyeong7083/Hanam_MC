@@ -22,11 +22,6 @@ public class Problem9_Step2_EffectController : EffectControllerBase
     [SerializeField] private RectTransform webtoonCardRect;
     [SerializeField] private CanvasGroup webtoonCardCanvasGroup;
 
-    [Header("===== 캐릭터 이모지 =====")]
-    [SerializeField] private RectTransform myEmojiRect;
-    [SerializeField] private RectTransform otherEmojiRect;
-    [SerializeField] private RectTransform middleIconRect;
-
     [Header("===== 선택지 카드 =====")]
     [SerializeField] private RectTransform choicesCardRect;
     [SerializeField] private CanvasGroup choicesCardCanvasGroup;
@@ -38,22 +33,10 @@ public class Problem9_Step2_EffectController : EffectControllerBase
     [Header("===== OK 결과 화면 =====")]
     [SerializeField] private RectTransform okResultCardRect;
     [SerializeField] private CanvasGroup okResultCardCanvasGroup;
-    [SerializeField] private RectTransform okBadgeRect;
-    [SerializeField] private RectTransform okMyEmojiRect;
-    [SerializeField] private RectTransform okOtherEmojiRect;
-    [SerializeField] private RectTransform okMiddleIconRect;
-    [SerializeField] private RectTransform okResponseRect;
-    [SerializeField] private CanvasGroup okResponseCanvasGroup;
 
     [Header("===== NG 결과 화면 =====")]
     [SerializeField] private RectTransform ngResultCardRect;
     [SerializeField] private CanvasGroup ngResultCardCanvasGroup;
-    [SerializeField] private RectTransform ngBadgeRect;
-    [SerializeField] private RectTransform ngMyEmojiRect;
-    [SerializeField] private RectTransform ngOtherEmojiRect;
-    [SerializeField] private RectTransform ngMiddleIconRect;
-    [SerializeField] private RectTransform ngResponseRect;
-    [SerializeField] private CanvasGroup ngResponseCanvasGroup;
 
     [Header("===== 진행도 점 =====")]
     [SerializeField] private RectTransform[] progressDotRects;
@@ -188,13 +171,13 @@ public class Problem9_Step2_EffectController : EffectControllerBase
     #region Public API - OK 결과 화면
 
     /// <summary>
-    /// OK컷 결과 화면 애니메이션
+    /// OK컷 결과 화면 애니메이션 (카드 스케일 + 페이드)
     /// </summary>
     public void PlayOkResultAnimation(Action onComplete = null)
     {
         var seq = CreateSequence();
 
-        // 1. 카드 스케일 + 페이드
+        // 카드 스케일 + 페이드
         if (okResultCardRect != null && okResultCardCanvasGroup != null)
         {
             okResultCardRect.localScale = Vector3.one * 0.9f;
@@ -206,53 +189,6 @@ public class Problem9_Step2_EffectController : EffectControllerBase
             seq.Join(okResultCardCanvasGroup.DOFade(1f, 0.4f));
         }
 
-        // 2. OK 뱃지 스프링 등장
-        if (okBadgeRect != null)
-        {
-            okBadgeRect.localScale = Vector3.zero;
-            seq.Insert(0f, okBadgeRect
-                .DOScale(1f, 0.5f)
-                .SetEase(Ease.OutBack, 2f));
-        }
-
-        // 3. 이모지들 등장 (딜레이 0.3초)
-        if (okMyEmojiRect != null)
-        {
-            okMyEmojiRect.localScale = Vector3.zero;
-            seq.Insert(0.3f, okMyEmojiRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack));
-        }
-
-        if (okOtherEmojiRect != null)
-        {
-            okOtherEmojiRect.localScale = Vector3.zero;
-            seq.Insert(0.4f, okOtherEmojiRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack));
-        }
-
-        if (okMiddleIconRect != null)
-        {
-            okMiddleIconRect.localScale = Vector3.zero;
-            seq.Insert(0.35f, okMiddleIconRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack, 1.5f));
-        }
-
-        // 4. 응답 텍스트 슬라이드 업 (딜레이 0.5초)
-        if (okResponseRect != null && okResponseCanvasGroup != null)
-        {
-            Vector2 basePos = okResponseRect.anchoredPosition;
-            okResponseRect.anchoredPosition = basePos + Vector2.down * 20f;
-            okResponseCanvasGroup.alpha = 0f;
-
-            seq.Insert(0.5f, okResponseRect
-                .DOAnchorPos(basePos, 0.4f)
-                .SetEase(Ease.OutQuad));
-            seq.Insert(0.5f, okResponseCanvasGroup.DOFade(1f, 0.4f));
-        }
-
         seq.OnComplete(() => onComplete?.Invoke());
     }
 
@@ -261,13 +197,13 @@ public class Problem9_Step2_EffectController : EffectControllerBase
     #region Public API - NG 결과 화면
 
     /// <summary>
-    /// NG 결과 화면 애니메이션
+    /// NG 결과 화면 애니메이션 (카드 스케일 + 페이드)
     /// </summary>
     public void PlayNgResultAnimation(Action onComplete = null)
     {
         var seq = CreateSequence();
 
-        // 1. 카드 스케일 + 페이드
+        // 카드 스케일 + 페이드
         if (ngResultCardRect != null && ngResultCardCanvasGroup != null)
         {
             ngResultCardRect.localScale = Vector3.one * 0.9f;
@@ -277,53 +213,6 @@ public class Problem9_Step2_EffectController : EffectControllerBase
                 .DOScale(1f, 0.4f)
                 .SetEase(Ease.OutQuad));
             seq.Join(ngResultCardCanvasGroup.DOFade(1f, 0.4f));
-        }
-
-        // 2. NG 뱃지 스프링 등장
-        if (ngBadgeRect != null)
-        {
-            ngBadgeRect.localScale = Vector3.zero;
-            seq.Insert(0f, ngBadgeRect
-                .DOScale(1f, 0.5f)
-                .SetEase(Ease.OutBack, 2f));
-        }
-
-        // 3. 이모지들 등장 (딜레이 0.3초)
-        if (ngMyEmojiRect != null)
-        {
-            ngMyEmojiRect.localScale = Vector3.zero;
-            seq.Insert(0.3f, ngMyEmojiRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack));
-        }
-
-        if (ngOtherEmojiRect != null)
-        {
-            ngOtherEmojiRect.localScale = Vector3.zero;
-            seq.Insert(0.4f, ngOtherEmojiRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack));
-        }
-
-        if (ngMiddleIconRect != null)
-        {
-            ngMiddleIconRect.localScale = Vector3.zero;
-            seq.Insert(0.35f, ngMiddleIconRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack, 1.5f));
-        }
-
-        // 4. 응답 텍스트 슬라이드 업 (딜레이 0.5초)
-        if (ngResponseRect != null && ngResponseCanvasGroup != null)
-        {
-            Vector2 basePos = ngResponseRect.anchoredPosition;
-            ngResponseRect.anchoredPosition = basePos + Vector2.down * 20f;
-            ngResponseCanvasGroup.alpha = 0f;
-
-            seq.Insert(0.5f, ngResponseRect
-                .DOAnchorPos(basePos, 0.4f)
-                .SetEase(Ease.OutQuad));
-            seq.Insert(0.5f, ngResponseCanvasGroup.DOFade(1f, 0.4f));
         }
 
         seq.OnComplete(() => onComplete?.Invoke());
@@ -409,57 +298,20 @@ public class Problem9_Step2_EffectController : EffectControllerBase
             }
         }
 
-        // OK 결과 리셋
-        ResetResultElements(okResultCardRect, okResultCardCanvasGroup,
-            okBadgeRect, okMyEmojiRect, okOtherEmojiRect, okMiddleIconRect,
-            okResponseRect, okResponseCanvasGroup);
-
-        // NG 결과 리셋
-        ResetResultElements(ngResultCardRect, ngResultCardCanvasGroup,
-            ngBadgeRect, ngMyEmojiRect, ngOtherEmojiRect, ngMiddleIconRect,
-            ngResponseRect, ngResponseCanvasGroup);
-    }
-
-    private void ResetResultElements(RectTransform cardRect, CanvasGroup cardCanvasGroup,
-        RectTransform badgeRect, RectTransform myEmojiRect, RectTransform otherEmojiRect,
-        RectTransform middleIconRect, RectTransform responseRect, CanvasGroup responseCanvasGroup)
-    {
-        if (cardCanvasGroup != null)
+        // OK 결과 리셋 (카드만)
+        if (okResultCardCanvasGroup != null)
         {
-            DOTween.Kill(cardRect);
-            DOTween.Kill(cardCanvasGroup);
-            cardCanvasGroup.alpha = 0f;
+            DOTween.Kill(okResultCardRect);
+            DOTween.Kill(okResultCardCanvasGroup);
+            okResultCardCanvasGroup.alpha = 0f;
         }
 
-        if (badgeRect != null)
+        // NG 결과 리셋 (카드만)
+        if (ngResultCardCanvasGroup != null)
         {
-            DOTween.Kill(badgeRect);
-            badgeRect.localScale = Vector3.zero;
-        }
-
-        if (myEmojiRect != null)
-        {
-            DOTween.Kill(myEmojiRect);
-            myEmojiRect.localScale = Vector3.zero;
-        }
-
-        if (otherEmojiRect != null)
-        {
-            DOTween.Kill(otherEmojiRect);
-            otherEmojiRect.localScale = Vector3.zero;
-        }
-
-        if (middleIconRect != null)
-        {
-            DOTween.Kill(middleIconRect);
-            middleIconRect.localScale = Vector3.zero;
-        }
-
-        if (responseCanvasGroup != null)
-        {
-            DOTween.Kill(responseRect);
-            DOTween.Kill(responseCanvasGroup);
-            responseCanvasGroup.alpha = 0f;
+            DOTween.Kill(ngResultCardRect);
+            DOTween.Kill(ngResultCardCanvasGroup);
+            ngResultCardCanvasGroup.alpha = 0f;
         }
     }
 

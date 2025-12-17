@@ -6,7 +6,6 @@ using DG.Tweening;
 /// <summary>
 /// Part 9 - Step 1 NG 갈등 장면 이펙트 컨트롤러
 /// - 인트로 카드 등장 (NG 장면 + 어시스턴트)
-/// - NG 뱃지 펄스
 /// - 충돌 아이콘 흔들림
 /// - 안내 텍스트 펄스
 /// - 대본 카드 플립 등장
@@ -18,12 +17,6 @@ public class Problem9_Step1_EffectController : EffectControllerBase
     [SerializeField] private CanvasGroup ngSceneCardCanvasGroup;
     [SerializeField] private float introSlideDistance = 30f;
     [SerializeField] private float introAppearDuration = 0.5f;
-
-    [Header("===== NG 뱃지 =====")]
-    [SerializeField] private RectTransform ngBadgeRect;
-    [SerializeField] private float badgeMinScale = 1f;
-    [SerializeField] private float badgeMaxScale = 1.15f;
-    [SerializeField] private float badgePulseDuration = 1.5f;
 
     [Header("===== 충돌 아이콘 (💥) =====")]
     [SerializeField] private RectTransform conflictIconRect;
@@ -48,13 +41,7 @@ public class Problem9_Step1_EffectController : EffectControllerBase
     [SerializeField] private RectTransform scriptContentRect;
     [SerializeField] private float flipDuration = 0.6f;
 
-    [Header("===== 대본 내용 =====")]
-    [SerializeField] private RectTransform scriptIconRect;
-    [SerializeField] private RectTransform[] scriptStepRects;
-    [SerializeField] private CanvasGroup[] scriptStepCanvasGroups;
-
     // 루프 트윈들
-    private Tween _ngBadgeTween;
     private Tween _conflictWobbleTween;
     private Tween _instructionTween;
     private bool _initialized;
@@ -120,21 +107,11 @@ public class Problem9_Step1_EffectController : EffectControllerBase
     #region Public API - 대기 애니메이션
 
     /// <summary>
-    /// 대기 애니메이션 시작 (NG 뱃지 펄스, 충돌 아이콘 흔들림, 안내 텍스트 펄스)
+    /// 대기 애니메이션 시작 (충돌 아이콘 흔들림, 안내 텍스트 펄스)
     /// </summary>
     public void StartIdleAnimations()
     {
         StopIdleAnimations();
-
-        // NG 뱃지 스케일 펄스
-        if (ngBadgeRect != null)
-        {
-            _ngBadgeTween = ngBadgeRect
-                .DOScale(badgeMaxScale, badgePulseDuration * 0.5f)
-                .SetEase(Ease.InOutSine)
-                .SetLoops(-1, LoopType.Yoyo)
-                .From(Vector3.one * badgeMinScale);
-        }
 
         // 충돌 아이콘 흔들림
         if (conflictIconRect != null)
@@ -162,11 +139,9 @@ public class Problem9_Step1_EffectController : EffectControllerBase
     /// </summary>
     public void StopIdleAnimations()
     {
-        _ngBadgeTween?.Kill();
         _conflictWobbleTween?.Kill();
         _instructionTween?.Kill();
 
-        _ngBadgeTween = null;
         _conflictWobbleTween = null;
         _instructionTween = null;
     }
@@ -271,35 +246,6 @@ public class Problem9_Step1_EffectController : EffectControllerBase
                 .SetEase(Ease.OutQuad));
         }
 
-        // 3. 대본 아이콘 스프링 등장
-        if (scriptIconRect != null)
-        {
-            scriptIconRect.localScale = Vector3.zero;
-            seq.Insert(0.5f, scriptIconRect
-                .DOScale(1f, 0.4f)
-                .SetEase(Ease.OutBack, 2f));
-        }
-
-        // 4. 대본 단계들 순차 등장
-        if (scriptStepRects != null && scriptStepCanvasGroups != null)
-        {
-            for (int i = 0; i < scriptStepRects.Length && i < scriptStepCanvasGroups.Length; i++)
-            {
-                if (scriptStepRects[i] == null || scriptStepCanvasGroups[i] == null) continue;
-
-                Vector2 basePos = scriptStepRects[i].anchoredPosition;
-                scriptStepRects[i].anchoredPosition = basePos + Vector2.left * 20f;
-                scriptStepCanvasGroups[i].alpha = 0f;
-
-                float delay = 0.7f + i * 0.15f;
-
-                seq.Insert(delay, scriptStepRects[i]
-                    .DOAnchorPos(basePos, 0.3f)
-                    .SetEase(Ease.OutQuad));
-                seq.Insert(delay, scriptStepCanvasGroups[i].DOFade(1f, 0.3f));
-            }
-        }
-
         seq.OnComplete(() => onComplete?.Invoke());
     }
 
@@ -321,13 +267,6 @@ public class Problem9_Step1_EffectController : EffectControllerBase
             DOTween.Kill(ngSceneCardRect);
             DOTween.Kill(ngSceneCardCanvasGroup);
             ngSceneCardCanvasGroup.alpha = 0f;
-        }
-
-        // NG 뱃지 리셋
-        if (ngBadgeRect != null)
-        {
-            DOTween.Kill(ngBadgeRect);
-            ngBadgeRect.localScale = Vector3.one;
         }
 
         // 충돌 아이콘 리셋
@@ -372,27 +311,6 @@ public class Problem9_Step1_EffectController : EffectControllerBase
         {
             DOTween.Kill(scriptContentRect);
             scriptContentRect.localRotation = Quaternion.Euler(0, 90, 0);
-        }
-
-        if (scriptIconRect != null)
-        {
-            DOTween.Kill(scriptIconRect);
-            scriptIconRect.localScale = Vector3.zero;
-        }
-
-        // 대본 단계들 리셋
-        if (scriptStepRects != null && scriptStepCanvasGroups != null)
-        {
-            for (int i = 0; i < scriptStepRects.Length && i < scriptStepCanvasGroups.Length; i++)
-            {
-                if (scriptStepRects[i] != null)
-                    DOTween.Kill(scriptStepRects[i]);
-                if (scriptStepCanvasGroups[i] != null)
-                {
-                    DOTween.Kill(scriptStepCanvasGroups[i]);
-                    scriptStepCanvasGroups[i].alpha = 0f;
-                }
-            }
         }
     }
 

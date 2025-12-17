@@ -26,7 +26,7 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
     {
         public Button button;
         public GameObject selectedIndicator;  // 선택 시 표시되는 체크 표시
-        public Image backgroundImage;         // 배경 색상 변경용 (선택적)
+        public GameObject glowImage;          // 선택 시 표시되는 글로우 이펙트
     }
 
     // DB 저장용 DTO
@@ -63,15 +63,6 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
 
     #endregion
 
-    #region Virtual Config
-
-    /// <summary>선택된 카드 배경 색상</summary>
-    protected virtual Color SelectedColor => new Color(1f, 0.54f, 0.24f, 0.3f); // Orange 30%
-
-    /// <summary>기본 카드 배경 색상</summary>
-    protected virtual Color NormalColor => new Color(1f, 1f, 1f, 0.1f); // White 10%
-
-    #endregion
 
     // 내부 상태
     private int _selectedIndex = -1;
@@ -126,9 +117,9 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
             if (card.selectedIndicator != null)
                 card.selectedIndicator.SetActive(isSelected);
 
-            // 배경 색상 (선택적)
-            if (card.backgroundImage != null)
-                card.backgroundImage.color = isSelected ? SelectedColor : NormalColor;
+            // 글로우 이펙트
+            if (card.glowImage != null)
+                card.glowImage.SetActive(isSelected);
         }
     }
 
@@ -205,6 +196,7 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         if (sharedData != null)
         {
             sharedData.SetSelectedGenre(
+                _selectedIndex,
                 selected.id,
                 selected.name,
                 selected.emoji,

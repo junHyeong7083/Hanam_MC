@@ -7,13 +7,8 @@ using UnityEngine.UI;
 /// Director / Problem10 / Step3 로직 베이스
 /// - 영화 제목 녹음 → 다짐 선언 녹음 → 포스터 완성
 /// - 2개 서브스텝: title(제목) → commitment(다짐)
-/// - 각 서브스텝마다 마이크 버튼 클릭으로 녹음
+/// - 마이크 프리팹에서 녹음 완료 시 OnRecordingComplete() 호출
 /// - 모두 완료 시 complete 화면 표시
-///
-/// [STT 연동]
-/// - StartMicrophoneRecording(): 마이크 녹음 시작 (파생 클래스에서 구현)
-/// - StopMicrophoneRecording(): 마이크 녹음 종료 + STT 결과 반환 (파생 클래스에서 구현)
-/// - 현재는 더미로 빈 문자열 반환
 /// </summary>
 public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 {
@@ -58,17 +53,13 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     [Header("===== 화면 루트 =====")]
     protected abstract GameObject RecordingRoot { get; }
 
-    [Header("===== 포스터 프리뷰 UI =====")]
-    protected abstract Text PosterGenreEmoji { get; }
-    protected abstract Text PosterGenreName { get; }
-    protected abstract Text PosterTitleText { get; }
-    protected abstract Text PosterCommitmentText { get; }
+    [Header("===== 녹음 화면 - 장르별 포스터 UI =====")]
+    protected abstract GameObject[] GenreImages { get; }
+    protected abstract Text[] PosterTitleTexts { get; }
+    protected abstract Text[] PosterCommitmentTexts { get; }
 
     [Header("===== 녹음 화면 UI =====")]
     protected abstract Text InstructionText { get; }
-    protected abstract Button MicButton { get; }
-    protected abstract Image MicButtonImage { get; }
-    protected abstract Text RecordingStatusText { get; }
 
     [Header("===== 공유 데이터 =====")]
     protected abstract Problem10SharedData SharedData { get; }
@@ -80,16 +71,13 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     #region Virtual Config
 
-    protected virtual Color MicNormalColor => new Color(1f, 0.54f, 0.24f); // #FF8A3D
-    protected virtual Color MicRecordingColor => new Color(0.94f, 0.27f, 0.27f); // Red
     protected virtual float DelayAfterRecording => 0.8f;
 
     #endregion
 
     // 내부 상태
     private RecordingPhase _currentPhase;
-    private bool _isRecording;
-    private float _recordingStartTime;
+    private int _selectedGenreIndex;
 
     // 녹음 결과
     private string _movieTitle = "";
@@ -102,7 +90,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     protected override void OnStepEnter()
     {
         _currentPhase = RecordingPhase.Title;
-        _isRecording = false;
         _movieTitle = "";
         _commitment = "";
 
@@ -116,13 +103,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
         // 초기 화면 설정
         ShowPhase(RecordingPhase.Title);
-        RegisterListeners();
-    }
-
-    protected override void OnStepExit()
-    {
-        base.OnStepExit();
-        RemoveListeners();
     }
 
     #endregion
@@ -133,22 +113,46 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     {
         var data = SharedData;
 
-        // 포스터에 장르 정보 표시
-        if (data != null)
-        {
-            if (PosterGenreEmoji != null)
-                PosterGenreEmoji.text = data.selectedGenreEmoji;
+        // Step2에서 선택한 인덱스 저장 및 해당 이미지만 표시
+        _selectedGenreIndex = data != null ? data.selectedGenreIndex : 0;
+        UpdateGenreImage(_selectedGenreIndex);
 
-            if (PosterGenreName != null)
-                PosterGenreName.text = data.selectedGenreName;
+        // 모든 포스터 제목/다짐 초기화
+        ClearAllPosterTexts();
+    }
+
+    private void ClearAllPosterTexts()
+    {
+        var titles = PosterTitleTexts;
+        var commitments = PosterCommitmentTexts;
+
+        if (titles != null)
+        {
+            foreach (var text in titles)
+            {
+                if (text != null) text.text = "";
+            }
         }
 
-        // 제목/다짐 초기화
-        if (PosterTitleText != null)
-            PosterTitleText.text = "";
+        if (commitments != null)
+        {
+            foreach (var text in commitments)
+            {
+                if (text != null) text.text = "";
+            }
+        }
+    }
 
-        if (PosterCommitmentText != null)
-            PosterCommitmentText.text = "";
+    private void UpdateGenreImage(int selectedIndex)
+    {
+        var images = GenreImages;
+        if (images == null) return;
+
+        for (int i = 0; i < images.Length; i++)
+        {
+            if (images[i] != null)
+                images[i].SetActive(i == selectedIndex);
+        }
     }
 
     #endregion
@@ -158,7 +162,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     private void ShowPhase(RecordingPhase phase)
     {
         _currentPhase = phase;
-        _isRecording = false;
 
         bool isComplete = phase == RecordingPhase.Complete;
 
@@ -166,20 +169,19 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         {
             if (RecordingRoot != null) RecordingRoot.SetActive(true);
             ApplyPhaseToUI(phase);
-            ResetMicButton();
         }
         else
         {
             // 완료 화면으로 전환
             if (RecordingRoot != null) RecordingRoot.SetActive(false);
 
-            // 공유 데이터에 결과 저장
+            // 공유 데이터에 결과 저장 (FinalPosterDisplay가 OnEnable에서 읽음)
             SaveToSharedData();
 
             // DB 저장
             SavePosterData();
 
-            // Gate 완료 → completeRoot 자동 표시
+            // Gate 완료 → completeRoot 자동 표시 → FinalPosterDisplay.OnEnable
             var gate = CompletionGateRef;
             if (gate != null)
                 gate.MarkOneDone();
@@ -198,114 +200,64 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         // 안내 텍스트
         if (InstructionText != null)
             InstructionText.text = data.instruction;
-
-        // 상태 텍스트
-        if (RecordingStatusText != null)
-            RecordingStatusText.text = "마이크를 클릭해서 말해주세요";
-    }
-
-    private void ResetMicButton()
-    {
-        if (MicButtonImage != null)
-            MicButtonImage.color = MicNormalColor;
-
-        if (RecordingStatusText != null)
-            RecordingStatusText.text = "마이크를 클릭해서 말해주세요";
     }
 
     #endregion
 
-    #region Listeners
+    #region Recording Complete (마이크 프리팹에서 호출)
 
-    private void RegisterListeners()
-    {
-        if (MicButton != null)
-        {
-            MicButton.onClick.RemoveAllListeners();
-            MicButton.onClick.AddListener(OnMicButtonClicked);
-        }
-    }
-
-    private void RemoveListeners()
-    {
-        if (MicButton != null)
-            MicButton.onClick.RemoveAllListeners();
-    }
-
-    #endregion
-
-    #region Event Handlers
-
-    private void OnMicButtonClicked()
+    /// <summary>
+    /// 녹음 완료 시 Binder에서 호출
+    /// - MicRecordingIndicator 이벤트와 연결
+    /// </summary>
+    public void OnRecordingComplete(string text, float duration)
     {
         if (_currentPhase == RecordingPhase.Complete) return;
 
-        if (!_isRecording)
-        {
-            StartRecording();
-        }
-        else
-        {
-            StopRecording();
-        }
-    }
-
-    private void StartRecording()
-    {
-        _isRecording = true;
-        _recordingStartTime = Time.time;
-
-        if (MicButtonImage != null)
-            MicButtonImage.color = MicRecordingColor;
-
-        if (RecordingStatusText != null)
-            RecordingStatusText.text = "듣고 있어요...";
-
-        // [STT] 마이크 녹음 시작
-        StartMicrophoneRecording();
-    }
-
-    private void StopRecording()
-    {
-        _isRecording = false;
-        float duration = Time.time - _recordingStartTime;
-
-        // [STT] 마이크 녹음 종료 + 결과 받기
-        string sttResult = StopMicrophoneRecording();
-
         // 결과 저장
-        SaveRecordingResult(duration, sttResult);
-
-        // UI 업데이트
-        if (MicButtonImage != null)
-            MicButtonImage.color = MicNormalColor;
-
-        if (RecordingStatusText != null)
-            RecordingStatusText.text = string.IsNullOrEmpty(sttResult) ? "녹음 완료!" : "완료!";
+        SaveRecordingResult(text, duration);
 
         // 다음 단계로 전환
         StartCoroutine(TransitionToNextPhase());
     }
 
-    private void SaveRecordingResult(float duration, string text)
+    private void SaveRecordingResult(string text, float duration)
     {
         switch (_currentPhase)
         {
             case RecordingPhase.Title:
                 _movieTitle = text;
                 _titleDuration = duration;
-                // 포스터에 제목 표시
-                if (PosterTitleText != null)
-                    PosterTitleText.text = text;
+                // 선택된 장르 포스터에 제목 표시
+                SetPosterTitleText(text);
                 break;
 
             case RecordingPhase.Commitment:
                 _commitment = text;
                 _commitmentDuration = duration;
-                // 포스터에 다짐 표시
-                if (PosterCommitmentText != null)
-                    PosterCommitmentText.text = text;
+                // 선택된 장르 포스터에 다짐 표시
+                SetPosterCommitmentText(text);
                 break;
+        }
+    }
+
+    private void SetPosterTitleText(string text)
+    {
+        var titles = PosterTitleTexts;
+        if (titles != null && _selectedGenreIndex >= 0 && _selectedGenreIndex < titles.Length)
+        {
+            if (titles[_selectedGenreIndex] != null)
+                titles[_selectedGenreIndex].text = text;
+        }
+    }
+
+    private void SetPosterCommitmentText(string text)
+    {
+        var commitments = PosterCommitmentTexts;
+        if (commitments != null && _selectedGenreIndex >= 0 && _selectedGenreIndex < commitments.Length)
+        {
+            if (commitments[_selectedGenreIndex] != null)
+                commitments[_selectedGenreIndex].text = text;
         }
     }
 
@@ -349,38 +301,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
             commitmentRecordingDuration = _commitmentDuration,
             completedAt = DateTime.UtcNow
         });
-    }
-
-    #endregion
-
-    #region STT Virtual Methods (파생 클래스에서 구현)
-
-    /// <summary>
-    /// 마이크 녹음 시작
-    /// - 파생 클래스에서 실제 마이크 녹음 로직 구현
-    /// - 현재는 더미 (아무 동작 안 함)
-    /// </summary>
-    protected virtual void StartMicrophoneRecording()
-    {
-        // [TODO] 실제 마이크 녹음 시작
-        // Microphone.Start(...) 등
-        Debug.Log("[STT] 마이크 녹음 시작 (더미)");
-    }
-
-    /// <summary>
-    /// 마이크 녹음 종료 + STT 결과 반환
-    /// - 파생 클래스에서 실제 STT 로직 구현
-    /// - 현재는 더미 (빈 문자열 반환)
-    /// </summary>
-    /// <returns>STT 결과 텍스트 (현재 더미로 빈 문자열)</returns>
-    protected virtual string StopMicrophoneRecording()
-    {
-        // [TODO] 실제 마이크 녹음 종료 + STT 처리
-        // Microphone.End(...) + STT API 호출
-        Debug.Log("[STT] 마이크 녹음 종료 (더미)");
-
-        // 더미: 빈 문자열 반환 (실제 STT 연동 시 결과 반환)
-        return "";
     }
 
     #endregion

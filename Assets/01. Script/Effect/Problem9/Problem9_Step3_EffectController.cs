@@ -6,7 +6,8 @@ using DG.Tweening;
 /// <summary>
 /// Part 9 - Step 3 명대사 완성 이펙트 컨트롤러
 /// - 녹음 연습 화면 등장
-/// - 마이크 버튼 녹음 중 펄스
+/// - 단계 전환 애니메이션
+/// - 사용자 입력 표시 애니메이션
 /// - 완료 화면 애니메이션 (합쳐진 대사 + OK CUT)
 /// </summary>
 public class Problem9_Step3_EffectController : EffectControllerBase
@@ -20,11 +21,6 @@ public class Problem9_Step3_EffectController : EffectControllerBase
     [Header("===== 단계 표시 =====")]
     [SerializeField] private RectTransform stepIndicatorRect;
     [SerializeField] private CanvasGroup stepIndicatorCanvasGroup;
-
-    [Header("===== 마이크 버튼 =====")]
-    [SerializeField] private RectTransform micButtonRect;
-    [SerializeField] private float micPulseScale = 1.2f;
-    [SerializeField] private float micPulseDuration = 1f;
 
     [Header("===== 사용자 입력 표시 =====")]
     [SerializeField] private RectTransform userInputRect;
@@ -52,9 +48,6 @@ public class Problem9_Step3_EffectController : EffectControllerBase
     [Header("===== 완료 - 어시스턴트 피드백 =====")]
     [SerializeField] private RectTransform feedbackCardRect;
     [SerializeField] private CanvasGroup feedbackCardCanvasGroup;
-
-    // 루프 트윈들
-    private Tween _micPulseTween;
 
     #region Public API - 녹음 연습 화면
 
@@ -122,46 +115,13 @@ public class Problem9_Step3_EffectController : EffectControllerBase
 
     #endregion
 
-    #region Public API - 마이크 녹음 애니메이션
-
-    /// <summary>
-    /// 녹음 시작 애니메이션 (마이크 펄스)
-    /// </summary>
-    public void StartRecordingAnimation()
-    {
-        StopRecordingAnimation();
-
-        if (micButtonRect == null) return;
-
-        _micPulseTween = micButtonRect
-            .DOScale(micPulseScale, micPulseDuration * 0.5f)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1, LoopType.Yoyo)
-            .From(Vector3.one);
-    }
-
-    /// <summary>
-    /// 녹음 정지 애니메이션
-    /// </summary>
-    public void StopRecordingAnimation()
-    {
-        _micPulseTween?.Kill();
-        _micPulseTween = null;
-
-        if (micButtonRect != null)
-        {
-            DOTween.Kill(micButtonRect);
-            micButtonRect.localScale = Vector3.one;
-        }
-    }
+    #region Public API - 사용자 입력 표시
 
     /// <summary>
     /// 녹음 완료 애니메이션 (사용자 입력 표시)
     /// </summary>
     public void PlayRecordingCompleteAnimation(Action onComplete = null)
     {
-        StopRecordingAnimation();
-
         if (userInputRect == null || userInputCanvasGroup == null)
         {
             onComplete?.Invoke();
@@ -191,8 +151,6 @@ public class Problem9_Step3_EffectController : EffectControllerBase
     /// </summary>
     public void PlayCompleteAnimation(Action onComplete = null)
     {
-        StopRecordingAnimation();
-
         var seq = CreateSequence();
 
         // 1. 완료 카드 스케일 + 페이드
@@ -288,7 +246,6 @@ public class Problem9_Step3_EffectController : EffectControllerBase
     public void ResetAll()
     {
         KillCurrentSequence();
-        StopRecordingAnimation();
 
         // 연습 카드 리셋
         if (practiceCardCanvasGroup != null)
@@ -303,13 +260,6 @@ public class Problem9_Step3_EffectController : EffectControllerBase
         {
             DOTween.Kill(stepIndicatorRect);
             stepIndicatorRect.localScale = Vector3.one;
-        }
-
-        // 마이크 버튼 리셋
-        if (micButtonRect != null)
-        {
-            DOTween.Kill(micButtonRect);
-            micButtonRect.localScale = Vector3.one;
         }
 
         // 사용자 입력 리셋
@@ -369,15 +319,4 @@ public class Problem9_Step3_EffectController : EffectControllerBase
 
     #endregion
 
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-        StopRecordingAnimation();
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        StopRecordingAnimation();
-    }
 }
