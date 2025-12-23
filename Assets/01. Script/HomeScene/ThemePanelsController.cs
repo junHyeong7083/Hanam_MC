@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ThemePanelsController : MonoBehaviour
 {
@@ -16,11 +17,26 @@ public class ThemePanelsController : MonoBehaviour
 
         [Tooltip("이 테마에 속한 문제 수")]
         public int totalProblems = 10;
+
+        [Tooltip("이 패널의 뒤로가기 버튼")]
+        public Button backButton;
     }
 
+    [Serializable]
+    public class ThemeSelectButton
+    {
+        public ProblemTheme theme;
+        public Button button;
+    }
+
+    [Header("테마 선택 패널")]
+    [SerializeField] GameObject themeSelectPanel;
+    [SerializeField] ThemeSelectButton[] themeSelectButtons;
 
     [Header("각 테마별 패널 바인딩")]
     [SerializeField] ThemePanelBinding[] themePanels;
+
+    ProblemTheme? _selectedTheme = null;
 
     // 🔹 패널별로 구독한 핸들러를 저장해두는 딕셔너리
     private readonly Dictionary<ThemePanelUI, Action<int>> _clickHandlers
@@ -30,7 +46,18 @@ public class ThemePanelsController : MonoBehaviour
 
     void Awake()
     {
-        // 각 패널의 클릭 이벤트를 하나의 핸들러로 묶기
+        // 테마 선택 버튼 이벤트 등록
+        if (themeSelectButtons != null)
+        {
+            foreach (var tsb in themeSelectButtons)
+            {
+                if (tsb?.button == null) continue;
+                var theme = tsb.theme;
+                tsb.button.onClick.AddListener(() => SelectTheme(theme));
+            }
+        }
+
+        // 각 패널의 클릭 이벤트 + 뒤로가기 버튼 등록
         if (themePanels == null) return;
 
         foreach (var entry in themePanels)
@@ -40,11 +67,14 @@ public class ThemePanelsController : MonoBehaviour
             var theme = entry.theme;
             var panel = entry.panel;
 
-            // 여기서 한 번 만든 핸들러를 딕셔너리에 저장
+            // 문제 클릭 핸들러 등록
             Action<int> handler = index => HandleProblemClicked(theme, index);
             _clickHandlers[panel] = handler;
-
             panel.OnProblemClicked += handler;
+
+            // 각 패널의 뒤로가기 버튼 등록
+            if (entry.backButton != null)
+                entry.backButton.onClick.AddListener(BackToThemeSelect);
         }
     }
 
@@ -79,20 +109,67 @@ public class ThemePanelsController : MonoBehaviour
 
         currentUser = SessionManager.Instance.CurrentUser;
 
-        RefreshAllPanels();
+        // 초기 상태: 테마 선택 패널만 표시
+        ShowThemeSelectPanel();
     }
 
     /// <summary>
-    /// 모든 테마 패널 버튼 잠금/해제 상태 갱신
+    /// 테마 선택 패널 표시 (초기 상태)
     /// </summary>
-    void RefreshAllPanels()
+    void ShowThemeSelectPanel()
     {
-        if (themePanels == null) return;
+        _selectedTheme = null;
 
-        foreach (var entry in themePanels)
+        // 테마 선택 패널 보이기
+        if (themeSelectPanel != null)
+            themeSelectPanel.SetActive(true);
+
+        // 모든 문제 패널 숨기기 (각 패널의 뒤로가기 버튼도 같이 숨겨짐)
+        if (themePanels != null)
         {
-            RefreshSinglePanel(entry);
+            foreach (var entry in themePanels)
+            {
+                if (entry?.panel != null)
+                    entry.panel.gameObject.SetActive(false);
+            }
         }
+    }
+
+    /// <summary>
+    /// 테마 선택 시 호출
+    /// </summary>
+    void SelectTheme(ProblemTheme theme)
+    {
+        _selectedTheme = theme;
+
+        // 테마 선택 패널 숨기기
+        if (themeSelectPanel != null)
+            themeSelectPanel.SetActive(false);
+
+        // 선택된 테마의 문제 패널만 표시 (해당 패널의 뒤로가기 버튼도 같이 보임)
+        if (themePanels != null)
+        {
+            foreach (var entry in themePanels)
+            {
+                if (entry?.panel == null) continue;
+
+                bool isSelected = entry.theme == theme;
+                entry.panel.gameObject.SetActive(isSelected);
+
+                if (isSelected)
+                    RefreshSinglePanel(entry);
+            }
+        }
+
+        Debug.Log($"[ThemePanels] 테마 선택: {theme}");
+    }
+
+    /// <summary>
+    /// 테마 선택 화면으로 돌아가기
+    /// </summary>
+    void BackToThemeSelect()
+    {
+        ShowThemeSelectPanel();
     }
 
     /// <summary>

@@ -4373,7 +4373,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 90%
+  m_Text: 0%
 --- !u!222 &517276689
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5109,7 +5109,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 582960852}
-  - component: {fileID: 582960853}
   m_Layer: 5
   m_Name: ThemePanelsRoot
   m_TagString: Untagged
@@ -5138,25 +5137,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &582960853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 582960851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff3fbdad8531c3f449a43c3136d59339, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  themePanels:
-  - theme: 0
-    panel: {fileID: 1693077077}
-    totalProblems: 10
-  - theme: 1
-    panel: {fileID: 932770227}
-    totalProblems: 10
 --- !u!1 &590010112
 GameObject:
   m_ObjectHideFlags: 0
@@ -9519,8 +9499,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1097527178}
   - component: {fileID: 1097527179}
+  - component: {fileID: 1097527180}
   m_Layer: 0
-  m_Name: UIScript
+  m_Name: UIController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9559,6 +9540,33 @@ MonoBehaviour:
   startProblemButton: {fileID: 0}
   historyButton: {fileID: 0}
   logoutButton: {fileID: 0}
+--- !u!114 &1097527180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097527177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff3fbdad8531c3f449a43c3136d59339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  themeSelectPanel: {fileID: 1203899540}
+  themeSelectButtons:
+  - theme: 0
+    button: {fileID: 911761614}
+  - theme: 1
+    button: {fileID: 487708669}
+  themePanels:
+  - theme: 0
+    panel: {fileID: 1693077077}
+    totalProblems: 10
+    backButton: {fileID: 0}
+  - theme: 1
+    panel: {fileID: 932770227}
+    totalProblems: 10
+    backButton: {fileID: 0}
 --- !u!1 &1100118401
 GameObject:
   m_ObjectHideFlags: 0
@@ -10656,7 +10664,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1203899541}
   m_Layer: 5
-  m_Name: ProblemButton
+  m_Name: ProblemSelectPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14788,7 +14796,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1693077073
 RectTransform:
   m_ObjectHideFlags: 0

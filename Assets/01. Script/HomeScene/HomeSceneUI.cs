@@ -1,63 +1,45 @@
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HomeSceneUI : MonoBehaviour
 {
     [Header("User Info")]
-    [SerializeField] Text welcomeText;   // "OOO´Ô, ¾È³çÇÏ¼¼¿ä" °°Àº ¹®±¸
-    [SerializeField] Text nameText;      // ÀÌ¸§¸¸ µû·Î Ç¥½ÃÇÏ°í ½ÍÀ» ¶§
-    [SerializeField] Text roleText;      // ¿ªÇÒ(USER / ADMIN / SUPERADMIN)
+    [SerializeField] Text welcomeText;
+    [SerializeField] Text nameText;
+    [SerializeField] Text roleText;
 
     [Header("Buttons")]
-    [SerializeField] Button startProblemButton;   // ¹®Á¦Ç®ÀÌ ½ÃÀÛ ¹öÆ°
-    [SerializeField] Button historyButton;       // °ú°Å ±â·Ï º¸±â(³ªÁß¿¡ ¾²ÀÏ ¼ö ÀÖÀ½)
-    [SerializeField] Button logoutButton;        // ·Î±×¾Æ¿ô
+    [SerializeField] Button logoutButton;
 
-    // ÄÁÆ®·Ñ·¯¿¡¼­ ±¸µ¶ÇÒ ÀÌº¥Æ®
-    public event Action OnStartProblemRequested;
-    public event Action OnHistoryRequested;
     public event Action OnLogoutRequested;
     public event Action OnAdminPanelRequested;
 
     void Awake()
     {
-        if (startProblemButton) startProblemButton.onClick.AddListener(ClickStartProblem);
-        if (historyButton) historyButton.onClick.AddListener(ClickHistory);
         if (logoutButton) logoutButton.onClick.AddListener(ClickLogout);
-
     }
 
-    // ¦¡¦¡ ¹öÆ° Äİ¹é ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-
-    public void ClickStartProblem() => OnStartProblemRequested?.Invoke();
-    public void ClickHistory() => OnHistoryRequested?.Invoke();
     public void ClickLogout() => OnLogoutRequested?.Invoke();
     public void ClickAdminPanel() => OnAdminPanelRequested?.Invoke();
-
-    // ¦¡¦¡ Ç¥½Ã¿ë ¸Ş¼­µå ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
 
     public void BindUser(User user)
     {
         if (user == null)
         {
-            SetWelcomeText("·Î±×ÀÎ Á¤º¸¸¦ ºÒ·¯¿Ã ¼ö ¾ø½À´Ï´Ù.");
+            SetWelcomeText("ë¡œê·¸ì¸ ì •ë³´ë¥¼ ë¶ˆëŸ¬ì˜¬ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             SetNameText("");
             SetRoleText("");
             return;
         }
 
-        // ÀÌ¸§/¿ªÇÒ ÅØ½ºÆ® ¼³Á¤
         SetNameText(user.Name);
         SetRoleText(GetRoleKor(user.Role));
 
-        // È¯¿µ ¹®±¸
         if (!string.IsNullOrEmpty(user.Name))
-            SetWelcomeText($"{user.Name}´Ô, ¾È³çÇÏ¼¼¿ä");
+            SetWelcomeText($"{user.Name}ë‹˜, ì•ˆë…•í•˜ì„¸ìš”");
         else
-            SetWelcomeText("¾È³çÇÏ¼¼¿ä");
-
+            SetWelcomeText("ì•ˆë…•í•˜ì„¸ìš”");
     }
 
     public void SetWelcomeText(string text)
@@ -75,30 +57,19 @@ public class HomeSceneUI : MonoBehaviour
         if (roleText) roleText.text = text ?? "";
     }
 
-
-    // ÇÊ¿äÇÏ¸é ³ªÁß¿¡ ·Îµù Áß »óÅÂ °°Àº °Å ¸·À» ¶§ »ç¿ë
     public void SetInteractable(bool on)
     {
-        if (startProblemButton) startProblemButton.interactable = on;
-        if (historyButton) historyButton.interactable = on;
         if (logoutButton) logoutButton.interactable = on;
     }
-
-    // ¦¡¦¡ ³»ºÎ À¯Æ¿ ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
 
     string GetRoleKor(UserRole role)
     {
         switch (role)
         {
-            case UserRole.SUPERADMIN: return "ÃÖ°í°ü¸®ÀÚ";
-            case UserRole.ADMIN: return "°ü¸®ÀÚ";
+            case UserRole.SUPERADMIN: return "ìµœê³ ê´€ë¦¬ì";
+            case UserRole.ADMIN: return "ê´€ë¦¬ì";
             case UserRole.USER:
-            default: return "»ç¿ëÀÚ";
+            default: return "ì¼ë°˜íšŒì›";
         }
-    }
-
-    public void MoveProblemScene()
-    {
-
     }
 }
