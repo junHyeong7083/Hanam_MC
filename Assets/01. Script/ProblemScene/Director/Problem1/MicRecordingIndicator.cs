@@ -15,6 +15,17 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private Image targetImage;
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite recordingSprite;
+    [SerializeField] private GameObject micPulseImage;
+
+    [Header("텍스트 피드백")]
+    [SerializeField] private Text statusText;
+    [SerializeField] private string idleText = "마이크를 눌러주세요";
+    [SerializeField] private string recordingText = "녹음 중...";
+
+    [Header("자동 종료 설정")]
+    [SerializeField] private bool enableAutoStop = true;
+    [SerializeField] private float silenceDuration = 3f;  // 무음 지속 시간 (초)
+    [SerializeField] private float volumeThreshold = 0.02f;  // 음성 감지 임계값 (높을수록 큰 소리만 인식)
 
     [Header("STT 키워드")]
     [SerializeField] private string[] keywords;
@@ -39,6 +50,11 @@ public class MicRecordingIndicator : MonoBehaviour
     // 실시간 매칭 캐시
     private int _cachedMatchIndex = -1;
     private float _cachedMatchScore = 0f;
+
+    // 자동 종료
+    private Coroutine _silenceCheckCoroutine;
+    private float _silenceTimer = 0f;
+    private bool _hasDetectedVoice = false;  // 의미있는 음성이 감지되었는지 여부
 
     private void OnEnable()
     {
@@ -73,15 +89,40 @@ public class MicRecordingIndicator : MonoBehaviour
             // 녹음 시작
             _cachedMatchIndex = -1;
             _cachedMatchScore = 0f;
+            _silenceTimer = 0f;
+            _hasDetectedVoice = false;
 
             STTManager.Instance.OnPartialResult -= HandlePartialResult;
             STTManager.Instance.OnPartialResult += HandlePartialResult;
             STTManager.Instance.StartRecording();
+
+            // 자동 종료 코루틴 시작
+            if (enableAutoStop)
+            {
+                if (_silenceCheckCoroutine != null)
+                    StopCoroutine(_silenceCheckCoroutine);
+                _silenceCheckCoroutine = StartCoroutine(CheckSilence());
+            }
         }
         else
         {
             // 녹음 중지
             STTManager.Instance.OnPartialResult -= HandlePartialResult;
+
+            // 자동 종료 코루틴 중지
+            if (_silenceCheckCoroutine != null)
+            {
+                StopCoroutine(_silenceCheckCoroutine);
+                _silenceCheckCoroutine = null;
+            }
+
+            // 자동 종료 모드일 때만 음성 감지 체크
+            if (enableAutoStop && !_hasDetectedVoice)
+            {
+                Debug.Log("[MicRecordingIndicator] 음성이 감지되지 않아 STT를 실행하지 않습니다");
+                STTManager.Instance.StopRecording();
+                return;
+            }
 
             // 캐시된 실시간 결과가 있으면 즉시 사용
             if (_cachedMatchIndex >= 0)
@@ -195,8 +236,53 @@ public class MicRecordingIndicator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 무음 감지 코루틴 - 일정 시간 동안 음성이 없으면 자동 종료
+    /// </summary>
+    private System.Collections.IEnumerator CheckSilence()
+    {
+        while (_isSTTRecording)
+        {
+            yield return new WaitForSeconds(0.1f);
+
+            // STTManager의 현재 볼륨 가져오기 (마이크 충돌 방지)
+            float averageVolume = STTManager.Instance.GetCurrentVolume();
+
+            // 음성 감지 여부
+            if (averageVolume > volumeThreshold)
+            {
+                // 음성 감지됨 - 타이머 리셋
+                _silenceTimer = 0f;
+                _hasDetectedVoice = true;  // 의미있는 음성 감지
+            }
+            else
+            {
+                // 무음 - 타이머 증가 (단, 음성이 한 번이라도 감지된 경우에만)
+                if (_hasDetectedVoice)
+                {
+                    _silenceTimer += 0.1f;
+
+                    // 무음 지속 시간 초과 시 자동 종료
+                    if (_silenceTimer >= silenceDuration)
+                    {
+                        Debug.Log($"[MicRecordingIndicator] {silenceDuration}초 동안 음성 없음 - 자동 종료");
+                        ToggleRecording();  // 녹음 종료
+                        yield break;
+                    }
+                }
+            }
+        }
+    }
+
     private void OnDisable()
     {
+        // 코루틴 정리
+        if (_silenceCheckCoroutine != null)
+        {
+            StopCoroutine(_silenceCheckCoroutine);
+            _silenceCheckCoroutine = null;
+        }
+
         // 정리
         if (STTManager.Instance != null)
         {
@@ -218,6 +304,16 @@ public class MicRecordingIndicator : MonoBehaviour
         if (targetImage != null)
         {
             targetImage.sprite = _recording ? recordingSprite : idleSprite;
+        }
+
+        if (micPulseImage != null)
+        {
+            micPulseImage.SetActive(_recording);
+        }
+
+        if (statusText != null)
+        {
+            statusText.text = _recording ? recordingText : idleText;
         }
     }
 }

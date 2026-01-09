@@ -6,6 +6,18 @@ using DG.Tweening;
 using Text = UnityEngine.UI.Text;
 
 /// <summary>
+/// InputField와 표시할 라벨을 매핑하는 클래스
+/// </summary>
+[System.Serializable]
+public class InputFieldLabel
+{
+    [Tooltip("대상 InputField")]
+    public TMP_InputField inputField;
+    [Tooltip("표시할 라벨 (예: 이메일, 비밀번호)")]
+    public string label;
+}
+
+/// <summary>
 /// 가상 키보드 컨테이너 컨트롤러
 /// - 키보드 표시/숨김 관리
 /// - InputField 자동 감지
@@ -44,6 +56,10 @@ public class VirtualKeyboardController : MonoBehaviour
     [Header("===== 설정 =====")]
     [Tooltip("시작 시 키보드 숨김")]
     [SerializeField] private bool hideOnStart = true;
+
+    [Header("===== 커스텀 라벨 매핑 =====")]
+    [Tooltip("InputField별 표시할 라벨을 직접 설정")]
+    [SerializeField] private InputFieldLabel[] customLabels;
 
     // 자동 감지용
     private GameObject _lastSelectedObject;
@@ -302,7 +318,17 @@ public class VirtualKeyboardController : MonoBehaviour
 
     private string GetInputFieldLabel(TMP_InputField inputField)
     {
-        // 1. placeholder에서 가져오기
+        // 1. 커스텀 라벨 매핑에서 먼저 찾기
+        if (customLabels != null)
+        {
+            foreach (var mapping in customLabels)
+            {
+                if (mapping.inputField == inputField && !string.IsNullOrEmpty(mapping.label))
+                    return mapping.label;
+            }
+        }
+
+        // 2. placeholder에서 가져오기
         if (inputField.placeholder != null)
         {
             var tmpPlaceholder = inputField.placeholder as TMP_Text;
@@ -314,7 +340,7 @@ public class VirtualKeyboardController : MonoBehaviour
                 return textPlaceholder.text;
         }
 
-        // 2. 부모에서 "Label" 이름의 Text 찾기
+        // 3. 부모에서 "Label" 이름의 Text 찾기
         var parent = inputField.transform.parent;
         if (parent != null)
         {
@@ -327,7 +353,7 @@ public class VirtualKeyboardController : MonoBehaviour
                 return textLabel.text;
         }
 
-        // 3. 오브젝트 이름 사용
+        // 4. 오브젝트 이름 사용
         return inputField.gameObject.name;
     }
 

@@ -71,6 +71,32 @@ namespace STT
         public bool IsRecording => _isRecording;
         public bool IsProcessing => _isProcessing;
 
+        /// <summary>
+        /// 현재 마이크 입력 볼륨 가져오기 (0.0 ~ 1.0)
+        /// </summary>
+        public float GetCurrentVolume()
+        {
+            if (!_isRecording || _micClip == null)
+                return 0f;
+
+            int sampleWindow = 128;
+            float[] samples = new float[sampleWindow];
+
+            int micPosition = Microphone.GetPosition(_micDevice) - (sampleWindow + 1);
+            if (micPosition < 0)
+                return 0f;
+
+            _micClip.GetData(samples, micPosition);
+
+            float sum = 0f;
+            for (int i = 0; i < sampleWindow; i++)
+            {
+                sum += Mathf.Abs(samples[i]);
+            }
+
+            return sum / sampleWindow;
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -148,6 +174,13 @@ namespace STT
             }
 
             // 마이크 디바이스 확인
+            Log($"=== 감지된 마이크 목록 ({Microphone.devices.Length}개) ===");
+            for (int i = 0; i < Microphone.devices.Length; i++)
+            {
+                Log($"  [{i}] {Microphone.devices[i]}");
+            }
+            Log($"==========================================");
+
             if (Microphone.devices.Length == 0)
             {
                 string error = "마이크를 찾을 수 없습니다";
@@ -157,7 +190,7 @@ namespace STT
             }
 
             _micDevice = Microphone.devices[0];
-            Log($"초기화 완료! 마이크: {_micDevice}");
+            Log($"초기화 완료! 선택된 마이크: {_micDevice}");
         }
 
         /// <summary>

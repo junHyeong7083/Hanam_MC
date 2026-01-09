@@ -4,7 +4,8 @@
       "Bash(dir:*)",
       "Bash(curl:*)",
       "Bash(tree:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(C:flutterbinflutter pub get)"
     ],
     "deny": [],
     "ask": []
