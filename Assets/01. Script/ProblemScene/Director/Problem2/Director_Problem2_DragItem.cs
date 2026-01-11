@@ -53,6 +53,12 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
         }
     }
 
+    private void OnDisable()
+    {
+        // 씬/스텝 전환 시 드래그 상태 정리 (잔상 방지)
+        ResetToOriginalState();
+    }
+
     public void SetStepController(Director_Problem2_Step1_Logic controller)
     {
         _stepController = controller;

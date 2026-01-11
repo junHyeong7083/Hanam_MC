@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem7 / Step3 로직 베이스
-/// - "명대사 만들기" 음성 녹음
-/// - 4단계: intro → selectDialogue → recording → result(CompleteRoot)
+/// - "명대사 만들기"
+/// - 대사 3개 중 하나 선택 (버튼 클릭 또는 STT)
+/// - 선택 시 RecordingRoot 표시 + "주인공에게, (선택한 대사)" 출력
 /// </summary>
 public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 {
@@ -39,7 +39,7 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
     private class DialogueAttemptDto
     {
         public SelectedDialogueDto selectedDialogue;
-        public float recordingDuration;
+        public string inputMode;  // "button" or "voice"
     }
 
     protected enum Phase { Intro, SelectDialogue }
@@ -57,10 +57,13 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
     [Header("대사 선택 화면")]
     protected abstract GameObject SelectDialogueRoot { get; }
     protected abstract DialogueItem[] DialogueChoices { get; }
-    protected abstract Button RecordButton { get; }
 
-    [Header("녹음 화면")]
+    [Header("마이크 STT")]
+    protected abstract MicRecordingIndicator MicIndicator { get; }
+
+    [Header("결과 화면")]
     protected abstract GameObject RecordingRoot { get; }
+    protected abstract Text ResultText { get; }  // "주인공에게, (선택한 대사)" 표시할 텍스트
 
     [Header("완료 게이트 (CompleteRoot에 Result 화면 연결)")]
     protected abstract StepCompletionGate CompletionGateRef { get; }
@@ -69,16 +72,15 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
     #region Virtual Config
 
-    protected virtual float DialogueSelectDelay => 0.3f;
-    protected virtual float RecordingDuration => 4.0f;
+    protected virtual string ResultTextFormat => "주인공에게,\n{0}";
 
     #endregion
 
     // 내부 상태
     private Phase _currentPhase;
     private DialogueItem _selectedDialogue;
-    private Coroutine _recordingRoutine;
-    private bool _isRecording;
+    private bool _hasSelected;
+    private string _inputMode = "button";
 
     // =========================
     // ProblemStepBase 구현
@@ -88,7 +90,8 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
     {
         _currentPhase = Phase.Intro;
         _selectedDialogue = null;
-        _isRecording = false;
+        _hasSelected = false;
+        _inputMode = "button";
 
         var gate = CompletionGateRef;
         if (gate != null)
@@ -101,13 +104,6 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
     protected override void OnStepExit()
     {
         base.OnStepExit();
-
-        if (_recordingRoutine != null)
-        {
-            StopCoroutine(_recordingRoutine);
-            _recordingRoutine = null;
-        }
-
         RemoveAllListeners();
     }
 
@@ -134,10 +130,6 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
             }
         }
 
-        // 녹음 버튼 초기 비활성화
-        if (RecordButton != null)
-            RecordButton.interactable = false;
-
         // 버튼 리스너 등록
         RegisterListeners();
     }
@@ -157,20 +149,32 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         {
             for (int i = 0; i < dialogues.Length; i++)
             {
+                int index = i;
                 var choice = dialogues[i];
                 if (choice?.button != null)
                 {
                     choice.button.onClick.RemoveAllListeners();
-                    choice.button.onClick.AddListener(() => OnDialogueSelected(choice));
+                    choice.button.onClick.AddListener(() => OnDialogueSelected(index, "button"));
                 }
             }
         }
 
-        // 녹음 버튼
-        if (RecordButton != null)
+        // MicIndicator STT 이벤트 구독 + 키워드 설정
+        var mic = MicIndicator;
+        if (mic != null && dialogues != null)
         {
-            RecordButton.onClick.RemoveAllListeners();
-            RecordButton.onClick.AddListener(OnRecordButtonClicked);
+            // 3개 대사 모두 키워드로 설정
+            var keywords = new string[dialogues.Length];
+            for (int i = 0; i < dialogues.Length; i++)
+            {
+                keywords[i] = dialogues[i]?.text ?? "";
+            }
+            mic.SetKeywords(keywords);
+
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnKeywordMatched += OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
+            mic.OnNoMatch += OnSTTNoMatch;
         }
     }
 
@@ -186,8 +190,13 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
                 if (choice?.button != null) choice.button.onClick.RemoveAllListeners();
         }
 
-        if (RecordButton != null)
-            RecordButton.onClick.RemoveAllListeners();
+        // MicIndicator 이벤트 해제
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
+        }
     }
 
     // =========================
@@ -200,8 +209,6 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
         if (IntroRoot != null) IntroRoot.SetActive(phase == Phase.Intro);
         if (SelectDialogueRoot != null) SelectDialogueRoot.SetActive(phase == Phase.SelectDialogue);
-        // RecordingRoot는 RecordButton 클릭 시 수동으로 표시/숨김
-        // Result는 CompletionGate의 CompleteRoot로 자동 표시됨
     }
 
     // =========================
@@ -213,76 +220,74 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         ShowPhase(Phase.SelectDialogue);
     }
 
-    private void OnDialogueSelected(DialogueItem choice)
+    /// <summary>
+    /// 대사 선택 (버튼 또는 STT)
+    /// </summary>
+    private void OnDialogueSelected(int index, string inputMode)
     {
         if (_currentPhase != Phase.SelectDialogue) return;
+        if (_hasSelected) return;
 
-        _selectedDialogue = choice;
+        var dialogues = DialogueChoices;
+        if (dialogues == null || index < 0 || index >= dialogues.Length) return;
+
+        _hasSelected = true;
+        _inputMode = inputMode;
+        _selectedDialogue = dialogues[index];
+
+        Debug.Log($"[Problem7_Step3] 대사 선택: [{index}] {_selectedDialogue.text} (입력: {inputMode})");
 
         // 선택 시각 효과
-        OnDialogueSelectedVisual(choice);
+        OnDialogueSelectedVisual(_selectedDialogue);
 
-        // 녹음 버튼 활성화
-        if (RecordButton != null)
-            RecordButton.interactable = true;
-    }
-
-    private void OnRecordButtonClicked()
-    {
-        if (_currentPhase != Phase.SelectDialogue) return;
-        if (_selectedDialogue == null) return;
-        if (_isRecording) return;
-
-        // 녹음 시작
-        _isRecording = true;
-
-        // SelectDialogueRoot 숨기고, RecordingRoot 표시
+        // SelectDialogueRoot 숨기고 RecordingRoot 표시
         if (SelectDialogueRoot != null)
             SelectDialogueRoot.SetActive(false);
         if (RecordingRoot != null)
             RecordingRoot.SetActive(true);
 
-        if (_recordingRoutine != null)
-            StopCoroutine(_recordingRoutine);
-        _recordingRoutine = StartCoroutine(RecordingRoutine());
-    }
-
-    // =========================
-    // 코루틴
-    // =========================
-
-    private IEnumerator RecordingRoutine()
-    {
-        // 녹음 시작 콜백
-        OnRecordingStarted();
-
-        // 녹음 시간 대기
-        yield return new WaitForSeconds(RecordingDuration);
-
-        // 녹음 종료
-        _isRecording = false;
-        OnRecordingEnded();
+        // 결과 텍스트 표시: "주인공에게, (선택한 대사)"
+        if (ResultText != null)
+            ResultText.text = string.Format(ResultTextFormat, _selectedDialogue.text);
 
         // Attempt 저장
         var body = new DialogueAttemptDto
         {
             selectedDialogue = new SelectedDialogueDto
             {
-                id = _selectedDialogue?.id,
-                text = _selectedDialogue?.text
+                id = _selectedDialogue.id,
+                text = _selectedDialogue.text
             },
-            recordingDuration = RecordingDuration
+            inputMode = _inputMode
         };
         SaveAttempt(body);
 
-        // RecordingRoot 숨기기
-        if (RecordingRoot != null)
-            RecordingRoot.SetActive(false);
-
-        // Gate 완료 → CompleteRoot(Result 패널) 표시
+        // Gate 완료 → CompleteRoot 표시
         var gate = CompletionGateRef;
         if (gate != null)
             gate.MarkOneDone();
+    }
+
+    // =========================
+    // STT 이벤트 핸들러
+    // =========================
+
+    /// <summary>
+    /// STT 키워드 매칭 성공 시 호출
+    /// </summary>
+    private void OnSTTKeywordMatched(int matchedIndex)
+    {
+        Debug.Log($"[Problem7_Step3] STT 매칭 성공: index={matchedIndex}");
+        OnDialogueSelected(matchedIndex, "voice");
+    }
+
+    /// <summary>
+    /// STT 매칭 실패 시 호출
+    /// </summary>
+    private void OnSTTNoMatch(string sttResult)
+    {
+        Debug.Log($"[Problem7_Step3] STT 매칭 실패: {sttResult}");
+        // 매칭 실패 시에는 다시 녹음 시도 가능
     }
 
     // =========================
@@ -306,15 +311,5 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
             if (choice.checkIcon != null)
                 choice.checkIcon.SetActive(isSelected);
         }
-    }
-
-    protected virtual void OnRecordingStarted()
-    {
-        // 녹음 시작 시 효과 (파생 클래스에서 override)
-    }
-
-    protected virtual void OnRecordingEnded()
-    {
-        // 녹음 종료 시 효과 (파생 클래스에서 override)
     }
 }

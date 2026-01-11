@@ -4,43 +4,43 @@ using UnityEngine;
 public class ProblemSceneController : MonoBehaviour
 {
     [Header("Theme Roots")]
-    [SerializeField] private GameObject directorRoot;   // Canvas ¹Ø Director¿ë ·çÆ®
-    [SerializeField] private GameObject gardenerRoot;   // Canvas ¹Ø Gardener¿ë ·çÆ®
+    [SerializeField] private GameObject directorRoot;   // Canvas ï¿½ï¿½ Directorï¿½ï¿½ ï¿½ï¿½Æ®
+    [SerializeField] private GameObject gardenerRoot;   // Canvas ï¿½ï¿½ Gardenerï¿½ï¿½ ï¿½ï¿½Æ®
 
     private GameObject _activeRoot;
 
     void Start()
     {
-        // 1) DataService / ProblemQueryService Á¸Àç Ã¼Å©
+        // 1) DataService / ProblemQueryService ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
         if (DataService.Instance == null || DataService.Instance.Problems == null)
         {
-            Debug.LogError("[ProblemScene] DataService.Problems ¾øÀ½. DataService ¼¼ÆÃÀ» ¸ÕÀú È®ÀÎÇÏ¼¼¿ä.");
+            Debug.LogError("[ProblemScene] DataService.Problems ï¿½ï¿½ï¿½ï¿½. DataService ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.");
             enabled = false;
             return;
         }
 
-        // 2) ProblemSession °ª À¯È¿¼º Ã¼Å©
+        // 2) ProblemSession ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ Ã¼Å©
         if (ProblemSession.CurrentProblemIndex <= 0)
         {
-            Debug.LogError("[ProblemScene] ProblemSession.CurrentProblemIndex°¡ 0 ÀÌÇÏÀÔ´Ï´Ù. HomeScene¿¡¼­ ¼¼ÆÃÀÌ ¾È µÈ »óÅÂ·Î ³Ñ¾î¿Â °Í °°½À´Ï´Ù.");
+            Debug.LogError("[ProblemScene] ProblemSession.CurrentProblemIndexï¿½ï¿½ 0 ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½. HomeSceneï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½Ñ¾ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             enabled = false;
             return;
         }
 
-        // 3) Å×¸¶ ·çÆ® ¼±ÅÃ/È°¼ºÈ­
+        // 3) ï¿½×¸ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½/È°ï¿½ï¿½È­
         SetupThemeRoot();
 
         if (_activeRoot == null)
         {
-            Debug.LogError("[ProblemScene] È°¼ºÈ­ÇÒ Å×¸¶ ·çÆ®°¡ ¾ø½À´Ï´Ù. directorRoot/gardenerRoot ÇÒ´çÀ» È®ÀÎÇÏ¼¼¿ä.");
+            Debug.LogError("[ProblemScene] È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½×¸ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. directorRoot/gardenerRoot ï¿½Ò´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.");
             enabled = false;
             return;
         }
 
-        // 4) ÇØ´ç ¹®Á¦ ÀÎµ¦½º¸¸ È°¼ºÈ­
+        // 4) ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­
         ActivateSingleProblem(ProblemSession.CurrentProblemIndex);
 
-        // 5) (´ÙÀ½ ´Ü°è¿ë) ¹®Á¦ ³»¿ë DB¿¡¼­ ºÒ·¯¿À±â ¡æ UI¿¡ ¹ÙÀÎµù
+        // 5) (ï¿½ï¿½ï¿½ï¿½ ï¿½Ü°ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ DBï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ UIï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
         // LoadProblemDataAndBind();
     }
 
@@ -56,7 +56,7 @@ public class ProblemSceneController : MonoBehaviour
 
         if (isDirector) _activeRoot = directorRoot;
         else if (isGardener) _activeRoot = gardenerRoot;
-        else _activeRoot = null; // enum¿¡ ´Ù¸¥ °ªÀÌ µé¾î¿Â °æ¿ì
+        else _activeRoot = null; // enumï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     }
 
     private void ActivateSingleProblem(int problemIndex)
@@ -68,16 +68,16 @@ public class ProblemSceneController : MonoBehaviour
         int childCount = rootTr.childCount;
         if (childCount == 0)
         {
-            Debug.LogWarning("[ProblemScene] È°¼º ·çÆ®¿¡ ÀÚ½ÄÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("[ProblemScene] È°ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
-        // index´Â 1-based, Transform.GetChild´Â 0-based
+        // indexï¿½ï¿½ 1-based, Transform.GetChildï¿½ï¿½ 0-based
         int targetIdx = problemIndex - 1;
 
         if (targetIdx < 0 || targetIdx >= childCount)
         {
-            Debug.LogError($"[ProblemScene] ProblemIndex={problemIndex} °¡ ÀÚ½Ä ¼ö ¹üÀ§¸¦ ¹ş¾î³µ½À´Ï´Ù. (childCount={childCount})");
+            Debug.LogError($"[ProblemScene] ProblemIndex={problemIndex} ï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½î³µï¿½ï¿½ï¿½Ï´ï¿½. (childCount={childCount})");
             return;
         }
 
@@ -85,6 +85,43 @@ public class ProblemSceneController : MonoBehaviour
         {
             bool active = (i == targetIdx);
             rootTr.GetChild(i).gameObject.SetActive(active);
+        }
+    }
+
+    // ===== ë²„íŠ¼ ì´ë²¤íŠ¸ìš© í•¨ìˆ˜ =====
+
+    /// <summary>
+    /// í™ˆí™”ë©´ìœ¼ë¡œ ì´ë™ (ë¡œê·¸ì•„ì›ƒ ì—†ìŒ) - ë²„íŠ¼ OnClickì— ì—°ê²°
+    /// </summary>
+    public void GoToHome()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.GoToHome();
+        }
+        else
+        {
+            Debug.LogWarning("[ProblemSceneController] GameManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
+        }
+    }
+
+    /// <summary>
+    /// ì•± ì¢…ë£Œ - ë²„íŠ¼ OnClickì— ì—°ê²°
+    /// </summary>
+    public void QuitApplication()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.QuitApplication();
+        }
+        else
+        {
+            Debug.LogWarning("[ProblemSceneController] GameManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }

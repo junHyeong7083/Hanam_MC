@@ -66,7 +66,7 @@ public class MicRecordingIndicator : MonoBehaviour
 
     public void ToggleRecording()
     {
-        Debug.Log($"[MicRecordingIndicator] ToggleRecording 호출 - 현재 상태: _recording={_recording}, _isSTTRecording={_isSTTRecording}");
+       // Debug.Log($"[MicRecordingIndicator] ToggleRecording 호출 - 현재 상태: _recording={_recording}, _isSTTRecording={_isSTTRecording}");
 
         // 녹음 시작/중지 결정
         bool startRecording = !_isSTTRecording;
@@ -74,13 +74,13 @@ public class MicRecordingIndicator : MonoBehaviour
         // 상태 업데이트 및 비주얼 즉시 반영
         _recording = startRecording;
         _isSTTRecording = startRecording;
-        Debug.Log($"[MicRecordingIndicator] 상태 변경 후: _recording={_recording}, startRecording={startRecording}");
+     //   Debug.Log($"[MicRecordingIndicator] 상태 변경 후: _recording={_recording}, startRecording={startRecording}");
         ApplyVisual();
 
         // STT 사용 불가능하면 비주얼만 토글하고 종료
         if (STTManager.Instance == null || !STTManager.Instance.IsInitialized)
         {
-            Debug.LogWarning("[MicRecordingIndicator] STTManager가 초기화되지 않았습니다");
+          //  Debug.LogWarning("[MicRecordingIndicator] STTManager가 초기화되지 않았습니다");
             return;
         }
 
@@ -119,7 +119,7 @@ public class MicRecordingIndicator : MonoBehaviour
             // 자동 종료 모드일 때만 음성 감지 체크
             if (enableAutoStop && !_hasDetectedVoice)
             {
-                Debug.Log("[MicRecordingIndicator] 음성이 감지되지 않아 STT를 실행하지 않습니다");
+               // Debug.Log("[MicRecordingIndicator] 음성이 감지되지 않아 STT를 실행하지 않습니다");
                 STTManager.Instance.StopRecording();
                 return;
             }
@@ -127,7 +127,7 @@ public class MicRecordingIndicator : MonoBehaviour
             // 캐시된 실시간 결과가 있으면 즉시 사용
             if (_cachedMatchIndex >= 0)
             {
-                Debug.Log($"[MicRecordingIndicator] 캐시된 실시간 결과 사용: [{_cachedMatchIndex}] {keywords[_cachedMatchIndex]} ({_cachedMatchScore:F2})");
+              //  Debug.Log($"[MicRecordingIndicator] 캐시된 실시간 결과 사용: [{_cachedMatchIndex}] {keywords[_cachedMatchIndex]} ({_cachedMatchScore:F2})");
                 int matchIndex = _cachedMatchIndex;
                 _cachedMatchIndex = -1;
                 _cachedMatchScore = 0f;
@@ -158,7 +158,7 @@ public class MicRecordingIndicator : MonoBehaviour
     {
         if (string.IsNullOrEmpty(result)) return;
 
-        Debug.Log($"[MicRecordingIndicator] 실시간 결과 수신: {result}");
+    //    Debug.Log($"[MicRecordingIndicator] 실시간 결과 수신: {result}");
 
         if (keywords == null || keywords.Length == 0) return;
 
@@ -169,7 +169,7 @@ public class MicRecordingIndicator : MonoBehaviour
         for (int i = 0; i < keywords.Length; i++)
         {
             float score = KeywordMatcher.CalculateSimilarity(result, keywords[i]);
-            Debug.Log($"[MicRecordingIndicator] 실시간 [{i}] {keywords[i]}: {score:F2}");
+          //  Debug.Log($"[MicRecordingIndicator] 실시간 [{i}] {keywords[i]}: {score:F2}");
 
             if (score > bestScore)
             {
@@ -183,7 +183,7 @@ public class MicRecordingIndicator : MonoBehaviour
         {
             _cachedMatchIndex = bestIndex;
             _cachedMatchScore = bestScore;
-            Debug.Log($"[MicRecordingIndicator] 실시간 매칭 캐시 업데이트: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
+          //  Debug.Log($"[MicRecordingIndicator] 실시간 매칭 캐시 업데이트: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
         }
     }
 
@@ -193,16 +193,16 @@ public class MicRecordingIndicator : MonoBehaviour
 
         if (string.IsNullOrEmpty(result))
         {
-            Debug.Log("[MicRecordingIndicator] STT 결과가 비어있습니다");
+          //  Debug.Log("[MicRecordingIndicator] STT 결과가 비어있습니다");
             OnNoMatch?.Invoke("");
             return;
         }
 
-        Debug.Log($"[MicRecordingIndicator] STT 인식 결과: {result}");
+       // Debug.Log($"[MicRecordingIndicator] STT 인식 결과: {result}");
 
         if (keywords == null || keywords.Length == 0)
         {
-            Debug.LogWarning("[MicRecordingIndicator] 키워드가 설정되지 않았습니다");
+          //  Debug.LogWarning("[MicRecordingIndicator] 키워드가 설정되지 않았습니다");
             OnNoMatch?.Invoke(result);
             return;
         }
@@ -214,7 +214,7 @@ public class MicRecordingIndicator : MonoBehaviour
         for (int i = 0; i < keywords.Length; i++)
         {
             float score = KeywordMatcher.CalculateSimilarity(result, keywords[i]);
-            Debug.Log($"[MicRecordingIndicator] [{i}] {keywords[i]}: {score:F2}");
+         //   Debug.Log($"[MicRecordingIndicator] [{i}] {keywords[i]}: {score:F2}");
 
             if (score > bestScore)
             {
@@ -226,12 +226,12 @@ public class MicRecordingIndicator : MonoBehaviour
         // 임계값 이상이면 매칭 성공
         if (bestIndex >= 0 && bestScore >= matchThreshold)
         {
-            Debug.Log($"[MicRecordingIndicator] → 매칭 성공: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
+         //   Debug.Log($"[MicRecordingIndicator] → 매칭 성공: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
             OnKeywordMatched?.Invoke(bestIndex);
         }
         else
         {
-            Debug.Log($"[MicRecordingIndicator] 매칭 실패 (최고 점수: {bestScore:F2})");
+           // Debug.Log($"[MicRecordingIndicator] 매칭 실패 (최고 점수: {bestScore:F2})");
             OnNoMatch?.Invoke(result);
         }
     }

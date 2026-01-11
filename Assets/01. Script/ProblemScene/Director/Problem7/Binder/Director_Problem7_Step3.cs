@@ -5,6 +5,7 @@ using UnityEngine.UI;
 /// Director / Problem7 / Step3
 /// - 인스펙터에서 UI 참조를 갖고 있는 Binder.
 /// - 실제 로직은 Director_Problem7_Step3_Logic(부모)에 있음.
+/// - 마이크 버튼 OnClick에 MicIndicator.ToggleRecording 연결 필요
 /// </summary>
 public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
 {
@@ -16,16 +17,17 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
     [SerializeField] private GameObject selectDialogueRoot;
     [Tooltip("3개 대사: id/text/button 설정")]
     [SerializeField] private DialogueItem[] dialogueChoices;
-    [SerializeField] private Button recordButton;
 
-    [Header("===== 녹음 화면 =====")]
+    [Header("===== 마이크 STT =====")]
+    [SerializeField] private MicRecordingIndicator micIndicator;
+
+    [Header("===== 결과 화면 =====")]
     [SerializeField] private GameObject recordingRoot;
+    [Tooltip("\"주인공에게, (선택한 대사)\" 표시할 텍스트")]
+    [SerializeField] private Text resultText;
 
     [Header("===== 완료 게이트 (CompleteRoot에 Result 화면 연결) =====")]
     [SerializeField] private StepCompletionGate completionGate;
-
-    [Header("===== 이펙트 컨트롤러 =====")]
-    [SerializeField] private Problem7_Step3_EffectController effectController;
 
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override GameObject IntroRoot => introRoot;
@@ -33,31 +35,10 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
 
     protected override GameObject SelectDialogueRoot => selectDialogueRoot;
     protected override DialogueItem[] DialogueChoices => dialogueChoices;
-    protected override Button RecordButton => recordButton;
+    protected override MicRecordingIndicator MicIndicator => micIndicator;
 
     protected override GameObject RecordingRoot => recordingRoot;
+    protected override Text ResultText => resultText;
 
     protected override StepCompletionGate CompletionGateRef => completionGate;
-
-    // ----- 시각 효과 연결 -----
-    protected override void OnRecordingStarted()
-    {
-        base.OnRecordingStarted();
-
-        if (effectController != null)
-        {
-            effectController.StartRecordingAnimation();
-        }
-    }
-
-    protected override void OnRecordingEnded()
-    {
-        base.OnRecordingEnded();
-
-        if (effectController != null)
-        {
-            effectController.StopRecordingAnimation();
-            effectController.PlayResultAnimation();
-        }
-    }
 }

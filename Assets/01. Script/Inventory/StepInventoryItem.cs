@@ -99,6 +99,16 @@ public class StepInventoryItem : MonoBehaviour,
         }
     }
 
+    private void OnDisable()
+    {
+        // 씬/스텝 전환 시 드래그 상태 정리 (잔상 방지)
+        if (_isDragging)
+        {
+            _isDragging = false;
+            ReturnToSlot();
+        }
+    }
+
     private void InitOnce()
     {
         if (iconRect == null && iconImage != null)
