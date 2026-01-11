@@ -8,11 +8,28 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class UIDropBoxArea : MonoBehaviour
 {
-    [Header("��� ����")]
+    [Header("DropDown box")]
     [SerializeField] private RectTransform area;
 
-    [Header("���̶���Ʈ(�ܰ���)")]
+    [Header("drag Outline box")]
     [SerializeField] private GameObject outline;
+
+    private void Awake()
+    {
+        Debug.Log($"[UIDropBoxArea] Awake 호출됨 - outline={outline != null}");
+
+        // 가장 먼저 outline 숨김
+        if (outline != null)
+        {
+            bool wasActive = outline.activeSelf;
+            outline.SetActive(false);
+            Debug.Log($"[UIDropBoxArea] Awake - outline 숨김 처리됨 (이전 상태: {wasActive})");
+        }
+        else
+        {
+            Debug.LogError("[UIDropBoxArea] Awake - outline이 null! Inspector에서 할당하세요.");
+        }
+    }
 
     private void OnEnable()
     {
