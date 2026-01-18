@@ -38,6 +38,15 @@ public class TTSTrigger : MonoBehaviour
         PlayTTS();
     }
 
+    private void OnDisable()
+    {
+        // 스텝 전환/씬 전환 시 TTS 중지
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.StopTTS();
+        }
+    }
+
     private void OnDestroy()
     {
         if (_button != null)

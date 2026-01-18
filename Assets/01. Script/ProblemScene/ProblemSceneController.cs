@@ -1,47 +1,55 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class ProblemSceneController : MonoBehaviour
 {
     [Header("Theme Roots")]
-    [SerializeField] private GameObject directorRoot;   // Canvas �� Director�� ��Ʈ
-    [SerializeField] private GameObject gardenerRoot;   // Canvas �� Gardener�� ��Ʈ
+    [SerializeField] private GameObject directorRoot;
+    [SerializeField] private GameObject gardenerRoot;
+
+    [Header("Option Panel")]
+    [SerializeField] private GameObject optionPanel;
+    [SerializeField] private CanvasGroup optionCanvasGroup;
+    [SerializeField] private float animationDuration = 0.1f;
 
     private GameObject _activeRoot;
+    private bool _isOptionOpen = false;
+    private Coroutine _optionAnimCoroutine;
 
     void Start()
     {
-        // 1) DataService / ProblemQueryService ���� üũ
         if (DataService.Instance == null || DataService.Instance.Problems == null)
         {
-            Debug.LogError("[ProblemScene] DataService.Problems ����. DataService ������ ���� Ȯ���ϼ���.");
+            Debug.LogError("[ProblemScene] DataService.Problems 없음.");
             enabled = false;
             return;
         }
 
-        // 2) ProblemSession �� ��ȿ�� üũ
         if (ProblemSession.CurrentProblemIndex <= 0)
         {
-            Debug.LogError("[ProblemScene] ProblemSession.CurrentProblemIndex�� 0 �����Դϴ�. HomeScene���� ������ �� �� ���·� �Ѿ�� �� �����ϴ�.");
+            Debug.LogError("[ProblemScene] ProblemSession.CurrentProblemIndex가 0 이하입니다.");
             enabled = false;
             return;
         }
 
-        // 3) �׸� ��Ʈ ����/Ȱ��ȭ
         SetupThemeRoot();
 
         if (_activeRoot == null)
         {
-            Debug.LogError("[ProblemScene] Ȱ��ȭ�� �׸� ��Ʈ�� �����ϴ�. directorRoot/gardenerRoot �Ҵ��� Ȯ���ϼ���.");
+            Debug.LogError("[ProblemScene] 활성화된 테마 루트가 없습니다.");
             enabled = false;
             return;
         }
 
-        // 4) �ش� ���� �ε����� Ȱ��ȭ
         ActivateSingleProblem(ProblemSession.CurrentProblemIndex);
 
-        // 5) (���� �ܰ��) ���� ���� DB���� �ҷ����� �� UI�� ���ε�
-        // LoadProblemDataAndBind();
+        // 옵션 패널 초기 상태
+        if (optionPanel != null)
+        {
+            optionPanel.SetActive(false);
+            _isOptionOpen = false;
+        }
     }
 
     private void SetupThemeRoot()
@@ -56,7 +64,7 @@ public class ProblemSceneController : MonoBehaviour
 
         if (isDirector) _activeRoot = directorRoot;
         else if (isGardener) _activeRoot = gardenerRoot;
-        else _activeRoot = null; // enum�� �ٸ� ���� ���� ���
+        else _activeRoot = null;
     }
 
     private void ActivateSingleProblem(int problemIndex)
@@ -68,16 +76,15 @@ public class ProblemSceneController : MonoBehaviour
         int childCount = rootTr.childCount;
         if (childCount == 0)
         {
-            Debug.LogWarning("[ProblemScene] Ȱ�� ��Ʈ�� �ڽ��� �����ϴ�.");
+            Debug.LogWarning("[ProblemScene] 활성 루트에 자식이 없습니다.");
             return;
         }
 
-        // index�� 1-based, Transform.GetChild�� 0-based
         int targetIdx = problemIndex - 1;
 
         if (targetIdx < 0 || targetIdx >= childCount)
         {
-            Debug.LogError($"[ProblemScene] ProblemIndex={problemIndex} �� �ڽ� �� ������ ������ϴ�. (childCount={childCount})");
+            Debug.LogError($"[ProblemScene] ProblemIndex={problemIndex} 범위 초과. (childCount={childCount})");
             return;
         }
 
@@ -90,9 +97,6 @@ public class ProblemSceneController : MonoBehaviour
 
     // ===== 버튼 이벤트용 함수 =====
 
-    /// <summary>
-    /// 홈화면으로 이동 (로그아웃 없음) - 버튼 OnClick에 연결
-    /// </summary>
     public void GoToHome()
     {
         if (GameManager.Instance != null)
@@ -105,9 +109,95 @@ public class ProblemSceneController : MonoBehaviour
         }
     }
 
+    public void Logout()
+    {
+        if (GameManager.Instance != null) GameManager.Instance.Logout();
+    }
+
     /// <summary>
-    /// 앱 종료 - 버튼 OnClick에 연결
+    /// 옵션 패널 토글 - 버튼 OnClick에 연결
     /// </summary>
+    public void ToggleOptionPanel()
+    {
+        if (optionPanel == null) return;
+
+        if (_optionAnimCoroutine != null)
+            StopCoroutine(_optionAnimCoroutine);
+
+        if (_isOptionOpen)
+        {
+            // 닫기 애니메이션
+            _optionAnimCoroutine = StartCoroutine(CloseOptionPanel());
+        }
+        else
+        {
+            // 열기 애니메이션
+            _optionAnimCoroutine = StartCoroutine(OpenOptionPanel());
+        }
+    }
+
+    private IEnumerator OpenOptionPanel()
+    {
+        _isOptionOpen = true;
+        optionPanel.SetActive(true);
+
+        float elapsed = 0f;
+        Vector3 scale = optionPanel.transform.localScale;
+
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animationDuration;
+
+            // Alpha 0 → 1
+            if (optionCanvasGroup != null)
+                optionCanvasGroup.alpha = t;
+
+            // Scale Y 0 → 1
+            scale.y = t;
+            optionPanel.transform.localScale = scale;
+
+            yield return null;
+        }
+
+        // 최종값 보정
+        if (optionCanvasGroup != null)
+            optionCanvasGroup.alpha = 1f;
+        scale.y = 1f;
+        optionPanel.transform.localScale = scale;
+    }
+
+    private IEnumerator CloseOptionPanel()
+    {
+        float elapsed = 0f;
+        Vector3 scale = optionPanel.transform.localScale;
+
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f - (elapsed / animationDuration);
+
+            // Alpha 1 → 0
+            if (optionCanvasGroup != null)
+                optionCanvasGroup.alpha = t;
+
+            // Scale Y 1 → 0
+            scale.y = t;
+            optionPanel.transform.localScale = scale;
+
+            yield return null;
+        }
+
+        // 최종값 보정
+        if (optionCanvasGroup != null)
+            optionCanvasGroup.alpha = 0f;
+        scale.y = 0f;
+        optionPanel.transform.localScale = scale;
+
+        optionPanel.SetActive(false);
+        _isOptionOpen = false;
+    }
+
     public void QuitApplication()
     {
         if (GameManager.Instance != null)

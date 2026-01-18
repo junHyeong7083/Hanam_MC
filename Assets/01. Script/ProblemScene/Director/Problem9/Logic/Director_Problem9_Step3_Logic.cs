@@ -92,7 +92,7 @@ public abstract class Director_Problem9_Step3_Logic : ProblemStepBase
     #region Virtual Config
 
     /// <summary>녹음 완료 후 다음 단계 전환 대기 시간</summary>
-    protected virtual float DelayAfterRecording => 0.5f;
+    protected virtual float DelayAfterRecording => 1.0f;
 
     #endregion
 
