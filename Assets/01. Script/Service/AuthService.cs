@@ -83,7 +83,7 @@ public class AuthService : IAuthService
                 return Result.Fail(AuthError.EmailInvalid, "이메일 형식이 올바르지 않습니다.");
 
             if (!AuthValidator.IsStrongPassword(password))
-                return Result.Fail(AuthError.PasswordWeak, "비밀번호는 8자 이상, 영문+숫자를 포함해야 합니다.");
+                return Result.Fail(AuthError.PasswordWeak, "비밀번호는 6자 이상, 영문+숫자를 포함해야 합니다.");
 
             if (_users.ExistsEmail(email))
                 return Result.Fail(AuthError.EmailDuplicate, "이미 가입된 이메일입니다.");

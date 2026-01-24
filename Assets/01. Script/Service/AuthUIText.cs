@@ -4,21 +4,21 @@ using UnityEngine;
 public class AuthUIText : ScriptableObject
 {
     [Header("Common")]
-    public string required = "ÇÊ¼ö Ç×¸ñÀ» ÀÔ·ÂÇÏ¼¼¿ä.";
+    public string required = "ï¿½Ê¼ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.";
 
     [Header("Signup")]
-    public string emailFormatError = "ÀÌ¸ŞÀÏ Çü½Ä ¿À·ù";
-    public string emailDuplicate = "ÀÌ¹Ì »ç¿ë ÁßÀÎ ÀÌ¸ŞÀÏÀÔ´Ï´Ù.";
-    public string emailAvailable = "»ç¿ë °¡´ÉÇÑ ÀÌ¸ŞÀÏÀÔ´Ï´Ù.";
-    public string nameEmpty = "ÀÌ¸§À» ÀÔ·ÂÇÏ¼¼¿ä.";
-    public string pwWeak = "ÃÖ¼Ò 8ÀÚ, ¹®ÀÚ+¼ıÀÚ Æ÷ÇÔ";
-    public string pwStrong = "¾ÈÀüÇÑ ºñ¹Ğ¹øÈ£";
-    public string pwConfirmMismatch = "ºñ¹Ğ¹øÈ£ È®ÀÎÀÌ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.";
-    public string signupFail = "°¡ÀÔ ½ÇÆĞ. ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.";
-    public string signupDone = "°¡ÀÔ ¿Ï·á";
+    public string emailFormatError = "ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+    public string emailDuplicate = "ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.";
+    public string emailAvailable = "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.";
+    public string nameEmpty = "ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.";
+    public string pwWeak = "ìµœì†Œ 6ì, ë¬¸ì+ìˆ«ì í¬í•¨";
+    public string pwStrong = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ğ¹ï¿½È£";
+    public string pwConfirmMismatch = "ï¿½ï¿½Ğ¹ï¿½È£ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½.";
+    public string signupFail = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.";
+    public string signupDone = "ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½";
 
     [Header("Login")]
-    public string loginInProgress = "·Î±×ÀÎ Áß...";
-    public string loginFail = "ÀÌ¸ŞÀÏ ¶Ç´Â ºñ¹Ğ¹øÈ£°¡ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù.";
-    public string loginDone = "·Î±×ÀÎ ¼º°ø";
+    public string loginInProgress = "ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½...";
+    public string loginFail = "ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½Ğ¹ï¿½È£ï¿½ï¿½ ï¿½Ã¹Ù¸ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½.";
+    public string loginDone = "ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
 }

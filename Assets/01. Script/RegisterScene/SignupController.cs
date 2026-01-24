@@ -126,7 +126,7 @@ public class SignupController : MonoBehaviour
         if (AuthValidator.IsStrongPassword(pw))
             view.SetPasswordHint(texts ? texts.pwStrong : "안전한 비밀번호입니다.", true);
         else
-            view.SetPasswordHint(texts ? texts.pwWeak : "최소 8자, 문자+숫자를 포함해야 합니다.", false);
+            view.SetPasswordHint(texts ? texts.pwWeak : "최소 6자, 문자+숫자를 포함해야 합니다.", false);
 
         HandleConfirmChanged(view.CurrentConfirm);
     }

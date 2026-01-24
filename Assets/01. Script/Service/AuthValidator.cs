@@ -11,10 +11,10 @@ public static class AuthValidator
         return EmailRx.IsMatch(email);
     }
 
-    // 8ÀÚ ÀÌ»ó + ¹®ÀÚ/¼ýÀÚ °¢°¢ 1°³ ÀÌ»ó
+    // 8ï¿½ï¿½ ï¿½Ì»ï¿½ + ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½Ì»ï¿½
     public static bool IsStrongPassword(string pw)
     {
-        if (string.IsNullOrEmpty(pw) || pw.Length < 8) return false;
+        if (string.IsNullOrEmpty(pw) || pw.Length < 6) return false;
         bool hasLetter = false, hasDigit = false;
         foreach (var c in pw)
         {
