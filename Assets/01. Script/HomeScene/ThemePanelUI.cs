@@ -72,11 +72,17 @@ public class ThemePanelUI : MonoBehaviour
 
             if (solved) solvedCount++;
 
-            // 시작하기 버튼: 미완료 + 언락 상태일 때만 표시
+            // 시작하기 버튼
             if (item.startButton != null)
             {
-                item.startButton.gameObject.SetActive(!solved && unlocked);
-                item.startButton.interactable = unlocked && !solved;
+                // TODO: 개발 완료 후 아래 주석을 해제하고, 임시 코드를 제거할 것
+                // [원본] 이전 문제 재플레이 방지 — 미완료 + 언락 상태일 때만 표시
+                // item.startButton.gameObject.SetActive(!solved && unlocked);
+                // item.startButton.interactable = unlocked && !solved;
+
+                // [임시] 개발 기간 중: 풀었던 문제도 다시 플레이 가능
+                item.startButton.gameObject.SetActive(unlocked || solved);
+                item.startButton.interactable = unlocked || solved;
             }
 
             // 잠금 아이콘: 미완료 + 잠김 상태일 때 표시
