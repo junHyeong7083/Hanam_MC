@@ -6,6 +6,14 @@ public class Bootstrap : MonoBehaviour
 {
     private static bool s_Initialized = false;
 
+    public static Bootstrap I { get; private set; }
+
+    // 여기서 전역 접근 가능
+    public LocalizedTable Localized { get; private set; }
+
+    [Header("Resources CSV Path (no extension)")]
+    [SerializeField] private string localizedPath = "CSV/MC_DataTable_v01";
+
     void Awake()
     {
         // 중복 방지
@@ -16,22 +24,38 @@ public class Bootstrap : MonoBehaviour
         }
         s_Initialized = true;
 
+        I = this;
         DontDestroyOnLoad(gameObject);
 
         // 데이터베이스 인덱스 초기화 (앱 시작 시 한 번만)
         DatabaseInitializer.InitializeIndexes();
 
-        // 바로 GoTo 호출하지 말고, 코루틴에서 SceneNavigator 준비될 때까지 기다리기
+        // CSV 로드 (앱 시작 시 한 번만)
+        LoadTables();
+
+        // SceneNavigator 준비될 때까지 기다리기
         StartCoroutine(InitRoutine());
+    }
+
+    private void LoadTables()
+    {
+        var csv = Resources.Load<TextAsset>(localizedPath);
+        if (csv == null)
+        {
+            Debug.LogError($"[Bootstrap] TextAsset not found: Resources/{localizedPath}");
+            Localized = new LocalizedTable();
+            return;
+        }
+
+        Localized = new LocalizedTable();
+        Localized.Load(csv);
     }
 
     IEnumerator InitRoutine()
     {
-        // SceneNavigator.Instance가 살아날 때까지 한 프레임씩 대기
         while (SceneNavigator.Instance == null)
             yield return null;
 
-        // 세션 상태 기준으로 첫 씬 결정
         var session = SessionManager.Instance;
         bool authed = (session != null && session.IsSignedIn);
 

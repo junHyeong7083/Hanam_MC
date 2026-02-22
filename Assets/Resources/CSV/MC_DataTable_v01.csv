@@ -1,0 +1,341 @@
+#annotation,index,#textType,#textCategory,#XX,#order,ko,en
+주석,인덱스,텍스트 타입,텍스트 유형,빈 값,순서,한국어,영어
+챕터 1 타이틀,900100001,90,01,00,001,마음 영화감독,Mind Film Director
+챕터 2 타이틀,900100002,90,01,00,002,마음 정원사,Gardener of the Heart
+챕터 1 설명,900100003,90,01,00,003,"당신의 마음을 영화처럼 연출하고, 감정의 장면들을 재편집해보세요.",Direct your mind like a movie and re-edit emotional scenes.
+챕터 2 설명,900100004,90,01,00,004,"마음의 정원을 가꾸며, 긍정의 씨앗을 심고 키워보세요.","Cultivate the garden of your heart, plant and nurture seeds of positivity."
+,900100005,90,01,00,005,치유 모드를 선택해주세요,Please select a healing mode
+,900100006,90,01,00,006,당신에게 맞는 마음 치유 방법을 찾아보세요,Find the right mental healing method for you
+챕터 1 스테이지 1 타이틀,900200001,90,02,00,001,생각과 사실 구분하기,Distinguishing between thoughts and facts
+챕터 1 스테이지 2 타이틀,900200002,90,02,00,002,NG 장면 분석하기,Analyzing NG scenes
+챕터 1 스테이지 3 타이틀,900200003,90,02,00,003,과거 시나리오 재해석,Reinterpreting past scenarios
+챕터 1 스테이지 4 타이틀,900200004,90,02,00,004,흑백 필름 편집하기,Editing black and white film
+챕터 1 스테이지 5 타이틀,900200005,90,02,00,005,카메라 앵글 바꾸기,Change the camera angle
+챕터 1 스테이지 6 타이틀,900200006,90,02,00,006,마음의 휴식 공간,A space for the mind to rest
+챕터 1 스테이지 7 타이틀,900200007,90,02,00,007,배우 연기 지도하기,Coaching actors
+챕터 1 스테이지 8 타이틀,900200008,90,02,00,008,촬영 현장 정리하기,Cleaning up the filming site
+챕터 1 스테이지 9 타이틀,900200009,90,02,00,009,시사회 준비하기,Preparing for the premiere
+챕터 1 스테이지 10 타이틀,900200010,90,02,00,010,감독의 마스터 클래스,Director's Master Class
+챕터 1 스테이지 1 설명,900200011,90,02,00,011,흐릿한 생각 필름을 선명하게 만드는 첫 촬영,The first shot that makes the blurry thought film clear
+챕터 1 스테이지 2 설명,900200012,90,02,00,012,감정 조명을 연결하고 다른 관점으로 재촬영하기,Connecting emotional lighting and reshooting from a different perspective
+챕터 1 스테이지 3 설명,900200013,90,02,00,013,부정적 기억을 새로운 시각으로 바라보고 강점 찾기,Look at negative memories from a new perspective and find your strengths.
+챕터 1 스테이지 4 설명,900200014,90,02,00,014,흑백논리를 컬러로 바꾸고 반박 질문 연습하기,Transform black-and-white logic into color and practice asking counter-questions.
+챕터 1 스테이지 5 설명,900200015,90,02,00,015,다른 관점에서 상황을 이해하는 연습,Practice understanding situations from different perspectives
+챕터 1 스테이지 6 설명,900200016,90,02,00,016,스트레스 반응 알아차리고 이완 훈련하기,Recognize your stress response and practice relaxation techniques.
+챕터 1 스테이지 7 설명,900200017,90,02,00,017,자기 대화법과 내면의 목소리 다루기,Self-talk and dealing with your inner voice
+챕터 1 스테이지 8 설명,900200018,90,02,00,018,스트레스 관리와 이완 기법 익히기,Learn stress management and relaxation techniques
+챕터 1 스테이지 9 설명,900200019,90,02,00,019,성과 정리하고 미래 계획 세우기,Summarize your achievements and plan for the future.
+챕터 1 스테이지 10 설명,900200020,90,02,00,020,배운 모든 기술을 통합하고 실천하기,Integrate and put into practice all the skills you've learned
+스테이지 1,900300001,90,03,00,001,안녕하세요 감독님! 먼지 쌓인 마음 스튜디오를 함께 정리해볼까요?,"Hello, Director! Let's clean up the dusty Heart Studio together."
+스테이지 1,900300002,90,03,00,002,필름을 터치해서 내용을 확인해주세요,Please touch the film to check the contents.
+스테이지 1,900300003,90,03,00,003,이 필름이 '생각' 인지 '사실' 인지 구분해주세요!,Please tell me if this film is 'thought' or 'fact'!
+스테이지 1,900300004,90,03,00,004,불안한 생각,anxious thoughts
+스테이지 1,900300005,90,03,00,005,걱정되는 미래,A worrying future
+스테이지 1,900300006,90,03,00,006,과거의 실수,Past mistakes
+스테이지 1,900300007,90,03,00,007,부정적 감정,negative emotions
+스테이지 1,900300008,90,03,00,008,모호한 기억,vague memories
+스테이지 1,900300009,90,03,00,009,흐릿한 인상,blurry impression
+스테이지 1,900300010,90,03,00,010,막인한 두려움,A fear of being blocked
+스테이지 1,900300011,90,03,00,011,숨겨진 감정,Hidden emotions
+스테이지 1,900300012,90,03,00,012,생각 필름통,Thought Film Canister
+스테이지 1,900300013,90,03,00,013,사실 필름통,"Actually, a film canister"
+스테이지 1,900300014,90,03,00,014,생각,thought
+스테이지 1,900300015,90,03,00,015,사실,actually
+스테이지 1,900300016,90,03,00,016,나는 실패할 것이다,I will fail
+스테이지 1,900300017,90,03,00,017,시험에서 80점을 받았다,I got 80 points on the test.
+스테이지 1,900300018,90,03,00,018,나는 충분하지 않다,I am not enough
+스테이지 1,900300019,90,03,00,019,친구가 인사를 안했다,My friend didn't say hello
+스테이지 1,900300020,90,03,00,020,모두가 나를 싫어한다,Everyone hates me
+스테이지 1,900300021,90,03,00,021,프로젝트가 지연되었다,The project was delayed.
+스테이지 2,900300022,90,03,00,022,"감독님, 다시 오셨군요! 지난주에 얻은 마음렌즈로 이 NG 필름을 자세히 들여다볼까요?","Director, welcome back! Let's take a closer look at this NG film through the lens of the mind we acquired last week."
+스테이지 2,900300023,90,03,00,023,모두 나를 이상하게 생각할 거야,Everyone will think I'm weird
+스테이지 2,900300024,90,03,00,024,불안 조명,Anxious lighting
+스테이지 2,900300025,90,03,00,025,이 NG 장면들은 특정 감정의 조명을 켜고 있어요. 필름을 눌러 어떤 감정인지 확인해보세요.,These NG scenes illuminate specific emotions. Press the film to see what emotions they are.
+스테이지 2,900300026,90,03,00,026,발표할 때 떨렸던 순간,The moment I was nervous while presenting
+스테이지 2,900300027,90,03,00,027,시험 전날 밤,The night before the exam
+스테이지 2,900300028,90,03,00,028,혼자 남겨졌을 때,When left alone
+스테이지 2,900300029,90,03,00,029,불안,unrest
+스테이지 2,900300030,90,03,00,030,두려움,awe
+스테이지 2,900300031,90,03,00,031,위축,atrophy
+스테이지 2,900300032,90,03,00,032,이 장면을 다른 관점으로 다시 촬영하면 OK 컷이 될 수 있어요. 새로운 관점을 선택하고 마이크를 눌러 답해주세요,"If you reshoot this scene from a different perspective, it might be an OK cut. Choose a new perspective and press the microphone to respond."
+스테이지 2,900300033,90,03,00,033,나에게 관심이 없을 수도 있어,You may not be interested in me
+스테이지 2,900300034,90,03,00,034,상대도 긴장했을 수도 있어,The other person might have been nervous too
+스테이지 2,900300035,90,03,00,035,나를 도우려는 의도일지도 몰라,Maybe it's meant to help me
+스테이지 2,900300036,90,03,00,036,새로운 카메라 앵글 선택,Select a new camera angle
+스테이지 3,900300037,90,03,00,037,"감독님, 책상 위에 있는 낡은 시나리오가 보이시나요? 지난 주에 얻은 시나리오 펜으로 이 이야기의 진짜 의미를 찾아봐요.","Director, do you see the old script on the desk? Let's use the script pen I got last week to find the true meaning of this story."
+스테이지 3,900300038,90,03,00,038,과거의 시나리오,Past scenarios
+스테이지 3,900300039,90,03,00,039,- 재해석 노트 -,- Reinterpretation Note -
+스테이지 3,900300040,90,03,00,040,시나리오 펜을 드래그하여 책 위에 올려주세요,Drag the scenario pen over the book
+스테이지 3,900300041,90,03,00,041,과거 장면 재해석 하기,Reinterpreting past scenes
+스테이지 3,900300042,90,03,00,042,시나리오 수정 중...,Scenario revision in progress...
+스테이지 3,900300043,90,03,00,043,공백기 : 아무것도 하지 않았다.,Blank period: nothing done.
+스테이지 3,900300044,90,03,00,044,공백기 : 주인공이 다음 도약을 위해 에너지를 재충전했다.,Blank period: The protagonist recharges his energy for the next leap.
+스테이지 3,900300045,90,03,00,045,새로운 관점 선택,Choose a new perspective
+스테이지 3,900300046,90,03,00,046,집에서 주로 쉬었다.,I mostly rested at home.
+스테이지 3,900300047,90,03,00,047,새로운 방향을 고민했다.,I was thinking about a new direction.
+스테이지 3,900300048,90,03,00,048,몸을 회복하는 시간을 가졌다.,I had time to recover.
+스테이지 3,900300049,90,03,00,049,다음 장면,Next scene
+스테이지 3,900300050,90,03,00,050,실패 : 시도했지만 잘 안됐다.,Failure: Tried but didn't work out well.
+스테이지 3,900300051,90,03,00,051,실패 : 주인공이 또 다른 가능성을 발견하는 계기가 되었다.,Failure: This became the opportunity for the protagonist to discover another possibility.
+스테이지 3,900300052,90,03,00,052,예상과 달랐다.,It was different from what I expected.
+스테이지 3,900300053,90,03,00,053,새로운 걸 배웠다.,I learned something new.
+스테이지 3,900300054,90,03,00,054,다른 길을 찾게 됐다.,I had to find another way.
+스테이지 3,900300055,90,03,00,055,포기 : 더 이상 할 수 없었다.,Give up: I couldn't do it anymore.
+스테이지 3,900300056,90,03,00,056,포기 : 주인공이 자신에게 더 맞는 길을 선택한 순간이었다.,Giving Up: It was the moment when the protagonist chose the path that was better for him.
+스테이지 3,900300057,90,03,00,057,한계를 느꼈다.,I felt limited.
+스테이지 3,900300058,90,03,00,058,다른 우선 순위가 생겼다.,Other priorities arose.
+스테이지 3,900300059,90,03,00,059,더 나은 선택을 위해 멈췄다.,Stopped for a better choice.
+스테이지 3,900300060,90,03,00,060,방금 수정한 이야기를 보면 주인공의 강점이 보여요. 제가 질문하면 화면의 강점을 말해주세요!,"If you look at the story I just edited, you can see the protagonist's strengths. If I ask you, tell me the strengths on the screen!"
+스테이지 3,900300061,90,03,00,061,수정된 시나리오,Revised scenario
+스테이지 3,900300062,90,03,00,062,주인공의 강점,The protagonist's strengths
+스테이지 3,900300063,90,03,00,063,성실함,sincerity
+스테이지 3,900300064,90,03,00,064,자기관리 능력,self-management skills
+스테이지 3,900300065,90,03,00,065,인내심,patience
+스테이지 4,900300066,90,03,00,066,"감독님, 이 필름은 세상을 '성공' 아니면 '실패' 로만 보게 하는 흑백 논리로 촬영되었어요. 지난주에 얻은 편집용 가위로 불필요한 생각 컷들을 잘라내볼까요?","Director, this film was shot with a black-and-white logic that views the world as either ""success"" or ""failure."" Should we use the editing scissors we got last week to cut out the unnecessary thoughts?"
+스테이지 4,900300067,90,03,00,067,편집용 가위를 드래그하여 필름 위에 올려주세요,Drag the editing scissors and place them on the film.
+스테이지 4,900300068,90,03,00,068,"이 컷이 '내 생각' 인가요, 아니면 '사실' 인가요? 생각이라면 [컷] 으로 제거하고, 사실이라면 [통과] 시켜주세요!","Is this cut ""my opinion"" or ""fact""? If it's an opinion, please [cut] it out. If it's fact, please [pass] it!"
+스테이지 4,900300069,90,03,00,069,컷,Cut
+스테이지 4,900300070,90,03,00,070,통과,passing
+스테이지 4,900300071,90,03,00,071,생각인지 사실인지 판단해보세요,Decide if it's a thought or a fact.
+스테이지 4,900300072,90,03,00,072,나는 면접에서 떨어졌다,I failed the interview.
+스테이지 4,900300073,90,03,00,073,내 인생은 끝났다,My life is over
+스테이지 4,900300074,90,03,00,074,면접관이 고개를 끄덕였다,The interviewer nodded.
+스테이지 4,900300075,90,03,00,075,난 아무것도 못해,I can't do anything
+스테이지 4,900300076,90,03,00,076,다음 면접 기회가 있다,There is another interview opportunity.
+스테이지 4,900300077,90,03,00,077,항상 실패할 거야,It will always fail
+스테이지 4,900300078,90,03,00,078,다시 생각해보세요,Think again
+스테이지 4,900300079,90,03,00,079,이제 다시는 흑백논리에 빠지지 않도록 마음을 단단하게 만들어볼까요?,"Now, let's strengthen our minds so that we never fall into black-and-white thinking again."
+스테이지 4,900300080,90,03,00,080,반박 질문,Rebuttal question
+스테이지 4,900300081,90,03,00,081,이번에 떨어졌으니 앞으로도 계속 떨어질거야' 이 말이 100% 사실이라는 증거가 있을까요?,"Is there any evidence that this statement, 'I fell this time, so I'll keep falling', is 100% true?"
+스테이지 4,900300082,90,03,00,082,네' 또는 '아니오' 라고 말해주세요,Please say 'yes' or 'no'
+스테이지 4,900300083,90,03,00,083,네,yes
+스테이지 4,900300084,90,03,00,084,아니오,no
+스테이지 4,900300085,90,03,00,085,이번 경험을 통해 다음 면접을 더 잘 준비할 수 있다,This experience will help me better prepare for my next interview.
+스테이지 5,900300086,90,03,00,086,감독님 이 장면은 배우의 표정만 너무 가까이 찍어서 오해를 부르는 '독심술 오류' 장면이에요. 지난주에 얻은 '줌 렌즈'로 카메라를 뒤로 당겨 전체 상황을 살펴볼까요?,"Director, this scene is a ""mind-reading error"" where the camera only focuses on the actor's expression, leading to misunderstanding. Let's use the ""zoom lens"" we acquired last week to pull the camera back and get a full view of the situation."
+스테이지 5,900300087,90,03,00,087,줌 렌즈를 드래그하여 모니터 위에 올려주세요,Drag the zoom lens and place it on the monitor.
+스테이지 5,900300088,90,03,00,088,아하! 나 때문에 굳은 표정이 아니었네요. 다른 장면들도 줌 아웃 해볼까요? 오해 장면들을 터치해서 확인해보세요!,Aha! It wasn't because of me that you had such a stiff expression. Let's zoom out to see other scenes too. Tap on the misunderstanding scenes to check them out!
+스테이지 5,900300089,90,03,00,089,동료의 화난 표정,A colleague's angry expression
+스테이지 5,900300090,90,03,00,090,친구의 차가운 얼굴,My friend's cold face
+스테이지 5,900300091,90,03,00,091,상사의 무표정,The boss's expressionless face
+스테이지 5,900300092,90,03,00,092,친구는 피곤해서 잠시 쉬고있었을 뿐이에요,My friend was just resting for a while because he was tired.
+스테이지 5,900300093,90,03,00,093,사실 동료는 복잡한 엑셀 때문에 인상을 쓰고 있어요,"Actually, my colleague is frowning because of the complicated Excel."
+스테이지 5,900300094,90,03,00,094,상사는 일정 자료를 확인하며 집중하고 있어요,The boss is concentrating while checking the schedule data.
+스테이지 5,900300095,90,03,00,095,완벽해요! 줌 아웃하니 전혀 다른 상황이 보이죠? 이제 직접 대화하는 연습을 해볼까요?,"Perfect! Zooming out, you see a completely different scene. Now, let's practice having a real conversation."
+스테이지 5,900300096,90,03,00,096,대사 연습하기,Practice your lines
+스테이지 5,900300097,90,03,00,097,동료가 기다리고 있습니다...,Your colleagues are waiting...
+스테이지 5,900300098,90,03,00,098,"전체 상황을 봤으니, 이제 직접 물어보는 대사를 연습해봐요. 저를 동료라고 생각하고, 제가 ""무슨 일 있으세요?"" 라고 물으면, 화면에서 가장 적절한 대사를 골라 말해주세요.","Now that you've seen the full situation, let's practice asking questions directly. Imagine I'm your colleague. If I ask, ""What's wrong?"", choose the most appropriate line from the screen and say it."
+스테이지 5,900300099,90,03,00,099,"""아니요, 아무 문제 없어요.""","""No, it's no problem."""
+스테이지 5,900300100,90,03,00,100,"""혹시 제가 뭘 잘못했을까요?""","""I wonder if I did something wrong?"""
+스테이지 5,900300101,90,03,00,101,"""왜그러세요?""","""Why are you like that?"""
+스테이지 5,900300102,90,03,00,102,"""아니요! 그냥 오늘 처리할 일이 많아서 그래요...""","""No! I just have a lot to do today..."""
+스테이지 5,900300103,90,03,00,103,"""완벽해요! 건강한 자기표현이에요""","""It's perfect! It's healthy self-expression."""
+스테이지 6,900300104,90,03,00,104,"감독님, 좋은 영화를 만들려면 휴식도 중요해요. 지난 주에 얻은 '휴식용 감독 의자'를 저곳에 놓아 우리만의 휴식 공간을 만들어봐요","Director, rest is important to making a good film. Let's create our own relaxation space by placing the ""relaxation director's chair"" we got last week over there."
+스테이지 6,900300105,90,03,00,105,휴식용 감독의자를 드래그하여 빈 공간에 올려주세요,Drag the director's chair for relaxation and place it in the empty space.
+스테이지 6,900300106,90,03,00,106,이런! 스트레스 때문에 전력 공급이 불안정한 것 같아요. 먼저 감독님의 스트레스 반응을 알아차려 조명을 안정시켜요. 스트레스를 받을 때 어떤 반응이 나타나나요?,"Oh! I think the power supply is unstable due to stress. First, I'll notice the director's stress response and stabilize the lighting. What kind of reactions do you have when you're stressed?"
+스테이지 6,900300107,90,03,00,107,2~4개의 카드를 선택하세요,Select 2 to 4 cards
+스테이지 6,900300108,90,03,00,108,신체적,physical
+스테이지 6,900300109,90,03,00,109,정서적,emotional
+스테이지 6,900300110,90,03,00,110,행동,action
+스테이지 6,900300111,90,03,00,111,행동적,Behavioral
+스테이지 6,900300112,90,03,00,112,두통,headache
+스테이지 6,900300113,90,03,00,113,심장 두근거림,heart palpitations
+스테이지 6,900300114,90,03,00,114,피로감,fatigue
+스테이지 6,900300115,90,03,00,115,짜증,petulance
+스테이지 6,900300116,90,03,00,116,불안,unrest
+스테이지 6,900300117,90,03,00,117,우울,melancholy
+스테이지 6,900300118,90,03,00,118,과식,surfeit
+스테이지 6,900300119,90,03,00,119,회피,evasion
+스테이지 6,900300120,90,03,00,120,조명이 안정됐네요. 이제 편안한 분위기를 위해 배경 음악을 틀어봐요. 제가 안내하는대로 따라 하면서 몸과 마음의 긴장을 풀어주세요.,"The lighting is stable. Now, let's play some background music to create a relaxing atmosphere. Follow my instructions and relax your body and mind."
+스테이지 6,900300121,90,03,00,121,이완 훈련 시작하기,Start relaxation training
+스테이지 6,900300122,90,03,00,122,편안한 자세,comfortable posture
+스테이지 6,900300123,90,03,00,123,"감독 의자에 편안히 앉아주세요. 등을 의자에 기대고, 어깨의 힘을 빼주세요.",Please sit comfortably in the director's chair. Lean your back against the chair and relax your shoulders.
+스테이지 6,900300124,90,03,00,124,눈 감기,Close your eyes
+스테이지 6,900300125,90,03,00,125,"천천히 눈을 감아주세요. 주변의 소리와 빛을 차단하고, 내면의 평화에 집중해봐요.","Close your eyes slowly. Block out any surrounding sounds or lights, and focus on your inner peace."
+스테이지 6,900300126,90,03,00,126,복식 호흡 1,Abdominal breathing 1
+스테이지 6,900300127,90,03,00,127,코로 천천히 숨을 들이마시세요. 1...2...3...4... 배가 부풀어 오르는 것을 느껴보세요.,Inhale slowly through your nose. 1...2...3...4... Feel your belly rise.
+스테이지 6,900300128,90,03,00,128,복식 호흡 2,Abdominal breathing 2
+스테이지 6,900300129,90,03,00,129,잠시 숨을 멈춰주세요. 1...2...,Hold your breath for a moment. 1...2...
+스테이지 6,900300130,90,03,00,130,복식 호흡 3,Abdominal breathing 3
+스테이지 6,900300131,90,03,00,131,입으로 천천히 숨을 내쉬세요. 1...2...3...4...5...6... 몸의 긴장이 함께 빠져나가요.,Exhale slowly through your mouth. 1...2...3...4...5...6... Feel the tension in your body disappear together.
+스테이지 6,900300132,90,03,00,132,근육 이완 - 얼굴,Muscle relaxation - face
+스테이지 6,900300133,90,03,00,133,"이마, 눈 주변, 입 주변의 긴장을 풀어주세요. 턱의 힘도 빼주세요.","Relax your forehead, around your eyes, and around your mouth. Also relax your jaw."
+스테이지 6,900300134,90,03,00,134,근육 이완 - 어깨,Muscle Relaxation - Shoulders
+스테이지 6,900300135,90,03,00,135,어깨를 살짝 으쓱했다가 천천히 내려주세요. 긴장이 사라지는 것을 느껴보세요.,"Shrug your shoulders slightly, then slowly lower them. Feel the tension melt away."
+스테이지 6,900300136,90,03,00,136,마음 돌아보기,Look back at your heart
+스테이지 6,900300137,90,03,00,137,"이 순간, 당신은 충분히 잘하고 있어요. 스스로에게 따뜻한 말을 건네주세요. ""수고했어, 잘하고 있어.""","At this moment, you're doing well enough. Give yourself a warm word: ""Good job. You're doing well."""
+스테이지 6,900300138,90,03,00,138,이완 완료,Relaxation complete
+스테이지 6,900300139,90,03,00,139,"천천히 눈을 뜨고, 다시 현실로 돌아와주세요. 얼마나 편안해졌는지 느껴보세요.",Open your eyes slowly and come back to reality. Feel how relaxed you feel.
+스테이지 7,900300140,90,03,00,140,"""자기 비난 장면 재생 중...""","""Playing the self-blame scene..."""
+스테이지 7,900300141,90,03,00,141,"감독님, 이 장면은 주인공이 자기비난을 하다가 NG가 났어요. 지난 주에 얻은 '격력의 메가폰'을 눌러 자기 자비의 명대사를 들어볼까요?","Director, this scene was cut short because the main character was criticizing himself. Let's press the ""powerful megaphone"" we got last week and hear some self-compassionate lines."
+스테이지 7,900300142,90,03,00,142,격려의 메가폰을 드래그하여 빈 공간에 놓아주세요.,Drag the Megaphone of Encouragement and drop it on an empty space.
+스테이지 7,900300143,90,03,00,143,격려의 메가폰 활성화!,Activate the megaphone of encouragement!
+스테이지 7,900300144,90,03,00,144,주인공에게 힘을 줄 시간이에요,It's time to empower the protagonist.
+스테이지 7,900300145,90,03,00,145,"""주인공은 다른 사람에게 보여주기 위한 가면을 쓰고 있어요. 가면 뒤에 숨겨진 진짜 마음을 알아주면 힘을 낼 거예요.""","""The protagonist wears a mask to show others. If you understand the true feelings hidden behind the mask, you will gain strength."""
+스테이지 7,900300146,90,03,00,146,가면 살펴보기,Examine the mask
+스테이지 7,900300147,90,03,00,147,주인공이 쓰고 있는 가면은 무엇일까요?,What mask is the main character wearing?
+스테이지 7,900300148,90,03,00,148,쿨한 척,Pretend to be cool
+스테이지 7,900300149,90,03,00,149,아무렇지 않은 척,Pretend nothing happened
+스테이지 7,900300150,90,03,00,150,강한 척,pretending to be strong
+스테이지 7,900300151,90,03,00,151,괜찮은 척,Pretend to be okay
+스테이지 7,900300152,90,03,00,152,그 가면 뒤에 숨겨진 진짜 마음은 무엇이었나요?,What was the real heart hidden behind that mask?
+스테이지 7,900300153,90,03,00,153,사실은 불안헀어,"Actually, I was anxious"
+스테이지 7,900300154,90,03,00,154,도움이 필요했어,I needed help
+스테이지 7,900300155,90,03,00,155,혼자라서 외로웠어,I was lonely because I was alone
+스테이지 7,900300156,90,03,00,156,너무 힘들었어,It was so hard
+스테이지 7,900300157,90,03,00,157,주인공이 조금씩 고개를 들기 시작했어요,The protagonist began to raise his head little by little.
+스테이지 7,900300158,90,03,00,158,명대사 준비하기,Prepare your famous lines
+스테이지 7,900300159,90,03,00,159,"""이제 주인공을 일으켜 세울 명대사를 외쳐줄 시간이에요! 제가 '주인공에게', 라고 하면 이어서 해주고 싶은 말을 화면에서 골라 메가폰에 대고 힘차게 말해주세요.""","""Now it's time to shout out the famous line that will wake up the protagonist! When I say 'to the protagonist,' please choose the line you want to say next on the screen and say it powerfully into the megaphone."""
+스테이지 7,900300160,90,03,00,160,명대사 선택하기,Select a famous line
+스테이지 7,900300161,90,03,00,161,주인공에게 해주고 싶은 말 하나를 선택하고 마이크 버튼을 눌러 말해주세요,Choose one thing you want to say to the main character and press the microphone button to say it.
+스테이지 7,900300162,90,03,00,162,지금까지 정말 잘 버텨왔어,You've held up really well so far
+스테이지 7,900300163,90,03,00,163,너의 잘못이 아니야,It's not your fault
+스테이지 7,900300164,90,03,00,164,너는 소중한 사람이야,You are a precious person
+스테이지 7,900300165,90,03,00,165,버튼을 누르고 큰 소리로 외쳐주세요!,Please press the button and shout loudly!
+스테이지 7,900300166,90,03,00,166,명장면 탄생!,The birth of a famous scene!
+스테이지 7,900300167,90,03,00,167,따뜻한 격려로 주인공이 활짝 웃게 되었어요,The warm encouragement made the protagonist smile brightly.
+스테이지 8,900300168,90,03,00,168,"감독님, 이제 다음 챕터를 기획할 시간이에요. 지난주에 얻은 '스토리보드'에 '재취업' 이라는 새로운 이야기의 첫 장면을 그려보아요","Director, it's time to plan the next chapter. Let's draw the first scene of a new story called ""Reemployment"" using the ""storyboard"" we received last week."
+스테이지 8,900300169,90,03,00,169,스토리보드를 클릭해주세요,Please click on the storyboard
+스테이지 8,900300170,90,03,00,170,스토리보드가 펼쳐집니다...,The storyboard unfolds...
+스테이지 8,900300171,90,03,00,171,칠판에 있는 5가지 장면을 순서에 맞춰 스토리보드에 배치해주세요.,Please arrange the five scenes on the board in order on the storyboard.
+스테이지 8,900300172,90,03,00,172,장면 카드를 순서에 맞게 배치해주세요,Please arrange the scene cards in order.
+스테이지 8,900300173,90,03,00,173,문제 정의,Problem definition
+스테이지 8,900300174,90,03,00,174,대안 탐색,Explore alternatives
+스테이지 8,900300175,90,03,00,175,결과 예측,Predicting the outcome
+스테이지 8,900300176,90,03,00,176,대안 선택,Alternative options
+스테이지 8,900300177,90,03,00,177,실행,execution
+스테이지 8,900300178,90,03,00,178,1단계,Step 1
+스테이지 8,900300179,90,03,00,179,2단계,Step 2
+스테이지 8,900300180,90,03,00,180,3단계,Step 3
+스테이지 8,900300181,90,03,00,181,4단계,Step 4
+스테이지 8,900300182,90,03,00,182,5단계,Step 5
+스테이지 8,900300183,90,03,00,183,나의 문제 해결 이야기,My Problem Solving Story
+스테이지 8,900300184,90,03,00,184,"스토리보드가 완성됐어요! 이제 가장 중요한 첫 장면, '액션'을 정해봐요. '재취업' 이라는 이야기를 위해 지금 당장 촬영할 수 있는 가장 작은 장면은 무엇일까요? 화면에서 골라 말해주세요.","The storyboard is complete! Now, let's decide on the most important first scene: the ""action."" What's the smallest scene you can film right now for the story of ""re-employment""? Pick one from the screen and tell me."
+스테이지 8,900300185,90,03,00,185,워크넷 사이트 둘러보는 장면,A scene from browsing the Worknet site
+스테이지 8,900300186,90,03,00,186,이력서 파일 열어보는 장면,A scene where a resume file is opened
+스테이지 8,900300187,90,03,00,187,센터 선생님께 연락하는 장면,A scene where you contact the center teacher
+스테이지 8,900300188,90,03,00,188,좋아요! '???'은 정말 훌륭한 첫 장면이에요.,Okay! '???' is a really great first scene.
+스테이지 8,900300189,90,03,00,189,컷! 오케이!,Cut! Okay!
+스테이지 8,900300190,90,03,00,190,"그 약속, 꼭 지킬거라고 믿어요!",I believe you will keep that promise!
+스테이지 8,900300191,90,03,00,191,스토리보드에 첫 장면이 기록되었습니다,The first scene was written on the storyboard.
+스테이지 9,900300192,90,03,00,192,"감독님, 이 장면은 대사가 엉망이라 NG가 났어요. 지난주에 얻은 '대본'을 보고 더 좋은 대사로 바꿔볼까요?","Director, this scene was a flop because the dialogue was a mess. Should I look at the script I got last week and replace it with something better?"
+스테이지 9,900300193,90,03,00,193,갈등 장면,conflict scene
+스테이지 9,900300194,90,03,00,194,동료와 말다툼하는 장면 - 대사가 엉망이라 NG!,The scene where you argue with a colleague - the dialogue is a mess so it's NG!
+스테이지 9,900300195,90,03,00,195,인벤토리에서 '대본'을 드래그해 충돌영역에 놓아주세요,Drag the 'Script' from your inventory and drop it on the collision area.
+스테이지 9,900300196,90,03,00,196,대본 활용하기,Using a script
+스테이지 9,900300197,90,03,00,197,상황에 맞는 최고의 대사를 골라주세요. 감독님의 선택에 따라 장면의 결과가 달라질 거예요.,Please choose the best line for the situation. The outcome of the scene will depend on the director's choice.
+스테이지 9,900300198,90,03,00,198,동료가 회의 중에 내 의견을 무시하고 자기 의견만 강요했어요.,My colleague ignored my opinion during a meeting and insisted on his own.
+스테이지 9,900300199,90,03,00,199,어떻게 말할까요?,How should I say it?
+스테이지 9,900300200,90,03,00,200,공격적 표현,aggressive expressions
+스테이지 9,900300201,90,03,00,201,수동적 표현,passive expression
+스테이지 9,900300202,90,03,00,202,건강한 표현,Healthy expression
+스테이지 9,900300203,90,03,00,203,당신은 항상 남의 말을 안들어요! 이기적이에요!,You never listen to others! You're selfish!
+스테이지 9,900300204,90,03,00,204,...아무 말도 하지 않고 속으로 참는다,...holding it in without saying anything
+스테이지 9,900300205,90,03,00,205,회의 중에 제 의견이 무시된 것 같아 속상했어요. 다음엔 제 말도 들어주시면 좋겠어요.,I was upset that my opinion seemed ignored during the meeting. I hope you'll listen to me next time.
+스테이지 9,900300206,90,03,00,206,NG,NG
+스테이지 9,900300207,90,03,00,207,관계가 더 나빠지고 서러 불편한 분위기가 이어집니다.,The relationship worsens and an uncomfortable atmosphere ensues.
+스테이지 9,900300208,90,03,00,208,다시 시도하기,Try again
+스테이지 9,900300209,90,03,00,209,OK 컷!,OK cut!
+스테이지 9,900300210,90,03,00,210,동료가 미안하다고 말하며 앞으로는 서로 의견을 존중하자고 제안합니다.,Your colleague apologizes and suggests that you respect each other's opinions in the future.
+스테이지 9,900300211,90,03,00,211,다음 장면,Next scene
+스테이지 9,900300212,90,03,00,212,상황에 맞는 최고의 대사를 골라주세요. 감독님의 선택에 따라 장면의 결과가 달라질 거예요.,Please choose the best line for the situation. The outcome of the scene will depend on the director's choice.
+스테이지 9,900300213,90,03,00,213,친구가 약속 시간에 30분 늦게 와서 연락도 없었어요.,My friend arrived 30 minutes late for our appointment and didn't contact me.
+스테이지 9,900300214,90,03,00,214,너는 맨날 이래! 시간 약속 못 지키면서 왜 약속을 해?,You're always like this! Why do you make promises when you can't keep them?
+스테이지 9,900300215,90,03,00,215,괜찮아...(속으로는 화가 나지만 참는다),"It's okay... (I'm angry inside, but I hold it in)"
+스테이지 9,900300216,90,03,00,216,연락 없이 늦게 와서 걱정했어. 다음엔 늦을 것 같으면 미리 말해줬으면 좋겠어.,"I was worried because you arrived late without notice. Next time, if you think you'll be late, please let me know in advance."
+스테이지 9,900300217,90,03,00,217,친구도 기분이 상해서 말다툼이 시작됩니다.,The friend also feels hurt and an argument begins.
+스테이지 9,900300218,90,03,00,218,친구가 사과하며 다음부터는 연락하겠다고 약속합니다.,Your friend apologizes and promises to contact you again.
+스테이지 9,900300219,90,03,00,219,가족이 내가 힘들어하는 걸 알면서도 계속 일을 시켜요,My family keeps making me work even though they know I'm having a hard time.
+스테이지 9,900300220,90,03,00,220,내가 로봇이야? 나도 힘든데 왜 자꾸 시켜?!,"Am I a robot? I'm having a hard time too, so why do you keep ordering me around?!"
+스테이지 9,900300221,90,03,00,221,...아무 말도 없이 계속 일을 한다,...and continue working without saying anything
+스테이지 9,900300222,90,03,00,222,지금 좀 힘들어서 쉬고 싶어요. 나중에 해도 될까요?,I'm a little tired right now and want to rest. Can I rest later?
+스테이지 9,900300223,90,03,00,223,서로 언성이 높아지고 감정이 상합니다.,Voices are raised and feelings are hurt.
+스테이지 9,900300224,90,03,00,224,가족이 이해하며 쉬라고 말해줍니다.,My family understands and tells me to rest.
+스테이지 9,900300225,90,03,00,225,연습 완료,Practice complete
+스테이지 9,900300226,90,03,00,226,"먼저, ""당신이 퉁명스럽게 말했을 때 (상황)""을 따라 말해주세요.","First, tell me the situation ""when you speak rudely""."
+스테이지 9,900300227,90,03,00,227,"이제 ""나는 조금 당황스러웠어요 (감정)""를 따라 말해주세요.","Now, please repeat after me, ""I was a little embarrassed (feeling)""."
+스테이지 9,900300228,90,03,00,228,"마지막으로 ""구체적으로 알려주시면 좋겠어요 (바람)""를 따라 말해주세요.","Finally, please follow along with ""I would like you to be more specific (if you would like to be more specific)."""
+스테이지 9,900300229,90,03,00,229,완성!,completion!
+스테이지 9,900300230,90,03,00,230,나-전달법 대사가 완성되었어요,I-The delivery method dialogue is complete
+스테이지 9,900300231,90,03,00,231,"""그렇구나... 앞으로는 미리 연락할게!""","""I see... I'll contact you in advance from now on!"""
+스테이지 9,900300232,90,03,00,232,"""멋진 대사에요! 방금 장면. OK 컷 입니다!""","""Great line! Just now, the scene. OK, cut!"""
+스테이지 10,900300233,90,03,00,233,"감독님, 10주간의 대장정이 거의 끝나가요. 지난주에 얻은 '영화 포스터'에 감독님 영화의 제목과 주제를 정해 완성해봐요.","Director, the ten-week journey is almost over. Let's finalize the title and theme of your film based on the ""movie poster"" we received last week."
+스테이지 10,900300234,90,03,00,234,인벤토리에서 '영화 포스터'를 클릭하세요,Click on 'Movie Poster' in your inventory
+스테이지 10,900300235,90,03,00,235,영화 포스터 발견!,Movie poster found!
+스테이지 10,900300236,90,03,00,236,멋져요! 이제 이 포스털르 완성해서 감독님의 영화를 세상에 알려봐요!,Awesome! Now let's finish this poster and share your film with the world!
+스테이지 10,900300237,90,03,00,237,포스터 완성하기,Complete the poster
+스테이지 10,900300238,90,03,00,238,영화의 주제는 감독님이 가장 중요하게 생각하는 '가치'가 될거예요. 나의 인생 영화를 어떤 장르로 만들고 싶나요?,"The film's theme will be the ""values"" that the director considers most important. What genre would you like to make the film of your life in?"
+스테이지 10,900300239,90,03,00,239,성장 드라마,Coming-of-age drama
+스테이지 10,900300240,90,03,00,240,따듯한 휴먼 코미디,A warm human comedy
+스테이지 10,900300241,90,03,00,241,사회에 기여하는 다큐멘터리,Documentaries that contribute to society
+스테이지 10,900300242,90,03,00,242,안정적인 가족 영화,A stable family film
+스테이지 10,900300243,90,03,00,243,계속 배우고 발전하는 나,I am constantly learning and developing
+스테이지 10,900300244,90,03,00,244,사람들과 함께 웃으며 살아가는 나,Me living with people and laughing together
+스테이지 10,900300245,90,03,00,245,세상에 도움이 되는 일을 하는 나,Me doing something helpful to the world
+스테이지 10,900300246,90,03,00,246,소중한 사람들과 평온하게 지내는 나,Me spending time peacefully with my loved ones
+스테이지 10,900300247,90,03,00,247,이 장르로 포스터 만들기,Create a poster in this genre
+스테이지 10,900300248,90,03,00,248,정말 멋진 장르예요! 이제 이 영화에 제목을 붙여주세요. 마이크 버튼을 누르고 '나의 용기있는 첫걸음' 처럼 영화제목을 말씀해주시면 포스터에 새겨드릴게요.,"This is a really cool genre! Now, give this movie a title. Press the microphone button and say something like ""My Courageous First Step,"" and I'll put it on the poster."
+스테이지 10,900300249,90,03,00,249,"좋아요! 마지막으로, 이 영화를 세상에 공개하며 당신의 다짐을 선언해주세요!","Okay! Finally, declare your commitment by releasing this film to the world!"
+스테이지 10,900300250,90,03,00,250,포스터 완성!,Poster complete!
+스테이지 10,900300251,90,03,00,251,완벽해요! 감독님의 영화 포스터가 완성되었어요. 이제 감독님만의 영화가 세상에 개봉될 준비가 됐습니다!,"Perfect! The director's movie poster is complete. Now, your unique film is ready to be released to the world!"
+스테이지 10,900300252,90,03,00,252,촬영 정리하기,Organizing the shoot
+스테이지 1 요점 1,900400001,90,04,00,001,생각과 사실은 다르다,Thoughts and facts are different.
+스테이지 1 요점 2,900400002,90,04,00,002,생각을 바라보는 시선이 중요하다,The perspective on thinking is important.
+스테이지 1 요점 3,900400003,90,04,00,003,필름처럼 생각을 관찰할 수 있다,You can observe thoughts like film
+스테이지 2 요점 1,900400004,90,04,00,004,자동적 사고가 감정에 영향을 준다,Automatic thoughts influence emotions
+스테이지 2 요점 2,900400005,90,04,00,005,다른 관점으로 재촬영하면 장면을 바꿀 수 있다,You can change a scene by reshooting it from a different perspective.
+스테이지 2 요점 3,900400006,90,04,00,006,생각'은 편집 가능하다,'Thoughts' are editable
+스테이지 3 요점 1,900400007,90,04,00,007,과거 시나리오는 재해석 할 수 있다,Past scenarios can be reinterpreted
+스테이지 3 요점 2,900400008,90,04,00,008,다른 관점을 찾으면 새로운 힘이 보인다,Finding a different perspective reveals new strengths.
+스테이지 3 요점 3,900400009,90,04,00,009,감독의 시선이 영화를 바꾼다,The director's perspective changes the film.
+스테이지 4 요점 1,900400010,90,04,00,010,흑백 논리는 편집으로 제거할 수 있다,Black and white logic can be removed through editing.
+스테이지 4 요점 2,900400011,90,04,00,011,반박 질문으로 생각을 테스트한다,Test your thinking with counter-questions
+스테이지 4 요점 3,900400012,90,04,00,012,컬러 필름으로 균형 잡힌 시각을 만든다,Create a balanced visual experience with color film
+스테이지 5 요점 1,900400013,90,04,00,013,독심술의 오류를 배우고,Learn the errors of mind reading
+스테이지 5 요점 2,900400014,90,04,00,014,줌 아웃으로 전체 상황을 보고,Zoom out to see the whole situation
+스테이지 5 요점 3,900400015,90,04,00,015,질문하는 용기를 연습했어요,I practiced the courage to ask questions
+스테이지 6 요점 1,900400016,90,04,00,016,스트레스 반응을 알아차리는 것이 중요해요,It's important to recognize your stress response.
+스테이지 6 요점 2,900400017,90,04,00,017,이완 훈련으로 몸과 마음의 긴장을 풀 수 있어요,Relaxation training can help you release tension in your body and mind.
+스테이지 6 요점 3,900400018,90,04,00,018,언제든 휴식 공간에서 쉴 수 있어요,You can rest in the break room at any time.
+스테이지 7 요점 1,900400019,90,04,00,019,가면 뒤의 진짜 마음을 알아차리는 것이 중요해요,It's important to recognize the true feelings behind the mask.
+스테이지 7 요점 2,900400020,90,04,00,020,스스로에게 따뜻한 말을 건넬 수 있어요,I can say warm words to myself
+스테이지 7 요점 3,900400021,90,04,00,021,자기 자비는 나를 일으켜 세우는 힘이에요,Self-compassion is the power that lifts me up.
+스테이지 8 요점 1,900400022,90,04,00,022,막막한 목표도 단계를 나누면 실현 가능한 이야기가 될 수 있다,Even daunting goals can become achievable if broken down into steps.
+스테이지 8 요점 2,900400023,90,04,00,023,"스토리보드 5단계를 통해 문제, 대안, 예측, 선택, 실행 흐름을 정리할 수 있다","The five stages of a storyboard can help you organize problems, alternatives, predictions, choices, and action flow."
+스테이지 8 요점 3,900400024,90,04,00,024,작은 첫 장면을 정하면 이야기가 실제로 시작된다,"Once you have a small opening scene, the story really begins."
+스테이지 9 요점 1,900400025,90,04,00,025,상대를 비난하지 않고 내 마음을 표현하는 '나-전달법'을 배웠다,I learned the 'I-communication method' to express my feelings without blaming others.
+스테이지 9 요점 2,900400026,90,04,00,026,갈등도 대사 연기처럼 단계별로정리하면 명장면이 될 수 있다,"Conflict, like acting out a dialogue, can be organized step by step to create a masterpiece."
+스테이지 9 요점 3,900400027,90,04,00,027,"3단계 (상황, 감정, 바람) 를 말하면 AI가 전체 대사를 완성해준다.","If you say the three steps (situation, emotion, desire), AI will complete the entire dialogue."
+스테이지 10 요점 1,900400028,90,04,00,028,삶의 중요한 가치를 영화의 주제로 정했다,The important values ​​of life were chosen as the theme of the film.
+스테이지 10 요점 2,900400029,90,04,00,029,가치 기반의 미래 계획이 의미 있는 엔딩을 만든다,Value-based future planning creates meaningful endings.
+스테이지 10 요점 3,900400030,90,04,00,030,나의 영화 제목과 다짐을 선언하며 마지막 장면을 완성했다,I completed the final scene by declaring the title of my film and my pledge.
+스테이지 보상 1,900500001,90,05,00,001,마음 렌즈,Mind Lens
+스테이지 보상 2,900500002,90,05,00,002,시나리오 펜,Scenario pen
+스테이지 보상 3,900500003,90,05,00,003,편집용 가위,editing scissors
+스테이지 보상 4,900500004,90,05,00,004,줌 렌즈,zoom lens
+스테이지 보상 5,900500005,90,05,00,005,휴식용 감독 의자,Director's chair for relaxation
+스테이지 보상 6,900500006,90,05,00,006,결겨의 메가폰,Megaphone of determination
+스테이지 보상 7,900500007,90,05,00,007,스토리 보드,storyboard
+스테이지 보상 8,900500008,90,05,00,008,대본,script
+스테이지 보상 9,900500009,90,05,00,009,영화 포스터,movie poster
+스테이지 보상 10,900500010,90,05,00,010,아카데미 수료증,Academy Certificate
+스테이지 보상 설명 1,900500011,90,05,00,011,생각과 사실을 구분하는 특별한 렌즈,A special lens that distinguishes between thoughts and facts
+스테이지 보상 설명 2,900500012,90,05,00,012,과거의 이야기를 재구성하는 펜,A pen that reconstructs stories from the past
+스테이지 보상 설명 3,900500013,90,05,00,013,불필요한 부분을 잘라내는 가위,Scissors to cut off unnecessary parts
+스테이지 보상 설명 4,900500014,90,05,00,014,멀리서 전체 상황을 볼 수 있는 렌즈,A lens that allows you to see the whole situation from a distance
+스테이지 보상 설명 5,900500015,90,05,00,015,마음의 휴식을 위한 편안한 의자,A comfortable chair for mental relaxation
+스테이지 보상 설명 6,900500016,90,05,00,016,자기 자비를 전하는 따뜻한 메가폰,A warm megaphone for self-compassion
+스테이지 보상 설명 7,900500017,90,05,00,017,이야기의 뼈대를 세우는 계획서,A plan to lay the story's framework
+스테이지 보상 설명 8,900500018,90,05,00,018,다른 배우와 대사를 맞출 때 사용 할 대본,A script to use when matching lines with other actors
+스테이지 보상 설명 9,900500019,90,05,00,019,영화의 얼굴이 될 포스터,The poster that will become the face of the movie
+스테이지 보상 설명 10,900500020,90,05,00,020,"오늘 우리는 삶의 중요한 '가치'를 영화의 주제로 정하고, 미래를 향한 다짐을 선언했어요. 10번의 여정을 완주하신 감독님께 이 '아카데미 트로피'를 드립니다! 당신의 빛나는 앞날을 언제나 응원할게요! 그동안 정말 수고 많으셨습니다.","Today, we decided on the film's theme of life's important ""values"" and declared our commitment to the future. We present this ""Academy Trophy"" to the director who completed the ten-part journey! We will always support your bright future! Thank you for your hard work."
+,900600001,90,06,00,001,시작하기,Getting started
+,900600002,90,06,00,002,촬영 시작하기,Start shooting
+,900600003,90,06,00,003,다음으로,Next
+,900600004,90,06,00,004,요약 보기,View Summary
+,900600005,90,06,00,005,터치하여 확인,Touch to confirm
+,900600006,90,06,00,006,재촬영 준비하기,Preparing for reshoots
+,900600007,90,06,00,007,마이크를 눌러주세요,Please press the microphone
+,900600008,90,06,00,008,녹음중...,Recording...
+,900600009,90,06,00,009,재촬영 완료,Reshoots completed
+,900600010,90,06,00,010,오늘의 촬영 포인트,Today's shooting point
+,900700001,90,07,00,001,조감독 하남이,Assistant director Hanam

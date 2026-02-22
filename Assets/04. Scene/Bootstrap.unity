@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c034ff9aa28fe1e4c903b164cf1e1237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localizedPath: CSV/MC_DataTable_v01
 --- !u!4 &92874279
 Transform:
   m_ObjectHideFlags: 0
@@ -1387,6 +1388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onboardingSceneName: HomeScene
+  loginSceneName: RegisterScene
 --- !u!4 &1248574806
 Transform:
   m_ObjectHideFlags: 0
