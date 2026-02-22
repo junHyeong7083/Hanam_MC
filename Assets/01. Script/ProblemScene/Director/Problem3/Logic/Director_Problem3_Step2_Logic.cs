@@ -1,71 +1,69 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Problem3 / Step2 로직 베이스.
-/// - 시나리오를 단계별로 "새로운 관점"으로 다시 작성 유도.
-/// - 애니메이션은 EffectController에 위임, 로직만 담당.
-/// </summary>
 public interface IRewriteStepData
 {
     int Id { get; }
     string OriginalText { get; }
     string RewrittenText { get; }
     string[] Options { get; }
+    string[][] OptionKeywords { get; }
 }
 
 public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 {
-    // ===== 자식에서 넘겨주는 추상 프로퍼티들 =====
-
     [Header("재작성 단계 데이터 (자식 구현)")]
     protected abstract IRewriteStepData[] Steps { get; }
 
     [Header("이펙트 컨트롤러")]
     protected abstract Problem3_Step2_EffectController EffectController { get; }
 
-    [Header("옵션 버튼들 (최대 N개)")]
-    protected abstract Button[] OptionButtons { get; }
-    protected abstract Text[] OptionLabels { get; }
+    [Header("상단 가이드 텍스트")]
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId_Before { get; }
+    protected abstract int GuideTextId_After { get; }
 
-    [Header("옵션 버튼 이미지 (인덱스별)")]
-    protected abstract Image[] OptionButtonImages { get; }      // 버튼의 Image 컴포넌트
-    protected abstract Sprite[] OptionNormalSprites { get; }    // 기본 상태 스프라이트
-    protected abstract Sprite[] OptionSelectedSprites { get; }  // 선택 상태 스프라이트
-    protected abstract GameObject[] OptionSelectedMarkers { get; } // 선택 시 체크 마커
+    [Header("캐러셀 UI")]
+    protected abstract GameObject CarouselRoot { get; }
+    protected abstract Button PrevButton { get; }
+    protected abstract Button NextButton { get; }
+    protected abstract Text CarouselText { get; }
+    protected abstract Text CarouselIndexText { get; }
 
-    [Header("넘버링 이미지 (인덱스별)")]
-    protected abstract Image[] NumberingImages { get; }         // 넘버링 Image 컴포넌트
-    protected abstract Sprite[] NumberingNormalSprites { get; } // 기본 상태 넘버링 스프라이트
-    protected abstract Sprite[] NumberingSelectedSprites { get; } // 선택 상태 넘버링 스프라이트
+    [Header("마이크 UI")]
+    protected abstract GameObject MicButtonRoot { get; }
+    protected abstract MicRecordingIndicator MicIndicator { get; }
+    protected abstract GameObject RecordingOverlay { get; }
 
     [Header("상단 진행도 점들 (옵션)")]
     protected abstract GameObject[] ProgressDots { get; }
 
-    [Header("하단 네비게이션 버튼")]
-    protected abstract GameObject NextProblemButton { get; }  // 다음문제 버튼 (중간 단계용)
-    protected abstract GameObject NextStepButton { get; }     // 다음스텝 버튼 (마지막 단계용)
+    [Header("상단/하단 다음 버튼")]
+    protected abstract GameObject NextDialogButtonRoot { get; }
+    protected abstract GameObject NextStepButtonRoot { get; }
 
     [Header("완료 게이트 (옵션)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // ===== 내부 상태 =====
-    private int _currentIndex;
-    private int[] _selectedOptionIndices;   // step별 선택된 옵션 인덱스 (-1 이면 미선택)
-    private bool[] _stepCompleted;          // step별 재작성 완료 여부
+    [Header("옵션")]
+    protected abstract float RewriteDelay { get; }
 
-    // 애니메이션 중인지 여부 (EffectController에서 확인)
-    private bool IsAnimating => EffectController != null && EffectController.IsAnimating;
+    private int _stepIndex;
+    private int _currentOptionIndex;
+    private bool _isRecording;
+    private bool _isStepCompleted;
 
-    // === Attempt 기록용 DTO ===
     [Serializable]
     private class AttemptStepLog
     {
         public int stepId;
         public string originalText;
+        public int selectedOptionIndex;
         public string selectedOption;
         public string rewrittenText;
+        public bool recorded;
     }
 
     [Serializable]
@@ -74,358 +72,366 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         public AttemptStepLog[] steps;
     }
 
-    // =============================
-    // ProblemStepBase 오버라이드
-    // =============================
+    private int[] _selectedOptionIndices;
+    private bool[] _recordedFlags;
+
+    private bool IsAnimating => EffectController != null && EffectController.IsAnimating;
+
     protected override void OnStepEnter()
     {
-        Debug.Log("[Problem3_Step2] OnStepEnter");
+        Debug.Log("[Problem3_Step2] OnStepEnter (Carousel/Mic)");
 
         var steps = Steps;
         if (steps == null || steps.Length == 0)
         {
-            Debug.LogWarning("[Problem3_Step2] steps 데이터가 비어있음");
-            if (CompletionGate != null)
-            {
-                CompletionGate.ResetGate(1);
-            }
+            Debug.LogWarning("[Problem3_Step2] Steps 데이터가 비어있음");
+            if (CompletionGate != null) CompletionGate.ResetGate(1);
             return;
         }
 
-        _currentIndex = 0;
+        _stepIndex = 0;
+        _currentOptionIndex = 0;
+        _isRecording = false;
+        _isStepCompleted = false;
+
         _selectedOptionIndices = new int[steps.Length];
-        _stepCompleted = new bool[steps.Length];
+        _recordedFlags = new bool[steps.Length];
         for (int i = 0; i < steps.Length; i++)
         {
             _selectedOptionIndices[i] = -1;
-            _stepCompleted[i] = false;
+            _recordedFlags[i] = false;
         }
 
-        if (CompletionGate != null)
-        {
-            // 이 스텝 전체를 1칸짜리 Gate로 사용
-            CompletionGate.ResetGate(1);
-        }
+        if (CompletionGate != null) CompletionGate.ResetGate(1);
 
-        RefreshAllUI();
+        BindCarouselButtons();
+        BindMicEvents();
+
+        EnterInnerStep(_stepIndex);
     }
 
     protected override void OnStepExit()
     {
-        // 필요 시 정리
+        UnbindCarouselButtons();
+        UnbindMicEvents();
     }
 
-    // =============================
-    // UI 갱신
-    // =============================
-
-    private void RefreshAllUI()
+    private void EnterInnerStep(int index)
     {
+        var steps = Steps;
+        if (steps == null || index < 0 || index >= steps.Length) return;
+
+        _stepIndex = index;
+        _currentOptionIndex = 0;
+        _isRecording = false;
+        _isStepCompleted = false;
+
+        if (GuideText != null && GuideTextId_Before != 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Before);
+
+        SetBeforeCompleteUI();
+
         ApplyProgressDots();
-        ApplySentenceOriginal();
-        SetupOptionsForCurrentStep();
-        UpdateNextButton();
+        ApplyOriginalText();
+        RefreshCarouselUI();
+
+        ConfigureMicKeywordsForCurrentStep();
     }
 
     private void ApplyProgressDots()
     {
         var dots = ProgressDots;
-        if (dots == null || dots.Length == 0)
-            return;
+        if (dots == null || dots.Length == 0) return;
 
-        // 현재 인덱스만 활성화, 나머지는 비활성화
         for (int i = 0; i < dots.Length; i++)
         {
             if (dots[i] != null)
-                dots[i].SetActive(i == _currentIndex);
+                dots[i].SetActive(i == _stepIndex);
         }
     }
 
-    private void ApplySentenceOriginal()
+    private void ApplyOriginalText()
     {
-        var steps = Steps;
-        if (steps == null || steps.Length == 0 || _currentIndex < 0 || _currentIndex >= steps.Length)
-            return;
-
-        var step = steps[_currentIndex];
-
-        // 이펙트 컨트롤러에 위임
-        var effectController = EffectController;
-        if (effectController != null)
+        var step = Steps[_stepIndex];
+        var effect = EffectController;
+        if (effect != null)
         {
-            effectController.ResetForNextStep();
-            effectController.ShowOriginalTextImmediate(step.OriginalText);
+            effect.ResetForNextStep();
+            effect.ShowOriginalTextImmediate(step.OriginalText);
         }
     }
 
-    private void SetupOptionsForCurrentStep()
+    private void RefreshCarouselUI()
     {
-        var optionButtons = OptionButtons;
-        if (optionButtons == null || optionButtons.Length == 0)
-            return;
+        var step = Steps[_stepIndex];
+        var options = step.Options ?? Array.Empty<string>();
 
-        var steps = Steps;
-        var step = steps[_currentIndex];
-        var options = (step.Options != null) ? step.Options : Array.Empty<string>();
+        if (CarouselRoot != null) CarouselRoot.SetActive(true);
 
-        var optionLabels = OptionLabels;
-        var optionImages = OptionButtonImages;
-        var normalSprites = OptionNormalSprites;
-        var markers = OptionSelectedMarkers;
-        var numberingImages = NumberingImages;
-        var numberingNormalSprites = NumberingNormalSprites;
-
-        for (int i = 0; i < optionButtons.Length; i++)
+        if (options.Length == 0)
         {
-            var btn = optionButtons[i];
-            Text label = (optionLabels != null && i < optionLabels.Length) ? optionLabels[i] : null;
+            if (CarouselText != null) CarouselText.text = "";
+            if (CarouselIndexText != null) CarouselIndexText.text = "";
 
-            bool active = i < options.Length;
+            if (PrevButton != null) PrevButton.interactable = false;
+            if (NextButton != null) NextButton.interactable = false;
 
-            if (btn != null)
-            {
-                btn.gameObject.SetActive(active);
-
-                if (active)
-                {
-                    btn.interactable = true;
-
-                    // 기본 스프라이트로 초기화
-                    if (optionImages != null && i < optionImages.Length && optionImages[i] != null &&
-                        normalSprites != null && i < normalSprites.Length && normalSprites[i] != null)
-                    {
-                        optionImages[i].sprite = normalSprites[i];
-                    }
-
-                    // 넘버링 이미지도 기본 스프라이트로 초기화
-                    if (numberingImages != null && i < numberingImages.Length && numberingImages[i] != null &&
-                        numberingNormalSprites != null && i < numberingNormalSprites.Length && numberingNormalSprites[i] != null)
-                    {
-                        numberingImages[i].sprite = numberingNormalSprites[i];
-                    }
-                }
-            }
-
-            if (active && label != null)
-            {
-                label.text = options[i];
-            }
-
-            // 마커 숨기기
-            if (markers != null && i < markers.Length && markers[i] != null)
-            {
-                markers[i].SetActive(false);
-            }
+            SetMicInteractable(false);
+            return;
         }
 
-        // 새 단계에서는 선택 값 초기화
-        if (_selectedOptionIndices != null)
+        if (_currentOptionIndex < 0) _currentOptionIndex = 0;
+        if (_currentOptionIndex >= options.Length) _currentOptionIndex = options.Length - 1;
+
+        if (CarouselText != null) CarouselText.text = options[_currentOptionIndex];
+        if (CarouselIndexText != null) CarouselIndexText.text = $"{_currentOptionIndex + 1}/{options.Length}";
+
+        bool canNav = !_isStepCompleted && options.Length > 1 && !IsAnimating;
+        if (PrevButton != null) PrevButton.interactable = canNav;
+        if (NextButton != null) NextButton.interactable = canNav;
+
+        SetMicInteractable(!_isStepCompleted && !IsAnimating);
+    }
+
+    private void BindCarouselButtons()
+    {
+        if (PrevButton != null)
         {
-            _selectedOptionIndices[_currentIndex] = -1;
+            PrevButton.onClick.RemoveListener(OnClickPrev);
+            PrevButton.onClick.AddListener(OnClickPrev);
         }
-    }
 
-    private void UpdateNextButton()
-    {
-        bool show = (_stepCompleted != null &&
-                     _currentIndex >= 0 &&
-                     _currentIndex < _stepCompleted.Length &&
-                     _stepCompleted[_currentIndex]);
-
-        bool isLast = (_currentIndex == Steps.Length - 1);
-
-        // 중간 단계: 다음문제 버튼만 표시
-        // 마지막 단계: 다음스텝 버튼만 표시
-        if (NextProblemButton != null)
-            NextProblemButton.SetActive(show && !isLast);
-
-        if (NextStepButton != null)
-            NextStepButton.SetActive(show && isLast);
-    }
-
-    // =============================
-    // 옵션 클릭 & 재작성 시작
-    // =============================
-
-    /// <summary>
-    /// 옵션 버튼 OnClick에서 index를 넘겨 호출.
-    /// ex) Button(0) -> OnClickOption(0)
-    /// </summary>
-    public void OnClickOption(int optionIndex)
-    {
-        if (IsAnimating)
-            return;
-
-        var steps = Steps;
-        if (steps == null || steps.Length == 0)
-            return;
-
-        if (_currentIndex < 0 || _currentIndex >= steps.Length)
-            return;
-
-        var step = steps[_currentIndex];
-        if (step.Options == null || optionIndex < 0 || optionIndex >= step.Options.Length)
-            return;
-
-        // 이미 선택된 상태면 무시
-        if (_selectedOptionIndices != null && _selectedOptionIndices[_currentIndex] != -1)
-            return;
-
-        _selectedOptionIndices[_currentIndex] = optionIndex;
-
-        // 버튼 비주얼 업데이트
-        ApplyOptionSelectionVisual(optionIndex);
-
-        // 이펙트 컨트롤러에 재작성 애니메이션 요청
-        var effectController = EffectController;
-        if (effectController != null)
+        if (NextButton != null)
         {
-            effectController.PlayRewriteSequence(step.RewrittenText, OnRewriteComplete);
-        }
-        else
-        {
-            // 이펙트 컨트롤러 없으면 바로 완료 처리
-            OnRewriteComplete();
+            NextButton.onClick.RemoveListener(OnClickNext);
+            NextButton.onClick.AddListener(OnClickNext);
         }
     }
 
-    private void ApplyOptionSelectionVisual(int selectedIndex)
+    private void UnbindCarouselButtons()
     {
-        var optionButtons = OptionButtons;
-        if (optionButtons == null)
+        if (PrevButton != null) PrevButton.onClick.RemoveListener(OnClickPrev);
+        if (NextButton != null) NextButton.onClick.RemoveListener(OnClickNext);
+    }
+
+    private void BindMicEvents()
+    {
+        var indicator = MicIndicator;
+        if (indicator == null) return;
+
+        indicator.OnKeywordMatched -= OnSTTKeywordMatched;
+        indicator.OnKeywordMatched += OnSTTKeywordMatched;
+
+        indicator.OnNoMatch -= OnSTTNoMatch;
+        indicator.OnNoMatch += OnSTTNoMatch;
+    }
+
+    private void UnbindMicEvents()
+    {
+        var indicator = MicIndicator;
+        if (indicator == null) return;
+
+        indicator.OnKeywordMatched -= OnSTTKeywordMatched;
+        indicator.OnNoMatch -= OnSTTNoMatch;
+    }
+
+    private void OnClickPrev()
+    {
+        if (_isStepCompleted || IsAnimating) return;
+
+        var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
+        if (options.Length == 0) return;
+
+        _currentOptionIndex--;
+        if (_currentOptionIndex < 0) _currentOptionIndex = options.Length - 1;
+
+        RefreshCarouselUI();
+        ConfigureMicKeywordsForCurrentStep();
+    }
+
+    private void OnClickNext()
+    {
+        if (_isStepCompleted || IsAnimating) return;
+
+        var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
+        if (options.Length == 0) return;
+
+        _currentOptionIndex++;
+        if (_currentOptionIndex >= options.Length) _currentOptionIndex = 0;
+
+        RefreshCarouselUI();
+        ConfigureMicKeywordsForCurrentStep();
+    }
+
+    public void OnClickMic()
+    {
+        if (_isStepCompleted || IsAnimating) return;
+
+        var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
+        if (options.Length == 0) return;
+
+        _isRecording = !_isRecording;
+
+        if (RecordingOverlay != null)
+            RecordingOverlay.SetActive(_isRecording);
+
+        var indicator = MicIndicator;
+        if (indicator != null)
+            indicator.ToggleRecording();
+    }
+
+    // 핵심 수정: MicRecordingIndicator(SetKeywords)에 실제로 키워드를 넣어준다.
+    private void ConfigureMicKeywordsForCurrentStep()
+    {
+        var indicator = MicIndicator;
+        if (indicator == null) return;
+
+        var step = Steps[_stepIndex];
+        var options = step.Options ?? Array.Empty<string>();
+
+        string[] keywordsToSet = BuildIndicatorKeywords(step, options);
+
+        indicator.SetKeywords(keywordsToSet);
+
+        Debug.Log($"[Problem3_Step2] SetKeywords stepIndex={_stepIndex} -> {string.Join(" | ", keywordsToSet)}");
+    }
+
+    // MicRecordingIndicator는 string[]만 받으므로,
+    // 옵션별 키워드 그룹(string[][])이 있으면 각 옵션의 "대표 키워드" 1개씩만 뽑아준다.
+    private string[] BuildIndicatorKeywords(IRewriteStepData step, string[] options)
+    {
+        int n = options.Length;
+        var result = new string[n];
+
+        var kwGroups = step.OptionKeywords;
+
+        for (int i = 0; i < n; i++)
+        {
+            string v = null;
+
+            if (kwGroups != null && i < kwGroups.Length && kwGroups[i] != null && kwGroups[i].Length > 0)
+            {
+                // 대표 키워드(첫 번째)
+                v = kwGroups[i][0];
+            }
+
+            if (string.IsNullOrWhiteSpace(v))
+            {
+                // 키워드가 없으면 옵션 텍스트 자체를 사용
+                v = (i < options.Length) ? options[i] : "";
+            }
+
+            result[i] = v;
+        }
+
+        return result;
+    }
+
+    private void OnSTTKeywordMatched(int matchedIndex)
+    {
+        Debug.Log($"[Problem3_Step2] OnKeywordMatched matchedIndex={matchedIndex}, currentOption={_currentOptionIndex}, stepIndex={_stepIndex}");
+
+        if (_isStepCompleted || IsAnimating) return;
+
+        _isRecording = false;
+        if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
+
+        if (matchedIndex != _currentOptionIndex)
             return;
 
-        var steps = Steps;
-        var step = steps[_currentIndex];
-        int optionCount = (step.Options != null) ? step.Options.Length : 0;
+        _recordedFlags[_stepIndex] = true;
+        _selectedOptionIndices[_stepIndex] = _currentOptionIndex;
 
-        var optionImages = OptionButtonImages;
-        var normalSprites = OptionNormalSprites;
-        var selectedSprites = OptionSelectedSprites;
-        var markers = OptionSelectedMarkers;
-        var numberingImages = NumberingImages;
-        var numberingNormalSprites = NumberingNormalSprites;
-        var numberingSelectedSprites = NumberingSelectedSprites;
-
-        for (int i = 0; i < optionButtons.Length; i++)
-        {
-            var btn = optionButtons[i];
-            if (btn == null) continue;
-
-            if (i >= optionCount)
-            {
-                btn.gameObject.SetActive(false);
-                continue;
-            }
-
-            bool isSelected = (i == selectedIndex);
-
-            // 한 번 선택하면 다시 못 누르도록 전부 비활성화
-            btn.interactable = false;
-
-            // 선택된 버튼은 선택 스프라이트로, 나머지는 기본 스프라이트 유지
-            if (optionImages != null && i < optionImages.Length && optionImages[i] != null)
-            {
-                if (isSelected && selectedSprites != null && i < selectedSprites.Length && selectedSprites[i] != null)
-                {
-                    optionImages[i].sprite = selectedSprites[i];
-                }
-                else if (normalSprites != null && i < normalSprites.Length && normalSprites[i] != null)
-                {
-                    optionImages[i].sprite = normalSprites[i];
-                }
-            }
-
-            // 넘버링 이미지도 선택 여부에 따라 스프라이트 변경
-            if (numberingImages != null && i < numberingImages.Length && numberingImages[i] != null)
-            {
-                if (isSelected && numberingSelectedSprites != null && i < numberingSelectedSprites.Length && numberingSelectedSprites[i] != null)
-                {
-                    numberingImages[i].sprite = numberingSelectedSprites[i];
-                }
-                else if (numberingNormalSprites != null && i < numberingNormalSprites.Length && numberingNormalSprites[i] != null)
-                {
-                    numberingImages[i].sprite = numberingNormalSprites[i];
-                }
-            }
-
-            // 선택된 버튼에만 마커 표시
-            if (markers != null && i < markers.Length && markers[i] != null)
-            {
-                markers[i].SetActive(isSelected);
-            }
-        }
+        StartCoroutine(PlayRewriteCompleteSequence());
     }
 
-    /// <summary>
-    /// 재작성 애니메이션 완료 콜백
-    /// </summary>
-    private void OnRewriteComplete()
+    private void OnSTTNoMatch(string sttResult)
     {
-        // 현재 step 완료 플래그
-        if (_stepCompleted != null && _currentIndex >= 0 && _currentIndex < _stepCompleted.Length)
-            _stepCompleted[_currentIndex] = true;
+        Debug.Log($"[Problem3_Step2] OnNoMatch result={sttResult}");
 
-        // 다음 버튼 표시 갱신
-        UpdateNextButton();
+        _isRecording = false;
+        if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
     }
 
-    // =============================
-    // 다음/완료 버튼
-    // =============================
-
-    /// <summary>
-    /// 하단 "다음 장면" / "강점 찾기 단계로" 버튼에서 호출.
-    /// </summary>
-    public void OnClickNextOrComplete()
+    private IEnumerator PlayRewriteCompleteSequence()
     {
-        if (IsAnimating)
-            return;
+        _isStepCompleted = true;
+
+        if (GuideText != null && GuideTextId_After != 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_After);
+
+        SetAfterCompleteUI();
+
+        float delay = RewriteDelay;
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        var step = Steps[_stepIndex];
+        var effect = EffectController;
+        if (effect != null)
+            effect.PlayRewriteSequence(step.RewrittenText, null);
+    }
+
+    public void OnClickNextDialog()
+    {
+        if (IsAnimating) return;
+        if (!_isStepCompleted) return;
 
         var steps = Steps;
-        if (steps == null || steps.Length == 0)
-            return;
-
-        if (_stepCompleted == null ||
-            _currentIndex < 0 ||
-            _currentIndex >= _stepCompleted.Length ||
-            !_stepCompleted[_currentIndex])
-        {
-            Debug.Log("[Problem3_Step2] 현재 이 단계의 재작성이 완료되지 않음");
-            return;
-        }
-
-        bool isLast = (_currentIndex == steps.Length - 1);
+        bool isLast = (_stepIndex == steps.Length - 1);
 
         if (!isLast)
         {
-            // 다음 내부 step 이동
-            _currentIndex++;
-
-            // 새 step UI 갱신
-            RefreshAllUI();
+            EnterInnerStep(_stepIndex + 1);
         }
         else
         {
-            // 전체 step(3단계) 완료 시 Attempt 저장 + Gate 완료
             SaveRewriteLogToDb();
 
             if (CompletionGate != null)
-            {
                 CompletionGate.MarkOneDone();
-            }
+
+            if (NextStepButtonRoot != null)
+                NextStepButtonRoot.SetActive(true);
         }
     }
 
-    // =============================
-    // DB 저장 (Attempt)
-    // =============================
+    private void SetBeforeCompleteUI()
+    {
+        if (MicButtonRoot != null) MicButtonRoot.SetActive(true);
+        if (NextDialogButtonRoot != null) NextDialogButtonRoot.SetActive(false);
+        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
+        if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
+
+        SetMicInteractable(true);
+    }
+
+    private void SetAfterCompleteUI()
+    {
+        if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
+
+        if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
+        if (NextDialogButtonRoot != null) NextDialogButtonRoot.SetActive(true);
+        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
+
+        SetMicInteractable(false);
+
+        if (PrevButton != null) PrevButton.interactable = false;
+        if (NextButton != null) NextButton.interactable = false;
+    }
+
+    private void SetMicInteractable(bool interactable)
+    {
+        if (MicButtonRoot == null) return;
+
+        var btn = MicButtonRoot.GetComponentInChildren<Button>(true);
+        if (btn != null) btn.interactable = interactable;
+    }
 
     private void SaveRewriteLogToDb()
     {
         var steps = Steps;
-        if (steps == null || steps.Length == 0)
-            return;
+        if (steps == null || steps.Length == 0) return;
 
         int len = steps.Length;
         var logs = new AttemptStepLog[len];
@@ -433,34 +439,27 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         for (int i = 0; i < len; i++)
         {
             var s = steps[i];
-
-            int selIndex = (_selectedOptionIndices != null && i < _selectedOptionIndices.Length)
-                ? _selectedOptionIndices[i]
-                : -1;
+            int selIndex = (i < _selectedOptionIndices.Length) ? _selectedOptionIndices[i] : -1;
 
             string selectedOptionText = null;
-            var options = s.Options;
-            if (selIndex >= 0 && options != null && selIndex < options.Length)
-            {
+            var options = s.Options ?? Array.Empty<string>();
+            if (selIndex >= 0 && selIndex < options.Length)
                 selectedOptionText = options[selIndex];
-            }
 
             logs[i] = new AttemptStepLog
             {
                 stepId = s.Id,
                 originalText = s.OriginalText,
+                selectedOptionIndex = selIndex,
                 selectedOption = selectedOptionText,
-                rewrittenText = s.RewrittenText
+                rewrittenText = s.RewrittenText,
+                recorded = (i < _recordedFlags.Length) && _recordedFlags[i]
             };
         }
 
-        var body = new AttemptBody
-        {
-            steps = logs
-        };
-
-        // ProblemStepBase 에서 DBGateway + UserDataService 를 통해 저장
+        var body = new AttemptBody { steps = logs };
         SaveAttempt(body);
-        Debug.Log("[Problem3_Step2] SaveRewriteLogToDb 호출 완료");
+
+        Debug.Log("[Problem3_Step2] SaveRewriteLogToDb 완료");
     }
 }

@@ -21,9 +21,6 @@ public class Problem3_Step2_EffectController : EffectControllerBase
     [SerializeField] private CanvasGroup sentenceCanvasGroup;
     [SerializeField] private Text sentenceText;
 
-    [Header("===== 이펙트 컴포넌트 참조 =====")]
-    [SerializeField] private PenWriteAnimation penWriteAnimation;
-    [SerializeField] private CompletionSparkle completionSparkle;
 
     [Header("===== 타이밍 설정 =====")]
     [SerializeField] private float optionSelectDelay = 0.5f;
@@ -54,13 +51,6 @@ public class Problem3_Step2_EffectController : EffectControllerBase
         // 1. 딜레이
         seq.AppendInterval(optionSelectDelay);
 
-        // 2. 펜 이동 시작 + 텍스트 페이드아웃 (동시)
-        seq.AppendCallback(() =>
-        {
-            if (penWriteAnimation != null)
-                penWriteAnimation.Play();
-        });
-
         if (sentenceCanvasGroup != null)
             seq.Append(sentenceCanvasGroup.DOFade(0f, fadeOutDuration));
         else
@@ -74,22 +64,11 @@ public class Problem3_Step2_EffectController : EffectControllerBase
         // 3. 펜 숨김 + 텍스트 교체 + 스파클 표시
         seq.AppendCallback(() =>
         {
-            // 펜 숨김
-            if (penWriteAnimation != null)
-                penWriteAnimation.gameObject.SetActive(false);
-
             // 텍스트 교체
             if (sentenceText != null)
             {
                 sentenceText.text = _pendingRewrittenText;
                 sentenceText.color = rewrittenTextColor;
-            }
-
-            // 스파클 표시
-            if (completionSparkle != null)
-            {
-                completionSparkle.gameObject.SetActive(true);
-                completionSparkle.Show();
             }
         });
 
@@ -119,19 +98,6 @@ public class Problem3_Step2_EffectController : EffectControllerBase
         if (sentenceCanvasGroup != null)
             sentenceCanvasGroup.alpha = 1f;
 
-        // 스파클 숨김
-        if (completionSparkle != null)
-        {
-            completionSparkle.ResetTrigger();
-            completionSparkle.gameObject.SetActive(false);
-        }
-
-        // 펜 다시 표시 + 대기 상태로
-        if (penWriteAnimation != null)
-        {
-            penWriteAnimation.gameObject.SetActive(true);
-            penWriteAnimation.ResetToIdle();
-        }
     }
 
     /// <summary>
@@ -150,17 +116,7 @@ public class Problem3_Step2_EffectController : EffectControllerBase
         if (sentenceCanvasGroup != null)
             sentenceCanvasGroup.alpha = 1f;
 
-        // 펜 표시, 스파클 숨김
-        if (penWriteAnimation != null)
-        {
-            penWriteAnimation.gameObject.SetActive(true);
-            penWriteAnimation.ResetToIdle();
-        }
-
-        if (completionSparkle != null)
-        {
-            completionSparkle.gameObject.SetActive(false);
-        }
+  
     }
 
     #endregion
