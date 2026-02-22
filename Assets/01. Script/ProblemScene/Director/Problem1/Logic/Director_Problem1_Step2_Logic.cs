@@ -1,66 +1,82 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-/// <summary>
-/// Director / Problem1 / Step2 공통 로직 베이스.
-/// - 필름 카드 클릭 / 체크 / 플래시 / 알파 / 게이트 처리를 모두 담당.
-/// - 실제 Step 스크립트(Director_Problem1_Step2)는
-///   필드만 가지고 있고, 여기 추상 프로퍼티에 매핑만 해준다.
-/// </summary>
 public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 {
-
     [System.Serializable]
     public class FilmFragment
     {
-        public int id;                     // 버튼에서 넘겨줄 id (1, 2, 3...)
-        public GameObject checkMark;       // 체크됐을 때 보이는 오브젝트 (아이콘 등)
-        public GameObject flashOverlay;    // 클릭 시 잠깐 켜졌다 꺼질 흰색 오버레이 (옵션)
-        public Graphic dimTarget;          // 알파 조절용 (Image/Text 등)
-        public Text buttonText;            // 하단 텍스트 (처음엔 숨기고, 클릭 시 보이게)
-        public FilmCardWiggle wiggle;      // 살짝 회전/흔들리는 연출
+        public int id;
+        public GameObject checkMark;
+        public GameObject flashOverlay;
+        public Graphic dimTarget;
+        public Text buttonText;
+        public FilmCardWiggle wiggle;
     }
 
-    // === 자식에서 매핑해 줄 추상 프로퍼티들 ===
     protected abstract FilmFragment[] Films { get; }
     protected abstract float DimAlpha { get; }
     protected abstract float NormalAlpha { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // 내부 상태
+    [Header("Guide Text (Localized)")]
+    [SerializeField] private Text guideText;
+    [Tooltip("스텝 진입 시 안내 문구 textId")]
+    [SerializeField] private int guideTextIdOnEnter = 0;
+    [Tooltip("필름 전부 선택 완료 시 안내 문구 textId")]
+    [SerializeField] private int guideTextIdOnCompleted = 0;
+
+    [Header("Next Shoot Button")]
+    [SerializeField] private GameObject nextShootButtonRoot;
+    [SerializeField] private Button nextShootButton;
+
+    [Header("NextStep Auto Call")]
+    [SerializeField] private bool autoCallNextStep = true;
+    [SerializeField] private string stepFlowControllerTypeName = "StepFlowController";
+    [SerializeField] private string nextStepMethodName = "NextStep";
+
+    [Header("Fallback Callback")]
+    [SerializeField] private UnityEvent onClickNextShootFallback;
+
     private readonly Dictionary<int, FilmFragment> _filmMap = new Dictionary<int, FilmFragment>();
     private readonly HashSet<int> _checkedIds = new HashSet<int>();
 
-    // =========================
-    // ProblemStepBase 구현
-    // =========================
+    private bool _completed = false;
+
+    private Component _flowController;
+    private MethodInfo _nextStepMethod;
 
     protected override void OnStepEnter()
     {
         BuildFilmMap();
         ResetState();
+
+        ApplyGuideText(guideTextIdOnEnter);
+        SetNextShootButtonVisible(false);
+
+        CacheStepFlowController();
+        BindNextShootButton();
     }
 
     protected override void OnStepExit()
     {
-        // 필요 시 정리
+        UnbindNextShootButton();
+
         _checkedIds.Clear();
         _filmMap.Clear();
+        _completed = false;
     }
-
-    // =========================
-    // 초기화 관련
-    // =========================
 
     private void BuildFilmMap()
     {
         _filmMap.Clear();
 
         var films = Films;
-        if (films == null)
-            return;
+        if (films == null) return;
 
         foreach (var f in films)
         {
@@ -73,6 +89,7 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
     private void ResetState()
     {
         _checkedIds.Clear();
+        _completed = false;
 
         var films = Films;
         if (films != null)
@@ -81,15 +98,9 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
             {
                 if (f == null) continue;
 
-                // 처음에는 체크 표시/플래시 다 꺼두기
-                if (f.checkMark != null)
-                    f.checkMark.SetActive(false);
-
-                if (f.flashOverlay != null)
-                    f.flashOverlay.SetActive(false);
-
-                if (f.buttonText != null)
-                    f.buttonText.gameObject.SetActive(false);
+                if (f.checkMark != null) f.checkMark.SetActive(false);
+                if (f.flashOverlay != null) f.flashOverlay.SetActive(false);
+                if (f.buttonText != null) f.buttonText.gameObject.SetActive(false);
 
                 if (f.dimTarget != null)
                 {
@@ -103,7 +114,6 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
             }
         }
 
-        // 게이트 초기화: 총 몇 개를 채워야 완료인지
         var gate = CompletionGate;
         if (gate != null)
         {
@@ -112,37 +122,22 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
         }
     }
 
-    // =========================
-    // 버튼 클릭 처리
-    // =========================
-
-    /// <summary>
-    /// UI Button OnClick에서 id를 넘겨 호출.
-    /// ex) OnClick -> OnFilmClicked(1)
-    /// </summary>
     public void OnFilmClicked(int id)
     {
-        if (_filmMap == null || !_filmMap.TryGetValue(id, out var fragment))
+        if (!_filmMap.TryGetValue(id, out var fragment))
             return;
 
-        // 플래시는 매번 줘도 됨 (이미 체크된 카드라도)
         if (fragment.flashOverlay != null)
             StartCoroutine(FlashRoutine(fragment.flashOverlay, 0.1f));
 
-        // 이미 체크된 필름이면 상태 변화 없음
         if (_checkedIds.Contains(id))
             return;
 
-        // 처음 체크되는 경우만 여기로 옴
         _checkedIds.Add(id);
 
-        if (fragment.checkMark != null)
-            fragment.checkMark.SetActive(true);
+        if (fragment.checkMark != null) fragment.checkMark.SetActive(true);
+        if (fragment.buttonText != null) fragment.buttonText.gameObject.SetActive(true);
 
-        if (fragment.buttonText != null)
-            fragment.buttonText.gameObject.SetActive(true);
-
-        // 알파 선명하게
         if (fragment.dimTarget != null)
         {
             var c = fragment.dimTarget.color;
@@ -150,7 +145,6 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
             fragment.dimTarget.color = c;
         }
 
-        // 전체 카드들 살짝 다시 위글
         var films = Films;
         if (films != null)
         {
@@ -161,10 +155,105 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
             }
         }
 
-        // 새 필름이 처음으로 체크될 때만 완료 게이트에 1 증가 알림
         var gate = CompletionGate;
         if (gate != null)
             gate.MarkOneDone();
+
+        TryHandleCompleted();
+    }
+
+    private void TryHandleCompleted()
+    {
+        if (_completed) return;
+
+        int total = (Films != null) ? Films.Length : 0;
+        if (total <= 0) return;
+
+        if (_checkedIds.Count < total) return;
+
+        _completed = true;
+
+        ApplyGuideText(guideTextIdOnCompleted);
+        SetNextShootButtonVisible(true);
+    }
+
+    private void ApplyGuideText(int textId)
+    {
+        if (guideText == null) return;
+        guideText.text = ProblemRuntime.L(textId);
+    }
+
+    private void SetNextShootButtonVisible(bool visible)
+    {
+        if (nextShootButtonRoot != null)
+            nextShootButtonRoot.SetActive(visible);
+
+        if (nextShootButton != null)
+            nextShootButton.interactable = visible;
+    }
+
+    private void BindNextShootButton()
+    {
+        if (nextShootButton == null) return;
+        nextShootButton.onClick.RemoveListener(OnClickNextShoot);
+        nextShootButton.onClick.AddListener(OnClickNextShoot);
+    }
+
+    private void UnbindNextShootButton()
+    {
+        if (nextShootButton == null) return;
+        nextShootButton.onClick.RemoveListener(OnClickNextShoot);
+    }
+
+    private void OnClickNextShoot()
+    {
+        if (!_completed) return;
+
+        if (autoCallNextStep && TryCallNextStep())
+            return;
+
+        onClickNextShootFallback?.Invoke();
+    }
+
+    private void CacheStepFlowController()
+    {
+        _flowController = null;
+        _nextStepMethod = null;
+
+        if (!autoCallNextStep) return;
+
+        var monos = GetComponentsInParent<MonoBehaviour>(true);
+        for (int i = 0; i < monos.Length; i++)
+        {
+            var mb = monos[i];
+            if (mb == null) continue;
+
+            var t = mb.GetType();
+            if (t.Name != stepFlowControllerTypeName) continue;
+
+            var mi = t.GetMethod(nextStepMethodName,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (mi == null) continue;
+            if (mi.GetParameters().Length != 0) continue;
+
+            _flowController = mb;
+            _nextStepMethod = mi;
+            break;
+        }
+    }
+
+    private bool TryCallNextStep()
+    {
+        if (_flowController == null || _nextStepMethod == null)
+        {
+            CacheStepFlowController();
+            if (_flowController == null || _nextStepMethod == null)
+                return false;
+        }
+
+        _nextStepMethod.Invoke(_flowController, null);
+        return true;
     }
 
     private IEnumerator FlashRoutine(GameObject overlay, float duration)
