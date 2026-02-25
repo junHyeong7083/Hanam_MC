@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem1 / Step3
-/// - 실제 로직은 Problem1_ThoughtFactSortStepBase에서 모두 처리.
+/// - 실제 로직은 Director_Problem1_Step3_Logic에서 모두 처리.
 /// - 이 클래스는
 ///   - films 데이터
 ///   - 각종 UI 참조들
@@ -16,10 +16,14 @@ public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
     [Serializable]
     public class FilmItem
     {
-        public int id;           // 1..N (인스펙터에서 부여)
+        public int id;                 // 1..N (인스펙터에서 부여)
+
         [TextArea]
-        public string text;      // 문장 내용
-        public bool isThought;   // true=생각, false=사실
+        public string filmText;        // 현재 필름 카드에 보여줄 문장
+
+        public Sprite filmSprite;      // 현재 필름 카드에 보여줄 이미지
+
+        public bool isThought;         // true=생각, false=사실
     }
 
     [Header("문항 설정 (인스펙터에서 입력)")]
@@ -46,14 +50,13 @@ public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
     [SerializeField] private GameObject stepRoot;         // 현재 Step3 패널 루트
     [SerializeField] private GameObject summaryPanelRoot; // 요약 패널 루트
 
-    // ===== Problem1_ThoughtFactSortStepBase 추상 프로퍼티 구현 =====
-
     protected override int FilmCount => films != null ? films.Length : 0;
 
     protected override int GetFilmId(int index)
     {
         if (films == null || index < 0 || index >= films.Length)
             return -1;
+
         return films[index].id;
     }
 
@@ -61,13 +64,23 @@ public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
     {
         if (films == null || index < 0 || index >= films.Length)
             return null;
-        return films[index].text;
+
+        return films[index].filmText;
+    }
+
+    protected override Sprite GetFilmSprite(int index)
+    {
+        if (films == null || index < 0 || index >= films.Length)
+            return null;
+
+        return films[index].filmSprite;
     }
 
     protected override bool IsFilmThought(int index)
     {
         if (films == null || index < 0 || index >= films.Length)
             return false;
+
         return films[index].isThought;
     }
 
