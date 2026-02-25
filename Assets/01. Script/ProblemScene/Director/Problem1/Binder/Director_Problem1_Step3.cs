@@ -2,101 +2,105 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Director / Problem1 / Step3
-/// - 실제 로직은 Director_Problem1_Step3_Logic에서 모두 처리.
-/// - 이 클래스는
-///   - films 데이터
-///   - 각종 UI 참조들
-///   만 SerializeField로 가지고 있고,
-///   베이스의 추상 프로퍼티를 override 해서 매핑만 담당.
-/// </summary>
 public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
 {
     [Serializable]
     public class FilmItem
     {
-        public int id;                 // 1..N (인스펙터에서 부여)
+        public int id;
 
         [TextArea]
-        public string filmText;        // 현재 필름 카드에 보여줄 문장
+        public string filmText;
 
-        public Sprite filmSprite;      // 현재 필름 카드에 보여줄 이미지
+        public Sprite filmSprite;
 
-        public bool isThought;         // true=생각, false=사실
+        public bool isThought;
     }
 
-    [Header("문항 설정 (인스펙터에서 입력)")]
+    [Header("문항 설정")]
     [SerializeField] private FilmItem[] films;
+
+    [Header("상단 하남이 대사 (textId 배열)")]
+    [SerializeField] private Text hanamiDialogueText;
+    [SerializeField] private int[] hanamiDialogueTextIds; // [0]=기본, [1]=오답
+
+    [Header("하남이 대사 연출")]
+    [SerializeField] private float wrongHanamiMessageDuration = 2f;
 
     [Header("현재 필름 UI")]
     [SerializeField] private RectTransform currentFilmRoot;
     [SerializeField] private GameObject currentFilmPrefab;
 
-    [Header("정답 버튼 / 요약 버튼 루트")]
-    [SerializeField] private GameObject answerButtonsRoot;   // 생각/사실 버튼 묶음
-    [SerializeField] private GameObject summaryButtonRoot;   // 요약 보기 버튼 묶음
+    [Header("분류 후 배치 슬롯 (하이라키 pos들 순서대로)")]
+    [Tooltip("생각 필름통 슬롯들 (예: pos0, pos1, pos2, pos3 ...)")]
+    [SerializeField] private Transform[] thoughtSlots;
 
-    [Header("필름통 UI")]
-    [SerializeField] private Transform thoughtsContainer;    // 생각 필름통 Content
-    [SerializeField] private Transform factsContainer;       // 사실 필름통 Content
-    [SerializeField] private GameObject binItemPrefab;       // 한 줄짜리 카드 프리팹
-    [SerializeField] private float sortAdvanceDelay = 0.6f;  // 선택 후 잠깐 기다리는 시간
+    [Tooltip("사실 필름통 슬롯들 (예: pos4, pos5, pos6, pos7 ...)")]
+    [SerializeField] private Transform[] factSlots;
+
+    [Header("정답 버튼 / 다음촬영 버튼 루트")]
+    [SerializeField] private GameObject answerButtonsRoot;
+    [SerializeField] private GameObject summaryButtonRoot;
+
+    [Header("분류 연출 딜레이")]
+    [SerializeField] private float sortAdvanceDelay = 0.6f;
 
     [Header("마이크")]
     [SerializeField] private MicRecordingIndicator micIndicator;
 
     [Header("패널 전환")]
-    [SerializeField] private GameObject stepRoot;         // 현재 Step3 패널 루트
-    [SerializeField] private GameObject summaryPanelRoot; // 요약 패널 루트
+    [SerializeField] private GameObject stepRoot;
+    [SerializeField] private GameObject summaryPanelRoot;
 
     protected override int FilmCount => films != null ? films.Length : 0;
 
     protected override int GetFilmId(int index)
     {
-        if (films == null || index < 0 || index >= films.Length)
-            return -1;
-
+        if (films == null || index < 0 || index >= films.Length) return -1;
         return films[index].id;
     }
 
     protected override string GetFilmText(int index)
     {
-        if (films == null || index < 0 || index >= films.Length)
-            return null;
-
+        if (films == null || index < 0 || index >= films.Length) return null;
         return films[index].filmText;
     }
 
     protected override Sprite GetFilmSprite(int index)
     {
-        if (films == null || index < 0 || index >= films.Length)
-            return null;
-
+        if (films == null || index < 0 || index >= films.Length) return null;
         return films[index].filmSprite;
     }
 
     protected override bool IsFilmThought(int index)
     {
-        if (films == null || index < 0 || index >= films.Length)
-            return false;
-
+        if (films == null || index < 0 || index >= films.Length) return false;
         return films[index].isThought;
     }
+
+    protected override int GetHanamiDialogueTextId(int index)
+    {
+        if (hanamiDialogueTextIds == null || hanamiDialogueTextIds.Length == 0) return -1;
+        if (index < 0 || index >= hanamiDialogueTextIds.Length) return -1;
+        return hanamiDialogueTextIds[index];
+    }
+
+    protected override float WrongHanamiMessageDuration => wrongHanamiMessageDuration;
 
     protected override RectTransform CurrentFilmRoot => currentFilmRoot;
     protected override GameObject CurrentFilmPrefab => currentFilmPrefab;
 
+    protected override Transform[] ThoughtSlots => thoughtSlots;
+    protected override Transform[] FactSlots => factSlots;
+
     protected override GameObject AnswerButtonsRoot => answerButtonsRoot;
     protected override GameObject SummaryButtonRoot => summaryButtonRoot;
-
-    protected override Transform ThoughtsContainer => thoughtsContainer;
-    protected override Transform FactsContainer => factsContainer;
-    protected override GameObject BinItemPrefab => binItemPrefab;
     protected override float SortAdvanceDelay => sortAdvanceDelay;
 
     protected override MicRecordingIndicator MicIndicator => micIndicator;
 
     protected override GameObject StepRoot => stepRoot;
     protected override GameObject SummaryPanelRoot => summaryPanelRoot;
+
+    protected override Text HanamiDialogueText => hanamiDialogueText;
 }
