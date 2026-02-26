@@ -88,7 +88,7 @@ public class Director_Problem3_Step3
             micButtonRoot.SetActive(true);
 
         if (summaryButtonRoot != null)
-            summaryButtonRoot.SetActive(true);
+            summaryButtonRoot.SetActive(false);
 
         // MicIndicator STT 이벤트 구독
         if (micIndicator != null)
@@ -171,6 +171,12 @@ public class Director_Problem3_Step3
 
         // 다음 문제 or 종료
         GoNextQuestionOrFinish();
+    }
+
+    protected override void OnAllQuestionsCompleted()
+    {
+        if (summaryButtonRoot != null)
+            summaryButtonRoot.SetActive(true);
     }
 
     protected override void OnStepExit()

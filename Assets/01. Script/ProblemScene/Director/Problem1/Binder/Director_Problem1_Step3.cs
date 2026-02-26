@@ -9,8 +9,8 @@ public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
     {
         public int id;
 
-        [TextArea]
-        public string filmText;
+        [Tooltip("DataTable 텍스트 ID")]
+        public int filmTextId;
 
         public Sprite filmSprite;
 
@@ -63,7 +63,7 @@ public class Director_Problem1_Step3 : Director_Problem1_Step3_Logic
     protected override string GetFilmText(int index)
     {
         if (films == null || index < 0 || index >= films.Length) return null;
-        return films[index].filmText;
+        return ProblemRuntime.L(films[index].filmTextId);
     }
 
     protected override Sprite GetFilmSprite(int index)

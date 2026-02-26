@@ -303,7 +303,9 @@ public class MicRecordingIndicator : MonoBehaviour
     {
         if (targetImage != null)
         {
-            targetImage.sprite = _recording ? recordingSprite : idleSprite;
+            Sprite sprite = _recording ? recordingSprite : idleSprite;
+            if (sprite != null)
+                targetImage.sprite = sprite;
         }
 
         if (micPulseImage != null)

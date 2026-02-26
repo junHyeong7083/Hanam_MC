@@ -201,6 +201,7 @@ public class SoundManager : MonoBehaviour
             return;
         }
 
+
         player.clip = ttsClipsDic[clipName];
         player.Play();
         Debug.Log($"[SoundManager] TTS 재생: {clipName}");

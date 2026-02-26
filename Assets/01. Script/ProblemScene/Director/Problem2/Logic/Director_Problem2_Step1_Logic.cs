@@ -40,6 +40,15 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     [Header("�Ϸ� ����Ʈ (Next ��ư��)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
+    // ===== 가이드 텍스트 / 다음 버튼 =====
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId { get; }
+    protected abstract GameObject NextButton { get; }
+
+    // ===== 드래그 연출 =====
+    protected abstract GameObject DragOutlineImage { get; }
+    protected abstract GameObject TextBox { get; }
+
     // ===== ���� ĳ�� =====
     private bool _leftInit;
     private bool _rightInit;
@@ -124,6 +133,14 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 
         if (icon != null)
             icon.gameObject.SetActive(true);
+
+        // 가이드 텍스트 설정
+        if (GuideText != null && GuideTextId > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId);
+
+        // 다음 버튼 숨기기
+        if (NextButton != null)
+            NextButton.SetActive(false);
 
         // �Ϸ� ����Ʈ �ʱ�ȭ (��� ���� 1���̸� �Ϸ�)
         if (gate != null)
@@ -294,6 +311,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 
         if (iconImageBg != null)
             iconImageBg.gameObject.SetActive(true);
+
+        // 다음 버튼 표시
+        if (NextButton != null)
+            NextButton.SetActive(true);
 
         if (!_isCompleted)
         {

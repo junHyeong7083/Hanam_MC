@@ -34,6 +34,13 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [Header("완료 게이트 (Next 버튼용)")]
     [SerializeField] private StepCompletionGate completionGate;
 
+    [Header("상단 가이드 텍스트")]
+    [SerializeField] private Text guideText;
+    [SerializeField] private int guideTextId = 101020002;
+
+    [Header("드래그 완료 후 다음 버튼")]
+    [SerializeField] private GameObject nextButton;
+
     // ===== 베이스에 값 주입용 프로퍼티 구현 =====
 
     protected override UIDropBoxArea DropBoxArea => dropBoxArea;
@@ -52,4 +59,8 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     protected override float IntroDelay => introDelay;
 
     protected override StepCompletionGate CompletionGate => completionGate;
+
+    protected override Text GuideText => guideText;
+    protected override int GuideTextId => guideTextId;
+    protected override GameObject NextButton => nextButton;
 }

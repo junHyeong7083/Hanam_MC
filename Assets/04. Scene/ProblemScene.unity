@@ -7534,6 +7534,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 276117065}
     m_Modifications:
+    - target: {fileID: 455095630962163872, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: fitWidth
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2047390613286552769, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -7625,6 +7629,10 @@ PrefabInstance:
     - target: {fileID: 8041676033199524769, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_Name
       value: HanamBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 9028510621098595656, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1013.8202
       objectReference: {fileID: 0}
     - target: {fileID: 9036537916854351307, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -10180,7 +10188,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fa6b41d629e04354eafff784ec56781d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3496f0a5dffc2c84bb38c78d8f26a055, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10828,7 +10836,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 277875300}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9029743731876072455}
+        m_TargetAssemblyTypeName: CommonRewardStep, Assembly-CSharp
+        m_MethodName: ReplayCurrentProblem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &277875300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29689,7 +29709,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &753990061
 RectTransform:
   m_ObjectHideFlags: 0
@@ -29770,6 +29790,9 @@ MonoBehaviour:
   rightStartOffsetX: 300
   introDelay: 0.1
   completionGate: {fileID: 753990065}
+  guideText: {fileID: 1646131946}
+  guideTextId: 101020002
+  nextButton: {fileID: 874441210}
 --- !u!222 &753990064
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30296,7 +30319,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 765979517}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9029743731876072455}
+        m_TargetAssemblyTypeName: CommonRewardStep, Assembly-CSharp
+        m_MethodName: GoToNextProblem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &765979517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33645,7 +33680,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: eaadab91a0f31384588719d71dc3130c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3496f0a5dffc2c84bb38c78d8f26a055, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -33906,12 +33941,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: usePlaceholder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: placeholderCount
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: useProceedButton
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: dialogueTextIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: 'dialogueTextIds.Array.data[0]'
+      value: 101020003
       objectReference: {fileID: 0}
     - target: {fileID: 6969127894265614571, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_Name
@@ -35164,12 +35211,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: usePlaceholder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: placeholderCount
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: useProceedButton
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: dialogueTextIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: 'dialogueTextIds.Array.data[0]'
+      value: 101020004
       objectReference: {fileID: 0}
     - target: {fileID: 6969127894265614571, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_Name
@@ -35815,7 +35874,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ee735a49eaeb89241bf8ca5b7b7ffa1c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9b9be139a8775e94887183b75909eb01, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -42288,7 +42347,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: eaadab91a0f31384588719d71dc3130c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3496f0a5dffc2c84bb38c78d8f26a055, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -57941,6 +58000,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3091593816852724184, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
   m_PrefabInstance: {fileID: 1464099525}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1464099527 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4204970337983992360, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+  m_PrefabInstance: {fileID: 1464099525}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1470219884
 GameObject:
   m_ObjectHideFlags: 0
@@ -62070,7 +62134,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1598825144}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9029743731876072455}
+        m_TargetAssemblyTypeName: CommonRewardStep, Assembly-CSharp
+        m_MethodName: GoToHome
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1598825144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62255,6 +62331,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1629263204}
     m_Modifications:
+    - target: {fileID: 910160750604267810, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 539
+      objectReference: {fileID: 0}
+    - target: {fileID: 910160750604267810, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -87
+      objectReference: {fileID: 0}
+    - target: {fileID: 944357243542320843, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -614
+      objectReference: {fileID: 0}
     - target: {fileID: 2384481612709127214, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -62349,15 +62437,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: dialogueTextIds.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: 'dialogueTextIds.Array.data[0]'
-      value: 900300022
+      value: 101020001
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: 'dialogueTextIds.Array.data[1]'
-      value: 900300025
+      value: 101020002
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: onFinished.m_PersistentCalls.m_Calls.Array.size
@@ -62946,7 +63034,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1629263204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -63607,6 +63695,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1646131946 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5572876634498317439, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+  m_PrefabInstance: {fileID: 182617917}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1647948741
 GameObject:
   m_ObjectHideFlags: 0
@@ -78143,43 +78242,35 @@ MonoBehaviour:
   completionGate: {fileID: 2046801912}
   films:
   - id: 0
-    filmText: "\uBD88\uC548\uD55C \uC0DD\uAC01<\\\\n>\uBAA8\uB450\uAC00 \uB098\uB97C
-      \uC2EB\uC5B4\uD55C\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 085498753b557044d8b36c7dde592f7e, type: 3}
     isThought: 1
   - id: 1
-    filmText: "\uAC71\uC815\uB418\uB294 \uBBF8\uB798<\\n>\uB098\uB294 \uC2E4\uD328\uD560
-      \uAC83\uC774\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 3b6114a2a9a10c2459c94a67ac59fe02, type: 3}
     isThought: 1
   - id: 2
-    filmText: "\uACFC\uAC70\uC758 \uC2E4\uC218\\n\uADF8\uB54C\uC758 \uC120\uD0DD\uC774
-      \uB0B4 \uC778\uC0DD\uC744 \uB9DD\uCCE4\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 86c08aa841bacb343b696fff0586624f, type: 3}
     isThought: 1
   - id: 3
-    filmText: "\uBD80\uC815\uC801 \uAC10\uC815\\n\uB098\uB294 \uCDA9\uBD84\uD558\uC9C0
-      \uC54A\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 31d0f681488aab94aaf5dcb0c9981016, type: 3}
     isThought: 1
   - id: 4
-    filmText: "\uBAA8\uD638\uD55C \uAE30\uC5B5\\n\uCE5C\uAD6C\uAC00 \uC778\uC0AC\uB97C
-      \uC548 \uD5C0\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 2251ef7157eb125459a9fa995e851808, type: 3}
     isThought: 0
   - id: 5
-    filmText: "\uD750\uB9BF\uD55C \uC778\uC0C1\\n\uD504\uB85C\uC81D\uD2B8 \uC77C\uC815\uC774
-      \uC9C0\uC5F0\uB418\uC5C8\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 6b233710eb6e33f47beb6d8674738e64, type: 3}
     isThought: 0
   - id: 6
-    filmText: "\uB9C9\uC5F0\uD55C \uB450\uB824\uC6C0\\n\uC2DC\uD5D8\uC5D0\uC11C 80\uC810\uC744
-      \uBC1B\uC558\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 90b1da79398f15b40a8e3afd7189e71a, type: 3}
     isThought: 0
   - id: 7
-    filmText: "\uC228\uACA8\uC9C4 \uAC10\uC815\\n\uD45C\uC815 \uBCC0\uD654\uAC00
-      \uAC70\uC758 \uC5C6\uC5C8\uB2E4"
+    filmTextId: 0
     filmSprite: {fileID: 21300000, guid: 4d1414833465bbe41823a5f66c01ddac, type: 3}
     isThought: 0
   hanamiDialogueText: {fileID: 193490506}
@@ -78198,7 +78289,7 @@ MonoBehaviour:
   - {fileID: 189176477}
   - {fileID: 1115060276}
   answerButtonsRoot: {fileID: 1415187738}
-  summaryButtonRoot: {fileID: 0}
+  summaryButtonRoot: {fileID: 1464099527}
   sortAdvanceDelay: 0.2
   micIndicator: {fileID: 9217935813145606496}
   stepRoot: {fileID: 1407136721}
@@ -82543,27 +82634,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: editing_scissors
-  lockedRoot: {fileID: 8966166301957608706}
-  unlockedRoot: {fileID: 3115881560535007940}
-  iconImage: {fileID: 286419799443748147}
-  backgroundImage: {fileID: 7283060879609153598}
-  iconRect: {fileID: 2597830703571975151}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!222 &200430275809528753
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -84020,27 +84090,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: script
-  lockedRoot: {fileID: 6118084687765386684}
-  unlockedRoot: {fileID: 7107716206582622001}
-  iconImage: {fileID: 1252959858443335941}
-  backgroundImage: {fileID: 2303022194201410887}
-  iconRect: {fileID: 709493453309105114}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!224 &392431947989369354
 RectTransform:
   m_ObjectHideFlags: 0
@@ -85852,27 +85901,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: scenario_pen
-  lockedRoot: {fileID: 8756616638887522672}
-  unlockedRoot: {fileID: 5052890197504883677}
-  iconImage: {fileID: 259961982397843251}
-  backgroundImage: {fileID: 154317984893732709}
-  iconRect: {fileID: 3023182295269060761}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 1
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!224 &894637436041112487
 RectTransform:
   m_ObjectHideFlags: 0
@@ -89641,27 +89669,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: megaphone
-  lockedRoot: {fileID: 4222000505600336137}
-  unlockedRoot: {fileID: 4842333826869361734}
-  iconImage: {fileID: 6996192471060283099}
-  backgroundImage: {fileID: 8454052888302083970}
-  iconRect: {fileID: 8063775485194555662}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!114 &1692492246951678021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94651,47 +94658,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 126a464ae4658494890619498cde9050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 7837545609740116113}
-    itemComponent: {fileID: 5426114916001901299}
-  - itemId: 
-    draggableThisStep: 1
-    slotRoot: {fileID: 6922995321771799320}
-    itemComponent: {fileID: 875423957946362492}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 2854306676685781050}
-    itemComponent: {fileID: 174368197828916004}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 2260656239365717125}
-    itemComponent: {fileID: 6796317709544315790}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 4118118753116565733}
-    itemComponent: {fileID: 6474929310246581237}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 6731562099369005064}
-    itemComponent: {fileID: 1673341987165440132}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 1209054270805004153}
-    itemComponent: {fileID: 2929788891405196165}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 4718320470337342192}
-    itemComponent: {fileID: 385238709766722430}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 2510074994078353272}
-    itemComponent: {fileID: 7287154660448110057}
-  - itemId: 
-    draggableThisStep: 0
-    slotRoot: {fileID: 6763348665904592040}
-    itemComponent: {fileID: 8413537901296420490}
 --- !u!224 &2815776078146310517
 RectTransform:
   m_ObjectHideFlags: 0
@@ -95052,83 +95018,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: mind_lens
-    slotRoot: {fileID: 3816516601968616991}
-    canvasGroup: {fileID: 7800440448377300186}
-    lockedRoot: {fileID: 5566122659658882903}
-    unlockedRoot: {fileID: 4071059930562090310}
-    badgeRoot: {fileID: 8800922064339058366}
-    defaultUnlocked: 0
-  - itemId: scenario_pen
-    slotRoot: {fileID: 7026656764247736825}
-    canvasGroup: {fileID: 5831396073434721353}
-    lockedRoot: {fileID: 6673290696624407883}
-    unlockedRoot: {fileID: 5717305651353206466}
-    badgeRoot: {fileID: 8692365126612775439}
-    defaultUnlocked: 0
-  - itemId: editing_scissors
-    slotRoot: {fileID: 7660321496976420746}
-    canvasGroup: {fileID: 5108085074213327837}
-    lockedRoot: {fileID: 3980776539722271769}
-    unlockedRoot: {fileID: 1980468366214318905}
-    badgeRoot: {fileID: 812408259273522370}
-    defaultUnlocked: 0
-  - itemId: zoom_lens
-    slotRoot: {fileID: 1638451493195514882}
-    canvasGroup: {fileID: 1343043436298915578}
-    lockedRoot: {fileID: 3608831506714112150}
-    unlockedRoot: {fileID: 4640825152652459155}
-    badgeRoot: {fileID: 7774117073517159577}
-    defaultUnlocked: 0
-  - itemId: chair
-    slotRoot: {fileID: 2213446785363314462}
-    canvasGroup: {fileID: 7061741348999762833}
-    lockedRoot: {fileID: 1597724330167587868}
-    unlockedRoot: {fileID: 5107845373263967282}
-    badgeRoot: {fileID: 8241941921107483683}
-    defaultUnlocked: 0
-  - itemId: megaphone
-    slotRoot: {fileID: 3391982422520563020}
-    canvasGroup: {fileID: 1284464983920786982}
-    lockedRoot: {fileID: 4558630114974821198}
-    unlockedRoot: {fileID: 8052784616208889767}
-    badgeRoot: {fileID: 6454415267778518297}
-    defaultUnlocked: 0
-  - itemId: storyboard
-    slotRoot: {fileID: 4278987746893762084}
-    canvasGroup: {fileID: 1700964741045737842}
-    lockedRoot: {fileID: 3496512959222913144}
-    unlockedRoot: {fileID: 8230178329555453331}
-    badgeRoot: {fileID: 1739595582790238432}
-    defaultUnlocked: 0
-  - itemId: script
-    slotRoot: {fileID: 5634090421996075097}
-    canvasGroup: {fileID: 8370409438806297412}
-    lockedRoot: {fileID: 368005969238609808}
-    unlockedRoot: {fileID: 972181935505665816}
-    badgeRoot: {fileID: 5718816082718132270}
-    defaultUnlocked: 0
-  - itemId: movie force
-    slotRoot: {fileID: 4280839084945002771}
-    canvasGroup: {fileID: 367131551526829003}
-    lockedRoot: {fileID: 4843499828900830898}
-    unlockedRoot: {fileID: 5016804642950118959}
-    badgeRoot: {fileID: 8746285047928302207}
-    defaultUnlocked: 0
-  - itemId: academy_trophy
-    slotRoot: {fileID: 6413907719815516970}
-    canvasGroup: {fileID: 5327528737340727386}
-    lockedRoot: {fileID: 3354585712014939254}
-    unlockedRoot: {fileID: 4875257814535720175}
-    badgeRoot: {fileID: 4872121129234450056}
-    defaultUnlocked: 0
-  firstDelay: 0.1
-  slotInterval: 0.05
-  slotAnimDuration: 0.25
-  slotStartScale: 0
-  badgePopDuration: 0.3
-  badgePopOvershoot: 1.2
 --- !u!114 &2849893597994263858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95141,83 +95030,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: mind_lens
-    slotRoot: {fileID: 3816516602006728919}
-    canvasGroup: {fileID: 7800440448481997330}
-    lockedRoot: {fileID: 5566122659764095391}
-    unlockedRoot: {fileID: 4071059930524631950}
-    badgeRoot: {fileID: 8800922064301467766}
-    defaultUnlocked: 0
-  - itemId: scenario_pen
-    slotRoot: {fileID: 7026656764150978353}
-    canvasGroup: {fileID: 5831396073405069953}
-    lockedRoot: {fileID: 6673290696527582083}
-    unlockedRoot: {fileID: 5717305651323480074}
-    badgeRoot: {fileID: 8692365126583116999}
-    defaultUnlocked: 0
-  - itemId: editing_scissors
-    slotRoot: {fileID: 7660321496947292482}
-    canvasGroup: {fileID: 5108085074242323733}
-    lockedRoot: {fileID: 3980776539684821713}
-    unlockedRoot: {fileID: 1980468366319541745}
-    badgeRoot: {fileID: 812408259310971402}
-    defaultUnlocked: 0
-  - itemId: zoom_lens
-    slotRoot: {fileID: 1638451493300671178}
-    canvasGroup: {fileID: 1343043436336502834}
-    lockedRoot: {fileID: 3608831506743240286}
-    unlockedRoot: {fileID: 4640825152757148251}
-    badgeRoot: {fileID: 7774117073613992529}
-    defaultUnlocked: 0
-  - itemId: chair
-    slotRoot: {fileID: 2213446785392316886}
-    canvasGroup: {fileID: 7061741349029283161}
-    lockedRoot: {fileID: 1597724330138452692}
-    unlockedRoot: {fileID: 5107845373368525562}
-    badgeRoot: {fileID: 8241941921145457387}
-    defaultUnlocked: 0
-  - itemId: megaphone
-    slotRoot: {fileID: 3391982422558020484}
-    canvasGroup: {fileID: 1284464983891192046}
-    lockedRoot: {fileID: 4558630115071589766}
-    unlockedRoot: {fileID: 8052784616170971503}
-    badgeRoot: {fileID: 6454415267740928977}
-    defaultUnlocked: 0
-  - itemId: storyboard
-    slotRoot: {fileID: 4278987746923485420}
-    canvasGroup: {fileID: 1700964741007757242}
-    lockedRoot: {fileID: 3496512959126802096}
-    unlockedRoot: {fileID: 8230178329584522075}
-    badgeRoot: {fileID: 1739595582760588840}
-    defaultUnlocked: 0
-  - itemId: script
-    slotRoot: {fileID: 5634090422033985169}
-    canvasGroup: {fileID: 8370409438911520140}
-    lockedRoot: {fileID: 368005969142438232}
-    unlockedRoot: {fileID: 972181935534668240}
-    badgeRoot: {fileID: 5718816082755657446}
-    defaultUnlocked: 0
-  - itemId: movie force
-    slotRoot: {fileID: 4280839084840372187}
-    canvasGroup: {fileID: 367131551564934403}
-    lockedRoot: {fileID: 4843499828929955962}
-    unlockedRoot: {fileID: 5016804642988222695}
-    badgeRoot: {fileID: 8746285047966219447}
-    defaultUnlocked: 0
-  - itemId: academy_trophy
-    slotRoot: {fileID: 6413907719785858530}
-    canvasGroup: {fileID: 5327528737236104850}
-    lockedRoot: {fileID: 3354585711977546430}
-    unlockedRoot: {fileID: 4875257814431095335}
-    badgeRoot: {fileID: 4872121129272365120}
-    defaultUnlocked: 0
-  firstDelay: 0.1
-  slotInterval: 0.05
-  slotAnimDuration: 0.25
-  slotStartScale: 0
-  badgePopDuration: 0.3
-  badgePopOvershoot: 1.2
 --- !u!114 &2849893598088706694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95230,83 +95042,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: mind_lens
-    slotRoot: {fileID: 3816516602046377827}
-    canvasGroup: {fileID: 7800440448542879142}
-    lockedRoot: {fileID: 5566122659820525099}
-    unlockedRoot: {fileID: 4071059930480139322}
-    badgeRoot: {fileID: 8800922064244520898}
-    defaultUnlocked: 0
-  - itemId: scenario_pen
-    slotRoot: {fileID: 7026656764329691269}
-    canvasGroup: {fileID: 5831396073310889269}
-    lockedRoot: {fileID: 6673290696450182199}
-    unlockedRoot: {fileID: 5717305651514783678}
-    badgeRoot: {fileID: 8692365126488947571}
-    defaultUnlocked: 0
-  - itemId: editing_scissors
-    slotRoot: {fileID: 7660321496890599158}
-    canvasGroup: {fileID: 5108085074047752865}
-    lockedRoot: {fileID: 3980776539644511589}
-    unlockedRoot: {fileID: 1980468366379893317}
-    badgeRoot: {fileID: 812408259120330174}
-    defaultUnlocked: 0
-  - itemId: zoom_lens
-    slotRoot: {fileID: 1638451493340319102}
-    canvasGroup: {fileID: 1343043436145985414}
-    lockedRoot: {fileID: 3608831506514721258}
-    unlockedRoot: {fileID: 4640825152835073519}
-    badgeRoot: {fileID: 7774117073674350053}
-    defaultUnlocked: 0
-  - itemId: chair
-    slotRoot: {fileID: 2213446785201671778}
-    canvasGroup: {fileID: 7061741348838382317}
-    lockedRoot: {fileID: 1597724330077314400}
-    unlockedRoot: {fileID: 5107845373429808462}
-    badgeRoot: {fileID: 8241941921205949791}
-    defaultUnlocked: 0
-  - itemId: megaphone
-    slotRoot: {fileID: 3391982422631877680}
-    canvasGroup: {fileID: 1284464984086296410}
-    lockedRoot: {fileID: 4558630114859573810}
-    unlockedRoot: {fileID: 8052784616349564635}
-    badgeRoot: {fileID: 6454415267952415845}
-    defaultUnlocked: 0
-  - itemId: storyboard
-    slotRoot: {fileID: 4278987746698626904}
-    canvasGroup: {fileID: 1700964740930228238}
-    lockedRoot: {fileID: 3496512959321641220}
-    unlockedRoot: {fileID: 8230178329377361135}
-    badgeRoot: {fileID: 1739595582687644060}
-    defaultUnlocked: 0
-  - itemId: script
-    slotRoot: {fileID: 5634090421809525029}
-    canvasGroup: {fileID: 8370409438716281400}
-    lockedRoot: {fileID: 368005969047865068}
-    unlockedRoot: {fileID: 972181935344281188}
-    badgeRoot: {fileID: 5718816082577719634}
-    defaultUnlocked: 0
-  - itemId: movie force
-    slotRoot: {fileID: 4280839085052123247}
-    canvasGroup: {fileID: 367131551642333879}
-    lockedRoot: {fileID: 4843499828991104974}
-    unlockedRoot: {fileID: 5016804642796926803}
-    badgeRoot: {fileID: 8746285047791821571}
-    defaultUnlocked: 0
-  - itemId: academy_trophy
-    slotRoot: {fileID: 6413907719691950678}
-    canvasGroup: {fileID: 5327528737141664038}
-    lockedRoot: {fileID: 3354585712172391690}
-    unlockedRoot: {fileID: 4875257814340846995}
-    badgeRoot: {fileID: 4872121129077264372}
-    defaultUnlocked: 0
-  firstDelay: 0.1
-  slotInterval: 0.05
-  slotAnimDuration: 0.25
-  slotStartScale: 0
-  badgePopDuration: 0.3
-  badgePopOvershoot: 1.2
 --- !u!114 &2849893598955008226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95319,83 +95054,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: mind_lens
-    slotRoot: {fileID: 3816516601314354439}
-    canvasGroup: {fileID: 7800440448327051202}
-    lockedRoot: {fileID: 5566122660682341455}
-    unlockedRoot: {fileID: 4071059929605838430}
-    badgeRoot: {fileID: 8800922063382707622}
-    defaultUnlocked: 0
-  - itemId: scenario_pen
-    slotRoot: {fileID: 7026656763996029665}
-    canvasGroup: {fileID: 5831396072981688145}
-    lockedRoot: {fileID: 6673290696104265299}
-    unlockedRoot: {fileID: 5717305652242349530}
-    badgeRoot: {fileID: 8692365127233450263}
-    defaultUnlocked: 0
-  - itemId: editing_scissors
-    slotRoot: {fileID: 7660321496020036754}
-    canvasGroup: {fileID: 5108085073860923589}
-    lockedRoot: {fileID: 3980776538766020353}
-    unlockedRoot: {fileID: 1980468365627164705}
-    badgeRoot: {fileID: 812408258921119706}
-    defaultUnlocked: 0
-  - itemId: zoom_lens
-    slotRoot: {fileID: 1638451494219007770}
-    canvasGroup: {fileID: 1343043435409772002}
-    lockedRoot: {fileID: 3608831507402060686}
-    unlockedRoot: {fileID: 4640825152635764619}
-    badgeRoot: {fileID: 7774117074003781505}
-    defaultUnlocked: 0
-  - itemId: chair
-    slotRoot: {fileID: 2213446784474072070}
-    canvasGroup: {fileID: 7061741349184262281}
-    lockedRoot: {fileID: 1597724329748076292}
-    unlockedRoot: {fileID: 5107845372676683562}
-    badgeRoot: {fileID: 8241941920453123899}
-    defaultUnlocked: 0
-  - itemId: megaphone
-    slotRoot: {fileID: 3391982421899757140}
-    canvasGroup: {fileID: 1284464983199448382}
-    lockedRoot: {fileID: 4558630115192973398}
-    unlockedRoot: {fileID: 8052784616024388799}
-    badgeRoot: {fileID: 6454415267090570753}
-    defaultUnlocked: 0
-  - itemId: storyboard
-    slotRoot: {fileID: 4278987747581709628}
-    canvasGroup: {fileID: 1700964740055931498}
-    lockedRoot: {fileID: 3496512959508208480}
-    unlockedRoot: {fileID: 8230178329706366603}
-    badgeRoot: {fileID: 1739595581800334328}
-    defaultUnlocked: 0
-  - itemId: script
-    slotRoot: {fileID: 5634090422147021633}
-    canvasGroup: {fileID: 8370409439594874972}
-    lockedRoot: {fileID: 368005968718564488}
-    unlockedRoot: {fileID: 972181936227003392}
-    badgeRoot: {fileID: 5718816081829022518}
-    defaultUnlocked: 0
-  - itemId: movie force
-    slotRoot: {fileID: 4280839085800559115}
-    canvasGroup: {fileID: 367131550906153171}
-    lockedRoot: {fileID: 4843499828246601130}
-    unlockedRoot: {fileID: 5016804643134717239}
-    badgeRoot: {fileID: 8746285048649673063}
-    defaultUnlocked: 0
-  - itemId: academy_trophy
-    slotRoot: {fileID: 6413907718825578546}
-    canvasGroup: {fileID: 5327528736283714370}
-    lockedRoot: {fileID: 3354585712904181614}
-    unlockedRoot: {fileID: 4875257814015545335}
-    badgeRoot: {fileID: 4872121128345175440}
-    defaultUnlocked: 0
-  firstDelay: 0.1
-  slotInterval: 0.05
-  slotAnimDuration: 0.25
-  slotStartScale: 0
-  badgePopDuration: 0.3
-  badgePopOvershoot: 1.2
 --- !u!114 &2849893598955287679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95408,83 +95066,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: mind_lens
-    slotRoot: {fileID: 3816516601310994842}
-    canvasGroup: {fileID: 7800440448327328607}
-    lockedRoot: {fileID: 5566122660678981842}
-    unlockedRoot: {fileID: 4071059929602413251}
-    badgeRoot: {fileID: 8800922063384492347}
-    defaultUnlocked: 0
-  - itemId: scenario_pen
-    slotRoot: {fileID: 7026656763997357692}
-    canvasGroup: {fileID: 5831396072979868620}
-    lockedRoot: {fileID: 6673290696101331662}
-    unlockedRoot: {fileID: 5717305652238367047}
-    badgeRoot: {fileID: 8692365127229568394}
-    defaultUnlocked: 0
-  - itemId: editing_scissors
-    slotRoot: {fileID: 7660321496021919759}
-    canvasGroup: {fileID: 5108085073858024536}
-    lockedRoot: {fileID: 3980776538766789532}
-    unlockedRoot: {fileID: 1980468365628001468}
-    badgeRoot: {fileID: 812408258922478407}
-    defaultUnlocked: 0
-  - itemId: zoom_lens
-    slotRoot: {fileID: 1638451494218695559}
-    canvasGroup: {fileID: 1343043435413227903}
-    lockedRoot: {fileID: 3608831507400177427}
-    unlockedRoot: {fileID: 4640825152638139158}
-    badgeRoot: {fileID: 7774117074006680348}
-    defaultUnlocked: 0
-  - itemId: chair
-    slotRoot: {fileID: 2213446784476381339}
-    canvasGroup: {fileID: 7061741349186049044}
-    lockedRoot: {fileID: 1597724329747862425}
-    unlockedRoot: {fileID: 5107845372680139703}
-    badgeRoot: {fileID: 8241941920457071526}
-    defaultUnlocked: 0
-  - itemId: megaphone
-    slotRoot: {fileID: 3391982421896889033}
-    canvasGroup: {fileID: 1284464983202806179}
-    lockedRoot: {fileID: 4558630115189550283}
-    unlockedRoot: {fileID: 8052784616024698914}
-    badgeRoot: {fileID: 6454415267093437084}
-    defaultUnlocked: 0
-  - itemId: storyboard
-    slotRoot: {fileID: 4278987747582511521}
-    canvasGroup: {fileID: 1700964740051984119}
-    lockedRoot: {fileID: 3496512959511109629}
-    unlockedRoot: {fileID: 8230178329709822486}
-    badgeRoot: {fileID: 1739595581802710885}
-    defaultUnlocked: 0
-  - itemId: script
-    slotRoot: {fileID: 5634090422150905820}
-    canvasGroup: {fileID: 8370409439594663105}
-    lockedRoot: {fileID: 368005968716187669}
-    unlockedRoot: {fileID: 972181936227248285}
-    badgeRoot: {fileID: 5718816081826090923}
-    defaultUnlocked: 0
-  - itemId: movie force
-    slotRoot: {fileID: 4280839085804541590}
-    canvasGroup: {fileID: 367131550906956878}
-    lockedRoot: {fileID: 4843499828248910135}
-    unlockedRoot: {fileID: 5016804643136600490}
-    badgeRoot: {fileID: 8746285048651460090}
-    defaultUnlocked: 0
-  - itemId: academy_trophy
-    slotRoot: {fileID: 6413907718821696687}
-    canvasGroup: {fileID: 5327528736283469791}
-    lockedRoot: {fileID: 3354585712908162035}
-    unlockedRoot: {fileID: 4875257814016379754}
-    badgeRoot: {fileID: 4872121128342798605}
-    defaultUnlocked: 0
-  firstDelay: 0.1
-  slotInterval: 0.05
-  slotAnimDuration: 0.25
-  slotStartScale: 0
-  badgePopDuration: 0.3
-  badgePopOvershoot: 1.2
 --- !u!225 &2850787796041541604
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -95634,27 +95215,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: storyboard
-  lockedRoot: {fileID: 7042518018665267121}
-  unlockedRoot: {fileID: 8136476394572749117}
-  iconImage: {fileID: 1397090580666288659}
-  backgroundImage: {fileID: 8439307731714369257}
-  iconRect: {fileID: 2807981984724113679}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!1 &2930084589406411149
 GameObject:
   m_ObjectHideFlags: 0
@@ -104480,83 +104040,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea70c1cd81515a84d87698a0109d81c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemId: mind_lens
-    slotRoot: {fileID: 5838736218224526910}
-    canvasGroup: {fileID: 698371600530883835}
-    lockedRoot: {fileID: 2940693423733817206}
-    unlockedRoot: {fileID: 6741582328859571559}
-    badgeRoot: {fileID: 2293038079064202911}
-    defaultUnlocked: 0
-  - itemId: scenario_pen
-    slotRoot: {fileID: 320341742162698712}
-    canvasGroup: {fileID: 3827182075659439208}
-    lockedRoot: {fileID: 4138223731765208426}
-    unlockedRoot: {fileID: 3073237485724032739}
-    badgeRoot: {fileID: 2112427920625242670}
-    defaultUnlocked: 0
-  - itemId: editing_scissors
-    slotRoot: {fileID: 1134709020583661483}
-    canvasGroup: {fileID: 2527142026075878396}
-    lockedRoot: {fileID: 5967033303995886648}
-    unlockedRoot: {fileID: 9119137764700924696}
-    badgeRoot: {fileID: 7978099281243675875}
-    defaultUnlocked: 0
-  - itemId: zoom_lens
-    slotRoot: {fileID: 8308390298315383843}
-    canvasGroup: {fileID: 8598168716892909275}
-    lockedRoot: {fileID: 6333331173748363447}
-    unlockedRoot: {fileID: 2708391689198722226}
-    badgeRoot: {fileID: 1014031527346521272}
-    defaultUnlocked: 0
-  - itemId: chair
-    slotRoot: {fileID: 8882813808960923455}
-    canvasGroup: {fileID: 572518250308629424}
-    lockedRoot: {fileID: 8349084195076715581}
-    unlockedRoot: {fileID: 2527381729434801171}
-    badgeRoot: {fileID: 1698108320755252226}
-    defaultUnlocked: 0
-  - itemId: megaphone
-    slotRoot: {fileID: 5396183225074083181}
-    canvasGroup: {fileID: 8368515077145746951}
-    lockedRoot: {fileID: 6535329890860501871}
-    unlockedRoot: {fileID: 734257121790465926}
-    badgeRoot: {fileID: 4351346378598300984}
-    defaultUnlocked: 0
-  - itemId: storyboard
-    slotRoot: {fileID: 6814969505326394885}
-    canvasGroup: {fileID: 8244591649301051731}
-    lockedRoot: {fileID: 6158595550197020761}
-    unlockedRoot: {fileID: 1713287137426023858}
-    badgeRoot: {fileID: 9067416139856765121}
-    defaultUnlocked: 0
-  - itemId: script
-    slotRoot: {fileID: 3153057831859705976}
-    canvasGroup: {fileID: 1285792049196641125}
-    lockedRoot: {fileID: 6983620111302373297}
-    unlockedRoot: {fileID: 7533471416752967481}
-    badgeRoot: {fileID: 3075104131979405327}
-    defaultUnlocked: 0
-  - itemId: movie_force
-    slotRoot: {fileID: 6816548164527599922}
-    canvasGroup: {fileID: 6983383401778338794}
-    lockedRoot: {fileID: 2793981545366421139}
-    unlockedRoot: {fileID: 2337055091566124558}
-    badgeRoot: {fileID: 2058336269197429342}
-    defaultUnlocked: 0
-  - itemId: academy_trophy
-    slotRoot: {fileID: 4391960789917774603}
-    canvasGroup: {fileID: 3179129225619849339}
-    lockedRoot: {fileID: 5439301518803285079}
-    unlockedRoot: {fileID: 2763454396294114510}
-    badgeRoot: {fileID: 2768841159533045417}
-    defaultUnlocked: 0
-  firstDelay: 0.1
-  slotInterval: 0.05
-  slotAnimDuration: 0.25
-  slotStartScale: 0
-  badgePopDuration: 0.3
-  badgePopOvershoot: 1.2
 --- !u!224 &4816196259486502989
 RectTransform:
   m_ObjectHideFlags: 0
@@ -108333,27 +107816,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: mind_lens
-  lockedRoot: {fileID: 6092580728471166403}
-  unlockedRoot: {fileID: 2468977759012866964}
-  iconImage: {fileID: 4469545790248321916}
-  backgroundImage: {fileID: 7011782478414637577}
-  iconRect: {fileID: 4418607035340317211}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!224 &5430932328718079234
 RectTransform:
   m_ObjectHideFlags: 0
@@ -114152,27 +113614,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: chair
-  lockedRoot: {fileID: 5797896877573423381}
-  unlockedRoot: {fileID: 2294611125221988182}
-  iconImage: {fileID: 8713224049216476018}
-  backgroundImage: {fileID: 1264253236312503516}
-  iconRect: {fileID: 1168200436534729087}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!114 &6485499001822534043
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115455,27 +114896,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: zoom_lens
-  lockedRoot: {fileID: 4442477784318077518}
-  unlockedRoot: {fileID: 8062081539703112157}
-  iconImage: {fileID: 7546451108137386171}
-  backgroundImage: {fileID: 8542979878926891553}
-  iconRect: {fileID: 2927752157233087550}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!1 &6798705567212740743
 GameObject:
   m_ObjectHideFlags: 0
@@ -118352,27 +117772,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: movie force
-  lockedRoot: {fileID: 2945010779260834657}
-  unlockedRoot: {fileID: 3318351212482547311}
-  iconImage: {fileID: 6200666241924336424}
-  backgroundImage: {fileID: 174278535366529207}
-  iconRect: {fileID: 2409033639232124684}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!1 &7301032394639960194
 GameObject:
   m_ObjectHideFlags: 0
@@ -123803,27 +123202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dc8df1156c6ed4789751332075cf6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: academy_trophy
-  lockedRoot: {fileID: 7881541193812169042}
-  unlockedRoot: {fileID: 1047904800037806346}
-  iconImage: {fileID: 7171430102581941475}
-  backgroundImage: {fileID: 5023665196242333544}
-  iconRect: {fileID: 8522999837185287060}
-  rootCanvas: {fileID: 524762533}
-  hoverScale: 1.05
-  hoverSpeed: 10
-  wiggleEnabled: 0
-  wiggleAmplitude: 0.05
-  wiggleSpeed: 4
-  dragHandlerTarget: {fileID: 0}
-  _canDrag: 0
-  _isHover: 0
-  _isDragging: 0
-  _originalScale: {x: 0, y: 0, z: 0}
-  _originalAnchoredPos: {x: 0, y: 0}
-  _originalParent: {fileID: 0}
-  _cachedCanvas: {fileID: 0}
-  _initialized: 0
 --- !u!114 &8431400831636123033
 MonoBehaviour:
   m_ObjectHideFlags: 0
