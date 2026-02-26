@@ -12,15 +12,8 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         public RectTransform targetPoint; // 도착 위치
     }
 
-    [Serializable]
-    public struct SummaryDescription
-    {
-        public Sprite icon;
-        public int descriptionTextId;
-    }
-
-    [Header("요약 내용 (아이콘 + 텍스트 ID)")]
-    [SerializeField] private SummaryDescription[] summaryDescriptions;
+    [Header("요약 텍스트 ID 목록")]
+    [SerializeField] private int[] summaryTextIds;
 
     [Header("라인 생성 설정")]
     [SerializeField] private GameObject linePrefab;   // Image + Text 포함된 프리팹
@@ -33,14 +26,11 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
     [SerializeField] private float spawnInterval = 0.3f;  // 라인 간 생성 간격
     [SerializeField] private float moveDuration = 0.5f;   // spawn에서 target 이동 시간
 
-    [Header("하남 아이콘")]
-    [SerializeField] private RectTransform hanamIcon;     // HanamIcon Image의 RectTransform
-    [SerializeField] private float iconDelay = 0.3f;      // 라인 완료 후 아이콘 등장까지 딜레이
-    [SerializeField] private float iconBobAmplitude = 5f; // 위/아래 흔들림 크기 (px)
-    [SerializeField] private float iconBobSpeed = 2f;     // 흔들림 속도
+    [Header("자동 다음 스텝")]
+    [SerializeField] private StepCompletionGate completionGate;
+    [SerializeField] private float autoAdvanceDelay = 5f;  // 마지막 라인 출력 후 대기 시간
 
     private Coroutine _sequenceRoutine;
-    private Coroutine _iconBobRoutine;
 
     private void OnEnable()
     {
@@ -55,53 +45,17 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             StopCoroutine(_sequenceRoutine);
             _sequenceRoutine = null;
         }
-
-        if (_iconBobRoutine != null)
-        {
-            StopCoroutine(_iconBobRoutine);
-            _iconBobRoutine = null;
-        }
-
-        // 다시 열릴 때를 위해 아이콘 비활성화
-        if (hanamIcon != null)
-            hanamIcon.gameObject.SetActive(false);
     }
 
-    public void SetSummaryContent(Sprite[] icons, int[] textIds)
+    public void SetSummaryContent(int[] textIds)
     {
-        if (icons == null || textIds == null)
-        {
-            summaryDescriptions = Array.Empty<SummaryDescription>();
-            return;
-        }
-
-        int count = Mathf.Min(icons.Length, textIds.Length);
-        summaryDescriptions = new SummaryDescription[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            summaryDescriptions[i] = new SummaryDescription
-            {
-                icon = icons[i],
-                descriptionTextId = textIds[i]
-            };
-        }
+        summaryTextIds = textIds ?? Array.Empty<int>();
     }
 
     public void StartSequence()
     {
         if (_sequenceRoutine != null)
             StopCoroutine(_sequenceRoutine);
-
-        if (_iconBobRoutine != null)
-        {
-            StopCoroutine(_iconBobRoutine);
-            _iconBobRoutine = null;
-        }
-
-        // 아이콘을 비활성화 상태로 초기화
-        if (hanamIcon != null)
-            hanamIcon.gameObject.SetActive(false);
 
         ClearLines();
         _sequenceRoutine = StartCoroutine(SequenceRoutine());
@@ -117,23 +71,21 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
 
     private IEnumerator SequenceRoutine()
     {
-        if (summaryDescriptions == null || summaryDescriptions.Length == 0)
+        if (summaryTextIds == null || summaryTextIds.Length == 0)
             yield break;
 
-        int descCount = summaryDescriptions.Length;
+        int textCount = summaryTextIds.Length;
         int configCount = (lineConfigs != null) ? lineConfigs.Length : 0;
-        int count = Mathf.Min(descCount, configCount);
+        int count = Mathf.Min(textCount, configCount);
 
         for (int i = 0; i < count; i++)
         {
-            var data = summaryDescriptions[i];
             var cfg = lineConfigs[i];
 
             // --- fallback 처리 ---
             RectTransform spawn = cfg.spawnPoint;
             RectTransform target = cfg.targetPoint;
 
-            // spawn/target이 비어있으면 0번 설정으로 대체
             if (spawn == null && lineConfigs.Length > 0)
             {
                 spawn = lineConfigs[0].spawnPoint;
@@ -146,7 +98,6 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
                 Debug.LogWarning($"[SummaryPanel] line {i} targetPoint null → element0으로 대체");
             }
 
-            // 그래도 여전히 null이면 로그 남기고 건너뜀
             if (spawn == null || target == null || linePrefab == null || linesRoot == null)
             {
                 Debug.LogWarning($"[SummaryPanel] line {i} 생성 불가 - 필수값 null 존재");
@@ -158,13 +109,28 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             go.name = $"SummaryLine_{i}";
             var rt = go.GetComponent<RectTransform>();
 
-            var iconImage = go.GetComponentInChildren<Image>();
-            var textComp = go.GetComponentInChildren<Text>();
+            // 프리팹 구조: linePrefab > Icon(첫번째 자식) > NumberText(Icon의 자식)
+            //              linePrefab > DescriptionText
+            Transform iconTr = go.transform.childCount > 0 ? go.transform.GetChild(0) : null;
 
-            if (iconImage != null)
-                iconImage.sprite = data.icon;
-            if (textComp != null)
-                textComp.text = ProblemRuntime.L(data.descriptionTextId);
+            // 아이콘의 자식 텍스트에 번호 설정 (0번→"1", 1번→"2", ...)
+            if (iconTr != null)
+            {
+                var numberText = iconTr.GetComponentInChildren<Text>();
+                if (numberText != null)
+                    numberText.text = (i + 1).ToString();
+            }
+
+            // 설명 텍스트 설정 (linePrefab 직속 Text 컴포넌트)
+            var descTexts = go.GetComponentsInChildren<Text>();
+            foreach (var t in descTexts)
+            {
+                // 아이콘 하위 텍스트는 건너뜀
+                if (iconTr != null && t.transform.IsChildOf(iconTr))
+                    continue;
+                t.text = ProblemRuntime.L(summaryTextIds[i]);
+                break;
+            }
 
             // 2) 시작/목표 위치 설정 및 이동
             rt.position = spawn.position;
@@ -174,16 +140,17 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
         }
 
-        // 하남 아이콘 등장
-        if (hanamIcon != null)
-        {
-            yield return new WaitForSeconds(iconDelay);
+        // 마지막 라인 이동 완료 대기
+        yield return new WaitForSeconds(moveDuration);
 
-            hanamIcon.gameObject.SetActive(true);
-            _iconBobRoutine = StartCoroutine(BobHanamIcon(hanamIcon));
+        // 자동 다음 스텝 진행
+        if (completionGate != null)
+        {
+            yield return new WaitForSeconds(autoAdvanceDelay);
+            completionGate.ResetGate(1);
+            completionGate.MarkOneDone();
         }
     }
-
 
     private IEnumerator MoveLine(RectTransform rt, Vector3 targetPos, float duration)
     {
@@ -203,28 +170,5 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         }
 
         rt.position = targetPos;
-    }
-
-    /// <summary>
-    /// 하남 아이콘을 위/아래로 살랑살랑 흔드는 애니메이션
-    /// </summary>
-    private IEnumerator BobHanamIcon(RectTransform icon)
-    {
-        if (icon == null) yield break;
-
-        Vector2 basePos = icon.anchoredPosition;
-        float time = 0f;
-
-        while (icon != null && icon.gameObject.activeInHierarchy)
-        {
-            time += Time.deltaTime * iconBobSpeed;
-            float offsetY = Mathf.Sin(time) * iconBobAmplitude;
-            icon.anchoredPosition = basePos + new Vector2(0f, offsetY);
-            yield return null;
-        }
-
-        // 종료 시 원래 위치로 복원
-        if (icon != null)
-            icon.anchoredPosition = basePos;
     }
 }

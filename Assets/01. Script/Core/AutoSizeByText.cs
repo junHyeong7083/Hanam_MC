@@ -71,7 +71,7 @@ public class AutoSizeByText : MonoBehaviour
                     + paddingLeft + paddingRight;
             if (minWidth > 0f) w = Mathf.Max(w, minWidth);
             if (maxWidth > 0f) w = Mathf.Min(w, maxWidth);
-            Debug.Log($"[AutoSizeByText] \"{targetText.text}\" | preferredWidth={targetText.preferredWidth:F1}, textOffset=({textLeftOffset:F0}+{textRightOffset:F0}), padding=({paddingLeft}+{paddingRight}), result w={w:F1}");
+          //  Debug.Log($"[AutoSizeByText] \"{targetText.text}\" | preferredWidth={targetText.preferredWidth:F1}, textOffset=({textLeftOffset:F0}+{textRightOffset:F0}), padding=({paddingLeft}+{paddingRight}), result w={w:F1}");
             size.x = w;
         }
 
@@ -91,7 +91,7 @@ public class AutoSizeByText : MonoBehaviour
             size.y = h;
         }
 
-        Debug.Log($"[AutoSizeByText] \"{gameObject.name}\" | final sizeDelta=({size.x:F1}, {size.y:F1})");
+        //Debug.Log($"[AutoSizeByText] \"{gameObject.name}\" | final sizeDelta=({size.x:F1}, {size.y:F1})");
         _rt.sizeDelta = size;
     }
 
