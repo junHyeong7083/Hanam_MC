@@ -5,7 +5,17 @@
       "Bash(curl:*)",
       "Bash(tree:*)",
       "Bash(cat:*)",
-      "Bash(C:flutterbinflutter pub get)"
+      "Bash(C:flutterbinflutter pub get)",
+      "Bash(claude mcp list:*)",
+      "Bash(find:*)",
+      "Bash(claude mcp:*)",
+      "Bash(grep:*)",
+      "mcp__UnityMCP__manage_editor",
+      "mcp__UnityMCP__manage_scene",
+      "mcp__UnityMCP__manage_gameobject",
+      "mcp__UnityMCP__find_gameobjects",
+      "mcp__UnityMCP__batch_execute",
+      "mcp__UnityMCP__manage_components"
     ],
     "deny": [],
     "ask": []

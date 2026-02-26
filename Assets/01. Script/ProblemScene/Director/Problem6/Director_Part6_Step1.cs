@@ -2,34 +2,25 @@ using UnityEngine;
 
 /// <summary>
 /// Director / Problem6 / Step1
-/// - �ν����Ϳ��� UI ������ ��� �ִ� ����.
-/// - ���� ������ Director_Problem6_Step1_Logic(�θ�)�� ����.
+/// - 인스펙터에서 UI 참조를 갖고 있는 Binder.
+/// - 실제 로직은 Director_Problem6_Step1_Logic(부모)에 있음.
 /// </summary>
 public class Director_Problem6_Step1 : Director_Problem6_Step1_Logic
 {
-    [Header("���� ��� Ÿ�� ���� (�� ���� �ڽ�)")]
-    [SerializeField] private RectTransform emptySpaceRect;        // TS�� emptySpaceRef
+    [Header("활성화 연출용 비주얼 루트")]
+    [SerializeField] private RectTransform chairTargetVisualRoot;
 
-    [Header("��� �ε������� (�巡�� �� �׵θ� �ڽ�)")]
-    [SerializeField] private GameObject dropIndicatorRoot;
+    [Header("안내 텍스트 루트")]
+    [SerializeField] private GameObject instructionRoot;
 
-    [Header("Ȱ��ȭ ����� ���־� ��Ʈ (������ ƨ�� ���)")]
-    [SerializeField] private RectTransform chairTargetVisualRoot; // �ڽ� ��ü or ���� ī��
+    [Header("활성화 완료 시 등장")]
+    [SerializeField] private GameObject chairPlacedIconRoot;
+    [SerializeField] private GameObject glowImage;
+    [SerializeField] private GameObject sparkleImage;
 
-    [Header("�ȳ� �ؽ�Ʈ ��Ʈ")]
-    [SerializeField] private GameObject instructionRoot;          // "���ڸ� �巡���ؼ� �÷��ּ���"
-
-    [Header("드롭 완료 시 등장")]
-    [SerializeField] private GameObject chairPlacedIconRoot;      // 의자 아이콘
-    [SerializeField] private GameObject glowImage;                // 글로우 이미지
-    [SerializeField] private GameObject sparkleImage;             // 스파클 이미지
-
-    [Header("�Ϸ� ����Ʈ")]
+    [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // ----- �θ� �߻� ������Ƽ ���� -----
-    protected override RectTransform ChairDropTargetRect => emptySpaceRect;
-    protected override GameObject ChairDropIndicatorRoot => dropIndicatorRoot;
     protected override RectTransform ChairTargetVisualRoot => chairTargetVisualRoot;
     protected override GameObject InstructionRootObject => instructionRoot;
     protected override StepCompletionGate StepCompletionGateRef => completionGate;

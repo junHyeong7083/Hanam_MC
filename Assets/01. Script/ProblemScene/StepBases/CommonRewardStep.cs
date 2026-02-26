@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 공용 보상 연출 Step
 /// - ProblemStepBase 를 상속
 /// - 여러 UI 요소를 배열(sequenceItems)로 받아 순차적으로 등장
-/// - 인벤토리 패널 + 보상 DB 저장까지 포함
+/// - 보상 DB 저장 + 리워드 이름/설명 텍스트 표시
 /// </summary>
 public class CommonRewardStep : ProblemStepBase
 {
@@ -18,8 +18,8 @@ public class CommonRewardStep : ProblemStepBase
         public string name;
 
         [Header("UI Root")]
-        public RectTransform root;         // 위치/스케일을 줄 대상
-        public CanvasGroup canvasGroup;    // 알파 페이드 대상 (없으면 생략 가능)
+        public RectTransform root;
+        public CanvasGroup canvasGroup;
 
         [Header("타이밍")]
         [Tooltip("이전 아이템이 끝난 후 기다릴 시간")]
@@ -49,12 +49,11 @@ public class CommonRewardStep : ProblemStepBase
     [Header("연출 시퀀스 (위에서 아래 순서대로 재생)")]
     [SerializeField] private SequenceItem[] sequenceItems;
 
-    [Header("인벤토리 패널 (선택)")]
-    [Tooltip("보상 아이템을 보여줄 RewardInventoryPanel (없으면 무시)")]
-    [SerializeField] private RewardInventoryPanel inventoryPanel;
-
-    [Tooltip("sequenceItems 중 인벤토리가 등장하는 인덱스 (없으면 -1)")]
-    [SerializeField] private int inventorySequenceIndex = -1;
+    [Header("리워드 표시")]
+    [SerializeField] private Text rewardNameText;
+    [SerializeField] private int rewardNameTextId;
+    [SerializeField] private Text rewardDescText;
+    [SerializeField] private int rewardDescTextId;
 
     [Header("보상 메타 (DB 저장용)")]
     [SerializeField] private string rewardItemId = "mind_lens";
@@ -63,6 +62,7 @@ public class CommonRewardStep : ProblemStepBase
     // 내부 상태
     private Coroutine _sequenceRoutine;
     private bool _rewardSaved;
+
     [Serializable]
     public class StepRewardItemDto
     {
@@ -70,31 +70,29 @@ public class CommonRewardStep : ProblemStepBase
         public string itemName;
         public bool unlocked;
     }
+
     [Serializable]
     public class StepRewardAttemptDto
     {
         public StepRewardItemDto[] items;
     }
+
     // =========================
     // ProblemStepBase 구현
     // =========================
 
-    /// <summary>
-    /// 스텝이 켜질 때(활성화될 때) 호출됨.
-    /// ProblemStepBase.OnEnable -> OnStepEnter() 순서로 들어옴.
-    /// </summary>
     protected override void OnStepEnter()
     {
         // 1) 보상 DB 저장 (한 번만)
         SaveRewardToDbOnce();
 
-        // 2) 연출 시퀀스 시작
+        // 2) 리워드 이름/설명 텍스트 표시
+        ApplyRewardText();
+
+        // 3) 연출 시퀀스 시작
         StartSequence();
     }
 
-    /// <summary>
-    /// 스텝이 꺼질 때 정리
-    /// </summary>
     protected override void OnStepExit()
     {
         if (_sequenceRoutine != null)
@@ -105,12 +103,22 @@ public class CommonRewardStep : ProblemStepBase
     }
 
     // =========================
+    // 리워드 텍스트 표시
+    // =========================
+
+    private void ApplyRewardText()
+    {
+        if (rewardNameText != null && rewardNameTextId > 0)
+            rewardNameText.text = ProblemRuntime.L(rewardNameTextId);
+
+        if (rewardDescText != null && rewardDescTextId > 0)
+            rewardDescText.text = ProblemRuntime.L(rewardDescTextId);
+    }
+
+    // =========================
     // 시퀀스 제어
     // =========================
 
-    /// <summary>
-    /// 외부에서 다시 재생하고 싶을 때 호출
-    /// </summary>
     public void StartSequence()
     {
         if (_sequenceRoutine != null)
@@ -120,9 +128,6 @@ public class CommonRewardStep : ProblemStepBase
         _sequenceRoutine = StartCoroutine(SequenceRoutine());
     }
 
-    /// <summary>
-    /// sequenceItems 초기 위치/스케일/알파 세팅
-    /// </summary>
     private void InitState()
     {
         if (sequenceItems == null) return;
@@ -139,24 +144,18 @@ public class CommonRewardStep : ProblemStepBase
                 item.initialized = true;
             }
 
-            // 시작 위치: basePos + startOffset
             item.root.anchoredPosition = item.basePos + item.startOffset;
 
-            // 시작 스케일
             if (item.useScale)
                 item.root.localScale = Vector3.one * item.startScale;
             else
                 item.root.localScale = item.baseScale;
 
-            // 시작 알파 0
             if (item.canvasGroup != null)
                 item.canvasGroup.alpha = 0f;
         }
     }
 
-    /// <summary>
-    /// 전체 시퀀스 재생
-    /// </summary>
     private IEnumerator SequenceRoutine()
     {
         if (sequenceItems == null || sequenceItems.Length == 0)
@@ -168,26 +167,13 @@ public class CommonRewardStep : ProblemStepBase
             if (item == null || item.root == null)
                 continue;
 
-            // 인벤토리 등장 시점이면 ShowInventory 호출
-            if (i == inventorySequenceIndex &&
-                inventoryPanel != null &&
-                !string.IsNullOrEmpty(rewardItemId))
-            {
-                inventoryPanel.ShowInventory(rewardItemId, true);
-            }
-
-            // 개별 아이템 앞 딜레이
             if (item.delay > 0f)
                 yield return new WaitForSeconds(item.delay);
 
-            // 개별 아이템 등장 애니메이션
             yield return PlayItemRoutine(item);
         }
     }
 
-    /// <summary>
-    /// 개별 SequenceItem 등장 애니메이션
-    /// </summary>
     private IEnumerator PlayItemRoutine(SequenceItem item)
     {
         if (item == null || item.root == null)
@@ -211,7 +197,6 @@ public class CommonRewardStep : ProblemStepBase
 
         while (t < duration)
         {
-            // 오브젝트가 파괴되었으면 종료
             if (item.root == null)
                 yield break;
 
@@ -219,10 +204,8 @@ public class CommonRewardStep : ProblemStepBase
             float x = Mathf.Clamp01(t / duration);
             float ease = Mathf.SmoothStep(0f, 1f, x);
 
-            // 위치 lerp
             item.root.anchoredPosition = Vector2.Lerp(startPos, endPos, ease);
 
-            // 스케일 연출
             if (item.useScale)
             {
                 if (item.useOvershoot)
@@ -246,14 +229,12 @@ public class CommonRewardStep : ProblemStepBase
                 }
             }
 
-            // 알파 페이드
             if (item.canvasGroup != null)
                 item.canvasGroup.alpha = x;
 
             yield return null;
         }
 
-        // 최종값 보정 (파괴되지 않았을 때만)
         if (item.root != null)
         {
             item.root.anchoredPosition = endPos;
@@ -268,10 +249,33 @@ public class CommonRewardStep : ProblemStepBase
     // 보상 DB 저장
     // =========================
 
-    /// <summary>
-    /// 보상 Attempt + 인벤토리 저장을 한 번만 수행
-    /// ProblemStepBase의 StepKeyConfig/SaveReward를 사용.
-    /// </summary>
+    // =========================
+    // 버튼 바인딩용 Public 메서드
+    // =========================
+
+    /// <summary>현재 문제를 처음부터 다시 시작 (다시하기)</summary>
+    public void ReplayCurrentProblem()
+    {
+        SceneNavigator.Instance.GoTo(ScreenId.PROBLEM);
+    }
+
+    /// <summary>다음 촬영(문제)으로 이동</summary>
+    public void GoToNextProblem()
+    {
+        ProblemSession.CurrentProblemIndex++;
+        SceneNavigator.Instance.GoTo(ScreenId.PROBLEM);
+    }
+
+    /// <summary>홈 화면으로 나가기</summary>
+    public void GoToHome()
+    {
+        GameManager.Instance.GoToHome();
+    }
+
+    // =========================
+    // 보상 DB 저장
+    // =========================
+
     private void SaveRewardToDbOnce()
     {
         if (_rewardSaved) return;
@@ -287,16 +291,15 @@ public class CommonRewardStep : ProblemStepBase
         {
             items = new[]
             {
-            new StepRewardItemDto
-            {
-                itemId = rewardItemId,
-                itemName = rewardItemName,
-                unlocked = true
+                new StepRewardItemDto
+                {
+                    itemId = rewardItemId,
+                    itemName = rewardItemName,
+                    unlocked = true
+                }
             }
-        }
         };
 
         SaveReward(body, rewardItemId, rewardItemName);
     }
-
 }

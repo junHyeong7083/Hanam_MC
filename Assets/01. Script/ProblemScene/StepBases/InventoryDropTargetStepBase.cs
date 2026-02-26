@@ -1,52 +1,52 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 /// <summary>
-/// Base class for inventory drag-drop to specific UI target.
-/// - ProblemStepBase + IStepInventoryDragHandler implementation
-/// - When dropped within radius, item is consumed and target scale animation + Gate completion.
-/// - Actual references (target Rect, etc.) are provided via protected properties from derived classes.
+/// 인벤토리 아이템 사용 스텝 베이스
+/// - 화면에 보이는 인벤토리 패널 없이, DB에서 아이템 보유 여부를 확인
+/// - 보유 시 자동으로 활성화 연출 + Gate 완료
+/// - 파생 클래스에서 필요한 UI 프로퍼티를 제공
 /// </summary>
-public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInventoryDragHandler
+public abstract class InventoryDropTargetStepBase : ProblemStepBase
 {
-    // Abstract/Virtual properties to be provided by derived classes
-    #region Property
-    /// <summary>Drop target RectTransform for distance check</summary>
-    protected abstract RectTransform DropTargetRect { get; }
+    [Header("필요 아이템 (DB InventoryItem.ItemId)")]
+    [SerializeField] private string requiredItemId;
 
-    /// <summary>Indicator shown during drag (highlight, etc.)</summary>
-    protected abstract GameObject DropIndicatorRoot { get; }
+    #region 파생 클래스에서 제공할 프로퍼티
 
-    /// <summary>Visual root for scale animation on drop success</summary>
+    /// <summary>사용할 아이템 ID</summary>
+    protected string RequiredItemId => requiredItemId;
+
+    /// <summary>활성화 연출 대상 비주얼 루트 (스케일 애니메이션)</summary>
     protected abstract RectTransform TargetVisualRoot { get; }
 
-    /// <summary>Instruction text/root (hidden on success)</summary>
+    /// <summary>안내 텍스트/UI 루트 (활성화 시 숨김)</summary>
     protected abstract GameObject InstructionRoot { get; }
 
-    /// <summary>Completion gate (optional, can be null)</summary>
+    /// <summary>완료 게이트 (옵션, null 가능)</summary>
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    /// <summary>Drop acceptance radius from target center (default 200)</summary>
-    protected virtual float DropRadius => 200f;
-
-    /// <summary>Max scale ratio during activation animation</summary>
+    /// <summary>활성화 연출 최대 스케일 비율</summary>
     protected virtual float ActivateScale => 1.05f;
 
-    /// <summary>Activation animation duration</summary>
+    /// <summary>활성화 연출 시간</summary>
     protected virtual float ActivateDuration => 0.6f;
 
-    /// <summary>Delay before Gate completion after animation</summary>
+    /// <summary>연출 후 Gate 완료까지 딜레이</summary>
     protected virtual float DelayBeforeComplete => 1.5f;
 
-    // Internal state
+    /// <summary>스텝 진입 후 자동 활성화까지 딜레이</summary>
+    protected virtual float AutoActivateDelay => 0.5f;
+
+    #endregion
+
     private bool _activated;
     private bool _animPlaying;
-    #endregion
 
     // ================================
     // ProblemStepBase
     // ================================
+
     protected override void OnStepEnter()
     {
         ResetBaseState();
@@ -56,17 +56,25 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
             gate.ResetGate(1);
 
         OnStepEnterExtra();
+
+        // DB에서 아이템 보유 확인 후 자동 활성화
+        if (HasItemInDb())
+        {
+            StartCoroutine(AutoActivateRoutine());
+        }
+        else
+        {
+            Debug.LogWarning($"[InventoryDropTargetStepBase] 아이템 미보유: {RequiredItemId}");
+        }
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
-        // Add cleanup logic if needed
     }
 
     /// <summary>
-    /// Override in derived class for additional initialization.
-    /// Called after base state reset.
+    /// 파생 클래스에서 추가 초기화가 필요할 때 override
     /// </summary>
     protected virtual void OnStepEnterExtra() { }
 
@@ -74,10 +82,6 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     {
         _activated = false;
         _animPlaying = false;
-
-        var indicator = DropIndicatorRoot;
-        if (indicator != null)
-            indicator.SetActive(false);
 
         var inst = InstructionRoot;
         if (inst != null)
@@ -89,102 +93,47 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     // ================================
-    // IStepInventoryDragHandler Implementation
+    // DB 아이템 확인
     // ================================
 
-    public void OnInventoryDragBegin(StepInventoryItem item, PointerEventData eventData)
+    private bool HasItemInDb()
     {
-        if (_activated) return;
-        if (item == null) return;
-        if (!item.IsDraggableThisStep) return;
-
-        var indicator = DropIndicatorRoot;
-        if (indicator != null)
-            indicator.SetActive(true);
-
-        OnInventoryDragBeginExtra(item, eventData);
-    }
-
-    public void OnInventoryDragging(StepInventoryItem item, PointerEventData eventData)
-    {
-        OnInventoryDraggingExtra(item, eventData);
-    }
-
-    public void OnInventoryDragEnd(StepInventoryItem item, PointerEventData eventData)
-    {
-        var indicator = DropIndicatorRoot;
-        if (indicator != null)
-            indicator.SetActive(false);
-
-        if (item == null || eventData == null)
-        {
-            item?.ReturnToSlot();
-            return;
-        }
-
-        if (_activated)
-        {
-            item.ReturnToSlot();
-            return;
-        }
-
-        var targetRect = DropTargetRect;
-        if (targetRect == null)
-        {
-            item.ReturnToSlot();
-            return;
-        }
-
-        bool success = IsPointerInsideDropArea(eventData);
-
-        if (success)
-        {
-            OnDropSuccess(item, eventData);
-        }
-        else
-        {
-            item.ReturnToSlot();
-        }
-    }
-
-    /// <summary>
-    /// Additional processing on drag begin (override if needed)
-    /// </summary>
-    protected virtual void OnInventoryDragBeginExtra(StepInventoryItem item, PointerEventData eventData) { }
-
-    /// <summary>
-    /// Additional processing during drag (e.g., glow effect)
-    /// </summary>
-    protected virtual void OnInventoryDraggingExtra(StepInventoryItem item, PointerEventData eventData) { }
-
-    /// <summary>
-    /// Check if pointer is inside drop area (default: distance from center)
-    /// </summary>
-    protected virtual bool IsPointerInsideDropArea(PointerEventData eventData)
-    {
-        var targetRect = DropTargetRect;
-        if (targetRect == null || eventData == null)
+        string itemId = RequiredItemId;
+        if (string.IsNullOrEmpty(itemId))
             return false;
 
-        var cam = eventData.pressEventCamera;
-        Vector2 targetScreenPos = RectTransformUtility.WorldToScreenPoint(cam, targetRect.position);
-        Vector2 dropPos = eventData.position;
+        var ds = DataService.Instance;
+        if (ds == null || ds.Reward == null)
+            return false;
 
-        float dist = Vector2.Distance(targetScreenPos, dropPos);
-        return dist <= DropRadius;
+        var session = SessionManager.Instance;
+        var user = (session != null) ? session.CurrentUser : null;
+        if (user == null || string.IsNullOrEmpty(user.Email))
+            return false;
+
+        var result = ds.Reward.GetInventory(user.Email);
+        if (!result.Ok || result.Value == null)
+            return false;
+
+        foreach (var item in result.Value)
+        {
+            if (item != null && item.ItemId == itemId)
+                return true;
+        }
+
+        return false;
     }
 
-    /// <summary>
-    /// Called on successful drop.
-    /// - Consume item visual effect
-    /// - Start activation coroutine
-    /// </summary>
-    protected virtual void OnDropSuccess(StepInventoryItem item, PointerEventData eventData)
-    {
-        // 드롭 성공 후 다시 드래그 못하게 비활성화
-        item?.SetDraggable(false);
+    // ================================
+    // 자동 활성화
+    // ================================
 
-        StartCoroutine(HandleActivatedRoutine());
+    private IEnumerator AutoActivateRoutine()
+    {
+        if (AutoActivateDelay > 0f)
+            yield return new WaitForSeconds(AutoActivateDelay);
+
+        yield return HandleActivatedRoutine();
     }
 
     private IEnumerator HandleActivatedRoutine()
@@ -206,7 +155,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
         if (DelayBeforeComplete > 0f)
             yield return new WaitForSeconds(DelayBeforeComplete);
 
-        OnDropComplete();
+        OnActivateComplete();
 
         var gate = CompletionGate;
         if (gate != null)
@@ -214,7 +163,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
     }
 
     /// <summary>
-    /// Target activation scale animation (default: slight grow then shrink)
+    /// 활성화 스케일 애니메이션 (살짝 커졌다 돌아옴)
     /// </summary>
     protected virtual IEnumerator PlayActivateAnimation()
     {
@@ -223,7 +172,6 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
             yield break;
 
         float t = 0f;
-        Vector3 baseScale = Vector3.one;
 
         while (t < ActivateDuration)
         {
@@ -236,12 +184,11 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase, IStepInvent
             yield return null;
         }
 
-        visual.localScale = baseScale;
+        visual.localScale = Vector3.one;
     }
 
     /// <summary>
-    /// Called after Gate completion for additional work.
-    /// (e.g., sound effect, additional UI)
+    /// 활성화 완료 후 추가 처리 (파생 클래스에서 override)
     /// </summary>
-    protected virtual void OnDropComplete() { }
+    protected virtual void OnActivateComplete() { }
 }

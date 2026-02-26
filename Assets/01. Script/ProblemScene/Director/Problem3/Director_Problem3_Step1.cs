@@ -1,19 +1,12 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using System.Collections;
 
 /// <summary>
 /// Director / Problem_3 / Step1
-/// - Drag 'Scenario Pen' from inventory to book drop area.
-/// - Drop logic handled by InventoryDropTargetStepBase.
+/// - DB에서 시나리오 펜 보유 확인 후 자동 활성화
 /// </summary>
 public class Director_Problem3_Step1 : InventoryDropTargetStepBase
 {
-    [Header("Book Drop Target")]
-    [SerializeField] private RectTransform bookDropArea;
-    [SerializeField] private GameObject dropIndicatorRoot;
-    [SerializeField] private float dropRadius = 200f;
-
     [Header("Book Activation")]
     [SerializeField] private RectTransform bookVisualRoot;
     [SerializeField] private float activateScale = 1.05f;
@@ -24,7 +17,7 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
     [SerializeField] private GameObject cameraShutterPrefab;
 
     [Header("Sparkle Effect")]
-    [SerializeField] private GameObject sparkleEffectPrefab;  // SparkleEffect.cs prefab
+    [SerializeField] private GameObject sparkleEffectPrefab;
     [SerializeField] private int sparkleCount = 6;
     [SerializeField] private float sparkleSpreadMin = 30f;
     [SerializeField] private float sparkleSpreadMax = 100f;
@@ -42,13 +35,10 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
     [SerializeField] private StepCompletionGate completionGate;
 
     // === Base Properties ===
-    protected override RectTransform DropTargetRect => bookDropArea;
-    protected override GameObject DropIndicatorRoot => dropIndicatorRoot;
     protected override RectTransform TargetVisualRoot => bookVisualRoot;
     protected override GameObject InstructionRoot => instructionRoot;
     protected override StepCompletionGate CompletionGate => completionGate;
 
-    protected override float DropRadius => dropRadius;
     protected override float ActivateScale => activateScale;
     protected override float ActivateDuration => activateDuration;
     protected override float DelayBeforeComplete => delayBeforeComplete;
@@ -56,16 +46,12 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
     // Internal
     private CanvasGroup _targetCanvasGroup;
 
-    /// <summary>
-    /// Override activation animation: Scale Pulse + Flicker + CameraShutter + Sparkle
-    /// </summary>
-    protected override System.Collections.IEnumerator PlayActivateAnimation()
+    protected override IEnumerator PlayActivateAnimation()
     {
         var visual = TargetVisualRoot;
         if (visual == null || ActivateDuration <= 0f)
             yield break;
 
-        // Get CanvasGroup for Flicker
         if (_targetCanvasGroup == null)
         {
             _targetCanvasGroup = visual.GetComponent<CanvasGroup>();
@@ -73,7 +59,6 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
                 _targetCanvasGroup = visual.gameObject.AddComponent<CanvasGroup>();
         }
 
-        // Create Camera Shutter (starts hidden)
         GameObject shutterInstance = null;
         if (cameraShutterPrefab != null)
         {
@@ -84,10 +69,8 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
             shutterInstance.SetActive(false);
         }
 
-        // Spawn Sparkle Effects
         SpawnSparkleEffects(visual);
 
-        // Scale Pulse + Flicker simultaneously
         float totalDuration = Mathf.Max(activateDuration, enableFlicker ? flickerDuration : 0f);
         float t = 0f;
         int flickerIndex = 0;
@@ -99,7 +82,6 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
         {
             t += Time.deltaTime;
 
-            // Scale Pulse: grow over 0.3s then hold
             if (t < activateDuration)
             {
                 float scaleT = Mathf.Clamp01(t / 0.3f);
@@ -107,7 +89,6 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
                 visual.localScale = Vector3.one * scale;
             }
 
-            // Flicker + Camera Shutter sync
             if (enableFlicker && _targetCanvasGroup != null && t < flickerDuration)
             {
                 if (t >= nextFlickerTime && flickerIndex < flickerCount * 2)
@@ -115,7 +96,6 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
                     flickerOn = !flickerOn;
                     _targetCanvasGroup.alpha = flickerOn ? 1f : flickerMinAlpha;
 
-                    // Camera shutter shows when flickerOn is false (flash effect)
                     if (shutterInstance != null)
                         shutterInstance.SetActive(!flickerOn);
 
@@ -127,12 +107,10 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
             yield return null;
         }
 
-        // Final state
         visual.localScale = Vector3.one * activateScale;
         if (_targetCanvasGroup != null)
             _targetCanvasGroup.alpha = 1f;
 
-        // Destroy camera shutter
         if (shutterInstance != null)
             Destroy(shutterInstance);
     }
@@ -148,7 +126,6 @@ public class Director_Problem3_Step1 : InventoryDropTargetStepBase
             var rt = sparkle.GetComponent<RectTransform>();
             if (rt != null)
             {
-                // Radial spread - each sparkle gets different angle
                 float angle = (360f / sparkleCount) * i + Random.Range(-15f, 15f);
                 float distance = Random.Range(sparkleSpreadMin, sparkleSpreadMax);
                 Vector2 offset = new Vector2(
