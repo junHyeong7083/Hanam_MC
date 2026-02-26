@@ -14,10 +14,10 @@ public class LocalizedTable
 
         var headerMap = CsvHeader.Build(rows[0]);
 
-        // ÄÃ·³¸í ÈÄº¸¸¦ ¿©·¯ °³ µÎ¸é ½ÃÆ®°¡ Á¶±Ý ¹Ù²î¾îµµ ´ú ±úÁü
+        // ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½Äºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Î¸ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½îµµ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         int idxId = CsvHeader.GetIndex(headerMap, "index", "id", "textId");
-        int idxKo = CsvHeader.GetIndex(headerMap, "ko", "ÇÑ±¹¾î");
-        int idxEn = CsvHeader.GetIndex(headerMap, "en", "¿µ¾î");
+        int idxKo = CsvHeader.GetIndex(headerMap, "ko", "ï¿½Ñ±ï¿½ï¿½ï¿½");
+        int idxEn = CsvHeader.GetIndex(headerMap, "en", "ï¿½ï¿½ï¿½ï¿½");
 
         for (int i = 1; i < rows.Count; i++)
         {
@@ -36,6 +36,7 @@ public class LocalizedTable
     {
         if (textId == 0) return "";
         if (!_map.TryGetValue(textId, out var v)) return $"<missing textId:{textId}>";
-        return korean ? (v.ko ?? "") : (v.en ?? "");
+        string text = korean ? (v.ko ?? "") : (v.en ?? "");
+        return text.Replace("\\n", "\n");
     }
 }

@@ -8,44 +8,43 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
     [Serializable]
     public struct SummaryLineConfig
     {
-        public RectTransform spawnPoint;  // ½ÃÀÛ À§Ä¡
-        public RectTransform targetPoint; // µµÂø À§Ä¡
+        public RectTransform spawnPoint;  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+        public RectTransform targetPoint; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
     }
 
     [Serializable]
     public struct SummaryDescription
     {
-        public Sprite icon;          // ¾ÆÀÌÄÜ ½ºÇÁ¶óÀÌÆ®
-        [TextArea]
-        public string description;   // ¼³¸í ÅØ½ºÆ®
+        public Sprite icon;
+        public int descriptionTextId;
     }
 
-    [Header("¿ä¾à (¾ÆÀÌÄÜ + ¹®Àå ¼¼Æ®)")]
+    [Header("ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®)")]
     [SerializeField] private SummaryDescription[] summaryDescriptions;
 
-    [Header("¶óÀÎ »ý¼º ¼³Á¤")]
-    [SerializeField] private GameObject linePrefab;   // Image + Text Æ÷ÇÔµÈ ÇÁ¸®ÆÕ
-    [SerializeField] private Transform linesRoot;     // »ý¼ºµÈ ¶óÀÎµéÀÌ ºÙÀ» ºÎ¸ð
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] private GameObject linePrefab;   // Image + Text ï¿½ï¿½ï¿½Ôµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private Transform linesRoot;     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½
 
-    [Header("À§Ä¡ ¼³Á¤")]
+    [Header("ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private SummaryLineConfig[] lineConfigs;
 
-    [Header("Å¸ÀÌ¹Ö")]
-    [SerializeField] private float spawnInterval = 0.3f;  // ÁÙ¸¶´Ù µîÀå °£°Ý
-    [SerializeField] private float moveDuration = 0.5f;   // spawn ¡æ target ÀÌµ¿ ½Ã°£
+    [Header("Å¸ï¿½Ì¹ï¿½")]
+    [SerializeField] private float spawnInterval = 0.3f;  // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float moveDuration = 0.5f;   // spawn ï¿½ï¿½ target ï¿½Ìµï¿½ ï¿½Ã°ï¿½
 
-    [Header("ÇÏ³² ¾ÆÀÌÄÜ")]
-    [SerializeField] private RectTransform hanamIcon;     // HanamIcon ImageÀÇ RectTransform
-    [SerializeField] private float iconDelay = 0.3f;      // ¸¶Áö¸· ÁÙ ÀÌÈÄ ¾ÆÀÌÄÜ µîÀå±îÁö µô·¹ÀÌ
-    [SerializeField] private float iconBobAmplitude = 5f; // À§/¾Æ·¡ Èçµé¸² Å©±â (px)
-    [SerializeField] private float iconBobSpeed = 2f;     // Èçµé¸² ¼Óµµ
+    [Header("ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] private RectTransform hanamIcon;     // HanamIcon Imageï¿½ï¿½ RectTransform
+    [SerializeField] private float iconDelay = 0.3f;      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float iconBobAmplitude = 5f; // ï¿½ï¿½/ï¿½Æ·ï¿½ ï¿½ï¿½é¸² Å©ï¿½ï¿½ (px)
+    [SerializeField] private float iconBobSpeed = 2f;     // ï¿½ï¿½é¸² ï¿½Óµï¿½
 
     private Coroutine _sequenceRoutine;
     private Coroutine _iconBobRoutine;
 
     private void OnEnable()
     {
-        // ÆÐ³Î ÄÑÁú ¶§ ÀÚµ¿À¸·Î ½ÃÄö½º ½ÃÀÛ
+        // ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         StartSequence();
     }
 
@@ -63,23 +62,20 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             _iconBobRoutine = null;
         }
 
-        // ´Ù½Ã ÄÑÁú ¶§¸¦ À§ÇØ ¾ÆÀÌÄÜÀº ²¨µÒ
+        // ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (hanamIcon != null)
             hanamIcon.gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// ¿ÜºÎ¿¡¼­ ¿ä¾à ³»¿ëÀ» ¼¼ÆÃÇÏ°í ½ÍÀ» ¶§ »ç¿ë (¼±ÅÃ)
-    /// </summary>
-    public void SetSummaryContent(Sprite[] icons, string[] lines)
+    public void SetSummaryContent(Sprite[] icons, int[] textIds)
     {
-        if (icons == null || lines == null)
+        if (icons == null || textIds == null)
         {
             summaryDescriptions = Array.Empty<SummaryDescription>();
             return;
         }
 
-        int count = Mathf.Min(icons.Length, lines.Length);
+        int count = Mathf.Min(icons.Length, textIds.Length);
         summaryDescriptions = new SummaryDescription[count];
 
         for (int i = 0; i < count; i++)
@@ -87,7 +83,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             summaryDescriptions[i] = new SummaryDescription
             {
                 icon = icons[i],
-                description = lines[i]
+                descriptionTextId = textIds[i]
             };
         }
     }
@@ -103,7 +99,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             _iconBobRoutine = null;
         }
 
-        // ½ÃÀÛÇÒ ¶§ ¾ÆÀÌÄÜÀº ²¨µÎ±â
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î±ï¿½
         if (hanamIcon != null)
             hanamIcon.gameObject.SetActive(false);
 
@@ -135,31 +131,31 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             var data = summaryDescriptions[i];
             var cfg = lineConfigs[i];
 
-            // --- fallback ÁØºñ ---
+            // --- fallback ï¿½Øºï¿½ ---
             RectTransform spawn = cfg.spawnPoint;
             RectTransform target = cfg.targetPoint;
 
-            // spawn/target ÀÌ ºñ¾î ÀÖÀ¸¸é 0¹ø ¼³Á¤À» ´ë½Å »ç¿ë
+            // spawn/target ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             if (spawn == null && lineConfigs.Length > 0)
             {
                 spawn = lineConfigs[0].spawnPoint;
-                Debug.LogWarning($"[SummaryPanel] line {i} spawnPoint null ¡æ element0 ·Î ´ëÃ¼");
+                Debug.LogWarning($"[SummaryPanel] line {i} spawnPoint null ï¿½ï¿½ element0 ï¿½ï¿½ ï¿½ï¿½Ã¼");
             }
 
             if (target == null && lineConfigs.Length > 0)
             {
                 target = lineConfigs[0].targetPoint;
-                Debug.LogWarning($"[SummaryPanel] line {i} targetPoint null ¡æ element0 ·Î ´ëÃ¼");
+                Debug.LogWarning($"[SummaryPanel] line {i} targetPoint null ï¿½ï¿½ element0 ï¿½ï¿½ ï¿½ï¿½Ã¼");
             }
 
-            // ±×·¡µµ ¾ÆÁ÷ ¹º°¡ ½É°¢ÇÏ°Ô null ÀÌ¸é ±×³É ·Î±×¸¸ ³²±â°í °è¼Ó ÁøÇà
+            // ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½É°ï¿½ï¿½Ï°ï¿½ null ï¿½Ì¸ï¿½ ï¿½×³ï¿½ ï¿½Î±×¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (spawn == null || target == null || linePrefab == null || linesRoot == null)
             {
-                Debug.LogWarning($"[SummaryPanel] line {i} »ý¼º ½ÇÆÐ - ¿©ÀüÈ÷ null ÀÖÀ½");
+                Debug.LogWarning($"[SummaryPanel] line {i} ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ null ï¿½ï¿½ï¿½ï¿½");
                 continue;
             }
 
-            // 1) ¶óÀÎ ÇÁ¸®ÆÕ »ý¼º
+            // 1) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             var go = Instantiate(linePrefab, linesRoot);
             go.name = $"SummaryLine_{i}";
             var rt = go.GetComponent<RectTransform>();
@@ -170,19 +166,19 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             if (iconImage != null)
                 iconImage.sprite = data.icon;
             if (textComp != null)
-                textComp.text = data.description;
+                textComp.text = ProblemRuntime.L(data.descriptionTextId);
 
-           // Debug.Log($"[SummaryPanel] line {i} »ý¼º - \"{data.description}\"");
+           // Debug.Log($"[SummaryPanel] line {i} ï¿½ï¿½ï¿½ï¿½ - \"{data.description}\"");
 
-            // 2) ½ÃÀÛ/¸ñÇ¥ À§Ä¡
+            // 2) ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½Ç¥ ï¿½ï¿½Ä¡
             rt.position = spawn.position;
             StartCoroutine(MoveLine(rt, target.position, moveDuration));
 
-            // 3) ´ÙÀ½ ÁÙÀº interval ÈÄ¿¡
+            // 3) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ interval ï¿½Ä¿ï¿½
             yield return new WaitForSeconds(spawnInterval);
         }
 
-        // ÇÏ³² ¾ÆÀÌÄÜ
+        // ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (hanamIcon != null)
         {
             yield return new WaitForSeconds(iconDelay);
@@ -204,7 +200,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         {
             t += Time.deltaTime;
             float lerp = Mathf.Clamp01(t / duration);
-            lerp = Mathf.SmoothStep(0f, 1f, lerp); // ºÎµå·¯¿î °î¼±
+            lerp = Mathf.SmoothStep(0f, 1f, lerp); // ï¿½Îµå·¯ï¿½ï¿½ ï¿½î¼±
 
             rt.position = Vector3.Lerp(startPos, targetPos, lerp);
             yield return null;
@@ -214,7 +210,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// ÇÏ³² ¾ÆÀÌÄÜ À§/¾Æ·¡·Î »ìÂ¦»ìÂ¦ Èçµé¸®´Â ¾Ö´Ï¸ÞÀÌ¼Ç
+    /// ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½/ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½Â¦ï¿½ï¿½Â¦ ï¿½ï¿½é¸®ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½
     /// </summary>
     private IEnumerator BobHanamIcon(RectTransform icon)
     {
@@ -231,7 +227,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             yield return null;
         }
 
-        // ²¨Áú ¶§ À§Ä¡¸¦ ¿ø·¡´ë·Î º¹±¸
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (icon != null)
             icon.anchoredPosition = basePos;
     }

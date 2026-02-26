@@ -11,25 +11,19 @@ public class IntroStepController : MonoBehaviour
     [SerializeField] private Button proceedButton;
 
     [Header("Flow Mode")]
-    [Tooltip("true: Next·Î ´ë»ç ÁøÇà ÈÄ Proceed ¹öÆ°ÀÌ È°¼ºÈ­µÊ\nfalse: Proceed ¾øÀÌ ¸¶Áö¸· Next¸¦ ´©¸£¸é ¹Ù·Î ¿Ï·á Ã³¸®µÊ")]
+    [Tooltip("true: Nextë¡œ ëŒ€ì‚¬ ì§„í–‰ í›„ Proceed ë²„íŠ¼ì´ í™œì„±í™”ë¨\nfalse: Proceed ì—†ì´ ë§ˆì§€ë§‰ Nextë¥¼ ëˆ„ë¥´ë©´ ë°”ë¡œ ì™„ë£Œ ì²˜ë¦¬ë¨")]
     [SerializeField] private bool useProceedButton = true;
 
-    [Header("Auto Finish (optional)")]
-    [Tooltip("true¸é ºÎ¸ğ Ã¼ÀÎ¿¡¼­ StepFlowController¸¦ Ã£¾Æ nextStepMethodNameÀ» ÀÚµ¿ È£Ãâ")]
-    [SerializeField] private bool autoCallNextStep = true;
-    [SerializeField] private string stepFlowControllerTypeName = "StepFlowController";
-    [SerializeField] private string nextStepMethodName = "NextStep";
-
-    [Header("Callbacks (Fallback)")]
-    [Tooltip("autoCallNextStep°¡ ½ÇÆĞÇßÀ» ¶§ È£ÃâµÊ (´ÙÀ½ ÆĞ³Î ÄÑ±â µî)")]
+    [Header("Callbacks")]
+    [Tooltip("ì¸íŠ¸ë¡œ ì™„ë£Œ ì‹œ í˜¸ì¶œë¨ (ë‹¤ìŒ íŒ¨ë„ ë„˜ê¸°ê¸° ë“±)")]
     [SerializeField] private UnityEvent onFinished;
 
     [Header("Dialogue Source (textId list)")]
-    [Tooltip("usePlaceholder=falseÀÏ ¶§ »ç¿ë. CSVÀÇ index(textId)µéÀ» ¼ø¼­´ë·Î ³Ö±â")]
+    [Tooltip("usePlaceholder=falseì¼ ë•Œ ì‚¬ìš©. CSVì˜ index(textId)ë“¤ì„ ìˆœì„œëŒ€ë¡œ ë„£ê¸°")]
     [SerializeField] private List<int> dialogueTextIds = new List<int>();
 
     [Header("Placeholder Mode (temporary)")]
-    [Tooltip("true¸é placeholderTextId ÇÏ³ª¸¦ placeholderCount¹ø ¹İº¹ Ãâ·Â")]
+    [Tooltip("trueë©´ placeholderTextId í•˜ë‚˜ë¥¼ placeholderCountë§Œ ë°˜ë³µ ì‚¬ìš©")]
     [SerializeField] private bool usePlaceholder = true;
     [SerializeField] private int placeholderTextId = 0;
     [SerializeField] private int placeholderCount = 3;
@@ -39,14 +33,9 @@ public class IntroStepController : MonoBehaviour
 
     private bool _listenersBound = false;
 
-    // ÀÚµ¿ NextStep È£Ãâ¿ë(¸®ÇÃ·º¼ÇÀº ³»ºÎ Ä³½Ã)
-    private Component _flowController;
-    private System.Reflection.MethodInfo _nextStepMethod;
-
     private void OnEnable()
     {
         BindListenersOnce();
-        CacheStepFlowControllerIfNeeded();
         StartIntro();
     }
 
@@ -102,23 +91,23 @@ public class IntroStepController : MonoBehaviour
 
         RenderCurrent();
     }
+
     private void OnClickNext()
     {
-        // ´ÙÀ½ ´ë»ç°¡ ´õ ¾øÀ¸¸é(=ÀÌ¹Ì ¸¶Áö¸·À» º¸°í ÀÖÀ½) ±×³É ¿Ï·á Ã³¸®
+        // í˜„ì¬ ëŒ€ì‚¬ê°€ ë§¨ ë§ˆì§€ë§‰ì´ë©´ ì™„ë£Œ ì²˜ë¦¬
         if (_cursor >= _total - 1)
         {
             FinishIntroByMode();
             return;
         }
 
-        // ´ÙÀ½ ´ë»ç·Î ÀÌµ¿
+        // ë‹¤ìŒ ëŒ€ì‚¬ë¡œ ì´ë™
         _cursor++;
         RenderCurrent();
 
-        // ¹æ±İ Ãâ·ÂÇÑ ´ë»ç°¡ ¸¶Áö¸·ÀÌ¸é Áï½Ã ¿Ï·á Ã³¸®
+        // ë°©ê¸ˆ ì´ë™í•œ ëŒ€ì‚¬ê°€ ë§ˆì§€ë§‰ì´ë©´ ëª¨ë“œë³„ ì™„ë£Œ ì²˜ë¦¬
         if (_cursor >= _total - 1)
         {
-            // Proceed ¸ğµå¸é Next ¼û±â°í Proceed ¶ç¿ì´Â °É ¿øÇÏ¸é ¿©±â¼­ Ã³¸®
             if (useProceedButton)
             {
                 if (nextDialogueButton != null)
@@ -135,15 +124,13 @@ public class IntroStepController : MonoBehaviour
             }
             else
             {
-                // Proceed ¾øÀÌ ¸¶Áö¸· Next°¡ ¹Ù·Î ´ÙÀ½ ÆĞ³Î ¿ªÇÒÀÎ ¸ğµå
                 if (nextDialogueButton != null)
                     nextDialogueButton.interactable = false;
 
-                InvokeFinish(); // ³Ê ÄÚµå¿¡ ÀÖ´Â finish È£Ãâ
+                InvokeFinish();
             }
         }
     }
- 
 
     private void FinishIntroByMode()
     {
@@ -177,9 +164,6 @@ public class IntroStepController : MonoBehaviour
 
     private void InvokeFinish()
     {
-        if (autoCallNextStep && TryCallNextStep())
-            return;
-
         onFinished?.Invoke();
     }
 
@@ -202,48 +186,5 @@ public class IntroStepController : MonoBehaviour
         if (idx < 0) idx = 0;
         if (idx >= dialogueTextIds.Count) idx = dialogueTextIds.Count - 1;
         return dialogueTextIds[idx];
-    }
-
-    private void CacheStepFlowControllerIfNeeded()
-    {
-        if (!autoCallNextStep) return;
-
-        _flowController = null;
-        _nextStepMethod = null;
-
-        var monos = GetComponentsInParent<MonoBehaviour>(true);
-        for (int i = 0; i < monos.Length; i++)
-        {
-            var mb = monos[i];
-            if (mb == null) continue;
-
-            var t = mb.GetType();
-            if (t.Name != stepFlowControllerTypeName) continue;
-
-            var mi = t.GetMethod(nextStepMethodName,
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.NonPublic);
-
-            if (mi == null) continue;
-            if (mi.GetParameters().Length != 0) continue;
-
-            _flowController = mb;
-            _nextStepMethod = mi;
-            break;
-        }
-    }
-
-    private bool TryCallNextStep()
-    {
-        if (_flowController == null || _nextStepMethod == null)
-        {
-            CacheStepFlowControllerIfNeeded();
-            if (_flowController == null || _nextStepMethod == null)
-                return false;
-        }
-
-        _nextStepMethod.Invoke(_flowController, null);
-        return true;
     }
 }

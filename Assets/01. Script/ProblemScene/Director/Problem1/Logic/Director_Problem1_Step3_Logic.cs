@@ -314,14 +314,23 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         int logicalIndex = GetCurrentLogicalIndex();
         if (logicalIndex < 0) return;
         if (_isAdvancing) return;
+        if (_isShowingHanamiWrongMessage) return; // 오답 메시지 표시 중 입력 차단
         if (logicalIndex >= FilmCount) return;
         if (_currentFilmInstance == null) return;
 
+        bool correctIsThought = IsFilmThought(logicalIndex);
+        bool userCorrect = (userChoseThought == correctIsThought);
+
+        // 오답: 메시지만 표시하고 다시 시도하게 함
+        if (!userCorrect)
+        {
+            RenderHanamiWrongDialogueTemp();
+            return;
+        }
+
+        // 정답 처리
         int filmId = GetFilmId(logicalIndex);
         string text = GetFilmText(logicalIndex);
-        bool correctIsThought = IsFilmThought(logicalIndex); // 정답 타입
-
-        bool userCorrect = (userChoseThought == correctIsThought);
 
         if (_sortedFilmIds.Contains(filmId))
         {
@@ -332,27 +341,21 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         _sortedFilmIds.Add(filmId);
 
         string correctType = correctIsThought ? "생각" : "사실";
-        string chosenType = userChoseThought ? "생각" : "사실";
 
         var entry = new SortLogEntry
         {
             filmId = filmId,
             text = text,
             correctType = correctType,
-            chosenType = chosenType
+            chosenType = correctType
         };
         _logs.Add(entry);
 
-        // 핵심: 박스 배치는 "사용자 선택"이 아니라 "정답 타입" 기준
         PlaceCurrentFilmIntoCorrectSlot(correctIsThought);
-
-        if (!userCorrect)
-            RenderHanamiWrongDialogueTemp();
-        else if (!_isShowingHanamiWrongMessage)
-            RenderHanamiDefaultDialogue();
+        RenderHanamiDefaultDialogue();
 
         _isAdvancing = true;
-        StartCoroutine(AdvanceAfterDelayWithAnimation(userCorrect));
+        StartCoroutine(AdvanceAfterDelayWithAnimation(true));
     }
 
     private void PlaceCurrentFilmIntoCorrectSlot(bool correctIsThought)
