@@ -1,30 +1,21 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 자식 Text의 내용 길이에 따라 이 오브젝트의 RectTransform 크기를 동적으로 조절합니다.
-/// Image 오브젝트에 붙이면 자식 Text에 맞춰 배경이 자동 리사이즈됩니다.
-/// horizontalAnchor를 Left로 설정하면 왼쪽은 고정, 오른쪽만 줄어듭니다.
-/// </summary>
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
 public class AutoSizeByText : MonoBehaviour
 {
-    public enum HorizontalAnchor { Left, Center, Right }
-    public enum VerticalAnchor { Top, Center, Bottom }
-
     [SerializeField] private Text targetText;
 
     [Header("Fit 방향")]
     [SerializeField] private bool fitWidth = true;
     [SerializeField] private bool fitHeight = false;
 
-    [Header("기준점 (어느 쪽을 고정할지)")]
-    [SerializeField] private HorizontalAnchor horizontalAnchor = HorizontalAnchor.Left;
-    [SerializeField] private VerticalAnchor verticalAnchor = VerticalAnchor.Center;
-
-    [Header("Padding (left / right / top / bottom)")]
-    [SerializeField] private RectOffset padding = new RectOffset(10, 10, 5, 5);
+    [Header("Padding")]
+    [SerializeField] private float paddingLeft = 10f;
+    [SerializeField] private float paddingRight = 10f;
+    [SerializeField] private float paddingTop = 5f;
+    [SerializeField] private float paddingBottom = 5f;
 
     [Header("크기 제한 (0 = 제한 없음)")]
     [SerializeField] private float minWidth = 0f;
@@ -55,67 +46,53 @@ public class AutoSizeByText : MonoBehaviour
         if (targetText == null) return;
         if (_rt == null) _rt = GetComponent<RectTransform>();
 
-        // offsetMin.x = 왼쪽 가장자리, offsetMax.x = 오른쪽 가장자리
-        // 직접 가장자리를 조작하므로 pivot/anchor 값에 상관없이 정확하게 동작
-        Vector2 oMin = _rt.offsetMin;
-        Vector2 oMax = _rt.offsetMax;
+        // Text의 부모(자기자신) 내 오프셋을 자동 계산
+        RectTransform textRt = targetText.rectTransform;
+        float textLeftOffset = 0f;
+        float textRightOffset = 0f;
+        float textTopOffset = 0f;
+        float textBottomOffset = 0f;
+
+        // Text 앵커가 stretch일 때 offsetMin/offsetMax에서 마진을 읽어옴
+        if (textRt.parent == _rt)
+        {
+            textLeftOffset = textRt.offsetMin.x;                // 왼쪽 마진
+            textRightOffset = -textRt.offsetMax.x;              // 오른쪽 마진
+            textTopOffset = -textRt.offsetMax.y;                // 위쪽 마진
+            textBottomOffset = textRt.offsetMin.y;              // 아래쪽 마진
+        }
+
+        Vector2 size = _rt.sizeDelta;
 
         if (fitWidth)
         {
-            float w = targetText.preferredWidth + padding.left + padding.right;
+            float w = targetText.preferredWidth
+                    + Mathf.Max(textLeftOffset, 0f) + Mathf.Max(textRightOffset, 0f)
+                    + paddingLeft + paddingRight;
             if (minWidth > 0f) w = Mathf.Max(w, minWidth);
             if (maxWidth > 0f) w = Mathf.Min(w, maxWidth);
-
-            float curW = oMax.x - oMin.x;
-
-            switch (horizontalAnchor)
-            {
-                case HorizontalAnchor.Left:
-                    oMax.x = oMin.x + w;
-                    break;
-                case HorizontalAnchor.Right:
-                    oMin.x = oMax.x - w;
-                    break;
-                case HorizontalAnchor.Center:
-                    float cx = (oMin.x + oMax.x) * 0.5f;
-                    oMin.x = cx - w * 0.5f;
-                    oMax.x = cx + w * 0.5f;
-                    break;
-            }
-
-            _rt.offsetMin = new Vector2(oMin.x, _rt.offsetMin.y);
-            _rt.offsetMax = new Vector2(oMax.x, _rt.offsetMax.y);
+            Debug.Log($"[AutoSizeByText] \"{targetText.text}\" | preferredWidth={targetText.preferredWidth:F1}, textOffset=({textLeftOffset:F0}+{textRightOffset:F0}), padding=({paddingLeft}+{paddingRight}), result w={w:F1}");
+            size.x = w;
         }
 
         if (fitHeight)
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(targetText.rectTransform);
-
-            float h = targetText.preferredHeight + padding.top + padding.bottom;
-            if (minHeight > 0f) h = Mathf.Max(h, minHeight);
-            if (maxHeight > 0f) h = Mathf.Min(h, maxHeight);
-
-            oMin = _rt.offsetMin;
-            oMax = _rt.offsetMax;
-
-            switch (verticalAnchor)
+            if (fitWidth)
             {
-                case VerticalAnchor.Top:
-                    oMin.y = oMax.y - h;
-                    break;
-                case VerticalAnchor.Bottom:
-                    oMax.y = oMin.y + h;
-                    break;
-                case VerticalAnchor.Center:
-                    float cy = (oMin.y + oMax.y) * 0.5f;
-                    oMin.y = cy - h * 0.5f;
-                    oMax.y = cy + h * 0.5f;
-                    break;
+                _rt.sizeDelta = new Vector2(size.x, _rt.sizeDelta.y);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(textRt);
             }
 
-            _rt.offsetMin = oMin;
-            _rt.offsetMax = oMax;
+            float h = targetText.preferredHeight
+                    + Mathf.Max(textTopOffset, 0f) + Mathf.Max(textBottomOffset, 0f)
+                    + paddingTop + paddingBottom;
+            if (minHeight > 0f) h = Mathf.Max(h, minHeight);
+            if (maxHeight > 0f) h = Mathf.Min(h, maxHeight);
+            size.y = h;
         }
+
+        Debug.Log($"[AutoSizeByText] \"{gameObject.name}\" | final sizeDelta=({size.x:F1}, {size.y:F1})");
+        _rt.sizeDelta = size;
     }
 
 #if UNITY_EDITOR
