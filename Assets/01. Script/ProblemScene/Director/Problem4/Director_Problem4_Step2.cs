@@ -15,15 +15,14 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
         [Tooltip("컷 ID")]
         public string cutID;
 
-        [TextArea]
-        [Tooltip("화면에 표시할 컷 문장")]
-        public string text;
+        [Tooltip("DataTable textId")]
+        public int textId;
 
         [Tooltip("생각 컷이면 true, 사실이면 false")]
         public bool isThinking;
 
         string IFilmCutData.CutId => cutID;
-        string IFilmCutData.Text => text;
+        string IFilmCutData.Text => ProblemRuntime.L(textId);
         bool IFilmCutData.IsThinking => isThinking;
     }
 
@@ -32,7 +31,6 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
 
     [Header("필름 카드 UI")]
     [SerializeField] private Text filmSentenceLabel;
-    [SerializeField] private Text filmIndexLabel;
 
     [Header("하단 버튼")]
     [SerializeField] private Button cutBtn;
@@ -51,8 +49,7 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     [SerializeField] private GameObject hideObjectOnComplete;
     [SerializeField] private RectTransform showImageOnComplete;
     [SerializeField] private Text completionLabel;
-    [TextArea]
-    [SerializeField] private string completionText;
+    [SerializeField] private int completionTextId;
     [SerializeField] private float completionDelayDuration = 4f;
 
     // ====== 베이스 주입용 override 프로퍼티 ======
@@ -60,7 +57,7 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     protected override IFilmCutData[] FilmCuts => filmCuts;
 
     protected override Text FilmSentenceLabel => filmSentenceLabel;
-    protected override Text FilmIndexLabel => filmIndexLabel;
+    protected override Text FilmIndexLabel => null;
 
     protected override Button CutBtn => cutBtn;
     protected override Button PassBtn => passBtn;
@@ -74,6 +71,6 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     protected override GameObject HideObjectOnComplete => hideObjectOnComplete;
     protected override RectTransform ShowImageOnComplete => showImageOnComplete;
     protected override Text CompletionLabel => completionLabel;
-    protected override string CompletionText => completionText;
+    protected override string CompletionText => ProblemRuntime.L(completionTextId);
     protected override float CompletionDelayDuration => completionDelayDuration;
 }

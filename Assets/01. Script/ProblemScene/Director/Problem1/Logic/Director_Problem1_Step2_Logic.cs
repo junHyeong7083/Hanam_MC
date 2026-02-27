@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -25,9 +24,9 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
     [Header("Guide Text (Localized)")]
     [SerializeField] private Text guideText;
-    [Tooltip("½ºÅÜ ÁøÀÔ ½Ã ¾È³» ¹®±¸ textId")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½È³ï¿½ ï¿½ï¿½ï¿½ï¿½ textId")]
     [SerializeField] private int guideTextIdOnEnter = 0;
-    [Tooltip("ÇÊ¸§ ÀüºÎ ¼±ÅÃ ¿Ï·á ½Ã ¾È³» ¹®±¸ textId")]
+    [Tooltip("ï¿½Ê¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ ï¿½È³ï¿½ ï¿½ï¿½ï¿½ï¿½ textId")]
     [SerializeField] private int guideTextIdOnCompleted = 0;
 
     [Header("Next Shoot Button")]
@@ -36,8 +35,6 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
     [Header("NextStep Auto Call")]
     [SerializeField] private bool autoCallNextStep = true;
-    [SerializeField] private string stepFlowControllerTypeName = "StepFlowController";
-    [SerializeField] private string nextStepMethodName = "NextStep";
 
     [Header("Fallback Callback")]
     [SerializeField] private UnityEvent onClickNextShootFallback;
@@ -47,8 +44,7 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
     private bool _completed = false;
 
-    private Component _flowController;
-    private MethodInfo _nextStepMethod;
+    private StepFlowController _flowController;
 
     protected override void OnStepEnter()
     {

@@ -4,28 +4,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Problem4 / Step3 ���� ���̽�.
-/// - Q1, Q2 � ���� '�� / �ƴϿ�'�� ���ϴ� ����
-/// - �ڽĿ��� ���� ������ + UI�� ����.
-/// </summary>
 public interface IYesNoQuestionData
 {
     string QuestionId { get; }
     string MainText { get; }
     string SubText { get; }
-    string SubmainText { get; }
     bool IsYesCorrect { get; }
 }
 
+/// <summary>
+/// Problem4 / Step3 로직 베이스.
+/// - Q1~Q3 순서대로 '네 / 아니오' 로 답하는 반박 질문
+/// - 필름 애니메이션: Right→Center 등장, Center→Left 퇴장
+/// - 에러 메시지는 HanamText 에 일시 표시 후 복원
+/// - 모든 질문 완료 시 HanamBtn 활성화
+/// </summary>
 public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 {
     [Serializable]
     private class QuestionActionLog
     {
-        public string questionId; // � ������ ���� ��������
-        public string answer;     // "yes" �Ǵ� "no"
-        public bool wasCorrect;   // ���� ����
+        public string questionId;
+        public string answer;
+        public bool wasCorrect;
     }
 
     [Serializable]
@@ -35,56 +36,37 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==========================
-    // �ڽĿ��� ������ �߻� ������Ƽ
+    // 자식에서 제공할 추상 프로퍼티
     // ==========================
 
-    [Header("���� ���� (�ڽ� ����)")]
     protected abstract IYesNoQuestionData[] Questions { get; }
 
-    [Header("���� UI")]
-    protected abstract GameObject QuestionRoot { get; }
     protected abstract Text MainTextLabel { get; }
-    protected abstract Text SubTextLabel { get; }
-    protected abstract Text SubmainTextLabel { get; }
+    protected abstract Text HanamTextLabel { get; }
 
-    [Header("��ư")]
     protected abstract Button YesButton { get; }
     protected abstract Button NoButton { get; }
 
-    [Header("���� �޽���")]
-    protected abstract GameObject ErrorRoot { get; }
-    protected abstract Text ErrorLabel { get; }
     protected abstract string DefaultErrorMessage { get; }
     protected abstract float ErrorShowDuration { get; }
 
-    [Header("���� Echo UI")]
-    protected abstract GameObject AnswerEchoRoot { get; }
-    protected abstract Text AnswerEchoLabel { get; }
-    protected abstract float AnswerEchoDuration { get; }
-
-    [Header("�Ϸ� ����Ʈ")]
-    protected abstract StepCompletionGate StepCompletionGate { get; }
-
-    [Header("�ó����� ī��")]
-    protected abstract GameObject ScenarioCardRoot { get; }
-    protected abstract float ScenarioDisplayDuration { get; }
-
-    [Header("버튼 이미지 (Echo와 반대 동작)")]
     protected abstract GameObject ButtonImageRoot { get; }
 
-    [Header("마이크 STT (옵션)")]
+    protected abstract GameObject HanamBtn { get; }
+
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
+    protected virtual Problem4_Step3_EffectController EffectController => null;
+
     // ==========================
-    // ���� ����
+    // 내부 상태
     // ==========================
 
     private int _currentIndex;
     private bool _stepCompleted;
     private Coroutine _errorRoutine;
-    private Coroutine _answerEchoRoutine;
+    private string _savedHanamText;
     private readonly List<QuestionActionLog> _actionLogs = new List<QuestionActionLog>();
-
 
     // ==================================================
     // ProblemStepBase
@@ -96,15 +78,12 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         if (questions == null || questions.Length == 0)
         {
-            Debug.LogWarning("[Problem4_Step3] questions �� ��� ����");
+            Debug.LogWarning("[Problem4_Step3] questions 배열 비어있음");
 
             if (MainTextLabel != null)
-                MainTextLabel.text = "(������ �������� �ʾҽ��ϴ�)";
-            if (SubTextLabel != null)
-                SubTextLabel.text = "";
-
-            if (StepCompletionGate != null)
-                StepCompletionGate.ResetGate(1);
+                MainTextLabel.text = "";
+            if (HanamTextLabel != null)
+                HanamTextLabel.text = "";
 
             return;
         }
@@ -113,40 +92,22 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         _stepCompleted = false;
         _actionLogs.Clear();
 
-        var errorRoot = ErrorRoot;
-        var answerEchoRoot = AnswerEchoRoot;
-
-        if (errorRoot != null)
-            errorRoot.SetActive(false);
-
-        if (answerEchoRoot != null)
-            answerEchoRoot.SetActive(false);
-
         if (_errorRoutine != null)
         {
             StopCoroutine(_errorRoutine);
             _errorRoutine = null;
         }
 
-        if (_answerEchoRoutine != null)
-        {
-            StopCoroutine(_answerEchoRoutine);
-            _answerEchoRoutine = null;
-        }
-
         if (YesButton != null) YesButton.interactable = true;
         if (NoButton != null) NoButton.interactable = true;
-
-        if (StepCompletionGate != null)
-            StepCompletionGate.ResetGate(1);
-
-        // 시나리오 카드 숨김
-        if (ScenarioCardRoot != null)
-            ScenarioCardRoot.SetActive(false);
 
         // 버튼 이미지 표시
         if (ButtonImageRoot != null)
             ButtonImageRoot.SetActive(true);
+
+        // HanamBtn 숨김
+        if (HanamBtn != null)
+            HanamBtn.SetActive(false);
 
         // MicIndicator STT 이벤트 구독
         var mic = MicIndicator;
@@ -158,7 +119,12 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             mic.OnNoMatch += OnSTTNoMatch;
         }
 
+        // 첫 질문 텍스트 설정 + 등장 애니메이션
         ApplyQuestionUI(_currentIndex);
+
+        var effect = EffectController;
+        if (effect != null)
+            effect.PlayQuestionEnter();
     }
 
     protected override void OnStepExit()
@@ -169,13 +135,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             _errorRoutine = null;
         }
 
-        if (_answerEchoRoutine != null)
-        {
-            StopCoroutine(_answerEchoRoutine);
-            _answerEchoRoutine = null;
-        }
-
-        // MicIndicator 이벤트 구독 해제
         var mic = MicIndicator;
         if (mic != null)
         {
@@ -185,7 +144,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     }
 
     // ==================================================
-    // UI ����
+    // UI 갱신
     // ==================================================
 
     private void ApplyQuestionUI(int index)
@@ -194,33 +153,24 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         if (questions == null || index < 0 || index >= questions.Length)
         {
-            Debug.LogWarning("[Problem4_Step3] ApplyQuestionUI: �߸��� �ε��� " + index);
+            Debug.LogWarning("[Problem4_Step3] ApplyQuestionUI: 잘못된 인덱스 " + index);
             return;
         }
 
         var q = questions[index];
 
-        if (QuestionRoot != null)
-            QuestionRoot.SetActive(true);
-
         if (MainTextLabel != null)
             MainTextLabel.text = q.MainText;
 
-        if (SubTextLabel != null)
-            SubTextLabel.text = q.SubText;
-
-        if (SubmainTextLabel != null)
-            SubmainTextLabel.text = q.SubmainText;
-
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(false);
-
-        if (AnswerEchoRoot != null)
-            AnswerEchoRoot.SetActive(false);
+        if (HanamTextLabel != null)
+        {
+            HanamTextLabel.text = q.SubText;
+            _savedHanamText = q.SubText;
+        }
     }
 
     // ==================================================
-    // ��ư Ŭ�� ó��
+    // 버튼 클릭 처리
     // ==================================================
 
     public void OnClickYes()
@@ -256,12 +206,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         if (isCorrect)
         {
-            if (_answerEchoRoutine != null)
-            {
-                StopCoroutine(_answerEchoRoutine);
-                _answerEchoRoutine = null;
-            }
-            _answerEchoRoutine = StartCoroutine(AnswerEchoAndNext(isYes));
+            OnCorrectAnswer();
         }
         else
         {
@@ -269,51 +214,72 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         }
     }
 
-    private IEnumerator AnswerEchoAndNext(bool isYes)
+    private void OnCorrectAnswer()
     {
         if (YesButton != null) YesButton.interactable = false;
         if (NoButton != null) NoButton.interactable = false;
 
-        if (AnswerEchoLabel != null)
-            AnswerEchoLabel.text = isYes ? "예" : "아니오";
-
-        // Echo 표시 시 버튼 이미지 숨김
-        if (AnswerEchoRoot != null)
-            AnswerEchoRoot.SetActive(true);
-
         if (ButtonImageRoot != null)
             ButtonImageRoot.SetActive(false);
 
-        if (AnswerEchoDuration > 0f)
-            yield return new WaitForSeconds(AnswerEchoDuration);
+        var questions = Questions;
+        var effect = EffectController;
 
-        // Echo 숨김 시 버튼 이미지 표시
-        if (AnswerEchoRoot != null)
-            AnswerEchoRoot.SetActive(false);
+        if (effect != null)
+        {
+            // 퇴장 애니메이션 → 완료 콜백
+            effect.PlayQuestionExit(() =>
+            {
+                if (_currentIndex >= questions.Length - 1)
+                {
+                    CompleteStep();
+                }
+                else
+                {
+                    _currentIndex++;
+                    ApplyQuestionUI(_currentIndex);
+
+                    // 다음 질문 등장 애니메이션
+                    effect.PlayQuestionEnter(() =>
+                    {
+                        if (ButtonImageRoot != null)
+                            ButtonImageRoot.SetActive(true);
+                        if (YesButton != null) YesButton.interactable = true;
+                        if (NoButton != null) NoButton.interactable = true;
+                    });
+                }
+            });
+        }
+        else
+        {
+            // EffectController 없으면 딜레이 방식
+            if (_currentIndex >= questions.Length - 1)
+            {
+                CompleteStep();
+            }
+            else
+            {
+                _currentIndex++;
+                StartCoroutine(NextQuestionFallback());
+            }
+        }
+    }
+
+    private IEnumerator NextQuestionFallback()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        ApplyQuestionUI(_currentIndex);
 
         if (ButtonImageRoot != null)
             ButtonImageRoot.SetActive(true);
 
-        var questions = Questions;
-
-        if (_currentIndex >= questions.Length - 1)
-        {
-            CompleteStep();
-        }
-        else
-        {
-            _currentIndex++;
-            ApplyQuestionUI(_currentIndex);
-
-            if (YesButton != null) YesButton.interactable = true;
-            if (NoButton != null) NoButton.interactable = true;
-        }
-
-        _answerEchoRoutine = null;
+        if (YesButton != null) YesButton.interactable = true;
+        if (NoButton != null) NoButton.interactable = true;
     }
 
     // ==================================================
-    // ���� �޽���
+    // 에러 메시지 (HanamText 에 일시 표시 후 복원)
     // ==================================================
 
     private void ShowError(string msg)
@@ -321,25 +287,22 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (string.IsNullOrEmpty(msg))
             msg = DefaultErrorMessage;
 
-        if (ErrorLabel != null)
-            ErrorLabel.text = msg;
-
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(true);
+        if (HanamTextLabel != null)
+            HanamTextLabel.text = msg;
 
         if (_errorRoutine != null)
             StopCoroutine(_errorRoutine);
 
         if (ErrorShowDuration > 0f)
-            _errorRoutine = StartCoroutine(HideErrorAfterDelay());
+            _errorRoutine = StartCoroutine(RestoreHanamTextAfterDelay());
     }
 
-    private IEnumerator HideErrorAfterDelay()
+    private IEnumerator RestoreHanamTextAfterDelay()
     {
         yield return new WaitForSeconds(ErrorShowDuration);
 
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(false);
+        if (HanamTextLabel != null)
+            HanamTextLabel.text = _savedHanamText;
 
         _errorRoutine = null;
     }
@@ -348,32 +311,23 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     // STT 이벤트 핸들러
     // ==================================================
 
-    /// <summary>
-    /// STT 키워드 매칭 성공 시 호출
-    /// index 0 = "예", index 1 = "아니오"
-    /// </summary>
     protected void OnSTTKeywordMatched(int matchedIndex)
     {
         Debug.Log($"[Problem4_Step3] STT 매칭: index={matchedIndex}");
 
         if (_stepCompleted) return;
 
-        // index 0 = "예" → true, index 1 = "아니오" → false
         bool isYes = (matchedIndex == 0);
         HandleAnswer(isYes);
     }
 
-    /// <summary>
-    /// STT 매칭 실패 시 호출
-    /// </summary>
     protected void OnSTTNoMatch(string sttResult)
     {
         Debug.Log($"[Problem4_Step3] STT 매칭 실패: {sttResult}");
-        // 매칭 실패 시에는 아무것도 하지 않음 - 사용자가 다시 녹음하거나 버튼 클릭 가능
     }
 
     // ==================================================
-    // �Ϸ� ó�� + Attempt ����
+    // 완료 처리
     // ==================================================
 
     private void CompleteStep()
@@ -383,26 +337,11 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         SaveRebuttalAttempt();
 
-        Debug.Log("[Problem4_Step3] 반박 질문 완료 - 시나리오 카드 등장");
+        Debug.Log("[Problem4_Step3] 반박 질문 완료 - HanamBtn 활성화");
         _stepCompleted = true;
 
-        // 시나리오 카드 등장 후 대기 → 다음 스텝
-        StartCoroutine(ShowScenarioCardAndComplete());
-    }
-
-    private IEnumerator ShowScenarioCardAndComplete()
-    {
-        // 시나리오 카드 등장
-        if (ScenarioCardRoot != null)
-            ScenarioCardRoot.SetActive(true);
-
-        // 대기
-        if (ScenarioDisplayDuration > 0f)
-            yield return new WaitForSeconds(ScenarioDisplayDuration);
-
-        // 다음 스텝으로
-        if (StepCompletionGate != null)
-            StepCompletionGate.MarkOneDone();
+        if (HanamBtn != null)
+            HanamBtn.SetActive(true);
     }
 
     private void SaveRebuttalAttempt()
@@ -412,7 +351,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             actions = _actionLogs.ToArray()
         };
 
-        // ProblemStepBase�� ������ DB ���� ȣ��
         SaveAttempt(body);
     }
 }

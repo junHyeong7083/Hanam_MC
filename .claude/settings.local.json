@@ -21,7 +21,9 @@
       "mcp__UnityMCP__manage_asset",
       "mcp__UnityMCP__manage_material",
       "mcp__UnityMCP__manage_prefabs",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "mcp__UnityMCP__manage_script",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
