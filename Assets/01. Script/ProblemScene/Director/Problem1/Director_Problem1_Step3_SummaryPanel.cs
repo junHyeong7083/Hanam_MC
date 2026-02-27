@@ -30,20 +30,50 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
     [SerializeField] private StepCompletionGate completionGate;
     [SerializeField] private float autoAdvanceDelay = 5f;  // 마지막 라인 출력 후 대기 시간
 
+    [Header("수동 넘기기 버튼 (선택)")]
+    [SerializeField] private Button nextButton;
+
     private Coroutine _sequenceRoutine;
+    private bool _advanced;
 
     private void OnEnable()
     {
-        // 패널 활성화 시 자동으로 시퀀스 시작
+        _advanced = false;
+        if (nextButton != null)
+        {
+            nextButton.onClick.RemoveListener(OnClickNext);
+            nextButton.onClick.AddListener(OnClickNext);
+        }
         StartSequence();
     }
 
     private void OnDisable()
     {
+        if (nextButton != null)
+            nextButton.onClick.RemoveListener(OnClickNext);
+
         if (_sequenceRoutine != null)
         {
             StopCoroutine(_sequenceRoutine);
             _sequenceRoutine = null;
+        }
+    }
+
+    private void OnClickNext()
+    {
+        if (_advanced) return;
+        _advanced = true;
+
+        if (_sequenceRoutine != null)
+        {
+            StopCoroutine(_sequenceRoutine);
+            _sequenceRoutine = null;
+        }
+
+        if (completionGate != null)
+        {
+            completionGate.ResetGate(1);
+            completionGate.MarkOneDone();
         }
     }
 
@@ -144,9 +174,11 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         yield return new WaitForSeconds(moveDuration);
 
         // 자동 다음 스텝 진행
-        if (completionGate != null)
+        if (completionGate != null && !_advanced)
         {
             yield return new WaitForSeconds(autoAdvanceDelay);
+            if (_advanced) yield break;
+            _advanced = true;
             completionGate.ResetGate(1);
             completionGate.MarkOneDone();
         }

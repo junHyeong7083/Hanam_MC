@@ -55,6 +55,11 @@ public class CommonRewardStep : ProblemStepBase
     [SerializeField] private Text rewardDescText;
     [SerializeField] private int rewardDescTextId;
 
+    [Header("버튼 (선택 - 코드 자동 바인딩)")]
+    [SerializeField] private Button replayButton;
+    [SerializeField] private Button nextProblemButton;
+    [SerializeField] private Button homeButton;
+
     [Header("보상 메타 (DB 저장용)")]
     [SerializeField] private string rewardItemId = "mind_lens";
     [SerializeField] private string rewardItemName = "마음 렌즈";
@@ -83,18 +88,16 @@ public class CommonRewardStep : ProblemStepBase
 
     protected override void OnStepEnter()
     {
-        // 1) 보상 DB 저장 (한 번만)
         SaveRewardToDbOnce();
-
-        // 2) 리워드 이름/설명 텍스트 표시
         ApplyRewardText();
-
-        // 3) 연출 시퀀스 시작
+        BindButtons();
         StartSequence();
     }
 
     protected override void OnStepExit()
     {
+        UnbindButtons();
+
         if (_sequenceRoutine != null)
         {
             StopCoroutine(_sequenceRoutine);
@@ -250,7 +253,37 @@ public class CommonRewardStep : ProblemStepBase
     // =========================
 
     // =========================
-    // 버튼 바인딩용 Public 메서드
+    // 버튼 바인딩
+    // =========================
+
+    private void BindButtons()
+    {
+        if (replayButton != null)
+        {
+            replayButton.onClick.RemoveListener(ReplayCurrentProblem);
+            replayButton.onClick.AddListener(ReplayCurrentProblem);
+        }
+        if (nextProblemButton != null)
+        {
+            nextProblemButton.onClick.RemoveListener(GoToNextProblem);
+            nextProblemButton.onClick.AddListener(GoToNextProblem);
+        }
+        if (homeButton != null)
+        {
+            homeButton.onClick.RemoveListener(GoToHome);
+            homeButton.onClick.AddListener(GoToHome);
+        }
+    }
+
+    private void UnbindButtons()
+    {
+        if (replayButton != null) replayButton.onClick.RemoveListener(ReplayCurrentProblem);
+        if (nextProblemButton != null) nextProblemButton.onClick.RemoveListener(GoToNextProblem);
+        if (homeButton != null) homeButton.onClick.RemoveListener(GoToHome);
+    }
+
+    // =========================
+    // 버튼 Public 메서드
     // =========================
 
     /// <summary>현재 문제를 처음부터 다시 시작 (다시하기)</summary>

@@ -142,6 +142,12 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         if (NextButton != null)
             NextButton.SetActive(false);
 
+        // 드래그 연출 초기화
+        if (DragOutlineImage != null)
+            DragOutlineImage.SetActive(false);
+        if (TextBox != null)
+            TextBox.SetActive(false);
+
         // �Ϸ� ����Ʈ �ʱ�ȭ (��� ���� 1���̸� �Ϸ�)
         if (gate != null)
             gate.ResetGate(1);
@@ -249,6 +255,9 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         var dropBoxArea = DropBoxArea;
         if (dropBoxArea != null)
             dropBoxArea.SetOutlineVisible(false);
+
+        if (DragOutlineImage != null)
+            DragOutlineImage.SetActive(true);
     }
 
     public void NotifyDragging(Director_Problem2_DragItem item, PointerEventData eventData)
@@ -283,6 +292,9 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         }
         else
         {
+            if (DragOutlineImage != null)
+                DragOutlineImage.SetActive(false);
+
             item.ReturnToOriginalPosition();
             item.RestoreOriginalAlpha();
         }
@@ -311,6 +323,12 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 
         if (iconImageBg != null)
             iconImageBg.gameObject.SetActive(true);
+
+        // 드래그 연출: 아웃라인 끄고 텍스트박스 표시
+        if (DragOutlineImage != null)
+            DragOutlineImage.SetActive(false);
+        if (TextBox != null)
+            TextBox.SetActive(true);
 
         // 다음 버튼 표시
         if (NextButton != null)

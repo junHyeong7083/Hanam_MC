@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -18,6 +19,10 @@ public class IntroStepController : MonoBehaviour
     [Tooltip("인트로 완료 시 호출됨 (다음 패널 넘기기 등)")]
     [SerializeField] private UnityEvent onFinished;
 
+    [Header("NextStep Auto Call")]
+    [Tooltip("onFinished가 비어있을 때 자동으로 StepFlowController.NextStep() 호출")]
+    [SerializeField] private bool autoCallNextStep = true;
+
     [Header("Dialogue Source (textId list)")]
     [Tooltip("usePlaceholder=false일 때 사용. CSV의 index(textId)들을 순서대로 넣기")]
     [SerializeField] private List<int> dialogueTextIds = new List<int>();
@@ -32,9 +37,12 @@ public class IntroStepController : MonoBehaviour
     private int _total = 0;
 
     private bool _listenersBound = false;
+    private Component _flowController;
+    private MethodInfo _nextStepMethod;
 
     private void OnEnable()
     {
+        CacheStepFlowController();
         BindListenersOnce();
         StartIntro();
     }
@@ -165,6 +173,49 @@ public class IntroStepController : MonoBehaviour
     private void InvokeFinish()
     {
         onFinished?.Invoke();
+
+        if (autoCallNextStep)
+            TryCallNextStep();
+    }
+
+    private void CacheStepFlowController()
+    {
+        _flowController = null;
+        _nextStepMethod = null;
+
+        if (!autoCallNextStep) return;
+
+        var monos = GetComponentsInParent<MonoBehaviour>(true);
+        for (int i = 0; i < monos.Length; i++)
+        {
+            var mb = monos[i];
+            if (mb == null) continue;
+
+            var t = mb.GetType();
+            if (t.Name != "StepFlowController") continue;
+
+            var mi = t.GetMethod("NextStep",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (mi == null) continue;
+            if (mi.GetParameters().Length != 0) continue;
+
+            _flowController = mb;
+            _nextStepMethod = mi;
+            break;
+        }
+    }
+
+    private void TryCallNextStep()
+    {
+        if (_flowController == null || _nextStepMethod == null)
+        {
+            CacheStepFlowController();
+            if (_flowController == null || _nextStepMethod == null)
+                return;
+        }
+
+        _nextStepMethod.Invoke(_flowController, null);
     }
 
     private void RenderCurrent()

@@ -41,6 +41,10 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [Header("드래그 완료 후 다음 버튼")]
     [SerializeField] private GameObject nextButton;
 
+    [Header("드래그 연출")]
+    [SerializeField] private GameObject dragOutlineImage;
+    [SerializeField] private GameObject textBox;
+
     // ===== 베이스에 값 주입용 프로퍼티 구현 =====
 
     protected override UIDropBoxArea DropBoxArea => dropBoxArea;
@@ -63,4 +67,7 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     protected override Text GuideText => guideText;
     protected override int GuideTextId => guideTextId;
     protected override GameObject NextButton => nextButton;
+
+    protected override GameObject DragOutlineImage => dragOutlineImage;
+    protected override GameObject TextBox => textBox;
 }

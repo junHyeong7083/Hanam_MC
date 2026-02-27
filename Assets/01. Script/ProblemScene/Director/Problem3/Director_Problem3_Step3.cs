@@ -1,11 +1,14 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// Director / Problem3 / Step3
-/// - 객관식 문제 형태의 강점 찾기
-/// - 이펙트는 EffectController에 위임
+/// - 3개 보기 중 STT로 정답 선택
+/// - 인식 시 outline 표시, 정답이면 나머지 페이드아웃
+/// - 텍스트는 CSV textId로 관리
 /// </summary>
 public class Director_Problem3_Step3
     : Problem3_MultipleChoiceStepBase<Director_Problem3_Step3.Question>
@@ -14,40 +17,48 @@ public class Director_Problem3_Step3
     public class Question : Problem3_Question
     {
         public string id;
-        [TextArea] public string questionText;
-        public string[] options;
+        public int questionTextId;
+        public int[] optionTextIds;
         public int correctIndex;
-        public string[] wrongHints;
+        [TextArea] public string[] wrongHints;
         [Tooltip("STT 매칭용 키워드 (옵션 인덱스별)")]
         public string[] keywords;
 
         public string Id => id;
-        public string QuestionText => questionText;
-        public string[] Options => options;
+        public string QuestionText => questionTextId != 0 ? ProblemRuntime.L(questionTextId) : "";
+
+        public string[] Options
+        {
+            get
+            {
+                if (optionTextIds == null) return Array.Empty<string>();
+                var result = new string[optionTextIds.Length];
+                for (int i = 0; i < optionTextIds.Length; i++)
+                    result[i] = ProblemRuntime.L(optionTextIds[i]);
+                return result;
+            }
+        }
+
         public int CorrectIndex => correctIndex;
-        public string[] WrongHints => wrongHints;
+        public string[] WrongHints => wrongHints ?? Array.Empty<string>();
         public string[] Keywords => keywords;
     }
 
     [Header("문제 배열 데이터")]
     [SerializeField] private Question[] questions;
 
-    [Header("상단 가이드 텍스트 (정답 전/후)")]
+    [Header("상단 가이드 텍스트")]
     [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextIdBefore = 0;
-    [SerializeField] private int guideTextIdAfter = 0;
-
-    [Header("상단 진행 인덱스(옵션)")]
-    [SerializeField] private Text topIndexText; // 예: 1/3
+    [SerializeField] private string guideTextAfter = "잘 찾으셨어요!";
 
     [Header("상단 버튼들")]
-    [SerializeField] private GameObject micButtonRoot; // 상단 마이크 버튼 루트(활성/비활성 제어용)
-    [SerializeField] private GameObject summaryButtonRoot; // 상단 요약보기 버튼 루트(원하면 사용)
+    [SerializeField] private GameObject micButtonRoot;
+    [SerializeField] private GameObject summaryButtonRoot;
 
-    [Header("이펙트 컨트롤러")]
-    [SerializeField] private Problem3_Step3_EffectController effectController;
+    [Header("버튼 아웃라인 (각 옵션 버튼별)")]
+    [SerializeField] private GameObject[] outlineImages;
 
-    [Header("힌트 UI (이펙트 컨트롤러 미사용 시 폴백)")]
+    [Header("힌트 UI (베이스 호환)")]
     [SerializeField] private GameObject hintRoot;
     [SerializeField] private Text hintLabel;
     [SerializeField] private CanvasGroup hintCanvasGroup;
@@ -57,8 +68,14 @@ public class Director_Problem3_Step3
     [Header("정답 시 숨길 루트 (옵션)")]
     [SerializeField] private GameObject hideRootOnCorrect;
 
-    [Header("마이크 STT (옵션)")]
+    [Header("마이크 STT")]
     [SerializeField] private MicRecordingIndicator micIndicator;
+
+    [Header("오답 처리")]
+    [SerializeField] private float wrongHintDuration = 2f;
+    [SerializeField] private float incorrectFadeDuration = 0.5f;
+
+    private Coroutine _wrongHintRoutine;
 
     // ====== 베이스로 전달할 프로퍼티 ======
     protected override GameObject HintRoot => hintRoot;
@@ -81,8 +98,8 @@ public class Director_Problem3_Step3
     {
         base.OnStepEnter();
 
-        SetGuideBefore();
-        UpdateTopIndexText();
+        SetGuideToQuestion();
+        HideAllOutlines();
 
         if (micButtonRoot != null)
             micButtonRoot.SetActive(true);
@@ -90,7 +107,6 @@ public class Director_Problem3_Step3
         if (summaryButtonRoot != null)
             summaryButtonRoot.SetActive(false);
 
-        // MicIndicator STT 이벤트 구독
         if (micIndicator != null)
         {
             micIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
@@ -102,79 +118,81 @@ public class Director_Problem3_Step3
 
     protected override void ApplyQuestionUI(int index, Question q)
     {
-        // 새 문항 들어가면 "정답 전" 가이드로
-        SetGuideBefore();
-        UpdateTopIndexText();
+        SetGuideToQuestion();
+        HideAllOutlines();
 
-        // 이펙트 컨트롤러 리셋
-        if (effectController != null)
-            effectController.ResetForNextQuestion();
-
-        // 베이스 로직 실행 (질문/보기 세팅 + 힌트 초기화)
         base.ApplyQuestionUI(index, q);
 
-        // 옵션 버튼이 숨겨져 있을 수 있으니(이전 정답 처리) 다시 켜줌
         RestoreOptionButtons();
 
-        // MicIndicator에 현재 문제의 키워드 설정
         if (micIndicator != null && q != null)
         {
             var keywords = q.Keywords;
             if (keywords != null && keywords.Length > 0)
                 micIndicator.SetKeywords(keywords);
             else
-                micIndicator.SetKeywords(q.Options); // 키워드 없으면 옵션 텍스트를 키워드로 사용
+                micIndicator.SetKeywords(q.Options);
         }
-
-        // 문제 등장 애니메이션 (옵션)
-        if (effectController != null)
-            effectController.PlayQuestionAppear();
     }
 
     protected override void HandleWrong(int optionIndex)
     {
-        // 이펙트 컨트롤러가 있으면 사용
-        if (effectController != null)
-        {
-            var q = GetQuestion(_currentQuestionIndex);
-            if (q == null) return;
+        ShowOutline(optionIndex);
 
-            string hint = GetHintText(q.WrongHints, optionIndex);
-            effectController.PlayHintSequence(hint);
-        }
-        else
+        var q = GetQuestion(_currentQuestionIndex);
+        if (q != null && guideText != null)
         {
-            base.HandleWrong(optionIndex);
+            var wrongHints = q.WrongHints;
+            string hint = null;
+
+            if (wrongHints != null &&
+                optionIndex >= 0 &&
+                optionIndex < wrongHints.Length &&
+                !string.IsNullOrEmpty(wrongHints[optionIndex]))
+            {
+                hint = wrongHints[optionIndex];
+            }
+
+            if (!string.IsNullOrEmpty(hint))
+            {
+                if (_wrongHintRoutine != null)
+                    StopCoroutine(_wrongHintRoutine);
+                _wrongHintRoutine = StartCoroutine(WrongHintRoutine(hint));
+            }
         }
+    }
+
+    private IEnumerator WrongHintRoutine(string hint)
+    {
+        guideText.text = hint;
+        yield return new WaitForSeconds(wrongHintDuration);
+        SetGuideToQuestion();
+        HideAllOutlines();
+        _wrongHintRoutine = null;
     }
 
     protected override void HandleCorrect(int optionIndex)
     {
-        // 정답 후 상단 가이드로 변경
+        ShowOutline(optionIndex);
+
         SetGuideAfter();
-        UpdateTopIndexText();
 
-        // 드롭 애니메이션 재생
-        if (effectController != null)
-            effectController.PlayDropAnimation();
+        FadeOutIncorrectOptions(optionIndex);
 
-        // "정답만 남기고 나머지(0/2 등) 숨기기"
-        HideIncorrectOptions(optionIndex);
-
-        // 정답 시 숨길 루트 처리 (옵션)
         if (hideRootOnCorrect != null)
             hideRootOnCorrect.SetActive(false);
 
-        // Gate 완료
         if (completionGate != null)
             completionGate.MarkOneDone();
 
-        // 다음 문제 or 종료
         GoNextQuestionOrFinish();
     }
 
     protected override void OnAllQuestionsCompleted()
     {
+        if (micButtonRoot != null)
+            micButtonRoot.SetActive(false);
+
         if (summaryButtonRoot != null)
             summaryButtonRoot.SetActive(true);
     }
@@ -183,15 +201,20 @@ public class Director_Problem3_Step3
     {
         base.OnStepExit();
 
-        // MicIndicator 이벤트 구독 해제
         if (micIndicator != null)
         {
             micIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
             micIndicator.OnNoMatch -= OnSTTNoMatch;
         }
 
-        if (effectController != null)
-            effectController.HideHintImmediate();
+        HideAllOutlines();
+        KillFadeTweens();
+
+        if (_wrongHintRoutine != null)
+        {
+            StopCoroutine(_wrongHintRoutine);
+            _wrongHintRoutine = null;
+        }
     }
 
     // ====== STT 이벤트 핸들러 ======
@@ -206,7 +229,6 @@ public class Director_Problem3_Step3
         int correctIndex = q.CorrectIndex;
         bool isCorrect = (matchedIndex == correctIndex);
 
-        // Attempt 로그
         OnQuestionAttempted(q, matchedIndex, isCorrect);
 
         if (isCorrect)
@@ -217,10 +239,28 @@ public class Director_Problem3_Step3
 
     private void OnSTTNoMatch(string sttResult)
     {
-        // 매칭 실패 시: 필요하면 여기서 힌트나 안내 출력
     }
 
-    // ====== UI 유틸 ======
+    // ====== 아웃라인 ======
+
+    private void ShowOutline(int index)
+    {
+        if (outlineImages == null) return;
+        for (int i = 0; i < outlineImages.Length; i++)
+        {
+            if (outlineImages[i] != null)
+                outlineImages[i].SetActive(i == index);
+        }
+    }
+
+    private void HideAllOutlines()
+    {
+        if (outlineImages == null) return;
+        foreach (var outline in outlineImages)
+            if (outline != null) outline.SetActive(false);
+    }
+
+    // ====== 버튼 유틸 ======
 
     private void RestoreOptionButtons()
     {
@@ -234,74 +274,68 @@ public class Director_Problem3_Step3
             btn.gameObject.SetActive(true);
             btn.interactable = true;
 
-            // 색은 ApplyQuestionUI에서 다시 세팅되지 않으므로,
-            // 필요하면 여기서 기본 색으로 복구 로직을 추가해도 됨.
+            var cg = btn.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f;
         }
     }
 
-    private void HideIncorrectOptions(int correctOptionIndex)
+    private void FadeOutIncorrectOptions(int correctOptionIndex)
     {
         if (optionButtons == null) return;
 
         for (int i = 0; i < optionButtons.Length; i++)
         {
+            if (i == correctOptionIndex) continue;
+
             var btn = optionButtons[i];
             if (btn == null) continue;
 
-            if (i == correctOptionIndex)
-            {
-                btn.gameObject.SetActive(true);
-                btn.interactable = false; // 정답 확정이면 더 이상 클릭 불가
-            }
-            else
-            {
-                btn.gameObject.SetActive(false); // 나머지 2개 숨김
-            }
+            btn.interactable = false;
+
+            var cg = btn.GetComponent<CanvasGroup>();
+            if (cg == null) cg = btn.gameObject.AddComponent<CanvasGroup>();
+
+            int captured = i;
+            cg.DOFade(0f, incorrectFadeDuration)
+                .OnComplete(() =>
+                {
+                    if (optionButtons[captured] != null)
+                        optionButtons[captured].gameObject.SetActive(false);
+                });
+        }
+
+        if (correctOptionIndex >= 0 && correctOptionIndex < optionButtons.Length
+            && optionButtons[correctOptionIndex] != null)
+        {
+            optionButtons[correctOptionIndex].interactable = false;
         }
     }
 
-    private void UpdateTopIndexText()
+    private void KillFadeTweens()
     {
-        if (topIndexText == null) return;
-
-        int total = QuestionCount;
-        int current = Mathf.Clamp(_currentQuestionIndex + 1, 1, Mathf.Max(1, total));
-        topIndexText.text = $"{current}/{total}";
+        if (optionButtons == null) return;
+        foreach (var btn in optionButtons)
+        {
+            if (btn == null) continue;
+            var cg = btn.GetComponent<CanvasGroup>();
+            if (cg != null) cg.DOKill();
+        }
     }
 
-    private void SetGuideBefore()
+    // ====== 가이드 텍스트 ======
+
+    private void SetGuideToQuestion()
     {
         if (guideText == null) return;
-
-        if (guideTextIdBefore != 0)
-            guideText.text = ProblemRuntime.L(guideTextIdBefore);
+        var q = GetQuestion(_currentQuestionIndex);
+        if (q != null)
+            guideText.text = q.QuestionText;
     }
 
     private void SetGuideAfter()
     {
         if (guideText == null) return;
-
-        if (guideTextIdAfter != 0)
-            guideText.text = ProblemRuntime.L(guideTextIdAfter);
-    }
-
-    // ====== 텍스트 유틸 ======
-
-    private string GetHintText(string[] wrongHints, int optionIndex)
-    {
-        string hint = null;
-
-        if (wrongHints != null &&
-            optionIndex >= 0 &&
-            optionIndex < wrongHints.Length &&
-            !string.IsNullOrEmpty(wrongHints[optionIndex]))
-        {
-            hint = wrongHints[optionIndex];
-        }
-
-        if (string.IsNullOrEmpty(hint))
-            hint = "조금만 더 생각해볼까요? 화면에 보이는 단서를 다시 살펴보세요.";
-
-        return hint;
+        if (!string.IsNullOrEmpty(guideTextAfter))
+            guideText.text = guideTextAfter;
     }
 }

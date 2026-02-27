@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,23 +28,17 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract Text GuideText { get; }
     protected abstract int GuideTextId_Before { get; }
     protected abstract int GuideTextId_After { get; }
+    protected abstract int GuideTextId_Retry { get; }
 
     // ===== UI =====
-    protected abstract bool OverwriteSceneTextOnReset { get; }
-
-    protected abstract Text SceneText { get; }
     protected abstract RectTransform SceneCardRect { get; }
     protected abstract GameObject OkSceneCard { get; }
-    protected abstract Text OkSceneText { get; }
-
-    protected abstract CardFlip CardFlip { get; }
 
     // 캐러셀
     protected abstract GameObject CarouselRoot { get; }
     protected abstract Button PrevButton { get; }
     protected abstract Button NextButton { get; }
     protected abstract Text CarouselText { get; }
-    protected abstract Text CarouselIndexText { get; } // optional
 
     // 마이크
     protected abstract GameObject MicButtonRoot { get; }
@@ -62,7 +55,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract GameObject SummaryPanelRoot { get; }
 
     protected abstract StepCompletionGate CompletionGate { get; }
-    protected abstract float FlipDelay { get; }
 
     private int _currentIndex;
     private IDirectorProblem2PerspectiveOption _selected;
@@ -88,6 +80,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (gate != null) gate.ResetGate(1);
 
         BindCarouselButtons();
+        BindMicButton();
     }
 
     protected override void OnStepExit()
@@ -100,6 +93,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         }
 
         UnbindCarouselButtons();
+        UnbindMicButton();
     }
 
     private void ResetState()
@@ -116,9 +110,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (GuideText != null && GuideTextId_Before != 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Before);
 
-        if (SceneText != null && OverwriteSceneTextOnReset)
-            SceneText.text = NgSentence;
-
         if (SceneCardRect != null) SceneCardRect.gameObject.SetActive(true);
         if (OkSceneCard != null) OkSceneCard.SetActive(false);
 
@@ -129,6 +120,11 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         // ✅ 완료 전 UI 상태로 세팅
         SetBeforeCompleteUI();
+
+        // 마이크 아이들 텍스트 원복
+        var indicator2 = MicIndicator;
+        if (indicator2 != null)
+            indicator2.ResetIdleText();
     }
 
     private void SetBeforeCompleteUI()
@@ -194,7 +190,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             _selected = null;
 
             if (CarouselText != null) CarouselText.text = "";
-            if (CarouselIndexText != null) CarouselIndexText.text = "";
 
             if (PrevButton != null) PrevButton.interactable = false;
             if (NextButton != null) NextButton.interactable = false;
@@ -208,9 +203,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         if (CarouselText != null && _selected != null)
             CarouselText.text = _selected.Text;
-
-        if (CarouselIndexText != null)
-            CarouselIndexText.text = $"{_currentIndex + 1}/{p.Length}";
 
         bool canNavigate = !_isFinished && p.Length > 1;
         if (PrevButton != null) PrevButton.interactable = canNavigate;
@@ -285,13 +277,26 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             if (RecordingOverlay != null)
                 RecordingOverlay.SetActive(false);
 
-            StartCoroutine(PlayRefilmCompleteSequence());
+            PlayRefilmComplete();
         }
         else
         {
+            // 다른 관점의 키워드가 매칭됨 → 재시도 처리
             _isRecording = false;
             if (RecordingOverlay != null)
                 RecordingOverlay.SetActive(false);
+
+            if (GuideText != null)
+            {
+                var retryTextId = GuideTextId_Retry;
+                GuideText.text = retryTextId != 0
+                    ? ProblemRuntime.L(retryTextId)
+                    : "조금 더 가까이서 힘차게 말해주세요!";
+            }
+
+            var ind = MicIndicator;
+            if (ind != null)
+                ind.SetIdleText("다시 말하기");
         }
     }
 
@@ -300,10 +305,24 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         _isRecording = false;
         if (RecordingOverlay != null)
             RecordingOverlay.SetActive(false);
+
+        // 재시도 안내 텍스트 표시
+        if (GuideText != null)
+        {
+            var retryTextId = GuideTextId_Retry;
+            GuideText.text = retryTextId != 0
+                ? ProblemRuntime.L(retryTextId)
+                : "조금 더 가까이서 힘차게 말해주세요!";
+        }
+
+        // 마이크 버튼 텍스트를 "다시 말하기"로 변경
+        var indicator = MicIndicator;
+        if (indicator != null)
+            indicator.SetIdleText("다시 말하기");
     }
 
     // ===== Complete Sequence =====
-    private IEnumerator PlayRefilmCompleteSequence()
+    private void PlayRefilmComplete()
     {
         if (GuideText != null && GuideTextId_After != 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_After);
@@ -311,23 +330,12 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (PrevButton != null) PrevButton.interactable = false;
         if (NextButton != null) NextButton.interactable = false;
 
-        float delay = FlipDelay;
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
-
-        var cardFlip = CardFlip;
-        if (cardFlip != null)
-            yield return StartCoroutine(cardFlip.PlayFlipRoutine());
-
-        if (OkSceneText != null && _selected != null)
-            OkSceneText.text = _selected.Text;
-
         if (SceneCardRect != null) SceneCardRect.gameObject.SetActive(false);
         if (OkSceneCard != null) OkSceneCard.SetActive(true);
 
         _isFinished = true;
 
-        // ✅ 완료 UI 전환: 마이크 숨기고 Next 보이기
+        // 완료 UI 전환: 마이크 숨기고 Next 보이기
         SetAfterCompleteUI();
 
         var gate = CompletionGate;
@@ -363,11 +371,22 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         SaveAttempt(body);
     }
 
-    private void SetMicInteractable(bool interactable)
+    private Button _micButton;
+
+    private void BindMicButton()
     {
         if (MicButtonRoot == null) return;
+        _micButton = MicButtonRoot.GetComponentInChildren<Button>(true);
+    }
 
-        var btn = MicButtonRoot.GetComponentInChildren<Button>(true);
-        if (btn != null) btn.interactable = interactable;
+    private void UnbindMicButton()
+    {
+        _micButton = null;
+    }
+
+    private void SetMicInteractable(bool interactable)
+    {
+        if (_micButton != null)
+            _micButton.interactable = interactable;
     }
 }

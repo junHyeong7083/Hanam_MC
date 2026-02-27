@@ -15,7 +15,6 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private Image targetImage;
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite recordingSprite;
-    [SerializeField] private GameObject micPulseImage;
 
     [Header("텍스트 피드백")]
     [SerializeField] private Text statusText;
@@ -55,6 +54,33 @@ public class MicRecordingIndicator : MonoBehaviour
     private Coroutine _silenceCheckCoroutine;
     private float _silenceTimer = 0f;
     private bool _hasDetectedVoice = false;  // 의미있는 음성이 감지되었는지 여부
+
+    private string _originalIdleText;
+
+    private void Awake()
+    {
+        _originalIdleText = idleText;
+    }
+
+    /// <summary>
+    /// 아이들 텍스트를 동적으로 변경 (재시도 시 "다시 말하기" 등)
+    /// </summary>
+    public void SetIdleText(string text)
+    {
+        idleText = text;
+        if (!_recording && statusText != null)
+            statusText.text = text;
+    }
+
+    /// <summary>
+    /// 아이들 텍스트를 원래 값으로 복원
+    /// </summary>
+    public void ResetIdleText()
+    {
+        idleText = _originalIdleText;
+        if (!_recording && statusText != null)
+            statusText.text = _originalIdleText;
+    }
 
     private void OnEnable()
     {
@@ -308,14 +334,10 @@ public class MicRecordingIndicator : MonoBehaviour
                 targetImage.sprite = sprite;
         }
 
-        if (micPulseImage != null)
-        {
-            micPulseImage.SetActive(_recording);
-        }
-
         if (statusText != null)
         {
             statusText.text = _recording ? recordingText : idleText;
+            statusText.gameObject.SetActive(!_recording);
         }
     }
 }

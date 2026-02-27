@@ -12,58 +12,38 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
     [Serializable]
     protected class EmotionLightSlot
     {
-        [TextArea] public string sceneText;
-        public string emotionText;
-        public Color color = Color.white;
+        public int sceneTextId;
 
-        [Header("Top Light UI (Á¶¸í ¿µ¿ª)")]
-        public GameObject lightRoot;
+        [Header("Top Light UI")]
         public GameObject lightLockedRoot;
         public GameObject lightRevealedRoot;
-        public Image lightCircleImage;
-        public Image lightGlowImage;
-
-        [Header("Light Label (Image + Text)")]
-        public GameObject lightLabelRoot;
-
-        [Header("Line Anchors")]
-        public RectTransform filmLineAnchor;
-        public RectTransform lightLineAnchor;
 
         [Header("Bottom Film Card UI")]
         public Button filmButton;
+        public Sprite filmClickedSprite;
         public GameObject filmTouchPromptRoot;
-        public GameObject filmEmotionPopupRoot;
 
-        [Header("Line UI (slot Àü¿ë)")]
-        public RectTransform lineRect;
-        public Image lineImage;
-        public UILineConnector lineConnector;
+        [Header("Film After Click Display")]
+        public GameObject filmAfterClickRoot;
+        public Text filmSceneText;
 
         [NonSerialized] public bool revealed;
-        [NonSerialized] public Coroutine lineRoutine;
+        [NonSerialized] public Sprite filmOriginalSprite;
     }
 
-    [Header("Emotion Light Slots (ÀÚ½Ä¿¡¼­ ÁÖÀÔ)")]
+    [Header("Emotion Light Slots (ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     protected abstract EmotionLightSlot[] Slots { get; }
 
-    [Header("Line Animation Settings (ÀÚ½Ä¿¡¼­ ÁÖÀÔ)")]
-    protected abstract float LineDrawDuration { get; }
-    protected abstract float LineHoldDuration { get; }
-    protected abstract float LineFadeDuration { get; }
-    protected abstract AnimationCurve LineWidthCurve { get; }
-    protected abstract float LineMaxThickness { get; }
-
-    [Header("Light µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç (ÀÚ½Ä¿¡¼­ ÁÖÀÔ)")]
+    [Header("Light ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ (ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     protected abstract bool PlayLightAppearAnimation { get; }
     protected abstract float LightAppearDuration { get; }
     protected abstract float LightAppearScale { get; }
 
-    [Header("¿Ï·á °ÔÀÌÆ® (ÀÚ½Ä¿¡¼­ ÁÖÀÔ)")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (ï¿½Ú½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
     // =======================
-    // Ãß°¡: Problem1 Step2 ½ºÅ¸ÀÏ(guide text + next button)
+    // ï¿½ß°ï¿½: Problem1 Step2 ï¿½ï¿½Å¸ï¿½ï¿½(guide text + next button)
     // =======================
     [Header("Guide Text (Localized)")]
     [SerializeField] private Text guideText;
@@ -86,16 +66,8 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
     private Component _flowController;
     private MethodInfo _nextStepMethod;
 
-    // ³»ºÎ ·ÎÁ÷¿ë ÇÊµå
-    private Canvas _canvas;
-    private RectTransform _canvasRect;
-
     protected override void OnStepEnter()
     {
-        _canvas = GetComponentInParent<Canvas>();
-        if (_canvas != null)
-            _canvasRect = _canvas.transform as RectTransform;
-
         _completed = false;
 
         InitSlots();
@@ -129,35 +101,14 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
             slot.revealed = false;
 
-            if (slot.lightLabelRoot != null)
-                slot.lightLabelRoot.SetActive(false);
-
-            if (slot.lightCircleImage != null)
-                slot.lightCircleImage.color = slot.color;
-
-            if (slot.lightGlowImage != null)
-            {
-                var c = slot.color;
-                c.a = slot.lightGlowImage.color.a;
-                slot.lightGlowImage.color = c;
-            }
-
-            if (slot.lineRect != null)
-            {
-                if (slot.lineImage == null)
-                    slot.lineImage = slot.lineRect.GetComponent<Image>();
-
-                if (slot.lineConnector == null)
-                    slot.lineConnector = slot.lineRect.GetComponent<UILineConnector>();
-
-                if (slot.lineConnector != null)
-                    slot.lineConnector.ResetLine();
-
-                SetRevealState(slot, reveal: false, immediate: true);
-            }
+            SetRevealState(slot, reveal: false, immediate: true);
 
             if (slot.filmButton != null)
             {
+                var img = slot.filmButton.GetComponent<Image>();
+                if (img != null)
+                    slot.filmOriginalSprite = img.sprite;
+
                 var captured = slot;
                 slot.filmButton.onClick.RemoveAllListeners();
                 slot.filmButton.onClick.AddListener(() => OnFilmClicked(captured));
@@ -172,9 +123,12 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
         if (slot.lightLockedRoot != null)
             slot.lightLockedRoot.SetActive(!reveal);
 
+        Debug.Log($"[Step2] SetRevealState reveal={reveal}, lightRevealedRoot={(slot.lightRevealedRoot != null ? slot.lightRevealedRoot.name : "NULL")}, activeSelf before={slot.lightRevealedRoot?.activeSelf}");
+
         if (slot.lightRevealedRoot != null)
         {
             slot.lightRevealedRoot.SetActive(reveal);
+            Debug.Log($"[Step2] After SetActive({reveal}), activeSelf={slot.lightRevealedRoot.activeSelf}, activeInHierarchy={slot.lightRevealedRoot.activeInHierarchy}");
 
             if (reveal && PlayLightAppearAnimation && !immediate)
             {
@@ -186,10 +140,27 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
             }
         }
 
+        // í•„ë¦„ ìŠ¤í”„ë¼ì´íŠ¸ êµì²´ (í´ë¦­ ì „/í›„)
+        if (slot.filmButton != null)
+        {
+            var img = slot.filmButton.GetComponent<Image>();
+            if (img != null)
+            {
+                if (reveal && slot.filmClickedSprite != null)
+                    img.sprite = slot.filmClickedSprite;
+                else if (!reveal && slot.filmOriginalSprite != null)
+                    img.sprite = slot.filmOriginalSprite;
+            }
+        }
+
         if (slot.filmTouchPromptRoot != null)
             slot.filmTouchPromptRoot.SetActive(!reveal);
-        if (slot.filmEmotionPopupRoot != null)
-            slot.filmEmotionPopupRoot.SetActive(reveal);
+
+        if (slot.filmAfterClickRoot != null)
+            slot.filmAfterClickRoot.SetActive(reveal);
+
+        if (reveal && slot.filmSceneText != null && slot.sceneTextId > 0)
+            slot.filmSceneText.text = ProblemRuntime.L(slot.sceneTextId);
     }
 
     private void OnFilmClicked(EmotionLightSlot slot)
@@ -201,10 +172,6 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
         if (CompletionGate != null)
             CompletionGate.MarkOneDone();
-
-        if (slot.lineRoutine != null)
-            StopCoroutine(slot.lineRoutine);
-        slot.lineRoutine = StartCoroutine(PlayUILine(slot));
 
         TryHandleCompleted();
     }
@@ -231,9 +198,9 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
         ApplyGuideText(guideTextIdOnCompleted);
         SetNextShootButtonVisible(true);
 
-        // Áß¿ä: °ÔÀÌÆ®°¡ ÀÚµ¿À¸·Î ´ÙÀ½ ½ºÅÜÀ» ³Ñ±â´Â ±¸Á¶¸é
-        // StepCompletionGate¿¡¼­ auto-next¸¦ ²¨ÁÖ°Å³ª,
-        // °ÔÀÌÆ®ÀÇ ¿Ï·á ¹öÆ°/ÀÚµ¿ ¿¬°áÀ» »©Áà¾ß ÇÔ.
+        // ï¿½ß¿ï¿½: ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // StepCompletionGateï¿½ï¿½ï¿½ï¿½ auto-nextï¿½ï¿½ ï¿½ï¿½ï¿½Ö°Å³ï¿½,
+        // ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½Æ°/ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
     }
 
     private void ApplyGuideText(int textId)
@@ -313,33 +280,6 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
         _nextStepMethod.Invoke(_flowController, null);
         return true;
-    }
-
-    private IEnumerator PlayUILine(EmotionLightSlot slot)
-    {
-        if (slot.lineConnector == null && slot.lineRect != null)
-            slot.lineConnector = slot.lineRect.GetComponent<UILineConnector>();
-
-        if (slot.lineConnector == null ||
-            slot.filmLineAnchor == null ||
-            slot.lightLineAnchor == null)
-        {
-            slot.lineRoutine = null;
-            yield break;
-        }
-
-        if (slot.lightLabelRoot != null && !slot.lightLabelRoot.activeSelf)
-        {
-            slot.lightLabelRoot.SetActive(true);
-            StartCoroutine(PlayLightAppear(slot.lightLabelRoot.transform));
-        }
-
-        yield return slot.lineConnector.PlayLineRoutine(
-            slot.filmLineAnchor,
-            slot.lightLineAnchor
-        );
-
-        slot.lineRoutine = null;
     }
 
     private IEnumerator PlayLightAppear(Transform target)

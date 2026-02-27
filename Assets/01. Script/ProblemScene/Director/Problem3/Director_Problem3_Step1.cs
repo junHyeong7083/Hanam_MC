@@ -1,139 +1,64 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 /// <summary>
-/// Director / Problem_3 / Step1
-/// - DB에서 시나리오 펜 보유 확인 후 자동 활성화
+/// Director / Problem3 / Step1
+/// - 시나리오 펜을 책 위에 드래그하여 드롭하는 스텝
+/// - Problem2 Step1과 동일한 드래그앤드롭 로직 (리소스만 다름)
 /// </summary>
-public class Director_Problem3_Step1 : InventoryDropTargetStepBase
+public class Director_Problem3_Step1 : Director_Problem2_Step1_Logic
 {
-    [Header("Book Activation")]
-    [SerializeField] private RectTransform bookVisualRoot;
-    [SerializeField] private float activateScale = 1.05f;
-    [SerializeField] private float activateDuration = 0.6f;
-    [SerializeField] private float delayBeforeComplete = 1.5f;
+    [Header("Drop Box 영역")]
+    [SerializeField] private UIDropBoxArea dropBoxArea;
 
-    [Header("Camera Shutter Effect")]
-    [SerializeField] private GameObject cameraShutterPrefab;
+    [Header("드래그 아이템")]
+    [SerializeField] private Director_Problem2_DragItem[] dragItems;
 
-    [Header("Sparkle Effect")]
-    [SerializeField] private GameObject sparkleEffectPrefab;
-    [SerializeField] private int sparkleCount = 6;
-    [SerializeField] private float sparkleSpreadMin = 30f;
-    [SerializeField] private float sparkleSpreadMax = 100f;
+    [Header("드롭 후 결과 패널")]
+    [SerializeField] private GameObject resultPanelRoot;
 
-    [Header("Flicker")]
-    [SerializeField] private bool enableFlicker = true;
-    [SerializeField] private int flickerCount = 4;
-    [SerializeField] private float flickerDuration = 0.6f;
-    [SerializeField] private float flickerMinAlpha = 0.5f;
+    [Header("아이콘 이미지")]
+    [SerializeField] private Image iconImageBackground;
+    [SerializeField] private Image iconImage;
 
-    [Header("Instruction")]
-    [SerializeField] private GameObject instructionRoot;
+    [Header("인트로 애니메이션")]
+    [SerializeField] private RectTransform leftEnterRoot;
+    [SerializeField] private RectTransform rightEnterRoot;
+    [SerializeField] private float introDuration = 0.5f;
+    [SerializeField] private float leftStartOffsetX = -300f;
+    [SerializeField] private float rightStartOffsetX = 300f;
+    [SerializeField] private float introDelay = 0.1f;
 
-    [Header("Completion Gate (Optional)")]
+    [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // === Base Properties ===
-    protected override RectTransform TargetVisualRoot => bookVisualRoot;
-    protected override GameObject InstructionRoot => instructionRoot;
+    [Header("상단 가이드 텍스트")]
+    [SerializeField] private Text guideText;
+    [SerializeField] private int guideTextId = 101030002;
+
+    [Header("다음 버튼")]
+    [SerializeField] private GameObject nextButton;
+
+    [Header("드래그 연출")]
+    [SerializeField] private GameObject dragOutlineImage;
+    [SerializeField] private GameObject textBox;
+
+    // === 베이스 프로퍼티 구현 ===
+    protected override UIDropBoxArea DropBoxArea => dropBoxArea;
+    protected override Director_Problem2_DragItem[] DragItems => dragItems;
+    protected override GameObject ResultPanelRoot => resultPanelRoot;
+    protected override Image IconImageBackground => iconImageBackground;
+    protected override Image IconImage => iconImage;
+    protected override RectTransform LeftEnterRoot => leftEnterRoot;
+    protected override RectTransform RightEnterRoot => rightEnterRoot;
+    protected override float IntroDuration => introDuration;
+    protected override float LeftStartOffsetX => leftStartOffsetX;
+    protected override float RightStartOffsetX => rightStartOffsetX;
+    protected override float IntroDelay => introDelay;
     protected override StepCompletionGate CompletionGate => completionGate;
-
-    protected override float ActivateScale => activateScale;
-    protected override float ActivateDuration => activateDuration;
-    protected override float DelayBeforeComplete => delayBeforeComplete;
-
-    // Internal
-    private CanvasGroup _targetCanvasGroup;
-
-    protected override IEnumerator PlayActivateAnimation()
-    {
-        var visual = TargetVisualRoot;
-        if (visual == null || ActivateDuration <= 0f)
-            yield break;
-
-        if (_targetCanvasGroup == null)
-        {
-            _targetCanvasGroup = visual.GetComponent<CanvasGroup>();
-            if (_targetCanvasGroup == null)
-                _targetCanvasGroup = visual.gameObject.AddComponent<CanvasGroup>();
-        }
-
-        GameObject shutterInstance = null;
-        if (cameraShutterPrefab != null)
-        {
-            shutterInstance = Instantiate(cameraShutterPrefab, visual);
-            var rt = shutterInstance.GetComponent<RectTransform>();
-            if (rt != null)
-                rt.anchoredPosition = Vector2.zero;
-            shutterInstance.SetActive(false);
-        }
-
-        SpawnSparkleEffects(visual);
-
-        float totalDuration = Mathf.Max(activateDuration, enableFlicker ? flickerDuration : 0f);
-        float t = 0f;
-        int flickerIndex = 0;
-        float flickerInterval = flickerCount > 0 ? flickerDuration / (flickerCount * 2) : 0f;
-        float nextFlickerTime = 0f;
-        bool flickerOn = true;
-
-        while (t < totalDuration)
-        {
-            t += Time.deltaTime;
-
-            if (t < activateDuration)
-            {
-                float scaleT = Mathf.Clamp01(t / 0.3f);
-                float scale = Mathf.Lerp(1f, activateScale, scaleT);
-                visual.localScale = Vector3.one * scale;
-            }
-
-            if (enableFlicker && _targetCanvasGroup != null && t < flickerDuration)
-            {
-                if (t >= nextFlickerTime && flickerIndex < flickerCount * 2)
-                {
-                    flickerOn = !flickerOn;
-                    _targetCanvasGroup.alpha = flickerOn ? 1f : flickerMinAlpha;
-
-                    if (shutterInstance != null)
-                        shutterInstance.SetActive(!flickerOn);
-
-                    nextFlickerTime += flickerInterval;
-                    flickerIndex++;
-                }
-            }
-
-            yield return null;
-        }
-
-        visual.localScale = Vector3.one * activateScale;
-        if (_targetCanvasGroup != null)
-            _targetCanvasGroup.alpha = 1f;
-
-        if (shutterInstance != null)
-            Destroy(shutterInstance);
-    }
-
-    private void SpawnSparkleEffects(RectTransform parent)
-    {
-        if (sparkleEffectPrefab == null || sparkleCount <= 0)
-            return;
-
-        for (int i = 0; i < sparkleCount; i++)
-        {
-            var sparkle = Instantiate(sparkleEffectPrefab, parent);
-            var rt = sparkle.GetComponent<RectTransform>();
-            if (rt != null)
-            {
-                float angle = (360f / sparkleCount) * i + Random.Range(-15f, 15f);
-                float distance = Random.Range(sparkleSpreadMin, sparkleSpreadMax);
-                Vector2 offset = new Vector2(
-                    Mathf.Cos(angle * Mathf.Deg2Rad),
-                    Mathf.Sin(angle * Mathf.Deg2Rad)
-                ) * distance;
-                rt.anchoredPosition = offset;
-            }
-        }
-    }
+    protected override Text GuideText => guideText;
+    protected override int GuideTextId => guideTextId;
+    protected override GameObject NextButton => nextButton;
+    protected override GameObject DragOutlineImage => dragOutlineImage;
+    protected override GameObject TextBox => textBox;
 }

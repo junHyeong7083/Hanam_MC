@@ -1,45 +1,32 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // TMPro´Â »ç¿ëÇÏÁö ¾ÊÁö¸¸, ¿øº» ÆÄÀÏ¿¡ ÀÖ¾úÀ¸¹Ç·Î À¯Áö
+using TMPro; // TMProï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 /// <summary>
 /// Director / Problem2 / Step2
-/// - ÀÌ Å¬·¡½º´Â UI ¹ÙÀÎµù + ÇÁ·ÎÆÛÆ¼ ¸ÅÇÎ¸¸ ´ã´ç.
-/// - ½ÇÁ¦ ·ÎÁ÷Àº Director_Problem2_Step2_Logic(º£ÀÌ½º)¿¡¼­ Ã³¸®.
+/// - ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½Îµï¿½ + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Director_Problem2_Step2_Logic(ï¿½ï¿½ï¿½Ì½ï¿½)ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 /// </summary>
 public class Director_Problem2_Step2 : Director_Problem2_Step2_Logic
 {
-    // === ¿øº»°ú µ¿ÀÏÇÑ [SerializeField] ÇÊµå À¯Áö ===
+    // === ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [SerializeField] ï¿½Êµï¿½ ï¿½ï¿½ï¿½ï¿½ ===
 
     [Header("Emotion Light Slots")]
-    [SerializeField] private EmotionLightSlot[] slots; // Logic Å¬·¡½ºÀÇ protected EmotionLightSlot »ç¿ë
+    [SerializeField] private EmotionLightSlot[] slots; // Logic Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ protected EmotionLightSlot ï¿½ï¿½ï¿½
 
-    [Header("Line Animation Settings")]
-    [SerializeField] private float lineDrawDuration = 0.35f;   // ¼±ÀÌ ±×·ÁÁö´Â ½Ã°£
-    [SerializeField] private float lineHoldDuration = 0.4f;    // ´Ù ±×·ÁÁø ÈÄ À¯Áö ½Ã°£
-    [SerializeField] private float lineFadeDuration = 0.25f;   // ÁÙ¾îµé¸ç »ç¶óÁö´Â ½Ã°£
-    [SerializeField] private AnimationCurve lineWidthCurve = AnimationCurve.Linear(0, 1, 1, 1);
-    [SerializeField] private float lineMaxThickness = 4f;      // UI ÇÈ¼¿ ´ÜÀ§ µÎ²² (sizeDelta.y)
-
-    [Header("Light µîÀå ¾Ö´Ï¸ÞÀÌ¼Ç (¿É¼Ç)")]
+    [Header("Light ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ (ï¿½É¼ï¿½)")]
     [SerializeField] private bool playLightAppearAnimation = true;
     [SerializeField] private float lightAppearDuration = 0.25f;
     [SerializeField] private float lightAppearScale = 1.15f;
 
-    [Header("¿Ï·á °ÔÀÌÆ®")]
+    [Header("ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®")]
     [SerializeField] private StepCompletionGate completionGate;
 
 
-    // === º£ÀÌ½º Ãß»ó ÇÁ·ÎÆÛÆ¼ ¸ÅÇÎ ===
+    // === ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ ===
 
     protected override EmotionLightSlot[] Slots => slots;
-
-    protected override float LineDrawDuration => lineDrawDuration;
-    protected override float LineHoldDuration => lineHoldDuration;
-    protected override float LineFadeDuration => lineFadeDuration;
-    protected override AnimationCurve LineWidthCurve => lineWidthCurve;
-    protected override float LineMaxThickness => lineMaxThickness;
 
     protected override bool PlayLightAppearAnimation => playLightAppearAnimation;
     protected override float LightAppearDuration => lightAppearDuration;
