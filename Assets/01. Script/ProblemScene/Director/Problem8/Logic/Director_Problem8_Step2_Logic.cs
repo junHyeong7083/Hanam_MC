@@ -7,73 +7,41 @@ using UnityEngine.EventSystems;
 
 /// <summary>
 /// Director / Problem8 / Step2 로직 베이스
-/// - "5단계 스토리보드 채우기"
-/// - 5개의 장면 카드를 드래그 앤 드롭으로 올바른 슬롯에 배치
-/// - 카드는 Ghost(알파0.5, 원래자리) + Draggable(알파1, 드래그됨) 2개 레이어로 구성
+/// - "5단계 스토리보드 채우기" (캐러셀 + 재사용 드래그 프록시)
+/// - 좌/우 버튼으로 카드 탐색, 가운데 카드를 드래그하여 올바른 슬롯에 배치
 /// </summary>
 public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 {
     // =========================
-    // 장면 카드 데이터 구조
+    // 데이터 구조
     // =========================
 
-    /// <summary>
-    /// 장면 카드 아이템
-    /// UI 구조: CardRoot > Ghost (CanvasGroup+Image) + Draggable (CanvasGroup+Image)
-    /// </summary>
     [Serializable]
     public class SceneCardItem
     {
-        [Header("기본 정보")]
-        public string id;               // DB 저장용 ID (예: "step1", "step2")
-        public string text;             // 표시 텍스트 (예: "문제 정의", "대안 탐색")
+        public string id;               // DB 저장용 ID
+        public int textId;              // CSV textId (카드 텍스트)
+        public Sprite cardSprite;       // 카드 이미지
         public int correctSlotIndex;    // 올바른 슬롯 인덱스 (0~4)
-
-        [Header("UI 참조")]
-        public GameObject cardRoot;
-
-        [Tooltip("원래 자리의 반투명 카드 (고스트 레이어)")]
-        public CanvasGroup ghostCanvasGroup;
-
-        [Tooltip("드래그되는 실제 카드 (불투명 레이어)")]
-        public CanvasGroup draggableCanvasGroup;
     }
 
-    /// <summary>
-    /// 슬롯 아이템
-    /// UI 구조: SlotRoot > EmptyState + FilledState
-    /// </summary>
     [Serializable]
     public class SlotItem
     {
-        [Header("슬롯 인덱스 (0~4)")]
         public int slotIndex;
-
-        [Header("슬롯 루트")]
         public GameObject slotRoot;
-
-        [Header("빈 상태 UI")]
-        public GameObject emptyState;        // 빈 상태일 때 보이는 UI
-
-        [Header("채워진 상태 UI")]
-        public GameObject filledState;       // 카드가 채워졌을 때 보이는 UI
-        public Text filledText;              // 카드 텍스트 복사용
-        public Image filledImage;            // 카드 이미지 복사용
-
-        [Header("드롭 감지용 영역")]
-        public RectTransform dropArea;       // 드래그 종료 시 이 영역 위인지 체크
+        public GameObject emptyState;
+        public GameObject filledState;
+        public RectTransform dropArea;
     }
 
-    /// <summary>
-    /// 카드 배치 로그 DTO (DB 저장용)
-    /// </summary>
     [Serializable]
-    public class CardPlacementDto
+    private class CardPlacementDto
     {
-        public string cardId;            // 카드 ID
-        public int slotIndex;            // 배치된 슬롯 인덱스
-        public bool isCorrect;           // 정답 여부
-        public float placedAtSeconds;    // 스텝 시작 후 경과 시간(초)
+        public string cardId;
+        public int slotIndex;
+        public bool isCorrect;
+        public float placedAtSeconds;
     }
 
     // =========================
@@ -82,52 +50,52 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
     #region Abstract Properties
 
-    [Header("장면 카드들")]
-    protected abstract SceneCardItem[] SceneCards { get; }
+    // 캐러셀
+    protected abstract Button PrevButton { get; }
+    protected abstract Button NextButton { get; }
+    protected abstract Image CardDisplayImage { get; }
+    protected abstract CanvasGroup CardDisplayCanvasGroup { get; }
 
-    [Header("슬롯들")]
-    protected abstract SlotItem[] Slots { get; }
-
-    [Header("카드 선택 영역 루트 (모든 카드 배치 시 숨김)")]
-    protected abstract GameObject CardSelectionRoot { get; }
-
-    [Header("드래그용 Canvas (최상위 렌더링)")]
+    // 드래그 프록시
+    protected abstract RectTransform DragProxy { get; }
+    protected abstract Image DragProxyImage { get; }
     protected abstract Canvas DragCanvas { get; }
 
-    [Header("완료 게이트")]
-    protected abstract StepCompletionGate CompletionGateRef { get; }
+    // 카드/슬롯 데이터
+    protected abstract SceneCardItem[] SceneCards { get; }
+    protected abstract SlotItem[] Slots { get; }
 
-    [Header("Step2 완료 Fill 연출용 UI")]
-    protected abstract GameObject FillImageRoot { get; }
-    protected abstract Image FillImage { get; }
+    // 가이드 텍스트
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId_Main { get; }
+    protected abstract int GuideTextId_Fail { get; }
+    protected abstract int GuideTextId_Success { get; }
 
-    [Header("선택 안내 텍스트 이미지 (완료 시 숨김)")]
-    protected abstract GameObject SelectTextImage { get; }
+    // 완료
+    protected abstract GameObject NextStepButtonRoot { get; }
 
     #endregion
 
     #region Virtual Config
 
-    protected virtual float GhostAlpha => 0.5f;             // 드래그 중 Ghost 알파값
-    protected virtual float ReturnDuration => 0.3f;         // 원위치 복귀 시간
-    protected virtual float FillDuration => 1.0f;           // 모든 슬롯 채운 뒤 FillImage 0→1까지 걸리는 시간(초)
+    protected virtual float ReturnDuration => 0.3f;
+    protected virtual float GhostAlpha => 0.5f;
 
     #endregion
 
     // 내부 상태
+    private List<int> _unplacedIndices;
+    private int _currentCarouselIndex;
     private Dictionary<int, SceneCardItem> _slotToCard;
-    private HashSet<string> _placedCardIds;
     private List<CardPlacementDto> _placements;
     private float _stepStartTime;
-    private Coroutine _fillRoutine;
     private bool _isComplete;
 
     // 드래그 상태
-    private SceneCardItem _draggingCard;
-    private Vector3 _draggableOriginalPosition;
-    private Transform _draggableOriginalParent;
-    private int _draggableOriginalSiblingIndex;
     private bool _isDragging;
+    private SceneCardItem _draggingCard;
+    private Coroutine _snapBackRoutine;
+    private Coroutine _guideRevertRoutine;
 
     // =========================
     // ProblemStepBase 구현
@@ -135,504 +103,444 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
     protected override void OnStepEnter()
     {
+        var cards = SceneCards;
+        int count = cards?.Length ?? 0;
+
+        _unplacedIndices = new List<int>(count);
+        for (int i = 0; i < count; i++)
+            _unplacedIndices.Add(i);
+
+        _currentCarouselIndex = 0;
         _slotToCard = new Dictionary<int, SceneCardItem>();
-        _placedCardIds = new HashSet<string>();
         _placements = new List<CardPlacementDto>();
         _stepStartTime = Time.time;
         _isComplete = false;
         _isDragging = false;
         _draggingCard = null;
 
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.ResetGate(1);
+        // UI 초기화
+        InitSlots();
+        SetupCarouselButtons();
+        SetupDragHandler();
 
-        // Step2 전용 Fill UI 초기화
-        if (FillImageRoot != null)
-            FillImageRoot.SetActive(false);
-        if (FillImage != null)
-            FillImage.fillAmount = 0f;
+        if (DragProxy != null)
+            DragProxy.gameObject.SetActive(false);
 
-        SetupAllUI();
-        SetupDragHandlers();
+        if (NextStepButtonRoot != null)
+            NextStepButtonRoot.SetActive(false);
+
+        UpdateCarouselDisplay();
+
+        if (GuideText != null && GuideTextId_Main > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Main);
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
 
-        if (_fillRoutine != null)
+        if (_snapBackRoutine != null)
         {
-            StopCoroutine(_fillRoutine);
-            _fillRoutine = null;
+            StopCoroutine(_snapBackRoutine);
+            _snapBackRoutine = null;
         }
 
-        RemoveDragHandlers();
+        if (_guideRevertRoutine != null)
+        {
+            StopCoroutine(_guideRevertRoutine);
+            _guideRevertRoutine = null;
+        }
+
+        RemoveCarouselButtons();
+        RemoveDragHandler();
     }
 
     // =========================
     // 초기 설정
     // =========================
 
-    private void SetupAllUI()
+    private void InitSlots()
     {
-        // 슬롯 초기화 (모두 빈 상태)
         var slots = Slots;
-        if (slots != null)
+        if (slots == null) return;
+
+        foreach (var slot in slots)
         {
-            foreach (var slot in slots)
-            {
-                if (slot == null) continue;
-
-                if (slot.emptyState != null)
-                    slot.emptyState.SetActive(true);
-
-                if (slot.filledState != null)
-                    slot.filledState.SetActive(false);
-            }
-        }
-
-        // 카드 초기화
-        var cards = SceneCards;
-        if (cards != null)
-        {
-            foreach (var card in cards)
-            {
-                if (card == null) continue;
-
-                if (card.cardRoot != null)
-                    card.cardRoot.SetActive(true);
-
-                if (card.ghostCanvasGroup != null)
-                {
-                    card.ghostCanvasGroup.alpha = 1f;
-                    card.ghostCanvasGroup.blocksRaycasts = false;
-                }
-
-                if (card.draggableCanvasGroup != null)
-                {
-                    card.draggableCanvasGroup.alpha = 1f;
-                    card.draggableCanvasGroup.blocksRaycasts = true;
-                }
-            }
-        }
-
-        // 카드 선택 영역 초기화
-        if (CardSelectionRoot != null)
-            CardSelectionRoot.SetActive(true);
-    }
-
-    // =========================
-    // 드래그 핸들러 등록/해제
-    // =========================
-
-    private void SetupDragHandlers()
-    {
-        var cards = SceneCards;
-        if (cards == null) return;
-
-        foreach (var card in cards)
-        {
-            if (card?.draggableCanvasGroup == null) continue;
-
-            var draggableRect = card.draggableCanvasGroup.GetComponent<RectTransform>();
-            if (draggableRect == null) continue;
-
-            var eventTrigger = draggableRect.gameObject.GetComponent<EventTrigger>();
-            if (eventTrigger == null)
-                eventTrigger = draggableRect.gameObject.AddComponent<EventTrigger>();
-
-            eventTrigger.triggers ??= new List<EventTrigger.Entry>();
-            eventTrigger.triggers.Clear();
-
-            // BeginDrag
-            var beginEntry = new EventTrigger.Entry { eventID = EventTriggerType.BeginDrag };
-            beginEntry.callback.AddListener(data =>
-            {
-                var ped = (PointerEventData)data;
-                OnBeginDrag(card, ped);
-            });
-            eventTrigger.triggers.Add(beginEntry);
-
-            // Drag
-            var dragEntry = new EventTrigger.Entry { eventID = EventTriggerType.Drag };
-            dragEntry.callback.AddListener(data =>
-            {
-                var ped = (PointerEventData)data;
-                OnDrag(card, ped);
-            });
-            eventTrigger.triggers.Add(dragEntry);
-
-            // EndDrag
-            var endEntry = new EventTrigger.Entry { eventID = EventTriggerType.EndDrag };
-            endEntry.callback.AddListener(data =>
-            {
-                var ped = (PointerEventData)data;
-                OnEndDrag(card, ped);
-            });
-            eventTrigger.triggers.Add(endEntry);
+            if (slot == null) continue;
+            if (slot.emptyState != null) slot.emptyState.SetActive(true);
+            if (slot.filledState != null) slot.filledState.SetActive(false);
         }
     }
 
-    private void RemoveDragHandlers()
+    private void SetupCarouselButtons()
     {
+        var prev = PrevButton;
+        if (prev != null)
+        {
+            prev.onClick.RemoveAllListeners();
+            prev.onClick.AddListener(OnPrevClicked);
+        }
+
+        var next = NextButton;
+        if (next != null)
+        {
+            next.onClick.RemoveAllListeners();
+            next.onClick.AddListener(OnNextClicked);
+        }
+    }
+
+    private void RemoveCarouselButtons()
+    {
+        var prev = PrevButton;
+        if (prev != null) prev.onClick.RemoveAllListeners();
+
+        var next = NextButton;
+        if (next != null) next.onClick.RemoveAllListeners();
+    }
+
+    private void SetupDragHandler()
+    {
+        var displayImg = CardDisplayImage;
+        if (displayImg == null) return;
+
+        var go = displayImg.gameObject;
+        var trigger = go.GetComponent<EventTrigger>();
+        if (trigger == null)
+            trigger = go.AddComponent<EventTrigger>();
+
+        trigger.triggers ??= new List<EventTrigger.Entry>();
+        trigger.triggers.Clear();
+
+        // BeginDrag
+        var beginEntry = new EventTrigger.Entry { eventID = EventTriggerType.BeginDrag };
+        beginEntry.callback.AddListener(data => OnBeginDrag((PointerEventData)data));
+        trigger.triggers.Add(beginEntry);
+
+        // Drag
+        var dragEntry = new EventTrigger.Entry { eventID = EventTriggerType.Drag };
+        dragEntry.callback.AddListener(data => OnDrag((PointerEventData)data));
+        trigger.triggers.Add(dragEntry);
+
+        // EndDrag
+        var endEntry = new EventTrigger.Entry { eventID = EventTriggerType.EndDrag };
+        endEntry.callback.AddListener(data => OnEndDrag((PointerEventData)data));
+        trigger.triggers.Add(endEntry);
+    }
+
+    private void RemoveDragHandler()
+    {
+        var displayImg = CardDisplayImage;
+        if (displayImg == null) return;
+
+        var trigger = displayImg.gameObject.GetComponent<EventTrigger>();
+        if (trigger != null)
+            trigger.triggers.Clear();
+    }
+
+    // =========================
+    // 캐러셀 네비게이션
+    // =========================
+
+    private void UpdateCarouselDisplay()
+    {
+        if (_unplacedIndices == null || _unplacedIndices.Count == 0) return;
+
+        // 인덱스 보정
+        if (_currentCarouselIndex >= _unplacedIndices.Count)
+            _currentCarouselIndex = 0;
+        if (_currentCarouselIndex < 0)
+            _currentCarouselIndex = _unplacedIndices.Count - 1;
+
         var cards = SceneCards;
         if (cards == null) return;
 
-        foreach (var card in cards)
-        {
-            if (card?.draggableCanvasGroup == null) continue;
+        int cardIndex = _unplacedIndices[_currentCarouselIndex];
+        var card = cards[cardIndex];
 
-            var draggableRect = card.draggableCanvasGroup.GetComponent<RectTransform>();
-            if (draggableRect == null) continue;
+        if (CardDisplayImage != null && card.cardSprite != null)
+            CardDisplayImage.sprite = card.cardSprite;
 
-            var eventTrigger = draggableRect.gameObject.GetComponent<EventTrigger>();
-            if (eventTrigger != null)
-                eventTrigger.triggers.Clear();
-        }
+        if (CardDisplayCanvasGroup != null)
+            CardDisplayCanvasGroup.alpha = 1f;
+
+        // 버튼 상태
+        bool hasMultiple = _unplacedIndices.Count > 1;
+        if (PrevButton != null) PrevButton.gameObject.SetActive(hasMultiple);
+        if (NextButton != null) NextButton.gameObject.SetActive(hasMultiple);
+    }
+
+    private void OnPrevClicked()
+    {
+        if (_isDragging || _isComplete) return;
+
+        _currentCarouselIndex--;
+        if (_currentCarouselIndex < 0)
+            _currentCarouselIndex = _unplacedIndices.Count - 1;
+
+        UpdateCarouselDisplay();
+    }
+
+    private void OnNextClicked()
+    {
+        if (_isDragging || _isComplete) return;
+
+        _currentCarouselIndex++;
+        if (_currentCarouselIndex >= _unplacedIndices.Count)
+            _currentCarouselIndex = 0;
+
+        UpdateCarouselDisplay();
     }
 
     // =========================
-    // 드래그 앤 드롭 핸들러
+    // 드래그 핸들러
     // =========================
 
-    private void OnBeginDrag(SceneCardItem card, PointerEventData eventData)
+    private void OnBeginDrag(PointerEventData eventData)
     {
-        if (_isComplete) return;
-        if (card == null) return;
-        if (_placedCardIds.Contains(card.id)) return;
+        if (_isComplete || _isDragging) return;
+        if (_unplacedIndices == null || _unplacedIndices.Count == 0) return;
 
-        var draggableRect = card.draggableCanvasGroup?.GetComponent<RectTransform>();
-        if (draggableRect == null) return;
+        var cards = SceneCards;
+        if (cards == null) return;
 
+        int cardIndex = _unplacedIndices[_currentCarouselIndex];
+        _draggingCard = cards[cardIndex];
         _isDragging = true;
-        _draggingCard = card;
 
-        _draggableOriginalPosition = draggableRect.position;
-        _draggableOriginalParent = draggableRect.parent;
-        _draggableOriginalSiblingIndex = draggableRect.GetSiblingIndex();
+        // 고스트 표시 (알파 0.5)
+        if (CardDisplayCanvasGroup != null)
+            CardDisplayCanvasGroup.alpha = GhostAlpha;
 
-        var dragCanvas = DragCanvas;
-        if (dragCanvas != null)
+        // 프록시 활성화
+        var proxy = DragProxy;
+        if (proxy != null)
         {
-            draggableRect.SetParent(dragCanvas.transform, true);
-            draggableRect.SetAsLastSibling();
+            proxy.gameObject.SetActive(true);
+
+            if (DragProxyImage != null && _draggingCard.cardSprite != null)
+                DragProxyImage.sprite = _draggingCard.cardSprite;
+
+            var dragCanvas = DragCanvas;
+            if (dragCanvas != null)
+            {
+                proxy.SetParent(dragCanvas.transform, true);
+                proxy.SetAsLastSibling();
+            }
+
+            // 초기 위치: CardDisplay 위치
+            if (CardDisplayImage != null)
+                proxy.position = CardDisplayImage.rectTransform.position;
         }
-
-        if (card.ghostCanvasGroup != null)
-            card.ghostCanvasGroup.alpha = GhostAlpha;
-
-        OnDragStartedVisual(card);
     }
 
-    private void OnDrag(SceneCardItem card, PointerEventData eventData)
+    private void OnDrag(PointerEventData eventData)
     {
         if (!_isDragging) return;
-        if (card != _draggingCard) return;
-        if (card.draggableCanvasGroup == null) return;
 
-        var draggableRect = card.draggableCanvasGroup.GetComponent<RectTransform>();
-        if (draggableRect == null) return;
+        var proxy = DragProxy;
+        if (proxy == null) return;
 
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
-            draggableRect,
+            proxy,
             eventData.position,
             eventData.pressEventCamera,
             out var worldPos
         );
 
-        draggableRect.position = worldPos;
-
-        HighlightSlotUnderPointer(eventData);
+        proxy.position = worldPos;
     }
 
-    private void OnEndDrag(SceneCardItem card, PointerEventData eventData)
+    private void OnEndDrag(PointerEventData eventData)
     {
         if (!_isDragging) return;
-        if (card != _draggingCard) return;
 
         _isDragging = false;
 
-        ResetAllSlotHighlights();
-
         var targetSlot = FindSlotUnderPointer(eventData);
-        if (targetSlot != null)
+
+        if (targetSlot != null && _draggingCard != null)
         {
-            TryPlaceCardInSlot(card, targetSlot);
+            if (_draggingCard.correctSlotIndex == targetSlot.slotIndex)
+            {
+                PlaceCard(_draggingCard, targetSlot);
+            }
+            else
+            {
+                OnDropFailed();
+            }
         }
         else
         {
-            ReturnCardToOriginal(card);
+            OnDropFailed();
         }
 
         _draggingCard = null;
     }
 
     // =========================
-    // 슬롯 하이라이트
+    // 슬롯 검출
     // =========================
-
-    private void HighlightSlotUnderPointer(PointerEventData eventData)
-    {
-        var slots = Slots;
-        if (slots == null) return;
-
-        foreach (var slot in slots)
-        {
-            if (slot?.dropArea == null) continue;
-
-            if (RectTransformUtility.RectangleContainsScreenPoint(
-                slot.dropArea,
-                eventData.position,
-                eventData.pressEventCamera))
-            {
-                OnSlotHighlight(slot, true);
-            }
-            else
-            {
-                OnSlotHighlight(slot, false);
-            }
-        }
-    }
-
-    private void ResetAllSlotHighlights()
-    {
-        var slots = Slots;
-        if (slots == null) return;
-
-        foreach (var slot in slots)
-        {
-            if (slot == null) continue;
-            OnSlotHighlight(slot, false);
-        }
-    }
 
     private SlotItem FindSlotUnderPointer(PointerEventData eventData)
     {
         var slots = Slots;
         if (slots == null) return null;
 
-        SlotItem closestSlot = null;
-        float closestDistance = float.MaxValue;
+        SlotItem closest = null;
+        float closestDist = float.MaxValue;
 
         foreach (var slot in slots)
         {
             if (slot == null) continue;
-
-            // 이미 채워진 슬롯은 건너뛰기
             if (_slotToCard.ContainsKey(slot.slotIndex)) continue;
 
-            // dropArea가 없거나 비활성화면 slotRoot 사용
-            RectTransform checkArea = slot.dropArea;
-            if (checkArea == null || !checkArea.gameObject.activeInHierarchy)
-            {
-                checkArea = slot.slotRoot?.GetComponent<RectTransform>();
-            }
-            if (checkArea == null) continue;
+            RectTransform area = slot.dropArea;
+            if (area == null || !area.gameObject.activeInHierarchy)
+                area = slot.slotRoot?.GetComponent<RectTransform>();
+            if (area == null) continue;
 
             if (RectTransformUtility.RectangleContainsScreenPoint(
-                checkArea,
-                eventData.position,
-                eventData.pressEventCamera))
+                area, eventData.position, eventData.pressEventCamera))
             {
-                // 슬롯 중심을 스크린 좌표로 변환 후 거리 계산
-                Vector2 slotScreenCenter = RectTransformUtility.WorldToScreenPoint(
-                    eventData.pressEventCamera,
-                    checkArea.position);
-                float distance = Vector2.Distance(eventData.position, slotScreenCenter);
+                Vector2 screenCenter = RectTransformUtility.WorldToScreenPoint(
+                    eventData.pressEventCamera, area.position);
+                float dist = Vector2.Distance(eventData.position, screenCenter);
 
-                if (distance < closestDistance)
+                if (dist < closestDist)
                 {
-                    closestDistance = distance;
-                    closestSlot = slot;
+                    closestDist = dist;
+                    closest = slot;
                 }
             }
         }
 
-        return closestSlot;
+        return closest;
     }
 
     // =========================
-    // 카드 배치 / 되돌리기
+    // 카드 배치
     // =========================
 
-    private void TryPlaceCardInSlot(SceneCardItem card, SlotItem slot)
+    private void PlaceCard(SceneCardItem card, SlotItem slot)
     {
-        if (card == null || slot == null) return;
-        if (_placedCardIds.Contains(card.id)) return;
-
-        // 정답 슬롯이 아니면 드롭 거부 → 원위치 복귀
-        if (card.correctSlotIndex != slot.slotIndex)
-        {
-            OnDropFailedVisual(card);
-            ReturnCardToOriginal(card);
-            return;
-        }
-
-        var newPlacement = new CardPlacementDto
+        // DB 기록
+        _placements.Add(new CardPlacementDto
         {
             cardId = card.id,
             slotIndex = slot.slotIndex,
             isCorrect = true,
             placedAtSeconds = Time.time - _stepStartTime
-        };
-        _placements.Add(newPlacement);
+        });
 
         _slotToCard[slot.slotIndex] = card;
-        _placedCardIds.Add(card.id);
 
-        UpdateSlotUI(slot, card);
-
-        HideCard(card);
-
-        OnCardPlacedVisual(card, slot.slotIndex);
-
-        CheckAllPlaced();
-    }
-
-    private void UpdateSlotUI(SlotItem slot, SceneCardItem card)
-    {
+        // 슬롯 UI 업데이트
         if (slot.emptyState != null) slot.emptyState.SetActive(false);
         if (slot.filledState != null) slot.filledState.SetActive(true);
-    }
 
-    private void HideCard(SceneCardItem card)
-    {
-        // 카드 전체 비활성화
-        if (card.cardRoot != null)
-            card.cardRoot.SetActive(false);
+        // 프록시 숨기기
+        if (DragProxy != null)
+            DragProxy.gameObject.SetActive(false);
 
-        // draggable을 원래 부모로 되돌림 (나중에 다시 사용할 경우 대비)
-        if (card.draggableCanvasGroup != null)
+        // unplaced 리스트에서 제거
+        int cardArrayIndex = Array.IndexOf(SceneCards, card);
+        _unplacedIndices.Remove(cardArrayIndex);
+
+        // 캐러셀 인덱스 보정
+        if (_unplacedIndices.Count > 0)
         {
-            var draggableRect = card.draggableCanvasGroup.GetComponent<RectTransform>();
-            if (draggableRect != null)
-            {
-                draggableRect.SetParent(_draggableOriginalParent, true);
-            }
+            if (_currentCarouselIndex >= _unplacedIndices.Count)
+                _currentCarouselIndex = 0;
+
+            UpdateCarouselDisplay();
+        }
+
+        // 모든 카드 배치 완료?
+        if (_unplacedIndices.Count == 0)
+        {
+            OnAllPlaced();
         }
     }
 
-    private void ReturnCardToOriginal(SceneCardItem card)
+    private void OnDropFailed()
     {
-        var draggableRect = card?.draggableCanvasGroup?.GetComponent<RectTransform>();
-        if (draggableRect == null) return;
+        // snap-back 애니메이션
+        if (_snapBackRoutine != null)
+            StopCoroutine(_snapBackRoutine);
+        _snapBackRoutine = StartCoroutine(SnapBackProxy());
 
-        if (card.ghostCanvasGroup != null)
-            card.ghostCanvasGroup.alpha = 0f;
-
-        draggableRect.SetParent(_draggableOriginalParent, true);
-        draggableRect.SetSiblingIndex(_draggableOriginalSiblingIndex);
-
-        StartCoroutine(AnimateReturn(draggableRect, _draggableOriginalPosition));
+        // 가이드 텍스트: 실패 → 2초 후 원래 텍스트 복귀
+        if (GuideText != null && GuideTextId_Fail > 0)
+        {
+            if (_guideRevertRoutine != null)
+                StopCoroutine(_guideRevertRoutine);
+            _guideRevertRoutine = StartCoroutine(ShowFailGuideAndRevert());
+        }
     }
 
-    private IEnumerator AnimateReturn(RectTransform rect, Vector3 targetPos)
+    private IEnumerator ShowFailGuideAndRevert()
     {
-        Vector3 startPos = rect.position;
+        GuideText.text = ProblemRuntime.L(GuideTextId_Fail);
+        yield return new WaitForSeconds(2f);
+        if (GuideText != null && GuideTextId_Main > 0 && !_isComplete)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Main);
+        _guideRevertRoutine = null;
+    }
+
+    private IEnumerator SnapBackProxy()
+    {
+        var proxy = DragProxy;
+        if (proxy == null) yield break;
+
+        Vector3 targetPos = CardDisplayImage != null
+            ? CardDisplayImage.rectTransform.position
+            : proxy.position;
+
+        Vector3 startPos = proxy.position;
         float elapsed = 0f;
 
         while (elapsed < ReturnDuration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / ReturnDuration;
-            t = 1f - Mathf.Pow(1f - t, 3f);
+            t = 1f - Mathf.Pow(1f - t, 3f); // ease-out cubic
 
-            rect.position = Vector3.Lerp(startPos, targetPos, t);
+            proxy.position = Vector3.Lerp(startPos, targetPos, t);
             yield return null;
         }
 
-        rect.position = targetPos;
+        proxy.position = targetPos;
+        proxy.gameObject.SetActive(false);
+
+        // 고스트 복원
+        if (CardDisplayCanvasGroup != null)
+            CardDisplayCanvasGroup.alpha = 1f;
+
+        _snapBackRoutine = null;
     }
 
     // =========================
-    // 완료 체크 + Fill 애니메이션
+    // 완료
     // =========================
 
-    private void CheckAllPlaced()
+    private void OnAllPlaced()
     {
-        var cards = SceneCards;
-        if (cards == null) return;
+        _isComplete = true;
 
-        if (_placedCardIds.Count >= cards.Length)
-        {
-            _isComplete = true;
+        // 캐러셀 숨기기
+        if (CardDisplayImage != null)
+            CardDisplayImage.gameObject.SetActive(false);
+        if (PrevButton != null) PrevButton.gameObject.SetActive(false);
+        if (NextButton != null) NextButton.gameObject.SetActive(false);
 
-            if (CardSelectionRoot != null)
-                CardSelectionRoot.SetActive(false);
+        // 가이드 텍스트
+        if (GuideText != null && GuideTextId_Success > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Success);
 
-            if (SelectTextImage != null)
-                SelectTextImage.SetActive(false);
+        // 다음 스텝 버튼
+        if (NextStepButtonRoot != null)
+            NextStepButtonRoot.SetActive(true);
 
-            OnAllCardsPlacedVisual();
-
-            // Fill 애니메이션 후 완료 처리
-            if (_fillRoutine != null)
-                StopCoroutine(_fillRoutine);
-            _fillRoutine = StartCoroutine(FillAndComplete());
-        }
-    }
-
-    private IEnumerator FillAndComplete()
-    {
-        var root = FillImageRoot;
-        var img = FillImage;
-        var gate = CompletionGateRef;
-
-        // 1) Fill UI 켜기
-        if (root != null)
-            root.SetActive(true);
-
-        // 2) FillAmount 0 → 1 애니메이션
-        if (img != null)
-        {
-            img.fillAmount = 0f;
-
-            float elapsed = 0f;
-            while (elapsed < FillDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / FillDuration);
-                img.fillAmount = t;
-                yield return null;
-            }
-
-            img.fillAmount = 1f;
-        }
-
-        // 3) 게이트 완료 처리
-        if (gate != null)
-            gate.MarkOneDone();
-
-        _fillRoutine = null;
-    }
-
-    // =========================
-    // 시각 효과 (파생 클래스에서 override 가능)
-    // =========================
-
-    protected virtual void OnDragStartedVisual(SceneCardItem card)
-    {
-        // 드래그 시작 시 효과 (파생 클래스에서 override)
-    }
-
-    protected virtual void OnSlotHighlight(SlotItem slot, bool isHighlighted)
-    {
-        // 슬롯 하이라이트 효과 (파생 클래스에서 override)
-    }
-
-    protected virtual void OnCardPlacedVisual(SceneCardItem card, int slotIndex)
-    {
-        // 카드 배치 성공 시 효과 (파생 클래스에서 override)
-    }
-
-    protected virtual void OnDropFailedVisual(SceneCardItem card)
-    {
-        // 드롭 실패 시 효과 (파생 클래스에서 override)
-    }
-
-    protected virtual void OnAllCardsPlacedVisual()
-    {
-        // 모든 카드 배치 완료 시 효과 (파생 클래스에서 override)
+        SaveAttempt(_placements);
     }
 }

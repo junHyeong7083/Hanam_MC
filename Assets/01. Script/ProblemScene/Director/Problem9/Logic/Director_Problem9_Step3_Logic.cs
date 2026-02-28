@@ -1,299 +1,325 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem9 / Step3 로직 베이스
-/// - 나-전달법 3단계 음성 녹음 연습
-/// - 3개 서브스텝: situation(상황) → feeling(감정) → request(바람)
-/// - 마이크는 별도 프리팹에서 처리, 녹음 완료 시 OnRecordingComplete() 호출
-/// - 모두 완료 시 complete 화면 표시
+/// - "3라운드 대사 조각 말하기" 한 화면에서 진행
+/// - 흐름: 키워드 카드(흰색) + 말하기 → STT 인식 → 전체 문장(검정) → 다음 라운드 (총 3회)
+/// - 3회 완료 후 CompleteRoot 표시 + NextStepBtn 활성화
 /// </summary>
 public abstract class Director_Problem9_Step3_Logic : ProblemStepBase
 {
-    #region Data Classes
+    // =========================
+    // 데이터 구조
+    // =========================
 
-    public enum PracticePhase
+    [Serializable]
+    public class RoundData
     {
-        Situation,  // 상황 설명
-        Feeling,    // 감정 전달
-        Request,    // 바람 표현
-        Complete    // 완료 화면
+        public int guideTextId;        // HanamBox 가이드
+        public int keywordTextId;      // 키워드 textId ("상황"/"감정"/"바람") - 흰색
+        public int fullTextId;         // 전체 문장 textId - 검정
+        public Sprite questionSprite;  // puzzleImg 질문 스프라이트
+        public Sprite answerSprite;    // puzzleImg 답변 스프라이트
     }
 
     [Serializable]
-    public class PracticeStepData
+    private class SpeakAttemptDto
     {
-        public string id;               // situation, feeling, request
-        public string title;            // 상황, 감정, 바람
-        [TextArea(2, 4)]
-        public string question;         // 조감독 질문
-        [TextArea(2, 4)]
-        public string placeholder;      // 예시 텍스트
+        public int roundIndex;
+        public string phase;
+        public string recordedText;
     }
 
-    // DB 저장용 DTO
-    [Serializable]
-    public class PracticeAttemptDto
-    {
-        public string stepKey;
-        public PracticeInputDto situationInput;
-        public PracticeInputDto feelingInput;
-        public PracticeInputDto requestInput;
-        public string combinedDialogue;     // 최종 합쳐진 대사
-        public DateTime completedAt;
-    }
-
-    [Serializable]
-    public class PracticeInputDto
-    {
-        public string phase;                // situation, feeling, request
-        public string recordedText;         // STT 결과
-        public float recordingDuration;     // 녹음 시간(초)
-    }
-
-    #endregion
+    // =========================
+    // 파생 클래스에서 넘겨줄 UI 참조
+    // =========================
 
     #region Abstract Properties
 
-    [Header("===== 연습 단계 데이터 =====")]
-    protected abstract PracticeStepData[] PracticeSteps { get; }
+    protected abstract RoundData[] Rounds { get; }
 
-    [Header("===== 화면 루트 =====")]
-    /// <summary>녹음 연습 화면 (situation, feeling, request 공용)</summary>
-    protected abstract GameObject RecordingPracticeRoot { get; }
+    // 하남박스
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId_Fail { get; }
+    protected abstract int GuideTextId_Success { get; }
+    protected abstract GameObject NextStepButtonRoot { get; }
 
-    [Header("===== 녹음 화면 UI =====")]
-    /// <summary>조감독 질문 텍스트</summary>
-    protected abstract Text QuestionText { get; }
+    // 메인 영역
+    protected abstract Image PuzzleImage { get; }
+    protected abstract Text PuzzleText { get; }
 
-    /// <summary>단계 제목 (상황, 감정, 바람)</summary>
-    protected abstract Text StepIndicatorTitle { get; }
+    // 마이크
+    protected abstract Button MicButton { get; }
+    protected abstract MicRecordingIndicator MicIndicator { get; }
 
-    /// <summary>사용자 입력 표시 영역 (STT 결과 표시용)</summary>
-    protected abstract GameObject UserInputDisplayRoot { get; }
-    protected abstract Text UserInputDisplayText { get; }
-
-    [Header("===== 진행도 이미지 (3개) =====")]
-    /// <summary>진행 단계별 이미지 (index 0, 1, 2)</summary>
-    protected abstract Image[] ProgressImages { get; }
-
-    [Header("===== 완료 화면 UI (Gate의 completeRoot 내부) =====")]
-    /// <summary>최종 합쳐진 대사 표시 (Gate의 completeRoot 안에 있는 Text)</summary>
-    protected abstract Text CombinedDialogueText { get; }
-
-    [Header("===== 완료 게이트 =====")]
-    /// <summary>completeRoot에 완료 화면 연결, 버튼은 인스펙터에서 직접 NextStep 연결</summary>
-    protected abstract StepCompletionGate CompletionGateRef { get; }
+    // 루트
+    protected abstract GameObject MainRoot { get; }
+    protected abstract GameObject CompleteRoot { get; }
 
     #endregion
 
     #region Virtual Config
 
-    /// <summary>녹음 완료 후 다음 단계 전환 대기 시간</summary>
-    protected virtual float DelayAfterRecording => 1.0f;
+    protected virtual Color KeywordColor => Color.white;
+    protected virtual Color FullTextColor => new Color(0.196f, 0.196f, 0.196f);
+    protected virtual float TransitionDelay => 1.0f;
 
     #endregion
 
     // 내부 상태
-    private PracticePhase _currentPhase;
+    private int _currentRound;
+    private bool _speaking;
+    private Coroutine _transitionRoutine;
+    private Coroutine _guideRevertRoutine;
+    private List<SpeakAttemptDto> _attempts;
 
-    // 각 단계별 녹음 데이터
-    private PracticeInputDto _situationInput;
-    private PracticeInputDto _feelingInput;
-    private PracticeInputDto _requestInput;
-
-    // 현재 Phase 외부 접근용
-    public PracticePhase CurrentPhase => _currentPhase;
-
-    #region Step Lifecycle
+    // =========================
+    // ProblemStepBase 구현
+    // =========================
 
     protected override void OnStepEnter()
     {
-        _currentPhase = PracticePhase.Situation;
+        _currentRound = 0;
+        _speaking = false;
+        _attempts = new List<SpeakAttemptDto>();
 
-        // 녹음 데이터 초기화
-        _situationInput = new PracticeInputDto { phase = "situation" };
-        _feelingInput = new PracticeInputDto { phase = "feeling" };
-        _requestInput = new PracticeInputDto { phase = "request" };
-
-        // Gate 초기화
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.ResetGate(1);
-
-        // 초기 화면 설정
-        ShowPhase(PracticePhase.Situation);
+        RegisterListeners();
+        ShowRound(0);
     }
 
-    #endregion
-
-    #region UI Control
-
-    private void ShowPhase(PracticePhase phase)
+    protected override void OnStepExit()
     {
-        _currentPhase = phase;
+        base.OnStepExit();
 
-        bool isComplete = phase == PracticePhase.Complete;
-
-        if (!isComplete)
+        if (_transitionRoutine != null)
         {
-            if (RecordingPracticeRoot != null) RecordingPracticeRoot.SetActive(true);
-            ApplyPhaseToUI(phase);
-            if (UserInputDisplayRoot != null) UserInputDisplayRoot.SetActive(false);
+            StopCoroutine(_transitionRoutine);
+            _transitionRoutine = null;
+        }
+        if (_guideRevertRoutine != null)
+        {
+            StopCoroutine(_guideRevertRoutine);
+            _guideRevertRoutine = null;
+        }
+
+        RemoveListeners();
+    }
+
+    // =========================
+    // 리스너 등록/해제
+    // =========================
+
+    private void RegisterListeners()
+    {
+        var micBtn = MicButton;
+        if (micBtn != null)
+        {
+            micBtn.onClick.RemoveAllListeners();
+            micBtn.onClick.AddListener(OnMicClicked);
+        }
+
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnKeywordMatched;
+            mic.OnKeywordMatched += OnKeywordMatched;
+            mic.OnNoMatch -= OnNoMatch;
+            mic.OnNoMatch += OnNoMatch;
+        }
+    }
+
+    private void RemoveListeners()
+    {
+        var micBtn = MicButton;
+        if (micBtn != null)
+            micBtn.onClick.RemoveAllListeners();
+
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnKeywordMatched;
+            mic.OnNoMatch -= OnNoMatch;
+        }
+    }
+
+    // =========================
+    // 라운드 표시
+    // =========================
+
+    private void ShowRound(int round)
+    {
+        var rounds = Rounds;
+        if (rounds == null || round >= rounds.Length) return;
+
+        var data = rounds[round];
+        _speaking = false;
+
+        // 가이드 텍스트
+        if (GuideText != null && data.guideTextId > 0)
+            GuideText.text = ProblemRuntime.L(data.guideTextId);
+
+        // puzzleImg: 질문 스프라이트 + 키워드(흰색)
+        if (PuzzleImage != null && data.questionSprite != null)
+            PuzzleImage.sprite = data.questionSprite;
+
+        if (PuzzleText != null && data.keywordTextId > 0)
+        {
+            PuzzleText.text = ProblemRuntime.L(data.keywordTextId);
+            PuzzleText.color = KeywordColor;
+        }
+
+        // STT 키워드: 현재 라운드의 fullText 1개만 설정
+        var mic = MicIndicator;
+        if (mic != null && data.fullTextId > 0)
+            mic.SetKeywords(new[] { ProblemRuntime.L(data.fullTextId) });
+
+        // 마이크 버튼 활성화
+        if (MicButton != null)
+            MicButton.interactable = true;
+
+        // MainRoot 표시, CompleteRoot 숨김
+        if (MainRoot != null) MainRoot.SetActive(true);
+        if (CompleteRoot != null) CompleteRoot.SetActive(false);
+        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
+    }
+
+    // =========================
+    // 마이크 클릭
+    // =========================
+
+    private void OnMicClicked()
+    {
+        if (_speaking) return;
+
+        var mic = MicIndicator;
+        if (mic != null)
+            mic.ToggleRecording();
+    }
+
+    // =========================
+    // STT 콜백
+    // =========================
+
+    private void OnKeywordMatched(int index)
+    {
+        OnSpeakSuccess();
+    }
+
+    private void OnNoMatch(string result)
+    {
+        OnSpeakFail();
+    }
+
+    // =========================
+    // 성공 / 실패
+    // =========================
+
+    private void OnSpeakSuccess()
+    {
+        if (_speaking) return;
+        _speaking = true;
+
+        var rounds = Rounds;
+        if (rounds == null || _currentRound >= rounds.Length) return;
+
+        var data = rounds[_currentRound];
+
+        // 기록
+        _attempts.Add(new SpeakAttemptDto
+        {
+            roundIndex = _currentRound,
+            phase = _currentRound == 0 ? "situation" : _currentRound == 1 ? "feeling" : "request",
+            recordedText = data.fullTextId > 0 ? ProblemRuntime.L(data.fullTextId) : ""
+        });
+
+        // puzzleImg: 답변 스프라이트 + 전체 문장(검정)
+        if (PuzzleImage != null && data.answerSprite != null)
+            PuzzleImage.sprite = data.answerSprite;
+
+        if (PuzzleText != null && data.fullTextId > 0)
+        {
+            PuzzleText.text = ProblemRuntime.L(data.fullTextId);
+            PuzzleText.color = FullTextColor;
+        }
+
+        // 마이크 비활성화
+        if (MicButton != null)
+            MicButton.interactable = false;
+
+        // 1초 후 다음으로
+        if (_transitionRoutine != null)
+            StopCoroutine(_transitionRoutine);
+        _transitionRoutine = StartCoroutine(TransitionAfterDelay());
+    }
+
+    private void OnSpeakFail()
+    {
+        if (_speaking) return;
+
+        if (GuideText != null && GuideTextId_Fail > 0)
+        {
+            if (_guideRevertRoutine != null)
+                StopCoroutine(_guideRevertRoutine);
+            _guideRevertRoutine = StartCoroutine(ShowFailGuideAndRevert());
+        }
+    }
+
+    private IEnumerator ShowFailGuideAndRevert()
+    {
+        var rounds = Rounds;
+        int guideTextId = (rounds != null && _currentRound < rounds.Length)
+            ? rounds[_currentRound].guideTextId
+            : 0;
+
+        GuideText.text = ProblemRuntime.L(GuideTextId_Fail);
+        yield return new WaitForSeconds(2f);
+
+        if (GuideText != null && guideTextId > 0 && !_speaking)
+            GuideText.text = ProblemRuntime.L(guideTextId);
+
+        _guideRevertRoutine = null;
+    }
+
+    // =========================
+    // 라운드 전환 / 완료
+    // =========================
+
+    private IEnumerator TransitionAfterDelay()
+    {
+        yield return new WaitForSeconds(TransitionDelay);
+
+        if (_currentRound < Rounds.Length - 1)
+        {
+            _currentRound++;
+            ShowRound(_currentRound);
         }
         else
         {
-            // 완료 화면으로 전환
-            if (RecordingPracticeRoot != null) RecordingPracticeRoot.SetActive(false);
-            ApplyCompleteUI();
-
-            // Gate 완료 → completeRoot 자동 표시
-            var gate = CompletionGateRef;
-            if (gate != null)
-                gate.MarkOneDone();
+            ShowComplete();
         }
 
-        UpdateProgressImages();
+        _transitionRoutine = null;
     }
 
-    private void ApplyPhaseToUI(PracticePhase phase)
+    private void ShowComplete()
     {
-        int stepIndex = (int)phase;
-        var steps = PracticeSteps;
-        if (steps == null || stepIndex >= steps.Length) return;
+        // MainRoot 숨기고 CompleteRoot 표시
+        if (MainRoot != null) MainRoot.SetActive(false);
+        if (CompleteRoot != null) CompleteRoot.SetActive(true);
 
-        var stepData = steps[stepIndex];
-        if (stepData == null) return;
+        // 가이드 텍스트: 성공
+        if (GuideText != null && GuideTextId_Success > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Success);
 
-        // 질문 텍스트
-        if (QuestionText != null)
-            QuestionText.text = stepData.question;
-
-        // 단계 제목
-        if (StepIndicatorTitle != null)
-            StepIndicatorTitle.text = stepData.title;
-    }
-
-    private void ApplyCompleteUI()
-    {
-        // 합쳐진 대사 생성
-        string combined = $"{_situationInput?.recordedText} {_feelingInput?.recordedText} {_requestInput?.recordedText}";
-
-        if (CombinedDialogueText != null)
-            CombinedDialogueText.text = combined;
+        // NextStepBtn 활성화
+        if (NextStepButtonRoot != null)
+            NextStepButtonRoot.SetActive(true);
 
         // DB 저장
-        SaveAttempt(new PracticeAttemptDto
-        {
-            stepKey = context != null ? context.CurrentStepKey : null,
-            situationInput = _situationInput,
-            feelingInput = _feelingInput,
-            requestInput = _requestInput,
-            combinedDialogue = combined,
-            completedAt = DateTime.UtcNow
-        });
+        SaveAttempt(_attempts);
     }
-
-    private void UpdateProgressImages()
-    {
-        var images = ProgressImages;
-        if (images == null || images.Length < 3) return;
-
-        int currentIndex = (int)_currentPhase;
-        if (_currentPhase == PracticePhase.Complete) currentIndex = 2; // 마지막 이미지 유지
-
-        // 현재 단계 이미지만 표시
-        for (int i = 0; i < images.Length; i++)
-        {
-            if (images[i] != null)
-                images[i].gameObject.SetActive(i == currentIndex);
-        }
-    }
-
-    #endregion
-
-    #region Public API (마이크 프리팹에서 호출)
-
-    /// <summary>
-    /// 녹음 완료 시 외부(마이크 프리팹)에서 호출
-    /// </summary>
-    /// <param name="recordedText">STT 결과 텍스트</param>
-    /// <param name="duration">녹음 시간(초)</param>
-    public void OnRecordingComplete(string recordedText, float duration)
-    {
-        if (_currentPhase == PracticePhase.Complete) return;
-
-        // 녹음 데이터 저장
-        SaveRecordingData(duration, recordedText);
-
-        // 입력 표시
-        if (UserInputDisplayRoot != null)
-            UserInputDisplayRoot.SetActive(true);
-
-        if (UserInputDisplayText != null)
-            UserInputDisplayText.text = recordedText;
-
-        // 다음 단계로 전환
-        StartCoroutine(TransitionToNextPhase());
-    }
-
-    /// <summary>
-    /// 현재 단계의 placeholder 텍스트 반환
-    /// </summary>
-    public string GetCurrentPlaceholder()
-    {
-        var steps = PracticeSteps;
-        int index = (int)_currentPhase;
-        if (steps == null || index >= steps.Length) return "";
-        return steps[index]?.placeholder ?? "";
-    }
-
-    #endregion
-
-    #region Internal
-
-    private void SaveRecordingData(float duration, string text)
-    {
-        var input = new PracticeInputDto
-        {
-            phase = _currentPhase.ToString().ToLower(),
-            recordedText = text,
-            recordingDuration = duration
-        };
-
-        switch (_currentPhase)
-        {
-            case PracticePhase.Situation:
-                _situationInput = input;
-                break;
-            case PracticePhase.Feeling:
-                _feelingInput = input;
-                break;
-            case PracticePhase.Request:
-                _requestInput = input;
-                break;
-        }
-    }
-
-    private IEnumerator TransitionToNextPhase()
-    {
-        yield return new WaitForSeconds(DelayAfterRecording);
-
-        switch (_currentPhase)
-        {
-            case PracticePhase.Situation:
-                ShowPhase(PracticePhase.Feeling);
-                break;
-            case PracticePhase.Feeling:
-                ShowPhase(PracticePhase.Request);
-                break;
-            case PracticePhase.Request:
-                ShowPhase(PracticePhase.Complete);
-                break;
-        }
-    }
-
-    #endregion
 }

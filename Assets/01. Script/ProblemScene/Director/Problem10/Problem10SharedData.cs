@@ -2,53 +2,23 @@ using UnityEngine;
 
 /// <summary>
 /// Problem 10 스텝 간 공유 데이터
-/// - Step2에서 선택한 장르를 Step3에서 사용
-/// - ScriptableObject로 인스펙터에서 같은 에셋 연결
+/// - Step2에서 선택한 장르 인덱스 + 스프라이트를 Step3에서 사용
 /// </summary>
 [CreateAssetMenu(menuName = "MindMovie/Problem10 Shared Data", fileName = "Problem10SharedData")]
 public class Problem10SharedData : ScriptableObject
 {
-    [Header("===== Step2에서 선택한 장르 =====")]
-    public int selectedGenreIndex;
-    public string selectedGenreId;
-    public string selectedGenreName;
-    public string selectedGenreEmoji;
-    public string selectedGenreDescription;
+    [HideInInspector] public int selectedGenreIndex = -1;
+    [HideInInspector] public Sprite selectedSprite;
 
-    [Header("===== Step3에서 녹음한 내용 =====")]
-    public string movieTitle;
-    public string commitment;
+    public void SetSelection(int index, Sprite sprite)
+    {
+        selectedGenreIndex = index;
+        selectedSprite = sprite;
+    }
 
-    /// <summary>데이터 초기화</summary>
     public void Clear()
     {
         selectedGenreIndex = -1;
-        selectedGenreId = "";
-        selectedGenreName = "";
-        selectedGenreEmoji = "";
-        selectedGenreDescription = "";
-        movieTitle = "";
-        commitment = "";
-    }
-
-    /// <summary>Step2에서 장르 선택 시 호출</summary>
-    public void SetSelectedGenre(int index, string id, string name, string emoji, string description)
-    {
-        selectedGenreIndex = index;
-        selectedGenreId = id;
-        selectedGenreName = name;
-        selectedGenreEmoji = emoji;
-        selectedGenreDescription = description;
-    }
-
-    /// <summary>Step3에서 녹음 결과 저장</summary>
-    public void SetMovieTitle(string title)
-    {
-        movieTitle = title;
-    }
-
-    public void SetCommitment(string text)
-    {
-        commitment = text;
+        selectedSprite = null;
     }
 }

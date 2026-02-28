@@ -8,26 +8,30 @@ using UnityEngine.UI;
 /// </summary>
 public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
 {
-    [Header("===== Intro 화면 =====")]
-    [SerializeField] private GameObject introRoot;
-    [SerializeField] private Button introNextButton;
+    [Header("===== HanamBox 가이드 텍스트 =====")]
+    [SerializeField] private Text guideText;
+    [SerializeField] private int guideTextId_SelectMask;
+    [SerializeField] private int guideTextId_SelectFeeling;
+    [SerializeField] private int guideTextId_Complete;
 
     [Header("===== 가면 선택 화면 =====")]
     [SerializeField] private GameObject selectMaskRoot;
-    [Tooltip("4개 가면: id/label/button 설정")]
+    [Tooltip("4개 가면: id/labelTextId/button 설정")]
     [SerializeField] private ChoiceItem[] maskChoices;
 
     [Header("===== 진짜 마음 선택 화면 =====")]
     [SerializeField] private GameObject selectFeelingRoot;
-    [Tooltip("4개 감정: id/label/button 설정")]
+    [Tooltip("4개 감정: id/labelTextId/button 설정")]
     [SerializeField] private ChoiceItem[] feelingChoices;
 
-    [Header("===== 완료 게이트 (CompleteRoot에 Reveal 화면 연결) =====")]
-    [SerializeField] private StepCompletionGate completionGate;
+    [Header("===== 완료 후 NextStep 버튼 =====")]
+    [SerializeField] private GameObject nextStepButtonRoot;
 
     // ----- 부모 추상 프로퍼티 구현 -----
-    protected override GameObject IntroRoot => introRoot;
-    protected override Button IntroNextButton => introNextButton;
+    protected override Text GuideText => guideText;
+    protected override int GuideTextId_SelectMask => guideTextId_SelectMask;
+    protected override int GuideTextId_SelectFeeling => guideTextId_SelectFeeling;
+    protected override int GuideTextId_Complete => guideTextId_Complete;
 
     protected override GameObject SelectMaskRoot => selectMaskRoot;
     protected override ChoiceItem[] MaskChoices => maskChoices;
@@ -35,5 +39,5 @@ public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
     protected override GameObject SelectFeelingRoot => selectFeelingRoot;
     protected override ChoiceItem[] FeelingChoices => feelingChoices;
 
-    protected override StepCompletionGate CompletionGateRef => completionGate;
+    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 }

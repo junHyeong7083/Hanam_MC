@@ -5,303 +5,327 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem10 / Step3 로직 베이스
-/// - 영화 제목 녹음 → 다짐 선언 녹음 → 포스터 완성
-/// - 2개 서브스텝: title(제목) → commitment(다짐)
-/// - 마이크 프리팹에서 녹음 완료 시 OnRecordingComplete() 호출
-/// - 모두 완료 시 complete 화면 표시
+/// - 2라운드 말하기 (영화 제목 → 다짐 선언)
+/// - 각 라운드: 가이드 → 말하기 → STT 인식 → 포스터에 텍스트 작성
+/// - 라운드 사이 전환 대사 + NextBtn으로 진행
+/// - 2라운드 완료 후 성공 가이드 + NextStepBtn
 /// </summary>
 public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 {
-    #region Data Classes
+    // =========================
+    // 데이터 구조
+    // =========================
 
-    public enum RecordingPhase
+    [Serializable]
+    public class RoundData
     {
-        Title,      // 영화 제목 녹음
-        Commitment, // 다짐 선언 녹음
-        Complete    // 완료 화면
+        public int guideTextId;              // 말하기 안내 (textId, 0이면 hardcodedGuide 사용)
+        [TextArea(1, 2)]
+        public string hardcodedGuide;        // guideTextId == 0일 때 사용
+        public string sttKeyword;            // STT 키워드 = 포스터에 표시할 텍스트
+        public int transitionGuideTextId;    // 성공 후 전환 대사 textId (0이면 바로 Complete)
     }
 
     [Serializable]
-    public class PhaseData
+    private class PosterCreationDto
     {
-        public string id;               // title, commitment
-        [TextArea(2, 4)]
-        public string instruction;      // 조감독 안내 멘트
-    }
-
-    // DB 저장용 DTO
-    [Serializable]
-    public class PosterCreationDto
-    {
-        public string stepKey;
-        public string selectedGenreId;
-        public string selectedGenreName;
-        public string movieTitle;
-        public float titleRecordingDuration;
+        public string title;
         public string commitment;
-        public float commitmentRecordingDuration;
-        public DateTime completedAt;
     }
 
-    #endregion
+    // =========================
+    // 파생 클래스에서 넘겨줄 UI 참조
+    // =========================
 
     #region Abstract Properties
 
-    [Header("===== 단계 데이터 =====")]
-    protected abstract PhaseData[] PhaseDataList { get; }
+    protected abstract RoundData[] Rounds { get; }
 
-    [Header("===== 화면 루트 =====")]
-    protected abstract GameObject RecordingRoot { get; }
+    // 하남박스
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId_Success { get; }
+    protected abstract string FailGuideText { get; }
+    protected abstract Button NextDialogueBtn { get; }
+    protected abstract GameObject NextStepButtonRoot { get; }
 
-    [Header("===== 녹음 화면 - 장르별 포스터 UI =====")]
-    protected abstract GameObject[] GenreImages { get; }
-    protected abstract Text[] PosterTitleTexts { get; }
-    protected abstract Text[] PosterCommitmentTexts { get; }
+    // 마이크
+    protected abstract GameObject MicRoot { get; }
+    protected abstract Button MicButton { get; }
+    protected abstract MicRecordingIndicator MicIndicator { get; }
 
-    [Header("===== 녹음 화면 UI =====")]
-    protected abstract Text InstructionText { get; }
+    // 포스터
+    protected abstract Image GenreCardImage { get; }
+    protected abstract Text PosterTitleText { get; }
+    protected abstract Text PosterCommitmentText { get; }
 
-    [Header("===== 공유 데이터 =====")]
+    // 공유 데이터
     protected abstract Problem10SharedData SharedData { get; }
-
-    [Header("===== 완료 게이트 =====")]
-    protected abstract StepCompletionGate CompletionGateRef { get; }
 
     #endregion
 
     #region Virtual Config
 
-    protected virtual float DelayAfterRecording => 0.8f;
+    protected virtual float TransitionDelay => 1.0f;
 
     #endregion
 
     // 내부 상태
-    private RecordingPhase _currentPhase;
-    private int _selectedGenreIndex;
+    private int _currentRound;
+    private bool _speaking;
+    private Coroutine _guideRevertRoutine;
 
-    // 녹음 결과
-    private string _movieTitle = "";
-    private float _titleDuration;
-    private string _commitment = "";
-    private float _commitmentDuration;
-
-    #region Step Lifecycle
+    // =========================
+    // ProblemStepBase 구현
+    // =========================
 
     protected override void OnStepEnter()
     {
-        _currentPhase = RecordingPhase.Title;
-        _movieTitle = "";
-        _commitment = "";
+        _currentRound = 0;
+        _speaking = false;
 
-        // 공유 데이터에서 장르 정보 로드
-        LoadGenreFromSharedData();
+        // SharedData에서 포스터 스프라이트 로드
+        var shared = SharedData;
+        if (shared != null && shared.selectedSprite != null && GenreCardImage != null)
+            GenreCardImage.sprite = shared.selectedSprite;
 
-        // Gate 초기화
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.ResetGate(1);
+        // 포스터 텍스트 초기화
+        if (PosterTitleText != null) PosterTitleText.text = "";
+        if (PosterCommitmentText != null) PosterCommitmentText.text = "";
 
-        // 초기 화면 설정
-        ShowPhase(RecordingPhase.Title);
+        RegisterListeners();
+        ShowSpeakingPhase(0);
     }
 
-    #endregion
-
-    #region Genre Loading
-
-    private void LoadGenreFromSharedData()
+    protected override void OnStepExit()
     {
-        var data = SharedData;
+        base.OnStepExit();
 
-        // Step2에서 선택한 인덱스 저장 및 해당 이미지만 표시
-        _selectedGenreIndex = data != null ? data.selectedGenreIndex : 0;
-        UpdateGenreImage(_selectedGenreIndex);
-
-        // 모든 포스터 제목/다짐 초기화
-        ClearAllPosterTexts();
-    }
-
-    private void ClearAllPosterTexts()
-    {
-        var titles = PosterTitleTexts;
-        var commitments = PosterCommitmentTexts;
-
-        if (titles != null)
+        if (_guideRevertRoutine != null)
         {
-            foreach (var text in titles)
-            {
-                if (text != null) text.text = "";
-            }
+            StopCoroutine(_guideRevertRoutine);
+            _guideRevertRoutine = null;
         }
 
-        if (commitments != null)
-        {
-            foreach (var text in commitments)
-            {
-                if (text != null) text.text = "";
-            }
-        }
+        RemoveListeners();
     }
 
-    private void UpdateGenreImage(int selectedIndex)
-    {
-        var images = GenreImages;
-        if (images == null) return;
+    // =========================
+    // 리스너 등록/해제
+    // =========================
 
-        for (int i = 0; i < images.Length; i++)
+    private void RegisterListeners()
+    {
+        var micBtn = MicButton;
+        if (micBtn != null)
         {
-            if (images[i] != null)
-                images[i].SetActive(i == selectedIndex);
+            micBtn.onClick.RemoveAllListeners();
+            micBtn.onClick.AddListener(OnMicClicked);
+        }
+
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnKeywordMatched;
+            mic.OnKeywordMatched += OnKeywordMatched;
+            mic.OnNoMatch -= OnNoMatch;
+            mic.OnNoMatch += OnNoMatch;
+        }
+
+        var nextBtn = NextDialogueBtn;
+        if (nextBtn != null)
+        {
+            nextBtn.onClick.RemoveAllListeners();
+            nextBtn.onClick.AddListener(OnNextDialogueClicked);
         }
     }
 
-    #endregion
-
-    #region UI Control
-
-    private void ShowPhase(RecordingPhase phase)
+    private void RemoveListeners()
     {
-        _currentPhase = phase;
+        var micBtn = MicButton;
+        if (micBtn != null) micBtn.onClick.RemoveAllListeners();
 
-        bool isComplete = phase == RecordingPhase.Complete;
-
-        if (!isComplete)
+        var mic = MicIndicator;
+        if (mic != null)
         {
-            if (RecordingRoot != null) RecordingRoot.SetActive(true);
-            ApplyPhaseToUI(phase);
+            mic.OnKeywordMatched -= OnKeywordMatched;
+            mic.OnNoMatch -= OnNoMatch;
+        }
+
+        var nextBtn = NextDialogueBtn;
+        if (nextBtn != null) nextBtn.onClick.RemoveAllListeners();
+    }
+
+    // =========================
+    // 말하기 페이즈
+    // =========================
+
+    private void ShowSpeakingPhase(int round)
+    {
+        var rounds = Rounds;
+        if (rounds == null || round >= rounds.Length) return;
+
+        var data = rounds[round];
+        _speaking = false;
+
+        // 가이드 텍스트
+        if (GuideText != null)
+        {
+            if (data.guideTextId > 0)
+                GuideText.text = ProblemRuntime.L(data.guideTextId);
+            else if (!string.IsNullOrEmpty(data.hardcodedGuide))
+                GuideText.text = data.hardcodedGuide;
+        }
+
+        // STT 키워드 설정
+        var mic = MicIndicator;
+        if (mic != null && !string.IsNullOrEmpty(data.sttKeyword))
+            mic.SetKeywords(new[] { data.sttKeyword });
+
+        // UI: MicRoot 표시, 버튼들 숨김
+        if (MicRoot != null) MicRoot.SetActive(true);
+        if (MicButton != null) MicButton.interactable = true;
+        if (NextDialogueBtn != null) NextDialogueBtn.gameObject.SetActive(false);
+        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
+    }
+
+    // =========================
+    // 마이크 클릭
+    // =========================
+
+    private void OnMicClicked()
+    {
+        if (_speaking) return;
+
+        var mic = MicIndicator;
+        if (mic != null)
+            mic.ToggleRecording();
+    }
+
+    // =========================
+    // STT 콜백
+    // =========================
+
+    private void OnKeywordMatched(int index)
+    {
+        OnSpeakSuccess();
+    }
+
+    private void OnNoMatch(string result)
+    {
+        OnSpeakFail();
+    }
+
+    // =========================
+    // 성공 / 실패
+    // =========================
+
+    private void OnSpeakSuccess()
+    {
+        if (_speaking) return;
+        _speaking = true;
+
+        var rounds = Rounds;
+        if (rounds == null || _currentRound >= rounds.Length) return;
+
+        var data = rounds[_currentRound];
+
+        // 포스터 텍스트 작성
+        if (_currentRound == 0 && PosterTitleText != null)
+            PosterTitleText.text = data.sttKeyword;
+        else if (_currentRound == 1 && PosterCommitmentText != null)
+            PosterCommitmentText.text = data.sttKeyword;
+
+        // 마이크 숨김
+        if (MicRoot != null) MicRoot.SetActive(false);
+
+        // 전환 대사가 있으면 → 대사 표시 + NextBtn
+        if (data.transitionGuideTextId > 0)
+        {
+            if (GuideText != null)
+                GuideText.text = ProblemRuntime.L(data.transitionGuideTextId);
+
+            if (NextDialogueBtn != null)
+                NextDialogueBtn.gameObject.SetActive(true);
         }
         else
         {
-            // 완료 화면으로 전환
-            if (RecordingRoot != null) RecordingRoot.SetActive(false);
-
-            // 공유 데이터에 결과 저장 (FinalPosterDisplay가 OnEnable에서 읽음)
-            SaveToSharedData();
-
-            // DB 저장
-            SavePosterData();
-
-            // Gate 완료 → completeRoot 자동 표시 → FinalPosterDisplay.OnEnable
-            var gate = CompletionGateRef;
-            if (gate != null)
-                gate.MarkOneDone();
+            // 전환 대사 없으면 → 딜레이 후 Complete
+            StartCoroutine(DelayedComplete());
         }
     }
 
-    private void ApplyPhaseToUI(RecordingPhase phase)
+    private void OnSpeakFail()
     {
-        int phaseIndex = (int)phase;
-        var phases = PhaseDataList;
-        if (phases == null || phaseIndex >= phases.Length) return;
+        if (_speaking) return;
 
-        var data = phases[phaseIndex];
-        if (data == null) return;
-
-        // 안내 텍스트
-        if (InstructionText != null)
-            InstructionText.text = data.instruction;
-    }
-
-    #endregion
-
-    #region Recording Complete (마이크 프리팹에서 호출)
-
-    /// <summary>
-    /// 녹음 완료 시 Binder에서 호출
-    /// - MicRecordingIndicator 이벤트와 연결
-    /// </summary>
-    public void OnRecordingComplete(string text, float duration)
-    {
-        if (_currentPhase == RecordingPhase.Complete) return;
-
-        // 결과 저장
-        SaveRecordingResult(text, duration);
-
-        // 다음 단계로 전환
-        StartCoroutine(TransitionToNextPhase());
-    }
-
-    private void SaveRecordingResult(string text, float duration)
-    {
-        switch (_currentPhase)
+        string failText = FailGuideText;
+        if (GuideText != null && !string.IsNullOrEmpty(failText))
         {
-            case RecordingPhase.Title:
-                _movieTitle = text;
-                _titleDuration = duration;
-                // 선택된 장르 포스터에 제목 표시
-                SetPosterTitleText(text);
-                break;
-
-            case RecordingPhase.Commitment:
-                _commitment = text;
-                _commitmentDuration = duration;
-                // 선택된 장르 포스터에 다짐 표시
-                SetPosterCommitmentText(text);
-                break;
+            if (_guideRevertRoutine != null)
+                StopCoroutine(_guideRevertRoutine);
+            _guideRevertRoutine = StartCoroutine(ShowFailGuideAndRevert());
         }
     }
 
-    private void SetPosterTitleText(string text)
+    private IEnumerator ShowFailGuideAndRevert()
     {
-        var titles = PosterTitleTexts;
-        if (titles != null && _selectedGenreIndex >= 0 && _selectedGenreIndex < titles.Length)
+        var rounds = Rounds;
+        var data = (rounds != null && _currentRound < rounds.Length) ? rounds[_currentRound] : null;
+
+        GuideText.text = FailGuideText;
+        yield return new WaitForSeconds(2f);
+
+        // 원래 가이드로 복귀
+        if (GuideText != null && data != null && !_speaking)
         {
-            if (titles[_selectedGenreIndex] != null)
-                titles[_selectedGenreIndex].text = text;
+            if (data.guideTextId > 0)
+                GuideText.text = ProblemRuntime.L(data.guideTextId);
+            else if (!string.IsNullOrEmpty(data.hardcodedGuide))
+                GuideText.text = data.hardcodedGuide;
         }
+
+        _guideRevertRoutine = null;
     }
 
-    private void SetPosterCommitmentText(string text)
+    // =========================
+    // NextDialogue 클릭
+    // =========================
+
+    private void OnNextDialogueClicked()
     {
-        var commitments = PosterCommitmentTexts;
-        if (commitments != null && _selectedGenreIndex >= 0 && _selectedGenreIndex < commitments.Length)
-        {
-            if (commitments[_selectedGenreIndex] != null)
-                commitments[_selectedGenreIndex].text = text;
-        }
+        _currentRound++;
+        ShowSpeakingPhase(_currentRound);
     }
 
-    private IEnumerator TransitionToNextPhase()
-    {
-        yield return new WaitForSeconds(DelayAfterRecording);
+    // =========================
+    // Complete
+    // =========================
 
-        switch (_currentPhase)
-        {
-            case RecordingPhase.Title:
-                ShowPhase(RecordingPhase.Commitment);
-                break;
-            case RecordingPhase.Commitment:
-                ShowPhase(RecordingPhase.Complete);
-                break;
-        }
+    private IEnumerator DelayedComplete()
+    {
+        yield return new WaitForSeconds(TransitionDelay);
+        ShowComplete();
     }
 
-    private void SaveToSharedData()
+    private void ShowComplete()
     {
-        var data = SharedData;
-        if (data != null)
-        {
-            data.SetMovieTitle(_movieTitle);
-            data.SetCommitment(_commitment);
-        }
-    }
+        // 성공 가이드
+        if (GuideText != null && GuideTextId_Success > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Success);
 
-    private void SavePosterData()
-    {
-        var data = SharedData;
+        // NextStepBtn 활성화
+        if (NextStepButtonRoot != null)
+            NextStepButtonRoot.SetActive(true);
 
+        // 나머지 숨김
+        if (MicRoot != null) MicRoot.SetActive(false);
+        if (NextDialogueBtn != null) NextDialogueBtn.gameObject.SetActive(false);
+
+        // DB 저장
         SaveAttempt(new PosterCreationDto
         {
-            stepKey = context != null ? context.CurrentStepKey : null,
-            selectedGenreId = data?.selectedGenreId ?? "",
-            selectedGenreName = data?.selectedGenreName ?? "",
-            movieTitle = _movieTitle,
-            titleRecordingDuration = _titleDuration,
-            commitment = _commitment,
-            commitmentRecordingDuration = _commitmentDuration,
-            completedAt = DateTime.UtcNow
+            title = PosterTitleText != null ? PosterTitleText.text : "",
+            commitment = PosterCommitmentText != null ? PosterCommitmentText.text : ""
         });
     }
-
-    #endregion
 }

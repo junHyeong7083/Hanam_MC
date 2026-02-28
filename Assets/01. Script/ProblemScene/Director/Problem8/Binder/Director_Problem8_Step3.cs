@@ -8,44 +8,29 @@ using UnityEngine.UI;
 /// </summary>
 public class Director_Problem8_Step3 : Director_Problem8_Step3_Logic
 {
-    [Header("===== 액션 선택 화면 =====")]
-    [SerializeField] private GameObject selectActionRoot;
+    [Header("===== 액션 카드 =====")]
     [SerializeField] private ActionItem[] actionChoices;
 
-    [Header("===== 녹음 화면 =====")]
-    [SerializeField] private GameObject recordingRoot;
-    [SerializeField] private Button recordButton;
+    [Header("===== 마이크 =====")]
+    [SerializeField] private Button micButton;
     [SerializeField] private MicRecordingIndicator micIndicator;
 
-    [Header("===== 결과 화면 =====")]
-    [SerializeField] private GameObject resultRoot;
-    [SerializeField] private Text resultText;
+    [Header("===== 가이드 텍스트 =====")]
+    [SerializeField] private Text guideText;
+    [SerializeField] private int guideTextId_Main;
+    [SerializeField] private int guideTextId_Fail;
+    [SerializeField] private int guideTextId_Success;
 
-    [Header("===== 완료 게이트 =====")]
-    [SerializeField] private StepCompletionGate completionGate;
-
-    [Header("===== 이펙트 컨트롤러 =====")]
-    [SerializeField] private Problem8_Step3_EffectController effectController;
+    [Header("===== 완료 =====")]
+    [SerializeField] private GameObject nextStepButtonRoot;
 
     // ----- 부모 추상 프로퍼티 구현 -----
-    protected override GameObject SelectActionRoot => selectActionRoot;
     protected override ActionItem[] ActionChoices => actionChoices;
-    protected override GameObject RecordingRoot => recordingRoot;
-    protected override Button RecordButton => recordButton;
+    protected override Button MicButton => micButton;
     protected override MicRecordingIndicator MicIndicator => micIndicator;
-    protected override GameObject ResultRoot => resultRoot;
-    protected override Text ResultText => resultText;
-    protected override StepCompletionGate CompletionGateRef => completionGate;
-
-    // ----- 시각 효과 연결 -----
-    protected override void OnRecordingEnded()
-    {
-        base.OnRecordingEnded();
-
-        // 녹음 종료 시 결과 화면 애니메이션
-        if (effectController != null)
-        {
-            effectController.PlayResultAnimation();
-        }
-    }
+    protected override Text GuideText => guideText;
+    protected override int GuideTextId_Main => guideTextId_Main;
+    protected override int GuideTextId_Fail => guideTextId_Fail;
+    protected override int GuideTextId_Success => guideTextId_Success;
+    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 }

@@ -57,7 +57,6 @@ public class CommonRewardStep : ProblemStepBase
 
     [Header("버튼 (선택 - 코드 자동 바인딩)")]
     [SerializeField] private Button replayButton;
-    [SerializeField] private Button nextProblemButton;
     [SerializeField] private Button homeButton;
 
     [Header("보상 메타 (DB 저장용)")]
@@ -263,11 +262,6 @@ public class CommonRewardStep : ProblemStepBase
             replayButton.onClick.RemoveListener(ReplayCurrentProblem);
             replayButton.onClick.AddListener(ReplayCurrentProblem);
         }
-        if (nextProblemButton != null)
-        {
-            nextProblemButton.onClick.RemoveListener(GoToNextProblem);
-            nextProblemButton.onClick.AddListener(GoToNextProblem);
-        }
         if (homeButton != null)
         {
             homeButton.onClick.RemoveListener(GoToHome);
@@ -278,7 +272,6 @@ public class CommonRewardStep : ProblemStepBase
     private void UnbindButtons()
     {
         if (replayButton != null) replayButton.onClick.RemoveListener(ReplayCurrentProblem);
-        if (nextProblemButton != null) nextProblemButton.onClick.RemoveListener(GoToNextProblem);
         if (homeButton != null) homeButton.onClick.RemoveListener(GoToHome);
     }
 
@@ -292,17 +285,32 @@ public class CommonRewardStep : ProblemStepBase
         SceneNavigator.Instance.GoTo(ScreenId.PROBLEM);
     }
 
-    /// <summary>다음 촬영(문제)으로 이동</summary>
-    public void GoToNextProblem()
-    {
-        ProblemSession.CurrentProblemIndex++;
-        SceneNavigator.Instance.GoTo(ScreenId.PROBLEM);
-    }
-
     /// <summary>홈 화면으로 나가기</summary>
     public void GoToHome()
     {
+        MarkProblemSolved();
         GameManager.Instance.GoToHome();
+    }
+
+    /// <summary>현재 문제를 완료 처리 (DB 저장)</summary>
+    private void MarkProblemSolved()
+    {
+        var ds = DataService.Instance;
+        var user = SessionManager.Instance?.CurrentUser;
+
+        if (ds != null && ds.Progress != null && user != null)
+        {
+            var theme = ProblemSession.CurrentTheme;
+            var index = ProblemSession.CurrentProblemIndex;
+
+            var res = ds.Progress.MarkProblemSolvedForCurrentUser(theme, index);
+            if (!res.Ok)
+                Debug.LogWarning($"[CommonRewardStep] MarkProblemSolved 실패: {res.Error}");
+        }
+        else
+        {
+            Debug.LogWarning("[CommonRewardStep] 문제 완료 저장 실패 - 세션 또는 DataService 없음");
+        }
     }
 
     // =========================

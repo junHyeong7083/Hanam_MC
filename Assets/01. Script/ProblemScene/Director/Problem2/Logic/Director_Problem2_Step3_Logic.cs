@@ -38,7 +38,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract GameObject CarouselRoot { get; }
     protected abstract Button PrevButton { get; }
     protected abstract Button NextButton { get; }
-    protected abstract Text CarouselText { get; }
 
     // 마이크
     protected abstract GameObject MicButtonRoot { get; }
@@ -52,7 +51,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
     // 패널
     protected abstract GameObject StepRoot { get; }
-    protected abstract GameObject SummaryPanelRoot { get; }
 
     protected abstract StepCompletionGate CompletionGate { get; }
 
@@ -105,7 +103,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         _isFinished = false;
 
         if (StepRoot != null) StepRoot.SetActive(true);
-        if (SummaryPanelRoot != null) SummaryPanelRoot.SetActive(false);
 
         if (GuideText != null && GuideTextId_Before != 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Before);
@@ -189,8 +186,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         {
             _selected = null;
 
-            if (CarouselText != null) CarouselText.text = "";
-
             if (PrevButton != null) PrevButton.interactable = false;
             if (NextButton != null) NextButton.interactable = false;
 
@@ -200,9 +195,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         ClampIndex();
         _selected = p[_currentIndex];
-
-        if (CarouselText != null && _selected != null)
-            CarouselText.text = _selected.Text;
 
         bool canNavigate = !_isFinished && p.Length > 1;
         if (PrevButton != null) PrevButton.interactable = canNavigate;
@@ -330,7 +322,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (PrevButton != null) PrevButton.interactable = false;
         if (NextButton != null) NextButton.interactable = false;
 
-        if (SceneCardRect != null) SceneCardRect.gameObject.SetActive(false);
+        if (StepRoot != null) StepRoot.SetActive(false);
         if (OkSceneCard != null) OkSceneCard.SetActive(true);
 
         _isFinished = true;
@@ -346,9 +338,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     public void OnClickSummaryButton()
     {
         SaveRefilmLogToDb();
-
-        if (StepRoot != null) StepRoot.SetActive(false);
-        if (SummaryPanelRoot != null) SummaryPanelRoot.SetActive(true);
     }
 
     private void SaveRefilmLogToDb()

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Director / Problem7 / Step2 로직 베이스
 /// - "보여지는 나 vs 진짜 나" 가면 선택
-/// - 4단계: intro → selectMask → selectFeeling → reveal
+/// - 2단계: selectMask → selectFeeling → 완료(NextStepBtn 표시)
 /// </summary>
 public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 {
@@ -17,9 +17,9 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     [Serializable]
     public class ChoiceItem
     {
-        public string id;       // DB 저장용 ID (예: "cool", "anxious")
-        public string label;    // 표시용 라벨 (예: "쿨한 척", "사실은 불안했어")
-        public Button button;   // 버튼 참조
+        public string id;           // DB 저장용 ID (예: "cool", "anxious")
+        public int labelTextId;     // CSV textId (라벨 표시용)
+        public Button button;       // 버튼 참조
         public GameObject clickImage;  // 선택 시 표시할 이미지
     }
 
@@ -41,7 +41,7 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
         public SelectedChoiceDto feeling;
     }
 
-    protected enum Phase { Intro, SelectMask, SelectFeeling }
+    protected enum Phase { SelectMask, SelectFeeling }
 
     // =========================
     // 파생 클래스에서 넘겨줄 UI 참조
@@ -49,9 +49,11 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     #region Abstract Properties
 
-    [Header("Intro 화면")]
-    protected abstract GameObject IntroRoot { get; }
-    protected abstract Button IntroNextButton { get; }
+    [Header("HanamBox 가이드 텍스트")]
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId_SelectMask { get; }
+    protected abstract int GuideTextId_SelectFeeling { get; }
+    protected abstract int GuideTextId_Complete { get; }
 
     [Header("가면 선택 화면")]
     protected abstract GameObject SelectMaskRoot { get; }
@@ -61,8 +63,8 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     protected abstract GameObject SelectFeelingRoot { get; }
     protected abstract ChoiceItem[] FeelingChoices { get; }
 
-    [Header("완료 게이트 (CompleteRoot에 Reveal 화면 연결)")]
-    protected abstract StepCompletionGate CompletionGateRef { get; }
+    [Header("완료 후 NextStep 버튼")]
+    protected abstract GameObject NextStepButtonRoot { get; }
 
     #endregion
 
@@ -85,16 +87,13 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     protected override void OnStepEnter()
     {
-        _currentPhase = Phase.Intro;
+        _currentPhase = Phase.SelectMask;
         _selectedMask = null;
         _selectedFeeling = null;
 
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.ResetGate(1);
-
         SetupAllPhases();
-        ShowPhase(Phase.Intro);
+        ApplyLabelsFromTextId();
+        ShowPhase(Phase.SelectMask);
     }
 
     protected override void OnStepExit()
@@ -116,46 +115,46 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     private void SetupAllPhases()
     {
-        // 모든 화면 숨기기
-        if (IntroRoot != null) IntroRoot.SetActive(false);
         if (SelectMaskRoot != null) SelectMaskRoot.SetActive(false);
         if (SelectFeelingRoot != null) SelectFeelingRoot.SetActive(false);
+        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
 
-        // 모든 clickImage 초기화 (비활성화)
-        var masks = MaskChoices;
-        if (masks != null)
-        {
-            foreach (var choice in masks)
-            {
-                if (choice?.clickImage != null)
-                    choice.clickImage.SetActive(false);
-            }
-        }
+        ResetClickImages(MaskChoices);
+        ResetClickImages(FeelingChoices);
 
-        var feelings = FeelingChoices;
-        if (feelings != null)
-        {
-            foreach (var choice in feelings)
-            {
-                if (choice?.clickImage != null)
-                    choice.clickImage.SetActive(false);
-            }
-        }
-
-        // 버튼 리스너 등록
         RegisterListeners();
+    }
+
+    private void ResetClickImages(ChoiceItem[] choices)
+    {
+        if (choices == null) return;
+        foreach (var choice in choices)
+        {
+            if (choice?.clickImage != null)
+                choice.clickImage.SetActive(false);
+        }
+    }
+
+    private void ApplyLabelsFromTextId()
+    {
+        ApplyLabels(MaskChoices);
+        ApplyLabels(FeelingChoices);
+    }
+
+    private void ApplyLabels(ChoiceItem[] choices)
+    {
+        if (choices == null) return;
+        foreach (var choice in choices)
+        {
+            if (choice == null || choice.button == null || choice.labelTextId <= 0) continue;
+            var text = choice.button.GetComponentInChildren<Text>(true);
+            if (text != null)
+                text.text = ProblemRuntime.L(choice.labelTextId);
+        }
     }
 
     private void RegisterListeners()
     {
-        // Intro 버튼
-        if (IntroNextButton != null)
-        {
-            IntroNextButton.onClick.RemoveAllListeners();
-            IntroNextButton.onClick.AddListener(OnIntroNextClicked);
-        }
-
-        // 가면 버튼들
         var masks = MaskChoices;
         if (masks != null)
         {
@@ -170,7 +169,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
             }
         }
 
-        // 감정 버튼들
         var feelings = FeelingChoices;
         if (feelings != null)
         {
@@ -184,14 +182,10 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
                 }
             }
         }
-
     }
 
     private void RemoveAllListeners()
     {
-        if (IntroNextButton != null)
-            IntroNextButton.onClick.RemoveAllListeners();
-
         var masks = MaskChoices;
         if (masks != null)
         {
@@ -205,7 +199,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
             foreach (var choice in feelings)
                 if (choice?.button != null) choice.button.onClick.RemoveAllListeners();
         }
-
     }
 
     // =========================
@@ -216,32 +209,32 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     {
         _currentPhase = phase;
 
-        if (IntroRoot != null) IntroRoot.SetActive(phase == Phase.Intro);
         if (SelectMaskRoot != null) SelectMaskRoot.SetActive(phase == Phase.SelectMask);
         if (SelectFeelingRoot != null) SelectFeelingRoot.SetActive(phase == Phase.SelectFeeling);
-        // Reveal은 CompletionGate의 CompleteRoot로 자동 표시됨
+
+        if (GuideText != null)
+        {
+            int textId = phase == Phase.SelectMask
+                ? GuideTextId_SelectMask
+                : GuideTextId_SelectFeeling;
+
+            if (textId > 0)
+                GuideText.text = ProblemRuntime.L(textId);
+        }
     }
 
     // =========================
     // 버튼 핸들러
     // =========================
 
-    private void OnIntroNextClicked()
-    {
-        ShowPhase(Phase.SelectMask);
-    }
-
     private void OnMaskSelected(ChoiceItem choice)
     {
         if (_currentPhase != Phase.SelectMask) return;
-        if (_selectedMask != null) return; // 이미 선택됨
+        if (_selectedMask != null) return;
 
         _selectedMask = choice;
-
-        // 선택 시각 효과 (파생 클래스에서 추가 가능)
         OnMaskSelectedVisual(choice);
 
-        // 딜레이 후 다음 Phase로
         if (_transitionRoutine != null)
             StopCoroutine(_transitionRoutine);
         _transitionRoutine = StartCoroutine(TransitionAfterDelay(Phase.SelectFeeling, MaskSelectDelay));
@@ -250,30 +243,28 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     private void OnFeelingSelected(ChoiceItem choice)
     {
         if (_currentPhase != Phase.SelectFeeling) return;
-        if (_selectedFeeling != null) return; // 이미 선택됨
+        if (_selectedFeeling != null) return;
 
         _selectedFeeling = choice;
-
-        // 선택 시각 효과
         OnFeelingSelectedVisual(choice);
 
-        // Attempt 저장
         var body = new MaskFeelingAttemptDto
         {
             mask = new SelectedChoiceDto
             {
                 id = _selectedMask?.id,
-                label = _selectedMask?.label
+                label = _selectedMask != null && _selectedMask.labelTextId > 0
+                    ? ProblemRuntime.L(_selectedMask.labelTextId) : ""
             },
             feeling = new SelectedChoiceDto
             {
                 id = _selectedFeeling?.id,
-                label = _selectedFeeling?.label
+                label = _selectedFeeling.labelTextId > 0
+                    ? ProblemRuntime.L(_selectedFeeling.labelTextId) : ""
             }
         };
         SaveAttempt(body);
 
-        // 딜레이 후 MarkOneDone → CompleteRoot(Reveal) 표시
         if (_transitionRoutine != null)
             StopCoroutine(_transitionRoutine);
         _transitionRoutine = StartCoroutine(CompleteAfterDelay(FeelingSelectDelay));
@@ -283,16 +274,14 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     {
         yield return new WaitForSeconds(delay);
 
-        // SelectFeeling 패널 숨기기
-        if (SelectFeelingRoot != null)
-            SelectFeelingRoot.SetActive(false);
+        // 완료 가이드 텍스트
+        if (GuideText != null && GuideTextId_Complete > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Complete);
 
-        // Gate 완료 → CompleteRoot(Reveal 패널) 표시
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.MarkOneDone();
+        // NextStepButton 표시
+        if (NextStepButtonRoot != null)
+            NextStepButtonRoot.SetActive(true);
     }
-
 
     // =========================
     // 코루틴
@@ -310,7 +299,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     protected virtual void OnMaskSelectedVisual(ChoiceItem selected)
     {
-        // 기본: 선택된 버튼 하이라이트, 나머지 비활성화
         var masks = MaskChoices;
         if (masks == null) return;
 
@@ -323,7 +311,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
             if (choice.button != null)
                 choice.button.interactable = false;
 
-            // 선택된 항목의 clickImage만 활성화
             if (choice.clickImage != null)
                 choice.clickImage.SetActive(isSelected);
         }
@@ -331,7 +318,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     protected virtual void OnFeelingSelectedVisual(ChoiceItem selected)
     {
-        // 기본: 선택된 버튼 하이라이트, 나머지 비활성화
         var feelings = FeelingChoices;
         if (feelings == null) return;
 
@@ -344,7 +330,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
             if (choice.button != null)
                 choice.button.interactable = false;
 
-            // 선택된 항목의 clickImage만 활성화
             if (choice.clickImage != null)
                 choice.clickImage.SetActive(isSelected);
         }

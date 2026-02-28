@@ -8,38 +8,49 @@ using UnityEngine.UI;
 /// </summary>
 public class Director_Problem8_Step2 : Director_Problem8_Step2_Logic
 {
-    [Header("===== 장면 카드들 =====")]
-    [Tooltip("5개 카드: Ghost(알파0.5) + Draggable(알파1) 구조")]
+    [Header("===== 캐러셀 UI =====")]
+    [SerializeField] private Button prevButton;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Image cardDisplayImage;
+    [SerializeField] private CanvasGroup cardDisplayCanvasGroup;
+
+    [Header("===== 드래그 프록시 =====")]
+    [SerializeField] private RectTransform dragProxy;
+    [SerializeField] private Image dragProxyImage;
+    [SerializeField] private Canvas dragCanvas;
+
+    [Header("===== 카드 데이터 =====")]
     [SerializeField] private SceneCardItem[] sceneCards;
 
     [Header("===== 슬롯들 =====")]
-    [Tooltip("5개 슬롯: 드롭 영역 + 빈 상태/채워진 상태 UI")]
     [SerializeField] private SlotItem[] slots;
 
-    [Header("===== 카드 선택 영역 =====")]
-    [Tooltip("모든 카드 배치 완료 시 숨겨지는 영역")]
-    [SerializeField] private GameObject cardSelectionRoot;
+    [Header("===== 가이드 텍스트 =====")]
+    [SerializeField] private Text guideText;
+    [SerializeField] private int guideTextId_Main;
+    [SerializeField] private int guideTextId_Fail;
+    [SerializeField] private int guideTextId_Success;
 
-    [Header("===== 드래그용 Canvas =====")]
-    [Tooltip("드래그 중 카드가 최상위에 렌더링되도록 하는 Canvas")]
-    [SerializeField] private Canvas dragCanvas;
-
-    [Header("===== 완료 게이트 =====")]
-    [SerializeField] private StepCompletionGate completionGate;
-    [SerializeField] private GameObject fillImageRoot;
-    [SerializeField] private Image fillImage;
-
-    [Header("===== 선택 안내 텍스트 이미지 =====")]
-    [SerializeField] private GameObject selectTextImage;
+    [Header("===== 완료 =====")]
+    [SerializeField] private GameObject nextStepButtonRoot;
 
     // ----- 부모 추상 프로퍼티 구현 -----
+    protected override Button PrevButton => prevButton;
+    protected override Button NextButton => nextButton;
+    protected override Image CardDisplayImage => cardDisplayImage;
+    protected override CanvasGroup CardDisplayCanvasGroup => cardDisplayCanvasGroup;
+
+    protected override RectTransform DragProxy => dragProxy;
+    protected override Image DragProxyImage => dragProxyImage;
+    protected override Canvas DragCanvas => dragCanvas;
+
     protected override SceneCardItem[] SceneCards => sceneCards;
     protected override SlotItem[] Slots => slots;
-    protected override GameObject CardSelectionRoot => cardSelectionRoot;
-    protected override Canvas DragCanvas => dragCanvas;
-    protected override StepCompletionGate CompletionGateRef => completionGate;
 
-    protected override GameObject FillImageRoot => fillImageRoot;
-    protected override Image FillImage => fillImage;
-    protected override GameObject SelectTextImage => selectTextImage;
+    protected override Text GuideText => guideText;
+    protected override int GuideTextId_Main => guideTextId_Main;
+    protected override int GuideTextId_Fail => guideTextId_Fail;
+    protected override int GuideTextId_Success => guideTextId_Success;
+
+    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 }

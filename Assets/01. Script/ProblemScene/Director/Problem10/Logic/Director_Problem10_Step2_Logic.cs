@@ -1,92 +1,110 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem10 / Step2 로직 베이스
 /// - 4개 장르 카드 중 하나 선택
-/// - 선택 후 확인 버튼 → Gate 완료
+/// - 선택 후 CompleteRoot에 선택한 장르 이미지/텍스트 표시
 /// </summary>
 public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
 {
-    #region Data Classes
+    // =========================
+    // 데이터 구조
+    // =========================
 
     [Serializable]
-    public class GenreData
+    public class GenreCardData
     {
-        public string id;           // growth, warmth, contribution, family
-        public string name;         // 성장 드라마, 따뜻한 휴먼 코미디, ...
-        public string emoji;        // 🌱, 🌈, 🌍, 🏡
-        [TextArea(1, 2)]
-        public string description;  // 계속 배우고 발전하는 나, ...
+        public int labelTextId;       // 장르명 textId (101101001~004)
+        public Sprite cardSprite;     // 장르 카드 스프라이트
     }
 
     [Serializable]
-    public class GenreCardUI
+    private class GenreSelectionDto
     {
-        public Button button;
-        public GameObject selectedIndicator;  // 선택 시 표시되는 체크 표시
-        public GameObject glowImage;          // 선택 시 표시되는 글로우 이펙트
+        public int selectedIndex;
+        public string selectedGenre;
     }
 
-    // DB 저장용 DTO
-    [Serializable]
-    public class GenreSelectionDto
-    {
-        public string stepKey;
-        public string selectedGenreId;
-        public string selectedGenreName;
-        public DateTime selectedAt;
-    }
-
-    #endregion
+    // =========================
+    // 파생 클래스에서 넘겨줄 UI 참조
+    // =========================
 
     #region Abstract Properties
 
-    [Header("===== 장르 데이터 =====")]
-    protected abstract GenreData[] Genres { get; }
+    protected abstract GenreCardData[] GenreCardsData { get; }
 
-    [Header("===== 화면 루트 =====")]
-    protected abstract GameObject SelectionRoot { get; }
+    // 하남박스
+    protected abstract Text GuideText { get; }
+    protected abstract int GuideTextId { get; }
+    protected abstract int GuideTextId_Success { get; }
+    protected abstract GameObject NextStepButtonRoot { get; }
 
-    [Header("===== 장르 카드 UI (4개) =====")]
-    protected abstract GenreCardUI[] GenreCards { get; }
+    // 선택 화면
+    protected abstract GameObject SelectRoot { get; }
+    protected abstract Button[] GenreButtons { get; }
+    protected abstract GameObject[] SelectIndicators { get; }
+    protected abstract Text[] GenreLabels { get; }
 
-    [Header("===== 확인 버튼 =====")]
-    protected abstract Button ConfirmButton { get; }
+    // 완료 화면
+    protected abstract GameObject CompleteRoot { get; }
+    protected abstract Image CompleteCardImage { get; }
+    protected abstract Text CompleteCardLabel { get; }
 
-    [Header("===== 완료 게이트 =====")]
-    protected abstract StepCompletionGate CompletionGateRef { get; }
-
-    [Header("===== 공유 데이터 =====")]
+    // 공유 데이터
     protected abstract Problem10SharedData SharedData { get; }
 
     #endregion
 
+    #region Virtual Config
+
+    protected virtual float TransitionDelay => 0.5f;
+
+    #endregion
 
     // 내부 상태
-    private int _selectedIndex = -1;
+    private bool _selected;
+    private Coroutine _transitionRoutine;
 
-    #region Step Lifecycle
+    // =========================
+    // ProblemStepBase 구현
+    // =========================
 
     protected override void OnStepEnter()
     {
-        _selectedIndex = -1;
+        _selected = false;
 
-        // Gate 초기화
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.ResetGate(1);
+        // 가이드 텍스트
+        if (GuideText != null && GuideTextId > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId);
 
-        // 초기 화면 설정
-        if (SelectionRoot != null) SelectionRoot.SetActive(true);
+        // 장르 라벨 설정
+        var data = GenreCardsData;
+        var labels = GenreLabels;
+        if (data != null && labels != null)
+        {
+            for (int i = 0; i < labels.Length && i < data.Length; i++)
+            {
+                if (labels[i] != null && data[i].labelTextId > 0)
+                    labels[i].text = ProblemRuntime.L(data[i].labelTextId);
+            }
+        }
 
-        // 확인 버튼 비활성화
-        if (ConfirmButton != null)
-            ConfirmButton.interactable = false;
+        // SelectIndicator 모두 숨김
+        var indicators = SelectIndicators;
+        if (indicators != null)
+        {
+            foreach (var ind in indicators)
+                if (ind != null) ind.SetActive(false);
+        }
 
-        // 모든 선택 표시 숨기기
-        UpdateSelectionVisuals();
+        // 루트 설정
+        if (SelectRoot != null) SelectRoot.SetActive(true);
+        if (CompleteRoot != null) CompleteRoot.SetActive(false);
+        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
 
         RegisterListeners();
     }
@@ -94,157 +112,121 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (_transitionRoutine != null)
+        {
+            StopCoroutine(_transitionRoutine);
+            _transitionRoutine = null;
+        }
+
         RemoveListeners();
     }
 
-    #endregion
-
-    #region UI Control
-
-    private void UpdateSelectionVisuals()
-    {
-        var cards = GenreCards;
-        if (cards == null) return;
-
-        for (int i = 0; i < cards.Length; i++)
-        {
-            var card = cards[i];
-            if (card == null) continue;
-
-            bool isSelected = i == _selectedIndex;
-
-            // 선택 표시
-            if (card.selectedIndicator != null)
-                card.selectedIndicator.SetActive(isSelected);
-
-            // 글로우 이펙트
-            if (card.glowImage != null)
-                card.glowImage.SetActive(isSelected);
-        }
-    }
-
-    #endregion
-
-    #region Listeners
+    // =========================
+    // 리스너 등록/해제
+    // =========================
 
     private void RegisterListeners()
     {
-        var cards = GenreCards;
-        if (cards != null)
+        var buttons = GenreButtons;
+        if (buttons != null)
         {
-            for (int i = 0; i < cards.Length; i++)
+            for (int i = 0; i < buttons.Length; i++)
             {
-                var card = cards[i];
-                if (card?.button != null)
-                {
-                    int index = i; // 클로저용
-                    card.button.onClick.RemoveAllListeners();
-                    card.button.onClick.AddListener(() => OnGenreSelected(index));
-                }
+                if (buttons[i] == null) continue;
+                int idx = i;
+                buttons[i].onClick.RemoveAllListeners();
+                buttons[i].onClick.AddListener(() => OnGenreClicked(idx));
             }
-        }
-
-        if (ConfirmButton != null)
-        {
-            ConfirmButton.onClick.RemoveAllListeners();
-            ConfirmButton.onClick.AddListener(OnConfirmClicked);
         }
     }
 
     private void RemoveListeners()
     {
-        var cards = GenreCards;
-        if (cards != null)
+        var buttons = GenreButtons;
+        if (buttons != null)
         {
-            foreach (var card in cards)
-                card?.button?.onClick.RemoveAllListeners();
+            foreach (var btn in buttons)
+                if (btn != null) btn.onClick.RemoveAllListeners();
         }
-
-        ConfirmButton?.onClick.RemoveAllListeners();
     }
 
-    #endregion
+    // =========================
+    // 장르 선택
+    // =========================
 
-    #region Event Handlers
-
-    private void OnGenreSelected(int index)
+    private void OnGenreClicked(int index)
     {
-        _selectedIndex = index;
+        if (_selected) return;
+        _selected = true;
 
-        // 시각적 업데이트
-        UpdateSelectionVisuals();
+        // SelectIndicator 표시
+        var indicators = SelectIndicators;
+        if (indicators != null)
+        {
+            for (int i = 0; i < indicators.Length; i++)
+                if (indicators[i] != null) indicators[i].SetActive(i == index);
+        }
 
-        // 확인 버튼 활성화
-        if (ConfirmButton != null)
-            ConfirmButton.interactable = true;
+        // 버튼 비활성화
+        var buttons = GenreButtons;
+        if (buttons != null)
+        {
+            foreach (var btn in buttons)
+                if (btn != null) btn.interactable = false;
+        }
 
-        // 선택 콜백
-        OnGenreSelectedVisual(index);
+        // 딜레이 후 전환
+        if (_transitionRoutine != null)
+            StopCoroutine(_transitionRoutine);
+        _transitionRoutine = StartCoroutine(TransitionToComplete(index));
     }
 
-    private void OnConfirmClicked()
+    // =========================
+    // 완료 화면 전환
+    // =========================
+
+    private IEnumerator TransitionToComplete(int index)
     {
-        if (_selectedIndex < 0) return;
+        yield return new WaitForSeconds(TransitionDelay);
 
-        var genres = Genres;
-        if (genres == null || _selectedIndex >= genres.Length) return;
-
-        var selected = genres[_selectedIndex];
-
-        // 공유 데이터에 저장 (Step3에서 사용)
-        var sharedData = SharedData;
-        if (sharedData != null)
+        var data = GenreCardsData;
+        if (data != null && index < data.Length)
         {
-            sharedData.SetSelectedGenre(
-                _selectedIndex,
-                selected.id,
-                selected.name,
-                selected.emoji,
-                selected.description
-            );
+            // CompleteRoot 카드에 선택한 장르 반영
+            if (CompleteCardImage != null && data[index].cardSprite != null)
+                CompleteCardImage.sprite = data[index].cardSprite;
+
+            if (CompleteCardLabel != null && data[index].labelTextId > 0)
+                CompleteCardLabel.text = ProblemRuntime.L(data[index].labelTextId);
         }
+
+        // 루트 전환
+        if (SelectRoot != null) SelectRoot.SetActive(false);
+        if (CompleteRoot != null) CompleteRoot.SetActive(true);
+
+        // 성공 가이드
+        if (GuideText != null && GuideTextId_Success > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId_Success);
+
+        // NextStepBtn 활성화
+        if (NextStepButtonRoot != null)
+            NextStepButtonRoot.SetActive(true);
+
+        // SharedData에 선택 결과 저장 (Step3에서 사용)
+        if (SharedData != null && data != null && index < data.Length)
+            SharedData.SetSelection(index, data[index].cardSprite);
 
         // DB 저장
+        string genreName = (data != null && index < data.Length && data[index].labelTextId > 0)
+            ? ProblemRuntime.L(data[index].labelTextId)
+            : "";
         SaveAttempt(new GenreSelectionDto
         {
-            stepKey = context != null ? context.CurrentStepKey : null,
-            selectedGenreId = selected.id,
-            selectedGenreName = selected.name,
-            selectedAt = DateTime.UtcNow
+            selectedIndex = index,
+            selectedGenre = genreName
         });
 
-        // SelectionRoot 숨기기
-        if (SelectionRoot != null) SelectionRoot.SetActive(false);
-
-        // Gate 완료 → completeRoot 자동 표시
-        var gate = CompletionGateRef;
-        if (gate != null)
-            gate.MarkOneDone();
+        _transitionRoutine = null;
     }
-
-    #endregion
-
-    #region Virtual Callbacks
-
-    /// <summary>장르 선택 시 호출 (파생 클래스에서 override 가능)</summary>
-    protected virtual void OnGenreSelectedVisual(int index)
-    {
-        // 선택 애니메이션 등 추가 가능
-    }
-
-    #endregion
-
-    #region Public Getters (다음 Step에서 사용 가능)
-
-    /// <summary>선택된 장르 데이터 반환</summary>
-    public GenreData GetSelectedGenre()
-    {
-        var genres = Genres;
-        if (genres == null || _selectedIndex < 0 || _selectedIndex >= genres.Length)
-            return null;
-
-        return genres[_selectedIndex];
-    }
-
-    #endregion
 }
