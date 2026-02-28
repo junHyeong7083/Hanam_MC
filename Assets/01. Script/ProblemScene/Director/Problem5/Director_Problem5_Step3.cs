@@ -3,107 +3,60 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Director / Part5 / Step3
-/// - �ν����Ϳ��� ������/��ư/UI ������ ��� �ִ� ����.
-/// - ���� �ൿ/���¸ӽ��� Director_Problem5_Step3_Logic �ʿ��� ó��.
+/// Director / Problem5 / Step3
+/// - 인스펙터에서 선택지/UI 참조 바인딩
+/// - 실제 로직은 Director_Problem5_Step3_Logic(부모)에서 처리
 /// </summary>
 public class Director_Problem5_Step3 : Director_Problem5_Step3_Logic
 {
     [Serializable]
     public class DialogueOptionData : IDialogueOptionData
     {
-        [Tooltip("�ɼ� ID (�α׿�)")]
+        [Tooltip("옵션 ID (로그용)")]
         public int id = 1;
 
-        [TextArea]
-        [Tooltip("ȭ�鿡 ǥ�õ� ��� �ؽ�Ʈ")]
-        public string text;
+        [Tooltip("CSV textId (대사 텍스트)")]
+        public int textId;
 
-        [Tooltip("��� Ÿ�� (ȸ���� / �ǰ� / ������)")]
+        [Tooltip("옵션 타입 (회피형 / 건강한 / 도전적)")]
         public DialogueOptionType type = DialogueOptionType.Avoidant;
 
-        [TextArea]
-        [Tooltip("���� �� ������ �ǵ�� ����")]
-        public string feedback;
-
-        [Tooltip("�� �ɼ��� ����(�ǰ��� ���)���� ����")]
+        [Tooltip("이 옵션이 정답(건강한 표현)인지 여부")]
         public bool isCorrect = false;
 
-        [Header("UI ����")]
-        public Button button;   // Ŭ�� ��ư (ī�� ��ü)
-        public Text label;      // ��ư �� �ؽ�Ʈ
+        [Tooltip("이 옵션의 카메라 이미지 스프라이트")]
+        public Sprite optionSprite;
 
-        // ==== �������̽� ���� ====
+        // ==== 인터페이스 구현 ====
         public int Id => id;
-        public string Text => text;
+        public int TextId => textId;
         public DialogueOptionType Type => type;
-        public string Feedback => feedback;
         public bool IsCorrect => isCorrect;
-
-        public Button Button => button;
-        public Text Label => label;
+        public Sprite OptionSprite => optionSprite;
     }
 
-    [Header("��������")]
+    [Header("선택지")]
     [SerializeField] private DialogueOptionData[] options;
 
     [Header("NPC 응답 UI")]
     [SerializeField] private GameObject npcResponseRoot;
-
-    [Header("������ �ǵ�� UI")]
-    [SerializeField] private GameObject feedbackRoot;
-    [SerializeField] private Text feedbackLabel;
-
-    [Header("���� ����")]
-    [SerializeField] private Color optionNormalColor = Color.white;
-    [SerializeField] private Color optionHealthyColor = Color.green;
-    [SerializeField] private Color optionWrongColor = Color.red;
+    [SerializeField] private Text npcResponseText;
+    [SerializeField] private int npcResponseTextId;
 
     [Header("마이크 STT")]
     [SerializeField] private MicRecordingIndicator micIndicator;
 
-    [Header("Ÿ�̹� ����")]
-    [SerializeField] private float optionSelectDelay = 1.5f;
-    [SerializeField] private float npcResponseDelay = 1.0f;
-
-    [Header("�Ϸ� ����Ʈ")]
+    [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    [Header("���� �ǵ�� ����")]
-    [SerializeField] private Image wrongFeedbackImage;
-    [SerializeField] private float wrongFeedbackImageHeightOnWrong = -300f;
-    [SerializeField] private float wrongFeedbackShowDuration = 1.0f;
-    [SerializeField] private GameObject feedbackNextButtonRoot;
-
-    [Header("정답 이미지 연출")]
-    [SerializeField] private GameObject originalAnswerImage;
-    [SerializeField] private PopupImageDisplay correctAnswerPopup;
-    // ===== ���̽��� �� ���Կ� override =====
+    // ===== 베이스에 값 주입용 override =====
 
     protected override IDialogueOptionData[] Options => options;
 
     protected override GameObject NpcResponseRoot => npcResponseRoot;
-
-    protected override GameObject FeedbackRoot => feedbackRoot;
-    protected override Text FeedbackLabel => feedbackLabel;
-
-
-    protected override Color OptionNormalColor => optionNormalColor;
-    protected override Color OptionHealthyColor => optionHealthyColor;
-    protected override Color OptionWrongColor => optionWrongColor;
+    protected override Text NpcResponseText => npcResponseText;
+    protected override int NpcResponseTextId => npcResponseTextId;
 
     protected override MicRecordingIndicator MicIndicator => micIndicator;
-
-    protected override float OptionSelectDelay => optionSelectDelay;
-    protected override float NpcResponseDelay => npcResponseDelay;
-
     protected override StepCompletionGate CompletionGate => completionGate;
-
-
-    protected override float WrongFeedbackShowDuration => wrongFeedbackShowDuration;
-
-    protected override GameObject FeedbackNextButtonRoot => feedbackNextButtonRoot;
-
-    protected override GameObject OriginalAnswerImage => originalAnswerImage;
-    protected override PopupImageDisplay CorrectAnswerPopup => correctAnswerPopup;
 }

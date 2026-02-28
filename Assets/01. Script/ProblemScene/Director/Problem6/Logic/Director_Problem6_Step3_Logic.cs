@@ -1,21 +1,21 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// Part6 / Problem6 / Step3 이완 훈련 로직 베이스.
-/// - 여러 단계(자세, 눈 감기, 복식호흡, 이완 등)를 순서대로 재생.
-/// - 시작 / 일시정지 / 재개 버튼으로 컨트롤.
-/// - 각 단계마다 duration 동안 progress bar 진행.
+/// - 여러 단계를 순서대로 재생.
+/// - 일시정지 / 재개 버튼으로 컨트롤.
+/// - 각 단계마다 duration 동안 대기 후 다음 단계.
 /// - 마지막 단계까지 끝나면 StepCompletionGate 완료.
-/// - 💡 이 스텝은 DB 저장 안 함.
+/// - 이 스텝은 DB 저장 안 함.
 /// </summary>
 public interface IRelaxationStepData
 {
     int Id { get; }
     string Title { get; }
-    string Instruction { get; }
-    float DurationSeconds { get; }   // 예: 3.0f, 4.0f
+    int InstructionTextId { get; }
+    float DurationSeconds { get; }
 }
 
 public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
@@ -26,23 +26,16 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
     protected abstract IRelaxationStepData[] Steps { get; }
 
     [Header("UI Root")]
-    protected abstract GameObject IntroRoot { get; }     // 처음 설명 + 시작 버튼
-    protected abstract GameObject PlayingRoot { get; }   // 진행 중 카드 + progress + 일시정지
-    protected abstract GameObject PausedRoot { get; }    // 일시정지 카드 + 계속하기
+    protected abstract GameObject PlayingRoot { get; }
+    protected abstract GameObject PausedRoot { get; }
 
-    [Header("텍스트 / 진행도 UI")]
-    protected abstract Text StepCounterLabel { get; }     // "1 / 9"
-    protected abstract Text StepTitleLabel { get; }       // 단계 제목
-    protected abstract Text StepInstructionLabel { get; } // 단계 설명
-    protected abstract Image ProgressFillImage { get; }   // 0~1 fillAmount
-
-    [Header("호흡 원 애니메이션 루트 (옵션)")]
-    protected abstract GameObject BreathingCircleRoot { get; }
+    [Header("텍스트 UI")]
+    protected abstract Text StepTitleLabel { get; }
+    protected abstract Text StepInstructionLabel { get; }
 
     [Header("컨트롤 버튼들")]
-    protected abstract Button StartButton { get; }   // "이완 훈련 시작하기"
-    protected abstract Button PauseButton { get; }   // "잠시 멈추기"
-    protected abstract Button ResumeButton { get; }  // "계속하기"
+    protected abstract Button PauseButton { get; }
+    protected abstract Button ResumeButton { get; }
 
     [Header("완료 게이트")]
     protected abstract StepCompletionGate CompletionGate { get; }
@@ -82,12 +75,6 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         _currentStepElapsed = 0f;
 
         // 버튼 리스너 세팅
-        if (StartButton != null)
-        {
-            StartButton.onClick.RemoveAllListeners();
-            StartButton.onClick.AddListener(OnClickStart);
-        }
-
         if (PauseButton != null)
         {
             PauseButton.onClick.RemoveAllListeners();
@@ -101,20 +88,15 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         }
 
         // 초기 UI 상태
-        SetRootActive(IntroRoot, true);
         SetRootActive(PlayingRoot, false);
         SetRootActive(PausedRoot, false);
 
-        // 호흡 원 끄기
-        if (BreathingCircleRoot != null)
-            BreathingCircleRoot.SetActive(false);
-
-        // 진행도 0
-        SetProgress(0f);
-
-        // 게이트 리셋 (한 번 끝나면 완료로 취급)
+        // 게이트 리셋
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
+
+        // IntroStep3에서 넘어오므로 자동 시작
+        AutoStart();
     }
 
     protected override void OnStepExit()
@@ -136,29 +118,14 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             go.SetActive(active);
     }
 
-    private void SetProgress(float t01)
-    {
-        if (ProgressFillImage != null)
-        {
-            ProgressFillImage.fillAmount = Mathf.Clamp01(t01);
-        }
-    }
-
     private void ApplyStepUI(IRelaxationStepData step, int index, int total)
     {
-        if (StepCounterLabel != null)
-            StepCounterLabel.text = $"{index + 1} / {total}";
-
         if (StepTitleLabel != null)
             StepTitleLabel.text = step.Title;
 
         if (StepInstructionLabel != null)
-            StepInstructionLabel.text = step.Instruction;
+            StepInstructionLabel.text = ProblemRuntime.L(step.InstructionTextId);
 
-        // 호흡 단계: React 기준으로 3~5번만 circle 사용
-        bool breathingOn = step.Id >= 3 && step.Id <= 5;
-        if (BreathingCircleRoot != null)
-            BreathingCircleRoot.SetActive(breathingOn);
         if (PauseButton != null)
         {
             bool isLastStep = (index >= total - 1);
@@ -166,20 +133,18 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         }
     }
 
-    // ===== 버튼 콜백 =====
+    // ===== 자동 시작 =====
 
-    public void OnClickStart()
+    private void AutoStart()
     {
         if (_isCompleted) return;
-        if (_hasStarted) return; // 이미 시작했다가 멈춘 경우는 Resume 사용
+        if (_hasStarted) return;
 
         _hasStarted = true;
         _isPlaying = true;
         _currentStepIndex = 0;
         _currentStepElapsed = 0f;
 
-        // Intro -> Playing 전환
-        SetRootActive(IntroRoot, false);
         SetRootActive(PlayingRoot, true);
         SetRootActive(PausedRoot, false);
 
@@ -192,6 +157,8 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         _playRoutine = StartCoroutine(PlayRoutine());
     }
 
+    // ===== 버튼 콜백 =====
+
     public void OnClickPause()
     {
         if (!_hasStarted) return;
@@ -200,13 +167,8 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
 
         _isPlaying = false;
 
-        // Playing -> Paused
         SetRootActive(PlayingRoot, false);
         SetRootActive(PausedRoot, true);
-
-        // 호흡 애니메이션 일시정지
-        if (EffectController != null)
-            EffectController.PauseBreathingAnimation();
     }
 
     public void OnClickResume()
@@ -217,13 +179,8 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
 
         _isPlaying = true;
 
-        // Paused -> Playing
         SetRootActive(PlayingRoot, true);
         SetRootActive(PausedRoot, false);
-
-        // 호흡 애니메이션 재개
-        if (EffectController != null)
-            EffectController.ResumeBreathingAnimation();
     }
 
     // ===== 메인 루프 =====
@@ -242,39 +199,22 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             // 단계 UI 세팅
             ApplyStepUI(step, _currentStepIndex, total);
             _currentStepElapsed = 0f;
-            SetProgress(0f);
 
             // 카드 팝인 애니메이션
             if (effect != null)
                 effect.PlayCardPopIn();
 
-            // 호흡 단계(3~5)면 호흡 애니메이션 시작
-            bool isBreathingStep = step.Id >= 3 && step.Id <= 5;
-            if (isBreathingStep && effect != null)
-                effect.StartBreathingAnimation();
-
-            // duration 동안 진행 (일시정지 시에는 시간 멈춤)
+            // duration 동안 대기 (일시정지 시에는 시간 멈춤)
             while (_currentStepElapsed < duration)
             {
                 if (_isPlaying)
-                {
-                    float dt = Time.deltaTime;
-                    _currentStepElapsed += dt;
-
-                    float t = Mathf.Clamp01(_currentStepElapsed / duration);
-                    SetProgress(t);
-                }
+                    _currentStepElapsed += Time.deltaTime;
 
                 yield return null;
             }
 
-            // 호흡 애니메이션 정지
-            if (isBreathingStep && effect != null)
-                effect.StopBreathingAnimation();
-
             // 다음 단계로
             _currentStepIndex++;
-            SetProgress(0f);
         }
 
         // 모두 끝났을 때
@@ -291,10 +231,8 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         _isCompleted = true;
         _isPlaying = false;
 
-        // 마지막 카드 그대로 두고, 그냥 Gate만 완료
         SetRootActive(PlayingRoot, true);
         SetRootActive(PausedRoot, false);
-        SetRootActive(IntroRoot, false);
 
         if (CompletionGate != null)
             CompletionGate.MarkOneDone();

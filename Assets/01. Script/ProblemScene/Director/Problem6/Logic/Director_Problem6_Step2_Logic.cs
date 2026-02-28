@@ -29,25 +29,17 @@ public class StressCardSlot
 [Serializable]
 public class StudioLightSlot
 {
-    [Header("조명 이미지 (기본 상태, 깜빡임)")]
+    [Header("조명 이미지 (기본 상태)")]
     public GameObject defaultImage;
 
     [Header("클릭 이미지 (선택 시 표시)")]
     public GameObject clickedImage;
-
-    [Header("깜빡임 설정 (CanvasGroup 사용)")]
-    public CanvasGroup defaultCanvasGroup;
-    public float flickerSpeed = 2f;
-    [Range(0f, 1f)] public float minAlpha = 0.2f;
-    [Range(0f, 1f)] public float maxAlpha = 1f;
-
-    [HideInInspector] public float phaseOffset;   // 각 조명 별 위상 랜덤
 }
 
 /// <summary>
 /// Director / Part6 / Step2 (스트레스 반응 카드 선택) 로직 베이스.
 /// - 카드 2~4개 선택.
-/// - 선택 개수에 비례해서 위쪽 조명들이 하나씩 안정화.
+/// - 선택 개수에 비례해서 위쪽 조명이 왼쪽부터 하나씩 켜짐 (단순 이미지 교체).
 /// - 카드 선택으로 Gate만 열고,
 ///   실제 DB 저장은 completeRoot 안 "다음" 버튼에서 SaveSelectionToDB()로 한 번만 호출.
 /// </summary>
@@ -58,11 +50,8 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     /// <summary>스트레스 카드 슬롯들 (8개)</summary>
     protected abstract StressCardSlot[] Cards { get; }
 
-    /// <summary>위쪽 조명들 (4개)</summary>
+    /// <summary>위쪽 조명들 (3개)</summary>
     protected abstract StudioLightSlot[] Lights { get; }
-
-    /// <summary> "2~4개의 카드를 선택하세요" 같은 안내 텍스트 (옵션)</summary>
-    protected abstract Text ProgressLabelUI { get; }
 
     /// <summary>완료 게이트 (completeRoot 안에 버튼 있음)</summary>
     protected abstract StepCompletionGate StepCompletionGateRef { get; }
@@ -78,13 +67,18 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     protected virtual Color CardSelectedColor =>
         new Color(1f, 0.54f, 0.24f, 1f); // #FF8A3D 느낌
 
+    // ===== NextStep 버튼 (조명 다 켜지면 활성화) =====
+
+    [Header("Next Step Button")]
+    [SerializeField] private GameObject nextStepButtonRoot;
+
     // ===== 내부 상태 =====
 
     private bool[] _selectedFlags;
     private int _selectedCount;
     private bool _initialized;
-    private bool _gateCompleted;   // MarkOneDone 한 번만 호출하기 위한 플래그
-    private bool _savedToDB;       // SaveSelectionToDB 한 번만 호출하기 위한 플래그
+    private bool _gateCompleted;
+    private bool _savedToDB;
 
     // =========================================================
     // Step Lifecycle (ProblemStepBase)
@@ -96,19 +90,16 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     protected override void OnStepEnter()
     {
         ResetGate();
-        InitializeLightPhases();
+        InitializeLights();
         InitializeIfNeeded();
+
+        if (nextStepButtonRoot != null)
+            nextStepButtonRoot.SetActive(false);
     }
 
     protected override void OnStepExit()
     {
         RemoveCardListeners();
-    }
-
-    // 매 프레임 조명 깜빡임/안정화
-    private void Update()
-    {
-        UpdateLightsVisual();
     }
 
     // =========================================================
@@ -125,7 +116,7 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         _savedToDB = false;
     }
 
-    private void InitializeLightPhases()
+    private void InitializeLights()
     {
         var lights = Lights;
         if (lights == null) return;
@@ -133,9 +124,6 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         for (int i = 0; i < lights.Length; i++)
         {
             var slot = lights[i];
-            slot.phaseOffset = UnityEngine.Random.Range(0f, 10f);
-
-            // 초기 상태: 기본 이미지 ON, 클릭 이미지 OFF
             if (slot.defaultImage != null)
                 slot.defaultImage.SetActive(true);
             if (slot.clickedImage != null)
@@ -164,7 +152,6 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
             _selectedFlags[i] = false;
 
         SetupCardUI();
-        UpdateProgressLabel();
 
         _initialized = true;
     }
@@ -255,7 +242,6 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
         UpdateCardVisuals();
         UpdateLightsVisual();
-        UpdateProgressLabel();
         UpdateGateState();   // 선택 개수에 따라 Gate 열기/닫기
     }
 
@@ -290,16 +276,8 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         }
     }
 
-    private void UpdateProgressLabel()
-    {
-        var label = ProgressLabelUI;
-        if (label == null) return;
-
-        label.text = $"{MinSelectCount}~{MaxSelectCount}개의 카드를 선택하세요 ({_selectedCount}/{MaxSelectCount} 선택됨)";
-    }
-
     // =========================================================
-    // 조명: 기본 이미지 깜빡임 / 클릭 이미지 표시
+    // 조명: 선택 개수만큼 왼쪽부터 이미지 교체
     // =========================================================
 
     private void UpdateLightsVisual()
@@ -308,38 +286,17 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         if (lights == null || lights.Length == 0)
             return;
 
-        int stabilizedLights = Mathf.Clamp(_selectedCount, 0, lights.Length);
-        float time = Time.time;
+        int litCount = Mathf.Clamp(_selectedCount, 0, lights.Length);
 
         for (int i = 0; i < lights.Length; i++)
         {
             var slot = lights[i];
+            bool isLit = i < litCount;
 
-            if (i < stabilizedLights)
-            {
-                // 안정 상태 (선택됨): 기본 이미지 OFF, 클릭 이미지 ON
-                if (slot.defaultImage != null)
-                    slot.defaultImage.SetActive(false);
-                if (slot.clickedImage != null)
-                    slot.clickedImage.SetActive(true);
-            }
-            else
-            {
-                // 불안정 상태: 기본 이미지 ON + 깜빡임, 클릭 이미지 OFF
-                if (slot.defaultImage != null)
-                    slot.defaultImage.SetActive(true);
-                if (slot.clickedImage != null)
-                    slot.clickedImage.SetActive(false);
-
-                // 깜빡임 (CanvasGroup alpha)
-                if (slot.defaultCanvasGroup != null)
-                {
-                    float phase = time * slot.flickerSpeed + slot.phaseOffset;
-                    float sin = (Mathf.Sin(phase) + 1f) * 0.5f;   // 0~1
-                    float alpha = Mathf.Lerp(slot.minAlpha, slot.maxAlpha, sin);
-                    slot.defaultCanvasGroup.alpha = alpha;
-                }
-            }
+            if (slot.defaultImage != null)
+                slot.defaultImage.SetActive(!isLit);
+            if (slot.clickedImage != null)
+                slot.clickedImage.SetActive(isLit);
         }
     }
 
@@ -349,6 +306,14 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
     private void UpdateGateState()
     {
+        var lights = Lights;
+        bool allLightsLit = lights != null && _selectedCount >= lights.Length;
+
+        // NextStep 버튼: 조명 다 켜지면 활성화, 아니면 비활성화
+        if (nextStepButtonRoot != null)
+            nextStepButtonRoot.SetActive(allLightsLit);
+
+        // Gate: 최소 선택 수 이상이면 열기
         var gate = StepCompletionGateRef;
         if (gate == null) return;
 
@@ -356,13 +321,11 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
         if (shouldBeCompleted && !_gateCompleted)
         {
-            // 최소 개수 이상 선택됨 → Gate 열기
             gate.MarkOneDone();
             _gateCompleted = true;
         }
         else if (!shouldBeCompleted && _gateCompleted)
         {
-            // 최소 개수 미만으로 내려감 → Gate 닫기
             gate.MarkOneUndone();
             _gateCompleted = false;
         }

@@ -214,41 +214,18 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
     private void CacheStepFlowController()
     {
         _flowController = null;
-        _nextStepMethod = null;
-
         if (!autoCallNextStep) return;
-
-        var monos = GetComponentsInParent<MonoBehaviour>(true);
-        for (int i = 0; i < monos.Length; i++)
-        {
-            var mb = monos[i];
-            if (mb == null) continue;
-
-            var t = mb.GetType();
-            if (t.Name != stepFlowControllerTypeName) continue;
-
-            var mi = t.GetMethod(nextStepMethodName,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            if (mi == null) continue;
-            if (mi.GetParameters().Length != 0) continue;
-
-            _flowController = mb;
-            _nextStepMethod = mi;
-            break;
-        }
+        _flowController = GetComponentInParent<StepFlowController>();
     }
 
     private bool TryCallNextStep()
     {
-        if (_flowController == null || _nextStepMethod == null)
-        {
-            CacheStepFlowController();
-            if (_flowController == null || _nextStepMethod == null)
-                return false;
-        }
+        if (_flowController == null)
+            _flowController = GetComponentInParent<StepFlowController>();
 
-        _nextStepMethod.Invoke(_flowController, null);
+        if (_flowController == null) return false;
+
+        _flowController.NextStep();
         return true;
     }
 

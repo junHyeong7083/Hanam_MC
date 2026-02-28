@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -56,15 +55,12 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
     [Header("NextStep Auto Call")]
     [SerializeField] private bool autoCallNextStep = true;
-    [SerializeField] private string stepFlowControllerTypeName = "StepFlowController";
-    [SerializeField] private string nextStepMethodName = "NextStep";
 
     [Header("Fallback Callback")]
     [SerializeField] private UnityEvent onClickNextShootFallback;
 
     private bool _completed = false;
-    private Component _flowController;
-    private MethodInfo _nextStepMethod;
+    private StepFlowController _flowController;
 
     protected override void OnStepEnter()
     {
@@ -244,41 +240,18 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
     private void CacheStepFlowController()
     {
         _flowController = null;
-        _nextStepMethod = null;
-
         if (!autoCallNextStep) return;
-
-        var monos = GetComponentsInParent<MonoBehaviour>(true);
-        for (int i = 0; i < monos.Length; i++)
-        {
-            var mb = monos[i];
-            if (mb == null) continue;
-
-            var t = mb.GetType();
-            if (t.Name != stepFlowControllerTypeName) continue;
-
-            var mi = t.GetMethod(nextStepMethodName,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            if (mi == null) continue;
-            if (mi.GetParameters().Length != 0) continue;
-
-            _flowController = mb;
-            _nextStepMethod = mi;
-            break;
-        }
+        _flowController = GetComponentInParent<StepFlowController>();
     }
 
     private bool TryCallNextStep()
     {
-        if (_flowController == null || _nextStepMethod == null)
-        {
-            CacheStepFlowController();
-            if (_flowController == null || _nextStepMethod == null)
-                return false;
-        }
+        if (_flowController == null)
+            _flowController = GetComponentInParent<StepFlowController>();
 
-        _nextStepMethod.Invoke(_flowController, null);
+        if (_flowController == null) return false;
+
+        _flowController.NextStep();
         return true;
     }
 

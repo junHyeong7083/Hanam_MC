@@ -19,22 +19,22 @@ public class Director_Problem5_Step2 : Director_Problem5_Step2_Logic
         public Button iconButton;           // 클릭용 버튼
         public GameObject unrevealedRoot;   // 아직 클릭 안 한 상태의 비주얼
         public GameObject revealedRoot;     // 클릭 완료 후 비주얼
-        public GameObject glowImage;        // 글로우 이미지 (revealed 시 비활성화)
 
-        [Header("팝업 이미지들")]
-        [Tooltip("클로즈업 팝업 (이미지 + 스케일 애니메이션)")]
-        public PopupImageDisplay closeUpPopup;
-        [Tooltip("풀씬 팝업 (이미지 + 스케일 애니메이션)")]
-        public PopupImageDisplay fullScenePopup;
+        [Header("텍스트 (CSV textId)")]
+        public int unrevealedTextId;        // 클릭 전 텍스트 ID
+        public Text unrevealedText;         // 클릭 전 텍스트 UI
+        public int revealedTextId;          // 클릭 후 텍스트 ID
+        public Text revealedText;           // 클릭 후 텍스트 UI
 
         // ==== IZoomOutSceneData 구현 ====
         public int Id => id;
         public Button IconButton => iconButton;
         public GameObject UnrevealedRoot => unrevealedRoot;
         public GameObject RevealedRoot => revealedRoot;
-        public GameObject GlowImage => glowImage;
-        public PopupImageDisplay CloseUpPopup => closeUpPopup;
-        public PopupImageDisplay FullScenePopup => fullScenePopup;
+        public int UnrevealedTextId => unrevealedTextId;
+        public int RevealedTextId => revealedTextId;
+        public Text UnrevealedText => unrevealedText;
+        public Text RevealedText => revealedText;
     }
 
     [Header("장면 데이터들 (씬에서 아이콘 1:1 대응)")]

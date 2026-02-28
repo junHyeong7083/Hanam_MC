@@ -3,24 +3,22 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem6 / Step2
-/// - ÀÎ½ºÆåÅÍ¿¡¼­ Ä«µå / Á¶¸í / ¹öÆ° / ¶óº§À» ¼¼ÆÃÇØÁÖ°í,
-///   ³ª¸ÓÁö ·ÎÁ÷Àº Director_Problem6_Step2_Logic(ºÎ¸ð)¿¡¼­ Ã³¸®.
+/// - ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½Æ° / ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½,
+///   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Director_Problem6_Step2_Logic(ï¿½Î¸ï¿½)ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 /// </summary>
 public class Director_Problem6_Step2 : Director_Problem6_Step2_Logic
 {
-    [Header("½ºÆ®·¹½º Ä«µå ½½·Ôµé (8°³)")]
+    [Header("ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ (8ï¿½ï¿½)")]
     [SerializeField] private StressCardSlot[] cardSlots;
 
-    [Header("À§ÂÊ Á¶¸íµé (4°³)")]
+    [Header("ì¡°ëª… ìŠ¬ë¡¯ (3ê°œ)")]
     [SerializeField] private StudioLightSlot[] studioLights;
 
-    [Header("UI ÂüÁ¶")]
-    [SerializeField] private Text progressLabel;
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // ---- Logic º£ÀÌ½º¿¡ ³Ñ°ÜÁÙ ÇÁ·ÎÆÛÆ¼ ±¸Çö ----
+    // ---- Logic ë² ì´ìŠ¤ì— ë„˜ê²¨ì¤„ í”„ë¡œí¼í‹° êµ¬í˜„ ----
     protected override StressCardSlot[] Cards => cardSlots;
     protected override StudioLightSlot[] Lights => studioLights;
-    protected override Text ProgressLabelUI => progressLabel;
     protected override StepCompletionGate StepCompletionGateRef => completionGate;
 }
