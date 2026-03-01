@@ -45,11 +45,14 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     [Header("오답 표시 UI")]
     [SerializeField] private GameObject errorRoot;
 
+    [Header("하남 박스")]
+    [SerializeField] private Text hanamText;
+    [SerializeField] private int guideTextId;
+    [SerializeField] private int completionTextId;
+
     [Header("완료 시 UI")]
     [SerializeField] private GameObject hideObjectOnComplete;
     [SerializeField] private RectTransform showImageOnComplete;
-    [SerializeField] private Text completionLabel;
-    [SerializeField] private int completionTextId;
     [SerializeField] private float completionDelayDuration = 4f;
 
     // ====== 베이스 주입용 override 프로퍼티 ======
@@ -68,9 +71,11 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
 
     protected override GameObject ErrorRoot => errorRoot;
 
+    protected override Text HanamText => hanamText;
+    protected override string GuideText => ProblemRuntime.L(guideTextId);
+    protected override string CompletionText => ProblemRuntime.L(completionTextId);
+
     protected override GameObject HideObjectOnComplete => hideObjectOnComplete;
     protected override RectTransform ShowImageOnComplete => showImageOnComplete;
-    protected override Text CompletionLabel => completionLabel;
-    protected override string CompletionText => ProblemRuntime.L(completionTextId);
     protected override float CompletionDelayDuration => completionDelayDuration;
 }

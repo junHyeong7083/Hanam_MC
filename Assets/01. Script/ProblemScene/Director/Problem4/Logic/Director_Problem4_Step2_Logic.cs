@@ -74,11 +74,14 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     [Header("오답 표시 UI")]
     protected abstract GameObject ErrorRoot { get; }
 
+    [Header("하남 박스")]
+    protected abstract Text HanamText { get; }
+    protected abstract string GuideText { get; }
+    protected abstract string CompletionText { get; }
+
     [Header("완료 시 UI")]
     protected abstract GameObject HideObjectOnComplete { get; }
     protected abstract RectTransform ShowImageOnComplete { get; }
-    protected abstract Text CompletionLabel { get; }
-    protected abstract string CompletionText { get; }
     protected virtual float CompletionDelayDuration => 4f;
 
     // ======================
@@ -131,6 +134,10 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         // 완료 게이트 리셋
         if (StepCompletionGate != null)
             StepCompletionGate.ResetGate(1);
+
+        // 시작 가이드 텍스트 설정
+        if (HanamText != null && !string.IsNullOrEmpty(GuideText))
+            HanamText.text = GuideText;
 
         // 첫 카드 표시
         RefreshCurrentCutUI();
@@ -412,9 +419,9 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (HideObjectOnComplete != null)
             HideObjectOnComplete.SetActive(false);
 
-        // 텍스트 설정
-        if (CompletionLabel != null && !string.IsNullOrEmpty(CompletionText))
-            CompletionLabel.text = CompletionText;
+        // 완료 텍스트 설정
+        if (HanamText != null && !string.IsNullOrEmpty(CompletionText))
+            HanamText.text = CompletionText;
 
         // 팝업 애니메이션으로 이미지 등장
         var effect = EffectController;

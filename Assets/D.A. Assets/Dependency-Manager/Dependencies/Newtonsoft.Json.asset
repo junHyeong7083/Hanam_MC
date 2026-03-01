@@ -15,5 +15,5 @@ MonoBehaviour:
   TypeAndAssembly: Newtonsoft.Json.JsonConvert, Newtonsoft.Json
   ScriptingDefineSymbol: JSONNET_EXISTS
   isEnabled: 1
-  scriptPath: Assets/Packages/Newtonsoft.Json.13.0.4/lib/netstandard2.0/Newtonsoft.Json.dll
+  scriptPath: Library/PackageCache/com.unity.nuget.newtonsoft-json@74deb55db2a0/Runtime/Newtonsoft.Json.dll
   disabledManually: 0
