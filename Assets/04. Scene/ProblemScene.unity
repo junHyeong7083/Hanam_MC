@@ -1560,7 +1560,6 @@ GameObject:
   - component: {fileID: 43495273}
   - component: {fileID: 43495271}
   - component: {fileID: 43495274}
-  - component: {fileID: 43495275}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
@@ -1822,21 +1821,6 @@ MonoBehaviour:
     distance: 100
     startScale: 0
   playOnEnable: 1
---- !u!114 &43495275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 43495268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 6
-  stepNumber: 2
-  hasButton: 1
 --- !u!1 &45583723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4576,9 +4560,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101080002
+  watchedText: {fileID: 2068278458}
 --- !u!114 &101472175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5664,7 +5647,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5882,7 +5866,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -6205,9 +6190,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101070009
+  watchedText: {fileID: 802992738}
 --- !u!114 &136622918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8729,6 +8713,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101020002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 1646131946}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -11959,9 +11951,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101050002
+  watchedText: {fileID: 165372033}
 --- !u!114 &271498667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15112,7 +15103,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -15298,6 +15290,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101030004
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 1438533151}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -15640,6 +15640,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101030006
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 535019827}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -18084,7 +18092,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -18834,7 +18843,6 @@ GameObject:
   - component: {fileID: 450532299}
   - component: {fileID: 450532298}
   - component: {fileID: 450532297}
-  - component: {fileID: 450532296}
   - component: {fileID: 450532295}
   m_Layer: 5
   m_Name: IntroStep3
@@ -18887,21 +18895,6 @@ MonoBehaviour:
   usePlaceholder: 0
   placeholderTextId: 900300001
   placeholderCount: 3
---- !u!114 &450532296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 450532293}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 8
-  stepNumber: 3
-  hasButton: 0
 --- !u!114 &450532297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19508,6 +19501,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101040007
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 458989031}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -20247,9 +20248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101100004
+  watchedText: {fileID: 247802454}
 --- !u!114 &479162227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21120,7 +21120,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -22432,9 +22433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101060002
+  watchedText: {fileID: 855740093}
 --- !u!114 &526833920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22548,7 +22548,6 @@ GameObject:
   - component: {fileID: 530876410}
   - component: {fileID: 530876406}
   - component: {fileID: 530876409}
-  - component: {fileID: 530876412}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
@@ -22705,21 +22704,6 @@ MonoBehaviour:
     distance: 30
     startScale: 0
   playOnEnable: 1
---- !u!114 &530876412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530876404}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 5
-  stepNumber: 2
-  hasButton: 1
 --- !u!1001 &533878523
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22856,7 +22840,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -23959,7 +23944,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -25318,9 +25304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101090004
+  watchedText: {fileID: 1633085895}
 --- !u!114 &579218330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25547,9 +25532,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101090008
+  watchedText: {fileID: 149534348}
 --- !u!114 &583524754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25701,9 +25685,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101070004
+  watchedText: {fileID: 1235715501}
 --- !u!114 &588195985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26308,9 +26291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101080007
+  watchedText: {fileID: 767272117}
 --- !u!114 &600546097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28817,6 +28799,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101030002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 651715385}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -33251,7 +33241,6 @@ GameObject:
   - component: {fileID: 753990063}
   - component: {fileID: 753990065}
   - component: {fileID: 753990062}
-  - component: {fileID: 753990066}
   m_Layer: 5
   m_Name: Step1
   m_TagString: Untagged
@@ -33372,21 +33361,6 @@ MonoBehaviour:
   stepFlowController: {fileID: 0}
   useHideRoot: 0
   hideRoot: {fileID: 0}
---- !u!114 &753990066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 753990060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 2
-  stepNumber: 1
-  hasButton: 1
 --- !u!1 &753996824 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6969127894265614571, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
@@ -33944,7 +33918,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -34181,7 +34156,6 @@ GameObject:
   - component: {fileID: 769179105}
   - component: {fileID: 769179104}
   - component: {fileID: 769179103}
-  - component: {fileID: 769179102}
   - component: {fileID: 769179101}
   m_Layer: 5
   m_Name: IntroStep1
@@ -34234,21 +34208,6 @@ MonoBehaviour:
   usePlaceholder: 0
   placeholderTextId: 900300001
   placeholderCount: 3
---- !u!114 &769179102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 769179099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 8
-  stepNumber: 1
-  hasButton: 0
 --- !u!114 &769179103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38893,7 +38852,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -39886,7 +39846,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -40701,7 +40662,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -42584,9 +42546,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101070002
+  watchedText: {fileID: 2063779763}
 --- !u!114 &936962189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43009,7 +42970,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -43113,7 +43075,6 @@ GameObject:
   - component: {fileID: 954160560}
   - component: {fileID: 954160562}
   - component: {fileID: 954160563}
-  - component: {fileID: 954160564}
   m_Layer: 5
   m_Name: Step3
   m_TagString: Untagged
@@ -43233,21 +43194,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   introElements: []
   playOnEnable: 1
---- !u!114 &954160564
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 954160557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 8
-  stepNumber: 3
-  hasButton: 1
 --- !u!1 &954281380
 GameObject:
   m_ObjectHideFlags: 0
@@ -43384,6 +43330,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101020003
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 959832793}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_Text
       value: "\uB2E4\uC74C"
@@ -43863,7 +43817,6 @@ GameObject:
   - component: {fileID: 970637617}
   - component: {fileID: 970637616}
   - component: {fileID: 970637619}
-  - component: {fileID: 970637620}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
@@ -44012,21 +43965,6 @@ MonoBehaviour:
     distance: 50
     startScale: 0
   playOnEnable: 1
---- !u!114 &970637620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 970637613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 9
-  stepNumber: 2
-  hasButton: 1
 --- !u!1 &970821630
 GameObject:
   m_ObjectHideFlags: 0
@@ -45279,7 +45217,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -51612,9 +51551,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101080003
+  watchedText: {fileID: 1991068640}
 --- !u!114 &1212343452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52275,9 +52213,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101070002
+  watchedText: {fileID: 550714058}
 --- !u!114 &1233222880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53306,9 +53243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101060004
+  watchedText: {fileID: 503621665}
 --- !u!114 &1255009563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53551,7 +53487,6 @@ GameObject:
   - component: {fileID: 1261084080}
   - component: {fileID: 1261084079}
   - component: {fileID: 1261084078}
-  - component: {fileID: 1261084077}
   - component: {fileID: 1261084076}
   m_Layer: 5
   m_Name: IntroStep1
@@ -53604,21 +53539,6 @@ MonoBehaviour:
   usePlaceholder: 0
   placeholderTextId: 900300001
   placeholderCount: 3
---- !u!114 &1261084077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1261084074}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 9
-  stepNumber: 1
-  hasButton: 0
 --- !u!114 &1261084078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54010,9 +53930,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101050004
+  watchedText: {fileID: 50463851}
 --- !u!114 &1274414006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56941,7 +56860,6 @@ GameObject:
   - component: {fileID: 1364899081}
   - component: {fileID: 1364899083}
   - component: {fileID: 1364899084}
-  - component: {fileID: 1364899085}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
@@ -57097,21 +57015,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   introElements: []
   playOnEnable: 1
---- !u!114 &1364899085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364899077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 8
-  stepNumber: 2
-  hasButton: 1
 --- !u!1001 &1366322657
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57240,7 +57143,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -57505,6 +57409,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101020004
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 1304640788}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -58851,7 +58763,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -61507,6 +61420,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101010003
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 193490506}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_Text
       value: "\uC694\uC57D\uBCF4\uAE30"
@@ -65299,9 +65220,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101090002
+  watchedText: {fileID: 1349972666}
 --- !u!114 &1574077400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66765,7 +66685,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -69893,9 +69814,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101050008
+  watchedText: {fileID: 1466965478}
 --- !u!114 &1700788649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72165,7 +72085,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -73321,7 +73242,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -79132,7 +79054,6 @@ GameObject:
   - component: {fileID: 1970336476}
   - component: {fileID: 1970336473}
   - component: {fileID: 1970336477}
-  - component: {fileID: 1970336478}
   m_Layer: 5
   m_Name: Step3
   m_TagString: Untagged
@@ -79303,21 +79224,6 @@ MonoBehaviour:
   npcResponseCanvasGroup: {fileID: 0}
   responseSlideUpDistance: 20
   responseFadeInDuration: 0.3
---- !u!114 &1970336478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1970336471}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 5
-  stepNumber: 3
-  hasButton: 1
 --- !u!1 &1971524843
 GameObject:
   m_ObjectHideFlags: 0
@@ -80560,9 +80466,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101100007
+  watchedText: {fileID: 2143309350}
 --- !u!114 &1987485820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81771,7 +81676,6 @@ GameObject:
   - component: {fileID: 2013157311}
   - component: {fileID: 2013157310}
   - component: {fileID: 2013157309}
-  - component: {fileID: 2013157308}
   - component: {fileID: 2013157307}
   m_Layer: 5
   m_Name: IntroStep2
@@ -81804,21 +81708,6 @@ MonoBehaviour:
   usePlaceholder: 0
   placeholderTextId: 900300001
   placeholderCount: 3
---- !u!114 &2013157308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2013157306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 3
-  hasButton: 0
 --- !u!114 &2013157309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82814,9 +82703,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101040003
+  watchedText: {fileID: 1812601034}
 --- !u!114 &2022487779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86711,7 +86599,6 @@ GameObject:
   - component: {fileID: 2120861679}
   - component: {fileID: 2120861678}
   - component: {fileID: 2120861681}
-  - component: {fileID: 2120861682}
   m_Layer: 5
   m_Name: Step2
   m_TagString: Untagged
@@ -86877,21 +86764,6 @@ MonoBehaviour:
     distance: 30
     startScale: 0
   playOnEnable: 1
---- !u!114 &2120861682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2120861675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemNumber: 10
-  stepNumber: 2
-  hasButton: 1
 --- !u!1 &2122629566
 GameObject:
   m_ObjectHideFlags: 0
@@ -88489,6 +88361,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 669f69b219fc1d041967165a486c9730, type: 3}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101010002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6379891089059316041, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: watchedText
+      value: 
+      objectReference: {fileID: 266132174}
     - target: {fileID: 7329419774973710359, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -92311,6 +92191,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2589186209492480856, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+    - {fileID: 3639286405758426846, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -94044,9 +93925,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 101040004
+  watchedText: {fileID: 603770667}
 --- !u!1 &9158664714796033165
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,48 +3,47 @@ using UnityEngine.UI;
 
 /// <summary>
 /// TTS 재생 컴포넌트
-/// - OnEnable 시 항상 자동 재생
-/// - hasButton = true: 버튼 클릭으로 토글 가능 (재생 중이면 끄기, 아니면 다시 재생)
-/// - hasButton = false: 버튼 없음 (자동 재생만)
+/// - OnEnable 시 자동 재생
+/// - Button이 있으면 클릭 시 다시 재생
+/// - textId 기반으로 SoundManager에서 클립 검색
+/// - watchedText 설정 시 텍스트 변경을 감지하여 textId 자동 동기화
 /// </summary>
 public class TTSTrigger : MonoBehaviour
 {
     [Header("TTS 설정")]
-    [Tooltip("문제 번호 (1~10)")]
-    [SerializeField] private int problemNumber = 1;
+    [Tooltip("재생할 대사 textId (DataTable 기준)")]
+    [SerializeField] private int textId;
 
-    [Tooltip("스텝 번호 (1~3)")]
-    [SerializeField] private int stepNumber = 1;
-
-    [Header("버튼 사용 여부")]
-    [Tooltip("true: 버튼으로 토글 가능 / false: 버튼 없음 (자동 재생만)")]
-    [SerializeField] private bool hasButton = true;
+    [Header("자동 동기화")]
+    [Tooltip("연결하면 이 Text의 내용이 바뀔 때 자동으로 textId를 업데이트합니다")]
+    [SerializeField] private Text watchedText;
 
     private Button _button;
+    private string _lastWatchedText;
+
+    public int TextId
+    {
+        get => textId;
+        set => textId = value;
+    }
 
     private void Awake()
     {
-        if (hasButton)
-        {
-            _button = GetComponent<Button>();
-            if (_button != null)
-                _button.onClick.AddListener(OnClick);
-        }
+        _button = GetComponent<Button>();
+        if (_button != null)
+            _button.onClick.AddListener(OnClick);
     }
 
     private void OnEnable()
     {
-        // 항상 자동 재생
-        PlayTTS();
+        if (textId > 0)
+            Play();
     }
 
     private void OnDisable()
     {
-        // 스텝 전환/씬 전환 시 TTS 중지
         if (SoundManager.Instance != null)
-        {
             SoundManager.Instance.StopTTS();
-        }
     }
 
     private void OnDestroy()
@@ -53,24 +52,29 @@ public class TTSTrigger : MonoBehaviour
             _button.onClick.RemoveListener(OnClick);
     }
 
-    /// <summary>
-    /// 버튼 클릭 시 토글
-    /// </summary>
-    private void OnClick()
+    private void LateUpdate()
     {
-        if (SoundManager.Instance == null)
-        {
-            Debug.LogWarning("[TTSTrigger] SoundManager가 없습니다");
-            return;
-        }
+        if (watchedText == null || SoundManager.Instance == null) return;
 
-        SoundManager.Instance.ToggleTTS(problemNumber, stepNumber);
+        string current = watchedText.text;
+        if (current == _lastWatchedText) return;
+        _lastWatchedText = current;
+
+        int foundId = SoundManager.Instance.FindTextIdByText(current);
+        if (foundId > 0)
+        {
+            textId = foundId;
+            Play();
+        }
     }
 
-    /// <summary>
-    /// TTS 재생 (자동 재생용)
-    /// </summary>
-    private void PlayTTS()
+    private void OnClick()
+    {
+        if (textId > 0)
+            Play();
+    }
+
+    private void Play()
     {
         if (SoundManager.Instance == null)
         {
@@ -78,8 +82,6 @@ public class TTSTrigger : MonoBehaviour
             return;
         }
 
-        string clipName = $"P{problemNumber}_S{stepNumber}";
-        Debug.Log($"[TTSTrigger] 자동 재생: {clipName}");
-        SoundManager.Instance.PlayTTS(problemNumber, stepNumber);
+        SoundManager.Instance.PlayTTS(textId);
     }
 }

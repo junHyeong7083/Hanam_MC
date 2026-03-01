@@ -17,12 +17,12 @@ public class SoundManager : MonoBehaviour
     }
 
     [Header("TTS Clips")]
-    [SerializeField] private AudioClip[] ttsAudioClips;  // P1_S1, P1_S2, P2_S1 등
-    [SerializeField] private AudioSource[] ttsPlayers;   // TTS 전용 AudioSource 배열
+    [SerializeField] private AudioClip[] ttsAudioClips;
+    [SerializeField] private AudioSource[] ttsPlayers;
 
-    private Dictionary<string, AudioClip> ttsClipsDic = new Dictionary<string, AudioClip>();
+    private Dictionary<int, AudioClip> _ttsClipsByTextId = new Dictionary<int, AudioClip>();
+    private Dictionary<string, int> _textToIdMap;
 
-    /// <summary>TTS 재생 상태 (하나라도 재생 중이면 true)</summary>
     public bool IsTTSPlaying
     {
         get
@@ -46,65 +46,91 @@ public class SoundManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
-        // TTS 클립 등록
-        foreach (AudioClip clip in ttsAudioClips)
+        RegisterTTSClips();
+    }
+
+    private void RegisterTTSClips()
+    {
+        _ttsClipsByTextId.Clear();
+
+        if (ttsAudioClips == null) return;
+
+        foreach (var clip in ttsAudioClips)
         {
-            if (clip != null)
-                ttsClipsDic[clip.name] = clip;
+            if (clip == null) continue;
+
+            int textId = ExtractTextId(clip.name);
+            if (textId > 0)
+            {
+                _ttsClipsByTextId[textId] = clip;
+            }
+            else
+            {
+                Debug.LogWarning($"[SoundManager] TTS 클립명에서 textId 파싱 실패: {clip.name}");
+            }
         }
+
+        Debug.Log($"[SoundManager] TTS 클립 {_ttsClipsByTextId.Count}개 등록 완료");
+    }
+
+    /// <summary>
+    /// 클립명에서 textId 추출
+    /// 형식: TTS_C01_S01_101010001 → 101010001
+    /// </summary>
+    private int ExtractTextId(string clipName)
+    {
+        int lastUnderscore = clipName.LastIndexOf('_');
+        if (lastUnderscore >= 0 && lastUnderscore < clipName.Length - 1)
+        {
+            string idStr = clipName.Substring(lastUnderscore + 1);
+            if (int.TryParse(idStr, out int id))
+                return id;
+        }
+        return -1;
+    }
+
+    // ============== 역방향 맵 (Text → TextId) ==============
+
+    public int FindTextIdByText(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return 0;
+        if (_textToIdMap == null) BuildReverseMap();
+        return _textToIdMap.TryGetValue(text, out int id) ? id : 0;
+    }
+
+    private void BuildReverseMap()
+    {
+        _textToIdMap = new Dictionary<string, int>();
+        foreach (var kvp in _ttsClipsByTextId)
+        {
+            string t = ProblemRuntime.L(kvp.Key);
+            if (!string.IsNullOrEmpty(t))
+                _textToIdMap[t] = kvp.Key;
+        }
+        Debug.Log($"[SoundManager] TTS 역방향 맵 {_textToIdMap.Count}개 생성 완료");
     }
 
     // ============== TTS ==============
 
-    /// <summary>
-    /// 사용 가능한 AudioSource 찾기 (재생 중이지 않은 것)
-    /// </summary>
     private AudioSource GetAvailablePlayer()
     {
         if (ttsPlayers == null || ttsPlayers.Length == 0)
             return null;
 
-        // 재생 중이지 않은 플레이어 찾기
         foreach (var player in ttsPlayers)
         {
             if (player != null && !player.isPlaying)
                 return player;
         }
 
-        // 모두 재생 중이면 첫 번째 것 반환
         return ttsPlayers[0];
     }
 
     /// <summary>
-    /// 현재 재생 중인 AudioSource 찾기
+    /// TTS 재생 (textId 기반)
+    /// - 기존 재생 중이면 중지 후 새로 재생
     /// </summary>
-    private AudioSource GetPlayingPlayer()
-    {
-        if (ttsPlayers == null) return null;
-
-        foreach (var player in ttsPlayers)
-        {
-            if (player != null && player.isPlaying)
-                return player;
-        }
-        return null;
-    }
-
-    /// <summary>
-    /// TTS 토글 재생 (문제번호, 스텝번호)
-    /// - 재생 중이면 중지
-    /// - 재생 중이 아니면 해당 클립 재생
-    /// </summary>
-    public void ToggleTTS(int problemNum, int stepNum)
-    {
-        string clipName = $"P{problemNum}_S{stepNum}";
-        ToggleTTS(clipName);
-    }
-
-    /// <summary>
-    /// TTS 토글 재생 (클립 이름으로)
-    /// </summary>
-    public void ToggleTTS(string clipName)
+    public void PlayTTS(int textId)
     {
         if (ttsPlayers == null || ttsPlayers.Length == 0)
         {
@@ -112,23 +138,15 @@ public class SoundManager : MonoBehaviour
             return;
         }
 
-        // 재생 중인 플레이어 확인
-        var playingPlayer = GetPlayingPlayer();
-        if (playingPlayer != null)
+        if (!_ttsClipsByTextId.TryGetValue(textId, out var clip))
         {
-            Debug.Log($"[SoundManager] TTS 강제 중지: {playingPlayer.clip?.name}");
-            playingPlayer.Stop();
+            Debug.LogWarning($"[SoundManager] TTS 클립을 찾을 수 없음: textId={textId}");
             return;
         }
 
-        // 클립 찾기
-        if (!ttsClipsDic.ContainsKey(clipName))
-        {
-            Debug.LogWarning($"[SoundManager] TTS 클립을 찾을 수 없음: {clipName}");
-            return;
-        }
+        // 기존 재생 중지
+        StopTTS();
 
-        // 사용 가능한 플레이어로 재생
         var player = GetAvailablePlayer();
         if (player == null)
         {
@@ -136,9 +154,8 @@ public class SoundManager : MonoBehaviour
             return;
         }
 
-        player.clip = ttsClipsDic[clipName];
+        player.clip = clip;
         player.Play();
-        Debug.Log($"[SoundManager] TTS 재생 시작: {clipName}");
     }
 
     /// <summary>
@@ -151,59 +168,7 @@ public class SoundManager : MonoBehaviour
         foreach (var player in ttsPlayers)
         {
             if (player != null && player.isPlaying)
-            {
                 player.Stop();
-            }
         }
-        Debug.Log("[SoundManager] TTS 중지");
-    }
-
-    /// <summary>
-    /// TTS 무조건 재생 (자동 재생용)
-    /// - 기존 재생 중이면 중지 후 새로 재생
-    /// </summary>
-    public void PlayTTS(int problemNum, int stepNum)
-    {
-        string clipName = $"P{problemNum}_S{stepNum}";
-        PlayTTS(clipName);
-    }
-
-    /// <summary>
-    /// TTS 무조건 재생 (클립 이름으로)
-    /// </summary>
-    public void PlayTTS(string clipName)
-    {
-        if (ttsPlayers == null || ttsPlayers.Length == 0)
-        {
-            Debug.LogWarning("[SoundManager] ttsPlayers가 할당되지 않았습니다");
-            return;
-        }
-
-        // 클립 찾기
-        if (!ttsClipsDic.ContainsKey(clipName))
-        {
-            Debug.LogWarning($"[SoundManager] TTS 클립을 찾을 수 없음: {clipName}");
-            return;
-        }
-
-        // 기존 재생 중인 것 모두 중지
-        foreach (var p in ttsPlayers)
-        {
-            if (p != null && p.isPlaying)
-                p.Stop();
-        }
-
-        // 사용 가능한 플레이어로 재생
-        var player = GetAvailablePlayer();
-        if (player == null)
-        {
-            Debug.LogWarning("[SoundManager] 사용 가능한 ttsPlayer가 없습니다");
-            return;
-        }
-
-
-        player.clip = ttsClipsDic[clipName];
-        player.Play();
-        Debug.Log($"[SoundManager] TTS 재생: {clipName}");
     }
 }
