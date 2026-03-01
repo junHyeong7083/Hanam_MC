@@ -1,18 +1,29 @@
 using System;
-using Unity.VisualScripting;
 
 /// <summary>
-/// ProblemScene¿¡¼­ ÇÊ¿äÇÑ ÄÁÅØ½ºÆ®¸¦ ÀÓ½Ã·Î ´ã¾ÆµÎ´Â ½ºÅÂÆ½ ÄÁÅ×ÀÌ³Ê.
-/// ³ªÁß¿¡ ÇÊ¿äÇÏ¸é SessionManager·Î ¿Å°Üµµ µÊ.
+/// HomeScene ë³µê·€ ì‹œ í‘œì‹œí•  íŒ¨ë„ ì§€ì •
+/// </summary>
+public enum HomeReturnTarget
+{
+    None,           // ê¸°ë³¸ (í…Œë§ˆ ì„ íƒ íŒ¨ë„)
+    LevelSelect,    // Director LevelSelectPanelë¡œ ë°”ë¡œ ì´ë™
+    Ending          // Director EndingPanelë¡œ ì´ë™ (P10 ì™„ì£¼)
+}
+
+/// <summary>
+/// ProblemSceneì—ì„œ í•„ìš”í•œ ì»¨í…ìŠ¤íŠ¸ë¥¼ ì„ì‹œë¡œ ë‹´ì•„ë‘ëŠ” ì •ì  ì»¨í…Œì´ë„ˆ.
 /// </summary>
 public static class ProblemSession
 {
-    /// <summary>¿¹: Director, Gardener µî</summary>
+    /// <summary>í…Œë§ˆ: Director, Gardener ë“±</summary>
     public static ProblemTheme CurrentTheme { get; set; }
-    
-    /// <summary>Å×¸¶ ¾È¿¡¼­ÀÇ ¹®Á¦ ¹øÈ£(1~10)</summary>
+
+    /// <summary>ê·¸ë£¹ ì•ˆì—ì„œì˜ ë¬¸ì œ ë²ˆí˜¸(1~10)</summary>
     public static int CurrentProblemIndex { get; set; }
 
-    /// <summary>Problem.Id (¹®Á¦ ¸¶½ºÅÍ ID). ÇÊ¿ä ¾øÀ¸¸é ¾È ½áµµ µÊ.</summary>
+    /// <summary>Problem.Id (ê³ ìœ  ë¬¸ìì—´ ID). í•„ìš” ì—†ìœ¼ë©´ ì•ˆ ì¨ë„ ë¨.</summary>
     public static string CurrentProblemId { get; set; }
+
+    /// <summary>HomeScene ë³µê·€ ì‹œ ì–´ë–¤ íŒ¨ë„ì„ ì—´ì§€ ì§€ì •</summary>
+    public static HomeReturnTarget ReturnTarget { get; set; } = HomeReturnTarget.None;
 }

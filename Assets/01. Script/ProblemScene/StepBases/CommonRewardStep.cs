@@ -289,6 +289,19 @@ public class CommonRewardStep : ProblemStepBase
     public void GoToHome()
     {
         MarkProblemSolved();
+
+        // Director 테마: LevelSelectPanel 또는 EndingPanel로 복귀
+        if (ProblemSession.CurrentTheme == ProblemTheme.Director)
+        {
+            ProblemSession.ReturnTarget = ProblemSession.CurrentProblemIndex >= 10
+                ? HomeReturnTarget.Ending
+                : HomeReturnTarget.LevelSelect;
+        }
+        else
+        {
+            ProblemSession.ReturnTarget = HomeReturnTarget.None;
+        }
+
         GameManager.Instance.GoToHome();
     }
 

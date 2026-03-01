@@ -388,7 +388,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8769339344122534526
 RectTransform:
   m_ObjectHideFlags: 0
@@ -399,15 +399,15 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5037275917390537042}
   m_Father: {fileID: 944357243542320843}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 539, y: -87}
-  m_SizeDelta: {x: 300, y: 70}
+  m_AnchoredPosition: {x: 540.6, y: -101.3}
+  m_SizeDelta: {x: 389.66666, y: 95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5995916122675792990
 CanvasRenderer:
@@ -901,12 +901,10 @@ MonoBehaviour:
   nextDialogueButton: {fileID: 6561261138023830320}
   proceedButton: {fileID: 7441537722732430763}
   useProceedButton: 1
-  autoCallNextStep: 1
-  stepFlowControllerTypeName: StepFlowController
-  nextStepMethodName: NextStep
   onFinished:
     m_PersistentCalls:
       m_Calls: []
+  autoCallNextStep: 1
   dialogueTextIds: 
   usePlaceholder: 1
   placeholderTextId: 900300001
@@ -946,7 +944,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 572, y: -72}
+  m_AnchoredPosition: {x: 572, y: -91.5}
   m_SizeDelta: {x: 48, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8739287953299399479

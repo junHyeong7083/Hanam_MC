@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class StepFlowController : MonoBehaviour
 {
-    [Header("ÀÌ Èå¸§¿¡¼­ »ç¿ëÇÒ ÆÐ³Î ¼ø¼­")]
+    [Header("ï¿½ï¿½ ï¿½å¸§ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private List<GameObject> stepPanels = new List<GameObject>();
 
-    [Header("Skip ¼³Á¤ (Intro °Ç³Ê¶Ù±â µî)")]
-    [Tooltip("Skip ¹öÆ°À» »ç¿ëÇÒÁö ¿©ºÎ")]
+    [Header("Skip ï¿½ï¿½ï¿½ï¿½ (Intro ï¿½Ç³Ê¶Ù±ï¿½ ï¿½ï¿½)")]
+    [Tooltip("Skip ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private bool useSkip = false;
 
-    [Tooltip("Skip ½Ã ÀÌµ¿ÇÒ step ÀÎµ¦½º (0 ±â¹Ý)")]
+    [Tooltip("Skip ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ step ï¿½Îµï¿½ï¿½ï¿½ (0 ï¿½ï¿½ï¿½)")]
     [SerializeField] private int skipTargetStepIndex = 0;
 
     private int _currentIndex = -1;
@@ -25,15 +25,15 @@ public class StepFlowController : MonoBehaviour
     {
         if (stepPanels.Count > 0)
         {
-            GoToStep(0); // Ç×»ó 0¹ø ½ºÅÜºÎÅÍ ½ÃÀÛ (ÀÎÆ®·Î ÆÐ³Î µî)
+            GoToStep(0); // ï¿½×»ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½Üºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½)
         }
         else
         {
-            Debug.LogWarning($"[ProblemFlowController] {name} ¿¡ µî·ÏµÈ ÆÐ³ÎÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[ProblemFlowController] {name} ï¿½ï¿½ ï¿½ï¿½Ïµï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
 
-    private void SetAllInactive()
+    public void SetAllInactive()
     {
         foreach (var p in stepPanels)
         {
@@ -46,7 +46,7 @@ public class StepFlowController : MonoBehaviour
         if (stepPanels == null || stepPanels.Count == 0) return;
         if (index < 0 || index >= stepPanels.Count)
         {
-            Debug.LogError($"[ProblemFlowController] Àß¸øµÈ step index: {index}");
+            Debug.LogError($"[ProblemFlowController] ï¿½ß¸ï¿½ï¿½ï¿½ step index: {index}");
             return;
         }
 
@@ -90,25 +90,25 @@ public class StepFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// Intro ÆÐ³Î µî¿¡¼­ "°Ç³Ê¶Ù±â" ´­·¶À» ¶§ È£ÃâÇÒ ÇÔ¼ö
+    /// Intro ï¿½Ð³ï¿½ ï¿½î¿¡ï¿½ï¿½ "ï¿½Ç³Ê¶Ù±ï¿½" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     /// </summary>
     public void SkipFlow()
     {
         if (!useSkip)
         {
-            Debug.LogWarning($"[ProblemFlowController] {name} ¿¡¼­ useSkip=false ÀÎµ¥ SkipFlow°¡ È£ÃâµÇ¾ú½À´Ï´Ù.");
+            Debug.LogWarning($"[ProblemFlowController] {name} ï¿½ï¿½ï¿½ï¿½ useSkip=false ï¿½Îµï¿½ SkipFlowï¿½ï¿½ È£ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
         if (stepPanels == null || stepPanels.Count == 0)
         {
-            Debug.LogWarning("[ProblemFlowController] stepPanels ºñ¾î ÀÖÀ½. Skip ºÒ°¡.");
+            Debug.LogWarning("[ProblemFlowController] stepPanels ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. Skip ï¿½Ò°ï¿½.");
             return;
         }
 
         int target = skipTargetStepIndex;
 
-        // ¹üÀ§ º¸Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (target < 0) target = 0;
         if (target >= stepPanels.Count) target = stepPanels.Count - 1;
 
@@ -128,12 +128,12 @@ public class StepFlowController : MonoBehaviour
             var res = ds.Progress.MarkProblemSolvedForCurrentUser(theme, index);
             if (!res.Ok)
             {
-                Debug.LogWarning($"[StepFlow] MarkProblemSolved ½ÇÆÐ: {res.Error}");
+                Debug.LogWarning($"[StepFlow] MarkProblemSolved ï¿½ï¿½ï¿½ï¿½: {res.Error}");
             }
         }
         else
         {
-            Debug.LogWarning("[StepFlow] ÁøÇàµµ ÀúÀå ½ÇÆÐ - ¼¼¼Ç ¶Ç´Â DataService.Progress ¾øÀ½");
+            Debug.LogWarning("[StepFlow] ï¿½ï¿½ï¿½àµµ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ DataService.Progress ï¿½ï¿½ï¿½ï¿½");
         }
 
         SceneNavigator.Instance.GoTo(ScreenId.HOME);
@@ -141,7 +141,7 @@ public class StepFlowController : MonoBehaviour
 
     protected virtual void OnFlowFinished()
     {
-        Debug.Log($"[ProblemFlowController] ¹®Á¦ Èå¸§ Á¾·á: {name}");
-        // TODO: ¿©±â¼­ ÀÌÈÄ "´ä¾È Á¦Ãâ ÈÄ °á°ú È­¸é ÀüÈ¯" °°Àº ÈÄÃ³¸® µé¾î°¡¸é µÊ.
+        Debug.Log($"[ProblemFlowController] ï¿½ï¿½ï¿½ï¿½ ï¿½å¸§ ï¿½ï¿½ï¿½ï¿½: {name}");
+        // TODO: ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½È¯" ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ ï¿½ï¿½.
     }
 }

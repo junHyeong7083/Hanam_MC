@@ -36,6 +36,10 @@ public class ThemePanelsController : MonoBehaviour
     [Header("각 테마별 패널 바인딩")]
     [SerializeField] ThemePanelBinding[] themePanels;
 
+    [Header("Director 복귀용 패널")]
+    [SerializeField] private GameObject directorEndingPanel;
+    [SerializeField] private Button levelSelectBackButton;
+
     ProblemTheme? _selectedTheme = null;
 
     // 🔹 패널별로 구독한 핸들러를 저장해두는 딕셔너리
@@ -76,6 +80,10 @@ public class ThemePanelsController : MonoBehaviour
             if (entry.backButton != null)
                 entry.backButton.onClick.AddListener(BackToThemeSelect);
         }
+
+        // LevelSelectPanel 뒤로가기 → 테마 선택 패널
+        if (levelSelectBackButton != null)
+            levelSelectBackButton.onClick.AddListener(BackToThemeSelect);
     }
 
     void OnDestroy()
@@ -109,8 +117,22 @@ public class ThemePanelsController : MonoBehaviour
 
         currentUser = SessionManager.Instance.CurrentUser;
 
-        // 초기 상태: 테마 선택 패널만 표시
-        ShowThemeSelectPanel();
+        // ProblemScene에서 복귀 시 라우팅
+        var returnTarget = ProblemSession.ReturnTarget;
+        ProblemSession.ReturnTarget = HomeReturnTarget.None;
+
+        switch (returnTarget)
+        {
+            case HomeReturnTarget.LevelSelect:
+                ShowDirectorLevelSelect();
+                break;
+            case HomeReturnTarget.Ending:
+                ShowDirectorEnding();
+                break;
+            default:
+                ShowThemeSelectPanel();
+                break;
+        }
     }
 
     /// <summary>
@@ -170,6 +192,78 @@ public class ThemePanelsController : MonoBehaviour
     void BackToThemeSelect()
     {
         ShowThemeSelectPanel();
+    }
+
+    // =========================
+    // Director 복귀용 메서드
+    // =========================
+
+    /// <summary>
+    /// Director LevelSelectPanel로 바로 이동 (P1~9 완료 후)
+    /// </summary>
+    void ShowDirectorLevelSelect()
+    {
+        _selectedTheme = ProblemTheme.Director;
+
+        if (themeSelectPanel != null)
+            themeSelectPanel.SetActive(false);
+
+        var binding = GetDirectorBinding();
+        if (binding?.panel == null) return;
+
+        // DirectorPanelRoot 활성화 (StepFlowController.OnEnable → GoToStep(0))
+        binding.panel.gameObject.SetActive(true);
+        RefreshSinglePanel(binding);
+
+        // StepFlowController에서 LevelSelectPanel(index 3)으로 점프
+        var sfc = binding.panel.GetComponent<StepFlowController>();
+        if (sfc != null) sfc.JumpToStep(3);
+    }
+
+    /// <summary>
+    /// Director EndingPanel 표시 (P10 완주 후)
+    /// </summary>
+    void ShowDirectorEnding()
+    {
+        _selectedTheme = ProblemTheme.Director;
+
+        if (themeSelectPanel != null)
+            themeSelectPanel.SetActive(false);
+
+        var binding = GetDirectorBinding();
+        if (binding?.panel == null) return;
+
+        // DirectorPanelRoot 활성화
+        binding.panel.gameObject.SetActive(true);
+        RefreshSinglePanel(binding);
+
+        // StepFlowController가 관리하는 패널 모두 숨김
+        var sfc = binding.panel.GetComponent<StepFlowController>();
+        if (sfc != null) sfc.SetAllInactive();
+
+        // EndingPanel 표시
+        if (directorEndingPanel != null)
+            directorEndingPanel.SetActive(true);
+    }
+
+    /// <summary>
+    /// EndingPanel에서 LevelSelectPanel로 전환 (public - EndingPanel 버튼에서 호출)
+    /// </summary>
+    public void EndingToLevelSelect()
+    {
+        if (directorEndingPanel != null)
+            directorEndingPanel.SetActive(false);
+
+        var binding = GetDirectorBinding();
+        if (binding?.panel == null) return;
+
+        var sfc = binding.panel.GetComponent<StepFlowController>();
+        if (sfc != null) sfc.JumpToStep(3);
+    }
+
+    ThemePanelBinding GetDirectorBinding()
+    {
+        return themePanels?.FirstOrDefault(b => b.theme == ProblemTheme.Director);
     }
 
     /// <summary>
