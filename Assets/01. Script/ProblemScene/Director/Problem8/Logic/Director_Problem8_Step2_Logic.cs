@@ -95,7 +95,6 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     private bool _isDragging;
     private SceneCardItem _draggingCard;
     private Coroutine _snapBackRoutine;
-    private Coroutine _guideRevertRoutine;
 
     // =========================
     // ProblemStepBase 구현
@@ -143,12 +142,6 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
         {
             StopCoroutine(_snapBackRoutine);
             _snapBackRoutine = null;
-        }
-
-        if (_guideRevertRoutine != null)
-        {
-            StopCoroutine(_guideRevertRoutine);
-            _guideRevertRoutine = null;
         }
 
         RemoveCarouselButtons();
@@ -386,35 +379,37 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
         var slots = Slots;
         if (slots == null) return null;
 
-        SlotItem closest = null;
-        float closestDist = float.MaxValue;
+        // EventSystem Raycast로 포인터 아래 모든 UI 검출
+        var rayResults = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, rayResults);
 
-        foreach (var slot in slots)
+        foreach (var result in rayResults)
         {
-            if (slot == null) continue;
-            if (_slotToCard.ContainsKey(slot.slotIndex)) continue;
-
-            RectTransform area = slot.dropArea;
-            if (area == null || !area.gameObject.activeInHierarchy)
-                area = slot.slotRoot?.GetComponent<RectTransform>();
-            if (area == null) continue;
-
-            if (RectTransformUtility.RectangleContainsScreenPoint(
-                area, eventData.position, eventData.pressEventCamera))
+            var hitGo = result.gameObject;
+            foreach (var slot in slots)
             {
-                Vector2 screenCenter = RectTransformUtility.WorldToScreenPoint(
-                    eventData.pressEventCamera, area.position);
-                float dist = Vector2.Distance(eventData.position, screenCenter);
+                if (slot == null) continue;
+                if (_slotToCard.ContainsKey(slot.slotIndex)) continue;
 
-                if (dist < closestDist)
+                // emptyState 또는 그 자식에 hit
+                if (slot.emptyState != null && slot.emptyState.activeInHierarchy)
                 {
-                    closestDist = dist;
-                    closest = slot;
+                    if (hitGo == slot.emptyState ||
+                        hitGo.transform.IsChildOf(slot.emptyState.transform))
+                        return slot;
+                }
+
+                // slotRoot 또는 그 자식에 hit (폴백)
+                if (slot.slotRoot != null)
+                {
+                    if (hitGo == slot.slotRoot ||
+                        hitGo.transform.IsChildOf(slot.slotRoot.transform))
+                        return slot;
                 }
             }
         }
 
-        return closest;
+        return null;
     }
 
     // =========================
@@ -469,22 +464,9 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
             StopCoroutine(_snapBackRoutine);
         _snapBackRoutine = StartCoroutine(SnapBackProxy());
 
-        // 가이드 텍스트: 실패 → 2초 후 원래 텍스트 복귀
-        if (GuideText != null && GuideTextId_Fail > 0)
-        {
-            if (_guideRevertRoutine != null)
-                StopCoroutine(_guideRevertRoutine);
-            _guideRevertRoutine = StartCoroutine(ShowFailGuideAndRevert());
-        }
-    }
-
-    private IEnumerator ShowFailGuideAndRevert()
-    {
-        GuideText.text = ProblemRuntime.L(GuideTextId_Fail);
-        yield return new WaitForSeconds(2f);
-        if (GuideText != null && GuideTextId_Main > 0 && !_isComplete)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Main);
-        _guideRevertRoutine = null;
+        // TTS 재생
+        if (GuideTextId_Fail > 0)
+            SoundManager.Instance.PlayTTS(GuideTextId_Fail);
     }
 
     private IEnumerator SnapBackProxy()

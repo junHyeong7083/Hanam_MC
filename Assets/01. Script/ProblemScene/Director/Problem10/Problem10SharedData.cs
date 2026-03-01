@@ -9,6 +9,8 @@ public class Problem10SharedData : ScriptableObject
 {
     [HideInInspector] public int selectedGenreIndex = -1;
     [HideInInspector] public Sprite selectedSprite;
+    [HideInInspector] public string posterTitle = "";
+    [HideInInspector] public string posterCommitment = "";
 
     public void SetSelection(int index, Sprite sprite)
     {
@@ -16,9 +18,17 @@ public class Problem10SharedData : ScriptableObject
         selectedSprite = sprite;
     }
 
+    public void SetPosterTexts(string title, string commitment)
+    {
+        posterTitle = title ?? "";
+        posterCommitment = commitment ?? "";
+    }
+
     public void Clear()
     {
         selectedGenreIndex = -1;
         selectedSprite = null;
+        posterTitle = "";
+        posterCommitment = "";
     }
 }

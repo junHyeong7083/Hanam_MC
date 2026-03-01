@@ -23,7 +23,8 @@
       "mcp__UnityMCP__manage_prefabs",
       "Bash(ls:*)",
       "mcp__UnityMCP__manage_script",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "mcp__UnityMCP__create_script"
     ],
     "deny": [],
     "ask": []

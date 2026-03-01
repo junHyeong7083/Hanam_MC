@@ -31,6 +31,11 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     protected abstract IZoomOutSceneData[] Scenes { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
+    [Header("하남 박스")]
+    protected abstract Text HanamText { get; }
+    protected abstract int GuideTextId { get; }
+    protected abstract int CompletionTextId { get; }
+
     // ==== 내부 상태 ====
 
     private bool[] _revealedFlags;
@@ -80,6 +85,10 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
                 scene.RevealedText.text = ProblemRuntime.L(scene.RevealedTextId);
         }
 
+        // 가이드 텍스트
+        if (HanamText != null && GuideTextId > 0)
+            HanamText.text = ProblemRuntime.L(GuideTextId);
+
         // Gate 초기화
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
@@ -117,10 +126,14 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         if (scene.RevealedRoot != null)
             scene.RevealedRoot.SetActive(true);
 
-        // 모든 장면을 다 봤다면 Gate 완료 처리
+        // 모든 장면을 다 봤다면 완료 처리
         var allScenes = Scenes;
         if (allScenes != null && _revealedCount >= allScenes.Length)
         {
+            // 완료 텍스트
+            if (HanamText != null && CompletionTextId > 0)
+                HanamText.text = ProblemRuntime.L(CompletionTextId);
+
             var gate = CompletionGate;
             if (gate != null)
                 gate.MarkOneDone();

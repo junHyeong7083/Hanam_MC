@@ -194,10 +194,7 @@ public abstract class Director_Problem9_Step3_Logic : ProblemStepBase
     private void OnMicClicked()
     {
         if (_speaking) return;
-
-        var mic = MicIndicator;
-        if (mic != null)
-            mic.ToggleRecording();
+        // ToggleRecording은 인스펙터에서 직접 연결 — 여기서는 상태만 관리
     }
 
     // =========================

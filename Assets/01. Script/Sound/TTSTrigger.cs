@@ -36,6 +36,9 @@ public class TTSTrigger : MonoBehaviour
 
     private void OnEnable()
     {
+        // watchedText가 설정되어 있으면 LateUpdate 자동 동기화에 맡김
+        if (watchedText != null) return;
+
         if (textId > 0)
             Play();
     }

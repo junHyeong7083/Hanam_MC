@@ -233,13 +233,8 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         {
             _isFinished = true;
 
-            // 모든 버튼 비활성화
-            var dialogues = DialogueChoices;
-            if (dialogues != null)
-            {
-                foreach (var choice in dialogues)
-                    if (choice?.button != null) choice.button.interactable = false;
-            }
+            // 모든 버튼 리스너 제거 (interactable 유지로 알파 변화 방지)
+            RemoveAllListeners();
 
             SaveDialogueAttempt();
 

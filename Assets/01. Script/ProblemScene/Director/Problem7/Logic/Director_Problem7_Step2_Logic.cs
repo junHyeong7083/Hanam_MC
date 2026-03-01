@@ -70,8 +70,8 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     #region Virtual Config
 
-    protected virtual float MaskSelectDelay => 0.8f;
-    protected virtual float FeelingSelectDelay => 1.0f;
+    protected virtual float MaskSelectDelay => 2.0f;
+    protected virtual float FeelingSelectDelay => 2.0f;
 
     #endregion
 
@@ -308,9 +308,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
             bool isSelected = choice == selected;
 
-            if (choice.button != null)
-                choice.button.interactable = false;
-
             if (choice.clickImage != null)
                 choice.clickImage.SetActive(isSelected);
         }
@@ -326,9 +323,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
             if (choice == null) continue;
 
             bool isSelected = choice == selected;
-
-            if (choice.button != null)
-                choice.button.interactable = false;
 
             if (choice.clickImage != null)
                 choice.clickImage.SetActive(isSelected);

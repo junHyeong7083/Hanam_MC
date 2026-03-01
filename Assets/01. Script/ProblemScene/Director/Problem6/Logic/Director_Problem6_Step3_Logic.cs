@@ -43,6 +43,9 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
     [Header("이펙트 컨트롤러")]
     protected abstract Problem6_Step3_EffectController EffectController { get; }
 
+    [Header("프로그레스 바")]
+    protected abstract Image ProgressFillImage { get; }
+
     [Header("완료 후 약간의 딜레이 (초)")]
     protected virtual float CompleteDelaySeconds => 2.0f;
 
@@ -90,6 +93,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         // 초기 UI 상태
         SetRootActive(PlayingRoot, false);
         SetRootActive(PausedRoot, false);
+
+        // 프로그레스 바 초기화
+        if (ProgressFillImage != null)
+            ProgressFillImage.fillAmount = 0f;
 
         // 게이트 리셋
         if (CompletionGate != null)
@@ -200,6 +207,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             ApplyStepUI(step, _currentStepIndex, total);
             _currentStepElapsed = 0f;
 
+            // 프로그레스 바 리셋
+            if (ProgressFillImage != null)
+                ProgressFillImage.fillAmount = 0f;
+
             // 카드 팝인 애니메이션
             if (effect != null)
                 effect.PlayCardPopIn();
@@ -209,6 +220,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             {
                 if (_isPlaying)
                     _currentStepElapsed += Time.deltaTime;
+
+                // 프로그레스 바 업데이트
+                if (ProgressFillImage != null)
+                    ProgressFillImage.fillAmount = Mathf.Clamp01(_currentStepElapsed / duration);
 
                 yield return null;
             }

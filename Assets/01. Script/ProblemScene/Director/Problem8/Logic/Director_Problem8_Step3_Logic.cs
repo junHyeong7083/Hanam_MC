@@ -123,7 +123,7 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
         }
 
         if (MicButton != null)
-            MicButton.interactable = false;
+            MicButton.gameObject.SetActive(false);
 
         if (NextStepButtonRoot != null)
             NextStepButtonRoot.SetActive(false);
@@ -201,9 +201,9 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
             }
         }
 
-        // 마이크 버튼 활성화
+        // 마이크 버튼 표시
         if (MicButton != null)
-            MicButton.interactable = true;
+            MicButton.gameObject.SetActive(true);
     }
 
     // =========================
@@ -214,25 +214,10 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
     {
         if (_selectedAction == null || _isComplete) return;
 
-        var mic = MicIndicator;
-        if (mic != null)
+        if (!_isRecording)
         {
-            if (!_isRecording)
-            {
-                _isRecording = true;
-                _recordingStartTime = Time.time;
-                mic.ToggleRecording();
-            }
-            else
-            {
-                mic.ToggleRecording();
-            }
-        }
-        else
-        {
-            // MicIndicator 없으면 바로 완료
+            _isRecording = true;
             _recordingStartTime = Time.time;
-            OnSuccess();
         }
     }
 

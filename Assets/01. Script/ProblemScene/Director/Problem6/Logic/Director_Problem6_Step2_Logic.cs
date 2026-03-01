@@ -58,8 +58,8 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
     // ===== 설정값 =====
 
-    protected virtual int MinSelectCount => 2;
-    protected virtual int MaxSelectCount => 4;
+    protected virtual int MinSelectCount => 3;
+    protected virtual int MaxSelectCount => 3;
 
     protected virtual Color CardNormalColor =>
         Color.white;

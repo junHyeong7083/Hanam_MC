@@ -109,6 +109,22 @@ public class ProblemSceneController : MonoBehaviour
         }
     }
 
+    /// <summary>스테이지 선택 화면으로 이동 (LevelSelectPanel)</summary>
+    public void GoToStageSelect()
+    {
+        ProblemSession.ReturnTarget = HomeReturnTarget.LevelSelect;
+        if (GameManager.Instance != null)
+            GameManager.Instance.GoToHome();
+    }
+
+    /// <summary>챕터 선택 화면으로 이동 (HomeScene 기본)</summary>
+    public void GoToChapterSelect()
+    {
+        ProblemSession.ReturnTarget = HomeReturnTarget.None;
+        if (GameManager.Instance != null)
+            GameManager.Instance.GoToHome();
+    }
+
     public void Logout()
     {
         if (GameManager.Instance != null) GameManager.Instance.Logout();

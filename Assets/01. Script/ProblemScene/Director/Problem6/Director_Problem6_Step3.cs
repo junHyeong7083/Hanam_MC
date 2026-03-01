@@ -39,6 +39,9 @@ public class Director_Problem6_Step3 : Director_Problem6_Step3_Logic
     [Header("이펙트 컨트롤러")]
     [SerializeField] private Problem6_Step3_EffectController effectController;
 
+    [Header("프로그레스 바")]
+    [SerializeField] private Image progressFillImage;
+
     protected override IRelaxationStepData[] Steps => steps;
 
     protected override GameObject PlayingRoot => playingRoot;
@@ -53,4 +56,6 @@ public class Director_Problem6_Step3 : Director_Problem6_Step3_Logic
     protected override StepCompletionGate CompletionGate => completionGate;
 
     protected override Problem6_Step3_EffectController EffectController => effectController;
+
+    protected override Image ProgressFillImage => progressFillImage;
 }

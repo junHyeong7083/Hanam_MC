@@ -195,10 +195,7 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     private void OnMicClicked()
     {
         if (_speaking) return;
-
-        var mic = MicIndicator;
-        if (mic != null)
-            mic.ToggleRecording();
+        // ToggleRecording은 인스펙터에서 직접 연결 — 여기서는 상태만 관리
     }
 
     // =========================
@@ -320,6 +317,16 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         // 나머지 숨김
         if (MicRoot != null) MicRoot.SetActive(false);
         if (NextDialogueBtn != null) NextDialogueBtn.gameObject.SetActive(false);
+
+        // SharedData에 포스터 텍스트 저장 (엔딩에서 사용)
+        var shared = SharedData;
+        if (shared != null)
+        {
+            shared.SetPosterTexts(
+                PosterTitleText != null ? PosterTitleText.text : "",
+                PosterCommitmentText != null ? PosterCommitmentText.text : ""
+            );
+        }
 
         // DB 저장
         SaveAttempt(new PosterCreationDto

@@ -297,21 +297,14 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     {
         _selectedItem = item;
 
-        var dropBoxArea = DropBoxArea;
+        // 원래 위치로 복귀
+        item.ReturnToOriginalPosition();
+
         var resultPanelRoot = ResultPanelRoot;
-        var iconImage = IconImage;
         var gate = CompletionGate;
 
         if (resultPanelRoot != null)
             resultPanelRoot.SetActive(true);
-
-        if (dropBoxArea != null)
-        {
-            item.SnapToDropBoxCenter(dropBoxArea.transform as RectTransform);
-        }
-
-        if (iconImage != null)
-            iconImage.gameObject.SetActive(false);
 
         // 드래그 연출: 아웃라인 끄고 텍스트박스 표시
         if (DragOutlineImage != null)

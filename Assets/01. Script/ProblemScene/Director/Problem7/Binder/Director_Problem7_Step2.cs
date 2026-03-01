@@ -27,6 +27,10 @@ public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
     [Header("===== 완료 후 NextStep 버튼 =====")]
     [SerializeField] private GameObject nextStepButtonRoot;
 
+    [Header("===== 전환 딜레이 (초) =====")]
+    [SerializeField] private float maskSelectDelay = 2.0f;
+    [SerializeField] private float feelingSelectDelay = 2.0f;
+
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override Text GuideText => guideText;
     protected override int GuideTextId_SelectMask => guideTextId_SelectMask;
@@ -40,4 +44,7 @@ public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
     protected override ChoiceItem[] FeelingChoices => feelingChoices;
 
     protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
+
+    protected override float MaskSelectDelay => maskSelectDelay;
+    protected override float FeelingSelectDelay => feelingSelectDelay;
 }
