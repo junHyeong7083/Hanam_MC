@@ -14,17 +14,14 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
 {
 
     [Header("UI References")]
-    [SerializeField] private Image itemImage;     // ������ �����̴� �̹���
-    [SerializeField] private Image ghostImage;    // ���� �ڸ��� ���� ������ ����Ʈ
-    [SerializeField] private Canvas rootCanvas;   // �ֻ��� Canvas (UI ��ǥ ����)
+    [SerializeField] private Image itemImage;
+    [SerializeField] private Canvas rootCanvas;
 
     private RectTransform _rect;
     private Director_Problem2_Step1_Logic _stepController;
 
     private Vector2 _originalAnchoredPos;
     private bool _initializedPos = false;
-    private float _originalAlpha = 1f;
-
 
     private void Awake()
     {
@@ -32,15 +29,6 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
 
         if (itemImage == null)
             itemImage = GetComponent<Image>();
-
-        if (itemImage != null)
-            _originalAlpha = itemImage.color.a;
-
-        // ����Ʈ�� ������ ������ ���� �ÿ��� ���ܵα�
-        if (ghostImage != null)
-        {
-            ghostImage.gameObject.SetActive(false);
-        }
     }
 
     private void OnEnable()
@@ -70,8 +58,6 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
     public void ResetToOriginalState()
     {
         ReturnToOriginalPosition();
-        RestoreOriginalAlpha();
-        HideGhost();
     }
 
     public void ReturnToOriginalPosition()
@@ -80,49 +66,11 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
         _rect.anchoredPosition = _originalAnchoredPos;
     }
 
-    public void RestoreOriginalAlpha()
-    {
-        if (itemImage == null) return;
-        var c = itemImage.color;
-        c.a = _originalAlpha;
-        itemImage.color = c;
-    }
 
-    private void ShowGhost()
-    {
-        if (ghostImage == null) return;
-
-        // ����Ʈ ��������Ʈ�� ������ �����ϰ� ���߰�
-        ghostImage.sprite = itemImage != null ? itemImage.sprite : ghostImage.sprite;
-
-        var c = ghostImage.color;
-        c.a = 0.35f; // ������ ����
-        ghostImage.color = c;
-
-        ghostImage.gameObject.SetActive(true);
-    }
-
-    private void HideGhost()
-    {
-        if (ghostImage == null) return;
-        ghostImage.gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// �巡�� �ڽ� �߾����� ����
-    /// (��� ���� �� Step1���� ȣ��)
-    /// </summary>
     public void SnapToDropBoxCenter(RectTransform dropBox)
     {
         if (dropBox == null) return;
-
         _rect.position = dropBox.position;
-
-        // ����� �Ϸ�Ǹ� ����Ʈ�� ���� ���� �ʿ� ���ٰ� ���� ����
-        HideGhost();
-
-        // �ʿ��ϸ� ���⼭ �������� �ٽ� ���� ����������
-        RestoreOriginalAlpha();
     }
 
     // =======================
@@ -138,16 +86,6 @@ public class Director_Problem2_DragItem : MonoBehaviour, IBeginDragHandler, IDra
         else
             Debug.LogWarning("[DragItem] _stepController가 null! SetStepController가 호출되지 않았습니다.");
 
-        // 1) 드래그 시작하면 원래 자리에는 고스트 이미지를 켬
-        ShowGhost();
-
-        // 2) 드래그되는 아이템은 완전 불투명
-        if (itemImage != null)
-        {
-            var c = itemImage.color;
-            c.a = 1f;
-            itemImage.color = c;
-        }
     }
 
     public void OnDrag(PointerEventData eventData)

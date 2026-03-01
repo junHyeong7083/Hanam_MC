@@ -38,6 +38,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract GameObject CarouselRoot { get; }
     protected abstract Button PrevButton { get; }
     protected abstract Button NextButton { get; }
+    protected abstract Text CarouselText { get; }
 
     // 마이크
     protected abstract GameObject MicButtonRoot { get; }
@@ -52,6 +53,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     // 패널
     protected abstract GameObject StepRoot { get; }
 
+    protected abstract Text CompletionText { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
     private int _currentIndex;
@@ -196,6 +198,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         ClampIndex();
         _selected = p[_currentIndex];
 
+        if (CarouselText != null && _selected != null)
+            CarouselText.text = _selected.Text;
+
         bool canNavigate = !_isFinished && p.Length > 1;
         if (PrevButton != null) PrevButton.interactable = canNavigate;
         if (NextButton != null) NextButton.interactable = canNavigate;
@@ -324,6 +329,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         if (StepRoot != null) StepRoot.SetActive(false);
         if (OkSceneCard != null) OkSceneCard.SetActive(true);
+
+        if (CompletionText != null && _selected != null)
+            CompletionText.text = _selected.Text;
 
         _isFinished = true;
 

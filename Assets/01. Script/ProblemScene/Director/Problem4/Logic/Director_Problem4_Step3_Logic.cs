@@ -9,6 +9,7 @@ public interface IYesNoQuestionData
     string QuestionId { get; }
     string MainText { get; }
     string SubText { get; }
+    int SubTextId { get; }
     bool IsYesCorrect { get; }
 }
 
@@ -167,6 +168,10 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             HanamTextLabel.text = q.SubText;
             _savedHanamText = q.SubText;
         }
+
+        // TTS 재생
+        if (q.SubTextId > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(q.SubTextId);
     }
 
     // ==================================================

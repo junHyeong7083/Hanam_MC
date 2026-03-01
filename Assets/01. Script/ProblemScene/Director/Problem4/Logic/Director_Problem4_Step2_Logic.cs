@@ -71,13 +71,11 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     [Header("이펙트 컨트롤러")]
     protected abstract Problem4_Step2_EffectController EffectController { get; }
 
-    [Header("오답 표시 UI")]
-    protected abstract GameObject ErrorRoot { get; }
-
     [Header("하남 박스")]
     protected abstract Text HanamText { get; }
     protected abstract string GuideText { get; }
     protected abstract string CompletionText { get; }
+    protected abstract string ErrorText { get; }
 
     [Header("완료 시 UI")]
     protected abstract GameObject HideObjectOnComplete { get; }
@@ -196,8 +194,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         if (FilmIndexLabel != null)
             FilmIndexLabel.text = string.Format("{0} / {1}", idx + 1, cuts.Length);
 
-        if (ErrorRoot != null)
-            ErrorRoot.SetActive(false);
+        if (HanamText != null && !string.IsNullOrEmpty(GuideText))
+            HanamText.text = GuideText;
     }
 
     // =========================================
@@ -243,8 +241,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         }
         else
         {
-            if (ErrorRoot != null)
-                ErrorRoot.SetActive(true);
+            if (HanamText != null && !string.IsNullOrEmpty(ErrorText))
+                HanamText.text = ErrorText;
 
             if (effect != null)
             {
@@ -292,8 +290,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         }
         else
         {
-            if (ErrorRoot != null)
-                ErrorRoot.SetActive(true);
+            if (HanamText != null && !string.IsNullOrEmpty(ErrorText))
+                HanamText.text = ErrorText;
 
             if (effect != null)
             {

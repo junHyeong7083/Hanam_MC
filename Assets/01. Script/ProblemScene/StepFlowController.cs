@@ -136,6 +136,14 @@ public class StepFlowController : MonoBehaviour
             Debug.LogWarning("[StepFlow] ���൵ ���� ���� - ���� �Ǵ� DataService.Progress ����");
         }
 
+        // Director 테마: LevelSelectPanel 또는 EndingPanel로 복귀
+        if (ProblemSession.CurrentTheme == ProblemTheme.Director)
+        {
+            ProblemSession.ReturnTarget = ProblemSession.CurrentProblemIndex >= 10
+                ? HomeReturnTarget.Ending
+                : HomeReturnTarget.LevelSelect;
+        }
+
         SceneNavigator.Instance.GoTo(ScreenId.HOME);
     }
 

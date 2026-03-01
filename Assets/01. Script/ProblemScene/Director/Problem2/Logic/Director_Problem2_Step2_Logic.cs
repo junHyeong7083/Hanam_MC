@@ -156,7 +156,15 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
             slot.filmAfterClickRoot.SetActive(reveal);
 
         if (reveal && slot.filmSceneText != null && slot.sceneTextId > 0)
-            slot.filmSceneText.text = ProblemRuntime.L(slot.sceneTextId);
+        {
+            var resolved = ProblemRuntime.L(slot.sceneTextId);
+            slot.filmSceneText.text = resolved;
+            Debug.Log($"[Step2] filmSceneText set: textId={slot.sceneTextId}, text='{resolved}', go={slot.filmSceneText.gameObject.name}, activeInHierarchy={slot.filmSceneText.gameObject.activeInHierarchy}");
+        }
+        else if (reveal)
+        {
+            Debug.LogWarning($"[Step2] filmSceneText 미설정! filmSceneText={(slot.filmSceneText != null ? "OK" : "NULL")}, sceneTextId={slot.sceneTextId}");
+        }
     }
 
     private void OnFilmClicked(EmotionLightSlot slot)

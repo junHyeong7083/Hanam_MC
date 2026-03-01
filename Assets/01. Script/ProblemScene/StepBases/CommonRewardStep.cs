@@ -257,22 +257,12 @@ public class CommonRewardStep : ProblemStepBase
 
     private void BindButtons()
     {
-        if (replayButton != null)
-        {
-            replayButton.onClick.RemoveListener(ReplayCurrentProblem);
-            replayButton.onClick.AddListener(ReplayCurrentProblem);
-        }
-        if (homeButton != null)
-        {
-            homeButton.onClick.RemoveListener(GoToHome);
-            homeButton.onClick.AddListener(GoToHome);
-        }
+        // homeButton/replayButton은 인스펙터 OnClick으로 연결됨
+        // 코드에서 중복 AddListener하면 GoToHome()이 2회 호출되어 씬이 2번 로드됨
     }
 
     private void UnbindButtons()
     {
-        if (replayButton != null) replayButton.onClick.RemoveListener(ReplayCurrentProblem);
-        if (homeButton != null) homeButton.onClick.RemoveListener(GoToHome);
     }
 
     // =========================
@@ -302,6 +292,7 @@ public class CommonRewardStep : ProblemStepBase
             ProblemSession.ReturnTarget = HomeReturnTarget.None;
         }
 
+        Debug.Log($"[CommonRewardStep] GoToHome - Theme={ProblemSession.CurrentTheme}, Index={ProblemSession.CurrentProblemIndex}, ReturnTarget={ProblemSession.ReturnTarget}");
         GameManager.Instance.GoToHome();
     }
 

@@ -49,7 +49,7 @@ public class Director_Problem3_Step3
 
     [Header("상단 가이드 텍스트")]
     [SerializeField] private Text guideText;
-    [SerializeField] private string guideTextAfter = "잘 찾으셨어요!";
+    [SerializeField] private int guideTextIdAfter;
 
     [Header("상단 버튼들")]
     [SerializeField] private GameObject micButtonRoot;
@@ -114,6 +114,7 @@ public class Director_Problem3_Step3
             micIndicator.OnNoMatch -= OnSTTNoMatch;
             micIndicator.OnNoMatch += OnSTTNoMatch;
         }
+
     }
 
     protected override void ApplyQuestionUI(int index, Question q)
@@ -304,11 +305,7 @@ public class Director_Problem3_Step3
                 });
         }
 
-        if (correctOptionIndex >= 0 && correctOptionIndex < optionButtons.Length
-            && optionButtons[correctOptionIndex] != null)
-        {
-            optionButtons[correctOptionIndex].interactable = false;
-        }
+        // 정답 버튼은 interactable 유지 (false로 하면 Unity 기본 Disabled Color로 투명해짐)
     }
 
     private void KillFadeTweens()
@@ -334,8 +331,11 @@ public class Director_Problem3_Step3
 
     private void SetGuideAfter()
     {
-        if (guideText == null) return;
-        if (!string.IsNullOrEmpty(guideTextAfter))
-            guideText.text = guideTextAfter;
+        if (guideText == null || guideTextIdAfter == 0) return;
+
+        guideText.text = ProblemRuntime.L(guideTextIdAfter);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(guideTextIdAfter);
     }
 }

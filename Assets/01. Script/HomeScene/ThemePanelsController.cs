@@ -121,6 +121,8 @@ public class ThemePanelsController : MonoBehaviour
         var returnTarget = ProblemSession.ReturnTarget;
         ProblemSession.ReturnTarget = HomeReturnTarget.None;
 
+        Debug.Log($"[ThemePanels] Start - ReturnTarget={returnTarget}, Theme={ProblemSession.CurrentTheme}");
+
         switch (returnTarget)
         {
             case HomeReturnTarget.LevelSelect:
@@ -206,10 +208,23 @@ public class ThemePanelsController : MonoBehaviour
         _selectedTheme = ProblemTheme.Director;
 
         if (themeSelectPanel != null)
+        {
             themeSelectPanel.SetActive(false);
+            Debug.Log($"[ThemePanels] themeSelectPanel({themeSelectPanel.name}) SetActive(false)");
+        }
+        else
+        {
+            Debug.LogWarning("[ThemePanels] themeSelectPanel이 null! ProblemSelectPanel이 안 꺼짐");
+        }
 
         var binding = GetDirectorBinding();
-        if (binding?.panel == null) return;
+        if (binding?.panel == null)
+        {
+            Debug.LogWarning("[ThemePanels] ShowDirectorLevelSelect - binding 또는 panel이 null!");
+            return;
+        }
+
+        Debug.Log($"[ThemePanels] ShowDirectorLevelSelect - panel={binding.panel.name}, activating");
 
         // DirectorPanelRoot 활성화 (StepFlowController.OnEnable → GoToStep(0))
         binding.panel.gameObject.SetActive(true);
@@ -217,7 +232,15 @@ public class ThemePanelsController : MonoBehaviour
 
         // StepFlowController에서 LevelSelectPanel(index 3)으로 점프
         var sfc = binding.panel.GetComponent<StepFlowController>();
-        if (sfc != null) sfc.JumpToStep(3);
+        if (sfc != null)
+        {
+            Debug.Log("[ThemePanels] JumpToStep(3) 호출");
+            sfc.JumpToStep(3);
+        }
+        else
+        {
+            Debug.LogWarning("[ThemePanels] StepFlowController not found on panel!");
+        }
     }
 
     /// <summary>

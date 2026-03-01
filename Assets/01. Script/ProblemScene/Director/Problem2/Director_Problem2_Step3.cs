@@ -41,6 +41,7 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     [SerializeField] private GameObject carouselRoot;
     [SerializeField] private Button prevButton;
     [SerializeField] private Button nextButton;
+    [SerializeField] private Text carouselText;
 
     [Header("마이크 UI")]
     [SerializeField] private GameObject micButtonRoot;
@@ -54,6 +55,9 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
 
     [Header("패널 전환")]
     [SerializeField] private GameObject stepRoot;
+
+    [Header("완료 시 선택한 관점 텍스트")]
+    [SerializeField] private Text completionText;
 
     [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
@@ -114,6 +118,7 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override GameObject CarouselRoot => carouselRoot;
     protected override Button PrevButton => prevButton;
     protected override Button NextButton => nextButton;
+    protected override Text CarouselText => carouselText;
 
     protected override GameObject MicButtonRoot => micButtonRoot;
     protected override MicRecordingIndicator MicIndicator => micIndicator;
@@ -123,5 +128,6 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
 
     protected override GameObject StepRoot => stepRoot;
 
+    protected override Text CompletionText => completionText;
     protected override StepCompletionGate CompletionGate => completionGate;
 }

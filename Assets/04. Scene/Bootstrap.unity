@@ -740,29 +740,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b79059aa013800e46a4133218ae3fd5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ttsAudioClips:
-  - {fileID: 8300000, guid: 3974de091d917a64c83420011de2517e, type: 3}
-  - {fileID: 8300000, guid: 47deb983d61c90e4f9de91c0b66be58b, type: 3}
-  - {fileID: 8300000, guid: 5e873bb48c80b75479014b99280fed7d, type: 3}
-  - {fileID: 8300000, guid: 08201cabb43c40f46ab62e6444e979b3, type: 3}
-  - {fileID: 8300000, guid: 84589352239cbf447a8cb5758815a149, type: 3}
-  - {fileID: 8300000, guid: 3d92d0c9ad5ab9642baa85fba6b8554d, type: 3}
-  - {fileID: 8300000, guid: 4f4b462c148bdaf43a1c3f63c00ad7af, type: 3}
-  - {fileID: 8300000, guid: d047d3c3fbb8bf245b358b1b9072d848, type: 3}
-  - {fileID: 8300000, guid: 23a8e0184a90d524aa0df6255e343452, type: 3}
-  - {fileID: 8300000, guid: 614348810088ce44d8f46f63ba98dd6f, type: 3}
-  - {fileID: 8300000, guid: b9e0b3c5beef1b34aa4aca9c6c951aaf, type: 3}
-  - {fileID: 8300000, guid: 6f8fbc3674f9b054790d96d5a8a5cbc3, type: 3}
-  - {fileID: 8300000, guid: d4f50321707709144bef4b5c5d272e64, type: 3}
-  - {fileID: 8300000, guid: 358f16506d745b540a56fd1cf75c27bb, type: 3}
-  - {fileID: 8300000, guid: f8d5458497531604c99085514d8f10dd, type: 3}
-  - {fileID: 8300000, guid: 4004b6c6fb0e6544091ff6cfd0405a10, type: 3}
-  - {fileID: 8300000, guid: f5c6679b37c5f474ea82b68c4902033f, type: 3}
-  - {fileID: 8300000, guid: ae824d8c30bd9f24285fac9a66b16040, type: 3}
-  - {fileID: 8300000, guid: 686369655922baf4282ab86e7fab47e7, type: 3}
-  - {fileID: 8300000, guid: 90a9ddaba513e34449046e0236bf2b83, type: 3}
-  - {fileID: 8300000, guid: 907873dcc4d5f2e458bbd25198eff3df, type: 3}
-  - {fileID: 8300000, guid: 19d7aad8fbeb7474eb6bcd7a4e1c7e22, type: 3}
   ttsPlayers:
   - {fileID: 1234894063}
   - {fileID: 2031332764}

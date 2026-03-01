@@ -18,7 +18,6 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [SerializeField] private GameObject resultPanelRoot;
 
     [Header("Icon Images")]
-    [SerializeField] private Image iconImageBackground;
     [SerializeField] private Image iconImage;
 
     [Header("Intro Animation Roots")]
@@ -51,7 +50,6 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     protected override Director_Problem2_DragItem[] DragItems => dragItems;
     protected override GameObject ResultPanelRoot => resultPanelRoot;
 
-    protected override Image IconImageBackground => iconImageBackground;
     protected override Image IconImage => iconImage;
 
     protected override RectTransform LeftEnterRoot => leftEnterRoot;

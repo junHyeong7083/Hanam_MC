@@ -16,8 +16,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    [Header("TTS Clips")]
-    [SerializeField] private AudioClip[] ttsAudioClips;
+    [Header("TTS Players")]
     [SerializeField] private AudioSource[] ttsPlayers;
 
     private Dictionary<int, AudioClip> _ttsClipsByTextId = new Dictionary<int, AudioClip>();
@@ -52,10 +51,16 @@ public class SoundManager : MonoBehaviour
     private void RegisterTTSClips()
     {
         _ttsClipsByTextId.Clear();
+        _textToIdMap = null;
 
-        if (ttsAudioClips == null) return;
+        var clips = Resources.LoadAll<AudioClip>("TTS");
+        if (clips == null || clips.Length == 0)
+        {
+            Debug.LogWarning("[SoundManager] Resources/TTS 폴더에서 TTS 클립을 찾을 수 없습니다");
+            return;
+        }
 
-        foreach (var clip in ttsAudioClips)
+        foreach (var clip in clips)
         {
             if (clip == null) continue;
 
@@ -64,13 +69,9 @@ public class SoundManager : MonoBehaviour
             {
                 _ttsClipsByTextId[textId] = clip;
             }
-            else
-            {
-                Debug.LogWarning($"[SoundManager] TTS 클립명에서 textId 파싱 실패: {clip.name}");
-            }
         }
 
-        Debug.Log($"[SoundManager] TTS 클립 {_ttsClipsByTextId.Count}개 등록 완료");
+        Debug.Log($"[SoundManager] TTS 클립 {_ttsClipsByTextId.Count}개 등록 완료 (Resources/TTS)");
     }
 
     /// <summary>

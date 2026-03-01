@@ -27,6 +27,7 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
         public string QuestionId => questionId;
         public string MainText => ProblemRuntime.L(mainTextId);
         public string SubText => subTextId > 0 ? ProblemRuntime.L(subTextId) : "";
+        public int SubTextId => subTextId;
         public bool IsYesCorrect => isYesCorrect;
     }
 

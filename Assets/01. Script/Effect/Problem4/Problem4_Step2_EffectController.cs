@@ -61,11 +61,8 @@ public class Problem4_Step2_EffectController : EffectControllerBase
     [SerializeField] private float errorShakeAmount = 10f;
 
     [Header("===== 완료 이미지 팝업 =====")]
-    [SerializeField] private float popMinScale = 0.3f;
-    [SerializeField] private float popMaxScale = 1.2f;
-    [SerializeField] private float popFinishScale = 1f;
-    [SerializeField] private float popGrowDuration = 0.2f;
-    [SerializeField] private float popShrinkDuration = 0.15f;
+    [SerializeField] private float popStartScale = 0.8f;
+    [SerializeField] private float popDuration = 0.3f;
 
     // 카드 기본 위치
     private Vector2 _cardDefaultPos;
@@ -358,19 +355,12 @@ public class Problem4_Step2_EffectController : EffectControllerBase
             return;
         }
 
-        // 시작 스케일 설정
-        target.localScale = Vector3.one * popMinScale;
+        target.localScale = Vector3.one * popStartScale;
         target.gameObject.SetActive(true);
 
-        var seq = DOTween.Sequence();
-
-        // min → max (빠르게 커짐)
-        seq.Append(target.DOScale(popMaxScale, popGrowDuration).SetEase(Ease.OutQuad));
-
-        // max → finish (살짝 줄어들며 안정)
-        seq.Append(target.DOScale(popFinishScale, popShrinkDuration).SetEase(Ease.OutBack));
-
-        seq.OnComplete(() => onComplete?.Invoke());
+        target.DOScale(1f, popDuration)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() => onComplete?.Invoke());
     }
 
     #endregion

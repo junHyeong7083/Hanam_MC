@@ -55,36 +55,33 @@ public class MicRecordingIndicator : MonoBehaviour
     private float _silenceTimer = 0f;
     private bool _hasDetectedVoice = false;  // 의미있는 음성이 감지되었는지 여부
 
-    private string _originalIdleText;
-
-    private void Awake()
-    {
-        _originalIdleText = idleText;
-    }
+    // idleText(SerializeField)는 런타임에 절대 수정하지 않음
+    // 런타임 표시용은 _displayIdleText 사용
+    private string _displayIdleText;
 
     /// <summary>
     /// 아이들 텍스트를 동적으로 변경 (재시도 시 "다시 말하기" 등)
     /// </summary>
     public void SetIdleText(string text)
     {
-        idleText = text;
+        _displayIdleText = text;
         if (!_recording && statusText != null)
             statusText.text = text;
     }
 
     /// <summary>
-    /// 아이들 텍스트를 원래 값으로 복원
+    /// 아이들 텍스트를 원래 값(인스펙터 값)으로 복원
     /// </summary>
     public void ResetIdleText()
     {
-        idleText = _originalIdleText;
+        _displayIdleText = idleText;
         if (!_recording && statusText != null)
-            statusText.text = _originalIdleText;
+            statusText.text = idleText;
     }
 
     private void OnEnable()
     {
-        // 상태 초기화 (혹시 이전 상태가 남아있을 경우 대비)
+        _displayIdleText = idleText;
         _recording = false;
         _isSTTRecording = false;
         ApplyVisual();
@@ -336,7 +333,7 @@ public class MicRecordingIndicator : MonoBehaviour
 
         if (statusText != null)
         {
-            statusText.text = _recording ? recordingText : idleText;
+            statusText.text = _recording ? recordingText : _displayIdleText;
             statusText.gameObject.SetActive(!_recording);
         }
     }

@@ -23,7 +23,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     protected abstract GameObject ResultPanelRoot { get; }
 
     [Header("Icon Images")]
-    protected abstract Image IconImageBackground { get; }
     protected abstract Image IconImage { get; }
 
     // ===== ���� �ִϸ��̼ǿ� ��Ʈ =====
@@ -89,7 +88,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         var dropBoxArea = DropBoxArea;
         var dragItems = DragItems;
         var resultPanelRoot = ResultPanelRoot;
-        var iconBg = IconImageBackground;
         var icon = IconImage;
         var gate = CompletionGate;
 
@@ -126,10 +124,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         // ���� �ִϸ��̼ǿ� ��Ʈ �ʱ� ��ġ/���� ����
         InitIntroRoot(LeftEnterRoot, ref _leftInit, ref _leftBasePos, LeftStartOffsetX, ref _leftCg);
         InitIntroRoot(RightEnterRoot, ref _rightInit, ref _rightBasePos, RightStartOffsetX, ref _rightCg);
-
-        // ������/��� �ʱ� ����
-        if (iconBg != null)
-            iconBg.gameObject.SetActive(true);
 
         if (icon != null)
             icon.gameObject.SetActive(true);
@@ -296,7 +290,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
                 DragOutlineImage.SetActive(false);
 
             item.ReturnToOriginalPosition();
-            item.RestoreOriginalAlpha();
         }
     }
 
@@ -307,7 +300,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         var dropBoxArea = DropBoxArea;
         var resultPanelRoot = ResultPanelRoot;
         var iconImage = IconImage;
-        var iconImageBg = IconImageBackground;
         var gate = CompletionGate;
 
         if (resultPanelRoot != null)
@@ -320,9 +312,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 
         if (iconImage != null)
             iconImage.gameObject.SetActive(false);
-
-        if (iconImageBg != null)
-            iconImageBg.gameObject.SetActive(true);
 
         // 드래그 연출: 아웃라인 끄고 텍스트박스 표시
         if (DragOutlineImage != null)
