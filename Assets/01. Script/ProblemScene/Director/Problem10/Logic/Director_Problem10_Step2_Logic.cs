@@ -61,7 +61,7 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
 
     #region Virtual Config
 
-    protected virtual float TransitionDelay => 0.5f;
+    protected virtual float TransitionDelay => 1.0f;
 
     #endregion
 
@@ -166,14 +166,6 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         {
             for (int i = 0; i < indicators.Length; i++)
                 if (indicators[i] != null) indicators[i].SetActive(i == index);
-        }
-
-        // 버튼 비활성화
-        var buttons = GenreButtons;
-        if (buttons != null)
-        {
-            foreach (var btn in buttons)
-                if (btn != null) btn.interactable = false;
         }
 
         // 딜레이 후 전환

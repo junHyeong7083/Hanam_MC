@@ -16,6 +16,9 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite recordingSprite;
 
+    // 같은 GO의 ButtonHover 자동 참조
+    private ButtonHover buttonHover;
+
     [Header("텍스트 피드백")]
     [SerializeField] private Text statusText;
     [SerializeField] private string idleText = "마이크를 눌러주세요";
@@ -42,6 +45,8 @@ public class MicRecordingIndicator : MonoBehaviour
     public event Action<int> OnKeywordMatched;
     /// <summary>매칭 실패 시 발생</summary>
     public event Action<string> OnNoMatch;
+    /// <summary>녹음 상태 변경 시 발생 (true=시작, false=종료)</summary>
+    public event Action<bool> OnRecordingChanged;
 
     private bool _recording;
     private bool _isSTTRecording;
@@ -79,6 +84,11 @@ public class MicRecordingIndicator : MonoBehaviour
             statusText.text = idleText;
     }
 
+    private void Awake()
+    {
+        buttonHover = GetComponent<ButtonHover>();
+    }
+
     private void OnEnable()
     {
         _displayIdleText = idleText;
@@ -89,14 +99,14 @@ public class MicRecordingIndicator : MonoBehaviour
 
     public void ToggleRecording()
     {
-       // Debug.Log($"[MicRecordingIndicator] ToggleRecording 호출 - 현재 상태: _recording={_recording}, _isSTTRecording={_isSTTRecording}");
-
+        if (SoundManager.Instance != null && SoundManager.Instance.IsTTSPlaying) SoundManager.Instance.StopTTS();
         // 녹음 시작/중지 결정
         bool startRecording = !_isSTTRecording;
 
         // 상태 업데이트 및 비주얼 즉시 반영
         _recording = startRecording;
         _isSTTRecording = startRecording;
+        OnRecordingChanged?.Invoke(startRecording);
      //   Debug.Log($"[MicRecordingIndicator] 상태 변경 후: _recording={_recording}, startRecording={startRecording}");
         ApplyVisual();
 
@@ -324,8 +334,22 @@ public class MicRecordingIndicator : MonoBehaviour
 
     private void ApplyVisual()
     {
-        if (targetImage != null)
+        if (buttonHover != null)
         {
+            // ButtonHover 연동: 녹음 중이면 recordingSprite 오버라이드, 아니면 해제
+            if (_recording)
+            {
+                if (recordingSprite != null)
+                    buttonHover.SetSpriteOverride(recordingSprite);
+            }
+            else
+            {
+                buttonHover.ClearSpriteOverride();
+            }
+        }
+        else if (targetImage != null)
+        {
+            // ButtonHover 없으면 기존 방식 (targetImage 직접 교체)
             Sprite sprite = _recording ? recordingSprite : idleSprite;
             if (sprite != null)
                 targetImage.sprite = sprite;

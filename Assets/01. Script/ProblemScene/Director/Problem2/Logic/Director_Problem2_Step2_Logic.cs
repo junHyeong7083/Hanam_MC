@@ -47,7 +47,6 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
     [Header("Guide Text (Localized)")]
     [SerializeField] private Text guideText;
     [SerializeField] private int guideTextIdOnEnter = 0;
-    [SerializeField] private int guideTextIdOnCompleted = 0;
 
     [Header("Next Shoot Button")]
     [SerializeField] private GameObject nextShootButtonRoot;
@@ -199,12 +198,7 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
         _completed = true;
 
-        ApplyGuideText(guideTextIdOnCompleted);
         SetNextShootButtonVisible(true);
-
-        // �߿�: ����Ʈ�� �ڵ����� ���� ������ �ѱ�� ������
-        // StepCompletionGate���� auto-next�� ���ְų�,
-        // ����Ʈ�� �Ϸ� ��ư/�ڵ� ������ ����� ��.
     }
 
     private void ApplyGuideText(int textId)

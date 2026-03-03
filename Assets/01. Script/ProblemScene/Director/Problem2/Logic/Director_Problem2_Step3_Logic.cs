@@ -40,6 +40,10 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract Button NextButton { get; }
     protected abstract Text CarouselText { get; }
 
+    // 관점별 이미지
+    protected abstract Image PerspectiveImage { get; }
+    protected abstract Sprite[] PerspectiveSprites { get; }
+
     // 마이크
     protected abstract GameObject MicButtonRoot { get; }
     protected abstract MicRecordingIndicator MicIndicator { get; }
@@ -74,6 +78,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
             indicator.OnNoMatch -= OnSTTNoMatch;
             indicator.OnNoMatch += OnSTTNoMatch;
+
+            indicator.OnRecordingChanged -= OnMicRecordingChanged;
+            indicator.OnRecordingChanged += OnMicRecordingChanged;
         }
 
         var gate = CompletionGate;
@@ -90,10 +97,25 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         {
             indicator.OnKeywordMatched -= OnSTTKeywordMatched;
             indicator.OnNoMatch -= OnSTTNoMatch;
+            indicator.OnRecordingChanged -= OnMicRecordingChanged;
         }
 
         UnbindCarouselButtons();
         UnbindMicButton();
+    }
+
+    private void OnMicRecordingChanged(bool isRecording)
+    {
+        _isRecording = isRecording;
+
+        if (RecordingOverlay != null)
+            RecordingOverlay.SetActive(isRecording);
+
+        if (PrevButton != null) PrevButton.gameObject.SetActive(!isRecording);
+        if (NextButton != null) NextButton.gameObject.SetActive(!isRecording);
+
+        // 녹음 중에는 마이크 버튼 비활성화 (중복 클릭 방지)
+        SetMicInteractable(!isRecording);
     }
 
     private void ResetState()
@@ -201,6 +223,12 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (CarouselText != null && _selected != null)
             CarouselText.text = _selected.Text;
 
+        // 관점 인덱스에 맞는 스프라이트 교체
+        var sprites = PerspectiveSprites;
+        var img = PerspectiveImage;
+        if (img != null && sprites != null && _currentIndex < sprites.Length && sprites[_currentIndex] != null)
+            img.sprite = sprites[_currentIndex];
+
         bool canNavigate = !_isFinished && p.Length > 1;
         if (PrevButton != null) PrevButton.interactable = canNavigate;
         if (NextButton != null) NextButton.interactable = canNavigate;
@@ -244,15 +272,8 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         ClampIndex();
         _selected = p[_currentIndex];
 
-        _isRecording = !_isRecording;
-
-        // ✅ 녹음 중 이미지 토글
-        if (RecordingOverlay != null)
-            RecordingOverlay.SetActive(_isRecording);
-
-        var indicator = MicIndicator;
-        if (indicator != null)
-            indicator.ToggleRecording();
+        // UI 업데이트는 MicRecordingIndicator.OnRecordingChanged 이벤트가 처리
+        // ToggleRecording은 인스펙터에서 버튼에 직접 연결
     }
 
     // ===== STT =====
@@ -282,6 +303,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             _isRecording = false;
             if (RecordingOverlay != null)
                 RecordingOverlay.SetActive(false);
+            ShowNavButtons();
 
             if (GuideText != null)
             {
@@ -297,11 +319,18 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         }
     }
 
+    private void ShowNavButtons()
+    {
+        if (PrevButton != null) PrevButton.gameObject.SetActive(true);
+        if (NextButton != null) NextButton.gameObject.SetActive(true);
+    }
+
     private void OnSTTNoMatch(string sttResult)
     {
         _isRecording = false;
         if (RecordingOverlay != null)
             RecordingOverlay.SetActive(false);
+        ShowNavButtons();
 
         // 재시도 안내 텍스트 표시
         if (GuideText != null)

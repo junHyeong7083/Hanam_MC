@@ -167,7 +167,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
             CompletionGate.ResetGate(1);
     }
 
-    protected override void OnStepExit()
+protected override void OnStepExit()
     {
         base.OnStepExit();
 
@@ -181,6 +181,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         {
             mic.OnKeywordMatched -= OnSTTKeywordMatched;
             mic.OnNoMatch -= OnSTTNoMatch;
+            mic.OnRecordingChanged -= OnMicRecordingChanged;
         }
     }
 
@@ -250,7 +251,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
     // ===== STT 설정 =====
 
-    private void SetupSTT()
+private void SetupSTT()
     {
         var mic = MicIndicator;
         if (mic == null) return;
@@ -269,17 +270,15 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         mic.OnKeywordMatched += OnSTTKeywordMatched;
         mic.OnNoMatch -= OnSTTNoMatch;
         mic.OnNoMatch += OnSTTNoMatch;
+        mic.OnRecordingChanged -= OnMicRecordingChanged;
+        mic.OnRecordingChanged += OnMicRecordingChanged;
     }
 
     // ===== STT 이벤트 =====
 
-    protected void OnSTTKeywordMatched(int matchedIndex)
+protected void OnSTTKeywordMatched(int matchedIndex)
     {
         Debug.Log($"[Problem5_Step3] STT 매칭: index={matchedIndex}");
-
-        // 아웃라인 끄기
-        if (selectOutline != null)
-            selectOutline.SetActive(false);
 
         if (_hasAnswered) return;
 
@@ -287,22 +286,30 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         OnSelectOption(matchedIndex);
     }
 
-    protected void OnSTTNoMatch(string sttResult)
+protected void OnSTTNoMatch(string sttResult)
     {
         Debug.Log($"[Problem5_Step3] STT 매칭 실패: {sttResult}");
-
-        if (selectOutline != null)
-            selectOutline.SetActive(false);
     }
 
     /// <summary>
     /// 말하기 버튼에서 호출 → 아웃라인 활성화
     /// </summary>
-    public void OnStartRecording()
+public void OnStartRecording()
+    {
+        // 녹음 상태 변경은 OnMicRecordingChanged에서 처리
+    }
+
+private void OnMicRecordingChanged(bool isRecording)
     {
         if (selectOutline != null)
-            selectOutline.SetActive(true);
+            selectOutline.SetActive(isRecording);
+
+        if (prevButton != null)
+            prevButton.gameObject.SetActive(!isRecording);
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(!isRecording);
     }
+
 
     // ===== 선택 흐름 =====
 

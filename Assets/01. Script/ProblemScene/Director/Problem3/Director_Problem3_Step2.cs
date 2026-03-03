@@ -13,6 +13,8 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
 
         public int[] optionTextIds;          // 캐러셀 옵션들
         public string[] optionKeywords;      // 선택: 각 옵션에 대응하는 "키1|키2" 문자열
+        public Sprite[] optionSprites;       // 각 옵션에 대응하는 스프라이트
+        public int afterCompleteTextId;      // 라운드 완료 후 가이드 텍스트 ID (0이면 공통값 사용)
 
         int IRewriteStepData.Id => id;
         string IRewriteStepData.OriginalText => ProblemRuntime.L(originalTextId);
@@ -29,6 +31,9 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
                 return arr;
             }
         }
+
+        Sprite[] IRewriteStepData.OptionSprites => optionSprites;
+        int IRewriteStepData.AfterCompleteTextId => afterCompleteTextId;
 
         string[][] IRewriteStepData.OptionKeywords
         {
@@ -67,10 +72,12 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
     [SerializeField] private Text guideText;
     [SerializeField] private int guideTextIdBefore = 0;
     [SerializeField] private int guideTextIdAfter = 0;
+    [SerializeField] private int guideTextIdBetweenRounds = 0; // 마지막 스텝 제외, 중간 스텝 완료 시 표시
 
     protected override Text GuideText => guideText;
     protected override int GuideTextId_Before => guideTextIdBefore;
     protected override int GuideTextId_After => guideTextIdAfter;
+    protected override int GuideTextId_BetweenRounds => guideTextIdBetweenRounds;
 
     [Header("Effect Controller")]
     [SerializeField] private Problem3_Step2_EffectController effectController;
@@ -81,6 +88,7 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
     [SerializeField] private Button nextButton;
     [SerializeField] private Text carouselText;
     [SerializeField] private Text carouselIndexText;
+    [SerializeField] private Image optionImage;
 
     [Header("Mic UI")]
     [SerializeField] private GameObject micButtonRoot;
@@ -108,6 +116,7 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
     protected override Button NextButton => nextButton;
     protected override Text CarouselText => carouselText;
     protected override Text CarouselIndexText => carouselIndexText;
+    protected override Image OptionImage => optionImage;
 
     protected override GameObject MicButtonRoot => micButtonRoot;
     protected override MicRecordingIndicator MicIndicator => micIndicator;

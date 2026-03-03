@@ -125,7 +125,7 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             go.SetActive(active);
     }
 
-    private void ApplyStepUI(IRelaxationStepData step, int index, int total)
+private void ApplyStepUI(IRelaxationStepData step, int index, int total)
     {
         if (StepTitleLabel != null)
             StepTitleLabel.text = step.Title;
@@ -138,6 +138,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             bool isLastStep = (index >= total - 1);
             PauseButton.gameObject.SetActive(!isLastStep);
         }
+
+        // 단계 텍스트 TTS 재생
+        if (step.InstructionTextId > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(step.InstructionTextId);
     }
 
     // ===== 자동 시작 =====

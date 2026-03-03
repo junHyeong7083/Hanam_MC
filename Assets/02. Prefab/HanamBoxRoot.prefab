@@ -91,7 +91,6 @@ GameObject:
   - component: {fileID: 8154701342690647874}
   - component: {fileID: 1346313716000995511}
   - component: {fileID: 2734844767887725856}
-  - component: {fileID: 8323841444481309558}
   - component: {fileID: 3853983128368511782}
   m_Layer: 5
   m_Name: NextStepBtn
@@ -213,21 +212,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &8323841444481309558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047390613286552769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65768dff56bdd6f488e7102aa745352f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetImage: {fileID: 1346313716000995511}
-  normalColor: {r: 1, g: 0.95, b: 0.65, a: 1}
-  pressedColor: {r: 1, g: 0.85, b: 0.15, a: 1}
 --- !u!114 &3853983128368511782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +229,10 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
+  isDialogueButton: 0
+  spritePathNormal: Buttons/button_01
+  spritePathPressed: Buttons/button_02
+  spritePathSelected: Buttons/button_03
 --- !u!1 &4204970337983992360
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,7 +245,6 @@ GameObject:
   - component: {fileID: 1029459529535916623}
   - component: {fileID: 6471229321793647915}
   - component: {fileID: 9036537916854351307}
-  - component: {fileID: 4607502932196878905}
   - component: {fileID: 7756378765473680438}
   - component: {fileID: 6172964983321990620}
   - component: {fileID: 3933441981021058881}
@@ -370,21 +357,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4607502932196878905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4204970337983992360}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65768dff56bdd6f488e7102aa745352f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetImage: {fileID: 6471229321793647915}
-  normalColor: {r: 1, g: 0.95, b: 0.65, a: 1}
-  pressedColor: {r: 1, g: 0.85, b: 0.15, a: 1}
 --- !u!114 &7756378765473680438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,6 +374,10 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
+  isDialogueButton: 0
+  spritePathNormal: Buttons/button_01
+  spritePathPressed: Buttons/button_02
+  spritePathSelected: Buttons/button_03
 --- !u!114 &6172964983321990620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,6 +555,10 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
+  isDialogueButton: 0
+  spritePathNormal: Buttons/button_01
+  spritePathPressed: Buttons/button_02
+  spritePathSelected: Buttons/button_03
 --- !u!114 &6379891089059316041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,9 +571,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f360b12174ed6e64abec8e0e9c656c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  problemNumber: 4
-  stepNumber: 2
-  hasButton: 1
+  textId: 0
+  watchedText: {fileID: 0}
 --- !u!1 &5021405252240319684
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,9 @@ public class ProblemSceneController : MonoBehaviour
     [SerializeField] private CanvasGroup optionCanvasGroup;
     [SerializeField] private float animationDuration = 0.1f;
 
+    [Header("Linked Panel (옵션과 함께 켜졌다 꺼질 패널 1개)")]
+    [SerializeField] private GameObject linkedPanel;
+
     private GameObject _activeRoot;
     private bool _isOptionOpen = false;
     private Coroutine _optionAnimCoroutine;
@@ -49,6 +52,21 @@ public class ProblemSceneController : MonoBehaviour
         {
             optionPanel.SetActive(false);
             _isOptionOpen = false;
+        }
+
+        // 같이 꺼질 패널 초기 상태
+        if (linkedPanel != null)
+            linkedPanel.SetActive(false);
+
+        // (선택) 캔버스그룹/스케일 초기화까지 안전하게
+        if (optionCanvasGroup != null)
+            optionCanvasGroup.alpha = 0f;
+
+        if (optionPanel != null)
+        {
+            Vector3 s = optionPanel.transform.localScale;
+            s.y = 0f;
+            optionPanel.transform.localScale = s;
         }
     }
 
@@ -109,7 +127,6 @@ public class ProblemSceneController : MonoBehaviour
         }
     }
 
-    /// <summary>스테이지 선택 화면으로 이동 (LevelSelectPanel)</summary>
     public void GoToStageSelect()
     {
         ProblemSession.ReturnTarget = HomeReturnTarget.LevelSelect;
@@ -117,7 +134,6 @@ public class ProblemSceneController : MonoBehaviour
             GameManager.Instance.GoToHome();
     }
 
-    /// <summary>챕터 선택 화면으로 이동 (HomeScene 기본)</summary>
     public void GoToChapterSelect()
     {
         ProblemSession.ReturnTarget = HomeReturnTarget.None;
@@ -141,21 +157,41 @@ public class ProblemSceneController : MonoBehaviour
             StopCoroutine(_optionAnimCoroutine);
 
         if (_isOptionOpen)
-        {
-            // 닫기 애니메이션
             _optionAnimCoroutine = StartCoroutine(CloseOptionPanel());
-        }
         else
-        {
-            // 열기 애니메이션
             _optionAnimCoroutine = StartCoroutine(OpenOptionPanel());
-        }
+    }
+
+    /// <summary>옵션 열기 - 기본 버튼(Button1) OnClick에 연결</summary>
+    public void ShowOptionPanel()
+    {
+        if (optionPanel == null || _isOptionOpen) return;
+        if (_optionAnimCoroutine != null) StopCoroutine(_optionAnimCoroutine);
+        _optionAnimCoroutine = StartCoroutine(OpenOptionPanel());
+    }
+
+    /// <summary>옵션 닫기 - 딤드 레이어 위 버튼(Button2) OnClick에 연결</summary>
+    public void HideOptionPanel()
+    {
+        if (optionPanel == null || !_isOptionOpen) return;
+        if (_optionAnimCoroutine != null) StopCoroutine(_optionAnimCoroutine);
+        _optionAnimCoroutine = StartCoroutine(CloseOptionPanel());
     }
 
     private IEnumerator OpenOptionPanel()
     {
         _isOptionOpen = true;
+
         optionPanel.SetActive(true);
+        if (linkedPanel != null)
+            linkedPanel.SetActive(true);
+
+        // (선택) 열릴 때 클릭 막힘 방지
+        if (optionCanvasGroup != null)
+        {
+            optionCanvasGroup.blocksRaycasts = true;
+            optionCanvasGroup.interactable = true;
+        }
 
         float elapsed = 0f;
         Vector3 scale = optionPanel.transform.localScale;
@@ -163,54 +199,60 @@ public class ProblemSceneController : MonoBehaviour
         while (elapsed < animationDuration)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / animationDuration;
+            float t = Mathf.Clamp01(elapsed / animationDuration);
 
-            // Alpha 0 → 1
             if (optionCanvasGroup != null)
                 optionCanvasGroup.alpha = t;
 
-            // Scale Y 0 → 1
             scale.y = t;
             optionPanel.transform.localScale = scale;
 
             yield return null;
         }
 
-        // 최종값 보정
         if (optionCanvasGroup != null)
             optionCanvasGroup.alpha = 1f;
+
         scale.y = 1f;
         optionPanel.transform.localScale = scale;
     }
 
     private IEnumerator CloseOptionPanel()
     {
+        // (선택) 닫히는 중 클릭 뚫림/씹힘 방지
+        if (optionCanvasGroup != null)
+        {
+            optionCanvasGroup.blocksRaycasts = false;
+            optionCanvasGroup.interactable = false;
+        }
+
         float elapsed = 0f;
         Vector3 scale = optionPanel.transform.localScale;
 
         while (elapsed < animationDuration)
         {
             elapsed += Time.deltaTime;
-            float t = 1f - (elapsed / animationDuration);
+            float t = 1f - Mathf.Clamp01(elapsed / animationDuration);
 
-            // Alpha 1 → 0
             if (optionCanvasGroup != null)
                 optionCanvasGroup.alpha = t;
 
-            // Scale Y 1 → 0
             scale.y = t;
             optionPanel.transform.localScale = scale;
 
             yield return null;
         }
 
-        // 최종값 보정
         if (optionCanvasGroup != null)
             optionCanvasGroup.alpha = 0f;
+
         scale.y = 0f;
         optionPanel.transform.localScale = scale;
 
         optionPanel.SetActive(false);
+        if (linkedPanel != null)
+            linkedPanel.SetActive(false);
+
         _isOptionOpen = false;
     }
 

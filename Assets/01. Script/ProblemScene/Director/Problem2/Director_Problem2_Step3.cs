@@ -43,6 +43,10 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     [SerializeField] private Button nextButton;
     [SerializeField] private Text carouselText;
 
+    [Header("관점별 이미지 (perspectiveTextIds 순서와 동일)")]
+    [SerializeField] private Image perspectiveImage;
+    [SerializeField] private Sprite[] perspectiveSprites;
+
     [Header("마이크 UI")]
     [SerializeField] private GameObject micButtonRoot;
     [SerializeField] private MicRecordingIndicator micIndicator;
@@ -119,6 +123,8 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override Button PrevButton => prevButton;
     protected override Button NextButton => nextButton;
     protected override Text CarouselText => carouselText;
+    protected override Image PerspectiveImage => perspectiveImage;
+    protected override Sprite[] PerspectiveSprites => perspectiveSprites;
 
     protected override GameObject MicButtonRoot => micButtonRoot;
     protected override MicRecordingIndicator MicIndicator => micIndicator;

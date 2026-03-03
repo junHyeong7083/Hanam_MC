@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,12 +60,15 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
     protected abstract GameObject AnswerRoot { get; }
     protected abstract Text SpeechBubbleText { get; }
 
+    // 대화 이미지 (질문 시 / 정답 시)
+    protected abstract GameObject MyDialogueImage { get; }
+    protected abstract GameObject OtherDialogueImage { get; }
+
     #endregion
 
     // 내부 상태
     private int _currentRound;
     private bool _answering;
-    private Coroutine _guideRevertRoutine;
     private List<ChoiceAttemptDto> _attempts;
 
     // =========================
@@ -86,13 +88,6 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
     protected override void OnStepExit()
     {
         base.OnStepExit();
-
-        if (_guideRevertRoutine != null)
-        {
-            StopCoroutine(_guideRevertRoutine);
-            _guideRevertRoutine = null;
-        }
-
         RemoveListeners();
     }
 
@@ -152,6 +147,9 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         if (GuideText != null && data.situationTextId > 0)
             GuideText.text = ProblemRuntime.L(data.situationTextId);
 
+        if (data.situationTextId > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(data.situationTextId);
+
         // 씬 이미지
         if (SceneCardImage != null && data.sceneSprite != null)
             SceneCardImage.sprite = data.sceneSprite;
@@ -178,6 +176,10 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         // QuestionRoot 표시, AnswerRoot 숨김
         if (QuestionRoot != null) QuestionRoot.SetActive(true);
         if (AnswerRoot != null) AnswerRoot.SetActive(false);
+
+        // 대화 이미지: 질문 시 my, other 숨김
+        if (MyDialogueImage != null) MyDialogueImage.SetActive(true);
+        if (OtherDialogueImage != null) OtherDialogueImage.SetActive(false);
 
         // 버튼 숨기기
         if (NextDialogueButton != null) NextDialogueButton.gameObject.SetActive(false);
@@ -223,6 +225,10 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         if (QuestionRoot != null) QuestionRoot.SetActive(false);
         if (AnswerRoot != null) AnswerRoot.SetActive(true);
 
+        // 대화 이미지: 정답 시 other 표시
+        if (MyDialogueImage != null) MyDialogueImage.SetActive(false);
+        if (OtherDialogueImage != null) OtherDialogueImage.SetActive(true);
+
         // 씬 이미지 → 답변용 스프라이트로 교체
         if (SceneCardImage != null && data.answerSceneSprite != null)
             SceneCardImage.sprite = data.answerSceneSprite;
@@ -230,6 +236,9 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         // 결과 텍스트 (하남박스)
         if (GuideText != null && data.resultTextId > 0)
             GuideText.text = ProblemRuntime.L(data.resultTextId);
+
+        if (data.resultTextId > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(data.resultTextId);
 
         // 말풍선 텍스트
         if (SpeechBubbleText != null && data.speechBubbleTextId > 0)
@@ -253,27 +262,7 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
     private void OnWrong()
     {
         if (GuideText != null && GuideTextId_Fail > 0)
-        {
-            if (_guideRevertRoutine != null)
-                StopCoroutine(_guideRevertRoutine);
-            _guideRevertRoutine = StartCoroutine(ShowFailGuideAndRevert());
-        }
-    }
-
-    private IEnumerator ShowFailGuideAndRevert()
-    {
-        var rounds = Rounds;
-        int situationTextId = (rounds != null && _currentRound < rounds.Length)
-            ? rounds[_currentRound].situationTextId
-            : 0;
-
-        GuideText.text = ProblemRuntime.L(GuideTextId_Fail);
-        yield return new WaitForSeconds(2f);
-
-        if (GuideText != null && situationTextId > 0 && !_answering)
-            GuideText.text = ProblemRuntime.L(situationTextId);
-
-        _guideRevertRoutine = null;
+            GuideText.text = ProblemRuntime.L(GuideTextId_Fail);
     }
 
     // =========================

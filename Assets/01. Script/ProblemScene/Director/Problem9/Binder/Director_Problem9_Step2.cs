@@ -29,6 +29,10 @@ public class Director_Problem9_Step2 : Director_Problem9_Step2_Logic
     [SerializeField] private GameObject answerRoot;
     [SerializeField] private Text speechBubbleText;
 
+    [Header("===== 대화 이미지 =====")]
+    [SerializeField] private GameObject myDialogueImage;
+    [SerializeField] private GameObject otherDialogueImage;
+
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override RoundData[] Rounds => rounds;
     protected override Text GuideText => guideText;
@@ -41,4 +45,6 @@ public class Director_Problem9_Step2 : Director_Problem9_Step2_Logic
     protected override Text[] QuestionLabels => questionLabels;
     protected override GameObject AnswerRoot => answerRoot;
     protected override Text SpeechBubbleText => speechBubbleText;
+    protected override GameObject MyDialogueImage => myDialogueImage;
+    protected override GameObject OtherDialogueImage => otherDialogueImage;
 }

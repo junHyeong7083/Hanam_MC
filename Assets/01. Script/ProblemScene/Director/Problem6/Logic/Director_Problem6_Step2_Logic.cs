@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,12 +17,7 @@ public class StressCardSlot
     public Text categoryText;      // 카테고리 텍스트
     public Image backgroundImage;  // 카드 배경 Image (색 바꿀 대상)
 
-    [Header("아이콘 (선택 상태에 따라 스프라이트 변경)")]
-    public Image iconImage;            // 아이콘 이미지
-    public Sprite[] iconSprites;       // [0]=선택 전, [1]=선택 후
-
     [Header("선택 시 표시")]
-    public GameObject glowImage;       // 글로우 이미지 (선택 시 ON)
     public GameObject selectImage;     // 선택 이미지 (선택 시 ON)
 }
 
@@ -156,7 +151,7 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         _initialized = true;
     }
 
-    private void SetupCardUI()
+private void SetupCardUI()
     {
         RemoveCardListeners();
 
@@ -168,7 +163,7 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
             int index = i;
             var slot = cards[i];
 
-            // 텍스트 세팅 (선택 전: 검은색)
+            // 텍스트 세팅 (항상 검정)
             if (slot.labelText != null)
             {
                 slot.labelText.text = slot.label;
@@ -181,17 +176,11 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
                 slot.categoryText.color = Color.black;
             }
 
-            // 선택 전: backgroundImage ON, glow/select OFF
+            // 선택 전: backgroundImage ON, selectImage OFF
             if (slot.backgroundImage != null)
                 slot.backgroundImage.gameObject.SetActive(true);
-            if (slot.glowImage != null)
-                slot.glowImage.SetActive(false);
             if (slot.selectImage != null)
                 slot.selectImage.SetActive(false);
-
-            // 아이콘 스프라이트 초기화 (선택 전 상태)
-            if (slot.iconImage != null && slot.iconSprites != null && slot.iconSprites.Length >= 1)
-                slot.iconImage.sprite = slot.iconSprites[0];
 
             // 버튼 리스너
             if (slot.button != null)
@@ -245,7 +234,7 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         UpdateGateState();   // 선택 개수에 따라 Gate 열기/닫기
     }
 
-    private void UpdateCardVisuals()
+private void UpdateCardVisuals()
     {
         var cards = Cards;
         if (cards == null) return;
@@ -255,24 +244,18 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
             var slot = cards[i];
             bool isSelected = _selectedFlags != null && _selectedFlags[i];
 
-            // 선택 시: backgroundImage OFF, glow/select ON
-            // 미선택 시: backgroundImage ON, glow/select OFF
+            // 선택 시: backgroundImage OFF, selectImage ON
+            // 미선택 시: backgroundImage ON, selectImage OFF
             if (slot.backgroundImage != null)
                 slot.backgroundImage.gameObject.SetActive(!isSelected);
-            if (slot.glowImage != null)
-                slot.glowImage.SetActive(isSelected);
             if (slot.selectImage != null)
                 slot.selectImage.SetActive(isSelected);
 
-            // 텍스트 색상: 선택 시 흰색, 미선택 시 검은색
+            // 텍스트 색상: 항상 검정 유지
             if (slot.labelText != null)
-                slot.labelText.color = isSelected ? Color.white : Color.black;
+                slot.labelText.color = Color.black;
             if (slot.categoryText != null)
-                slot.categoryText.color = isSelected ? Color.white : Color.black;
-
-            // 아이콘 스프라이트 변경 (선택 전/후)
-            if (slot.iconImage != null && slot.iconSprites != null && slot.iconSprites.Length >= 2)
-                slot.iconImage.sprite = isSelected ? slot.iconSprites[1] : slot.iconSprites[0];
+                slot.categoryText.color = Color.black;
         }
     }
 

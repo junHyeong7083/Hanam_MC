@@ -184,6 +184,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         if (_currentFilmInstance == null)
         {
+            // text 자식 찾아서 idx 기반 넣어주면됨
             _currentFilmInstance = UnityEngine.Object.Instantiate(CurrentFilmPrefab, CurrentFilmRoot, false);
             _currentFilmAnimator = _currentFilmInstance.GetComponent<Director_Problem1_Step3_FilmCardAnimator>();
         }
@@ -196,11 +197,20 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             }
         }
 
-        var uiText = _currentFilmInstance.GetComponentInChildren<Text>(true);
+        // GetComponentInChildren은 root GO도 포함하므로, 자식 전용으로 탐색
+        Text uiText = null;
+        foreach (var t in _currentFilmInstance.GetComponentsInChildren<Text>(true))
+        {
+            if (t.gameObject != _currentFilmInstance) { uiText = t; break; }
+        }
         if (uiText != null)
             uiText.text = text ?? string.Empty;
 
-        var uiImage = _currentFilmInstance.GetComponentInChildren<Image>(true);
+        Image uiImage = null;
+        foreach (var img in _currentFilmInstance.GetComponentsInChildren<Image>(true))
+        {
+            if (img.gameObject != _currentFilmInstance) { uiImage = img; break; }
+        }
         if (uiImage != null)
             uiImage.sprite = sprite;
     }

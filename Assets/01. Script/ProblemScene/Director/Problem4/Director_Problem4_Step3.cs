@@ -58,6 +58,10 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
     [Header("이펙트 컨트롤러")]
     [SerializeField] private Problem4_Step3_EffectController effectController;
 
+    [Header("완료 텍스트 설정")]
+    [SerializeField] private int completeTextId;
+    [SerializeField] private TTSTrigger hanamTTSTrigger;
+
     // ==========================
     // 베이스 클래스 프로퍼티 override
     // ==========================
@@ -80,4 +84,7 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
     protected override MicRecordingIndicator MicIndicator => micIndicator;
 
     protected override Problem4_Step3_EffectController EffectController => effectController;
+
+    protected override int CompleteTextId => completeTextId;
+    protected override TTSTrigger HanamTTSTrigger => hanamTTSTrigger;
 }

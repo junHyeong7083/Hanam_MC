@@ -10,6 +10,8 @@ public interface IRewriteStepData
     string RewrittenText { get; }
     string[] Options { get; }
     string[][] OptionKeywords { get; }
+    Sprite[] OptionSprites { get; }
+    int AfterCompleteTextId { get; }  // 라운드 완료 시 표시할 가이드 텍스트 ID (0이면 공통 GuideTextId_After 사용)
 }
 
 public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
@@ -24,6 +26,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     protected abstract Text GuideText { get; }
     protected abstract int GuideTextId_Before { get; }
     protected abstract int GuideTextId_After { get; }
+    protected abstract int GuideTextId_BetweenRounds { get; }  // 중간 스텝 완료 시 (마지막 제외)
 
     [Header("캐러셀 UI")]
     protected abstract GameObject CarouselRoot { get; }
@@ -31,6 +34,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     protected abstract Button NextButton { get; }
     protected abstract Text CarouselText { get; }
     protected abstract Text CarouselIndexText { get; }
+    protected abstract Image OptionImage { get; }
 
     [Header("마이크 UI")]
     protected abstract GameObject MicButtonRoot { get; }
@@ -129,6 +133,9 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (GuideText != null && GuideTextId_Before != 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Before);
 
+        if (GuideTextId_Before != 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(GuideTextId_Before);
+
         SetBeforeCompleteUI();
 
         ApplyProgressDots();
@@ -186,6 +193,12 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (CarouselText != null) CarouselText.text = options[_currentOptionIndex];
         if (CarouselIndexText != null) CarouselIndexText.text = $"{_currentOptionIndex + 1}/{options.Length}";
 
+        // 옵션 인덱스에 맞는 스프라이트 교체
+        var optSprites = step.OptionSprites;
+        var optImg = OptionImage;
+        if (optImg != null && optSprites != null && _currentOptionIndex < optSprites.Length && optSprites[_currentOptionIndex] != null)
+            optImg.sprite = optSprites[_currentOptionIndex];
+
         bool canNav = !_isStepCompleted && options.Length > 1 && !IsAnimating;
         if (PrevButton != null) PrevButton.interactable = canNav;
         if (NextButton != null) NextButton.interactable = canNav;
@@ -224,6 +237,9 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
         indicator.OnNoMatch -= OnSTTNoMatch;
         indicator.OnNoMatch += OnSTTNoMatch;
+
+        indicator.OnRecordingChanged -= OnMicRecordingChanged;
+        indicator.OnRecordingChanged += OnMicRecordingChanged;
     }
 
     private void UnbindMicEvents()
@@ -233,6 +249,22 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
         indicator.OnKeywordMatched -= OnSTTKeywordMatched;
         indicator.OnNoMatch -= OnSTTNoMatch;
+        indicator.OnRecordingChanged -= OnMicRecordingChanged;
+    }
+
+    private void OnMicRecordingChanged(bool isRecording)
+    {
+        if (RecordingOverlay != null)
+            RecordingOverlay.SetActive(isRecording);
+
+        if (isRecording)
+        {
+            // 녹음 시작 시: Prev/Next 숨기고, 마이크 중복 클릭 방지
+            if (PrevButton != null) PrevButton.gameObject.SetActive(false);
+            if (NextButton != null) NextButton.gameObject.SetActive(false);
+            SetMicInteractable(false);
+        }
+        // 녹음 종료 후 UI 복원은 OnSTTNoMatch 또는 SetAfterCompleteUI에서 처리
     }
 
     private void OnClickPrev()
@@ -270,14 +302,10 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
         if (options.Length == 0) return;
 
-        _isRecording = !_isRecording;
-
-        if (RecordingOverlay != null)
-            RecordingOverlay.SetActive(_isRecording);
-
         var indicator = MicIndicator;
         if (indicator != null)
             indicator.ToggleRecording();
+        // RecordingOverlay, PrevBtn, NextBtn 토글은 OnMicRecordingChanged 이벤트에서 처리
     }
 
     // 핵심 수정: MicRecordingIndicator(SetKeywords)에 실제로 키워드를 넣어준다.
@@ -349,16 +377,36 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     {
         Debug.Log($"[Problem3_Step2] OnNoMatch result={sttResult}");
 
-        _isRecording = false;
-        if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
+        // 녹음 실패: Prev/Next 다시 보이고, 마이크 버튼 다시 활성화
+        if (PrevButton != null) PrevButton.gameObject.SetActive(true);
+        if (NextButton != null) NextButton.gameObject.SetActive(true);
+        SetMicInteractable(true);
     }
 
     private IEnumerator PlayRewriteCompleteSequence()
     {
         _isStepCompleted = true;
 
-        if (GuideText != null && GuideTextId_After != 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_After);
+        var stepForText = Steps[_stepIndex];
+        bool isLastStep = (_stepIndex == Steps.Length - 1);
+
+        int afterTextId;
+        if (!isLastStep && GuideTextId_BetweenRounds != 0)
+            afterTextId = GuideTextId_BetweenRounds;
+        else if (stepForText.AfterCompleteTextId != 0)
+            afterTextId = stepForText.AfterCompleteTextId;
+        else
+            afterTextId = GuideTextId_After;
+
+        Debug.Log($"[Problem3_Step2] PlayRewriteCompleteSequence stepIndex={_stepIndex} isLast={isLastStep} " +
+                  $"BetweenRounds={GuideTextId_BetweenRounds} AfterComplete={stepForText.AfterCompleteTextId} " +
+                  $"GuideTextId_After={GuideTextId_After} -> afterTextId={afterTextId} GuideText={(GuideText != null ? "OK" : "NULL")}");
+
+        if (GuideText != null && afterTextId != 0)
+            GuideText.text = ProblemRuntime.L(afterTextId);
+
+        if (afterTextId != 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(afterTextId);
 
         SetAfterCompleteUI();
 
@@ -403,6 +451,8 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
         if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
 
+        if (PrevButton != null) PrevButton.gameObject.SetActive(true);
+        if (NextButton != null) NextButton.gameObject.SetActive(true);
         SetMicInteractable(true);
     }
 
@@ -414,10 +464,9 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (NextDialogButtonRoot != null) NextDialogButtonRoot.SetActive(true);
         if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
 
-        SetMicInteractable(false);
-
-        if (PrevButton != null) PrevButton.interactable = false;
-        if (NextButton != null) NextButton.interactable = false;
+        // gameObject 비활성화로 완전히 숨김 (interactable=false 시 dim 방지)
+        if (PrevButton != null) PrevButton.gameObject.SetActive(false);
+        if (NextButton != null) NextButton.gameObject.SetActive(false);
     }
 
     private void SetMicInteractable(bool interactable)

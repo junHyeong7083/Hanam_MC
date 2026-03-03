@@ -236,6 +236,15 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
             // 모든 버튼 리스너 제거 (interactable 유지로 알파 변화 방지)
             RemoveAllListeners();
 
+            // 대사 버튼들 interactable = false
+            var dialoguesRef = DialogueChoices;
+            if (dialoguesRef != null)
+            {
+                foreach (var choice in dialoguesRef)
+                    if (choice?.button != null)
+                        choice.button.interactable = false;
+            }
+
             SaveDialogueAttempt();
 
             if (GuideText != null && GuideTextId_Complete > 0)
@@ -258,10 +267,18 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         ShowRetryGuide();
     }
 
-    private void ShowRetryGuide()
+private void ShowRetryGuide()
     {
+        // 선택된 selectImg 비활성화
+        if (_selectedDialogue?.selectImg != null)
+            _selectedDialogue.selectImg.SetActive(false);
+
         if (GuideText != null && GuideTextId_Retry > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Retry);
+
+        // 재시도 TTS 재생
+        if (GuideTextId_Retry > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(GuideTextId_Retry);
 
         var mic = MicIndicator;
         if (mic != null)

@@ -24,7 +24,8 @@
       "Bash(ls:*)",
       "mcp__UnityMCP__manage_script",
       "Bash(git mv:*)",
-      "mcp__UnityMCP__create_script"
+      "mcp__UnityMCP__create_script",
+      "mcp__UnityMCP__script_apply_edits"
     ],
     "deny": [],
     "ask": []

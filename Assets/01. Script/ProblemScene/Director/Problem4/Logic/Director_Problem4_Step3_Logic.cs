@@ -58,6 +58,9 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
     protected virtual Problem4_Step3_EffectController EffectController => null;
+    protected virtual TTSTrigger HanamTTSTrigger => null;
+    protected virtual int CompleteTextId => 0;
+
 
     // ==========================
     // 내부 상태
@@ -110,10 +113,12 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (HanamBtn != null)
             HanamBtn.SetActive(false);
 
-        // MicIndicator STT 이벤트 구독
+        // MicIndicator 활성화 + STT 이벤트 구독
         var mic = MicIndicator;
         if (mic != null)
         {
+            mic.gameObject.SetActive(true);
+
             mic.OnKeywordMatched -= OnSTTKeywordMatched;
             mic.OnKeywordMatched += OnSTTKeywordMatched;
             mic.OnNoMatch -= OnSTTNoMatch;
@@ -219,20 +224,25 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         }
     }
 
-    private void OnCorrectAnswer()
+private void OnCorrectAnswer()
     {
         if (YesButton != null) YesButton.interactable = false;
         if (NoButton != null) NoButton.interactable = false;
 
-        if (ButtonImageRoot != null)
-            ButtonImageRoot.SetActive(false);
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            var micBtn = mic.GetComponent<Button>();
+            if (micBtn != null) micBtn.interactable = false;
+            var hover = mic.GetComponent<ButtonHover>();
+            if (hover != null) hover.SetInteractable(false);
+        }
 
         var questions = Questions;
         var effect = EffectController;
 
         if (effect != null)
         {
-            // 퇴장 애니메이션 → 완료 콜백
             effect.PlayQuestionExit(() =>
             {
                 if (_currentIndex >= questions.Length - 1)
@@ -244,20 +254,25 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
                     _currentIndex++;
                     ApplyQuestionUI(_currentIndex);
 
-                    // 다음 질문 등장 애니메이션
                     effect.PlayQuestionEnter(() =>
                     {
-                        if (ButtonImageRoot != null)
-                            ButtonImageRoot.SetActive(true);
                         if (YesButton != null) YesButton.interactable = true;
                         if (NoButton != null) NoButton.interactable = true;
+
+                        var mic2 = MicIndicator;
+                        if (mic2 != null)
+                        {
+                            var micBtn2 = mic2.GetComponent<Button>();
+                            if (micBtn2 != null) micBtn2.interactable = true;
+                            var hover2 = mic2.GetComponent<ButtonHover>();
+                            if (hover2 != null) hover2.SetInteractable(true);
+                        }
                     });
                 }
             });
         }
         else
         {
-            // EffectController 없으면 딜레이 방식
             if (_currentIndex >= questions.Length - 1)
             {
                 CompleteStep();
@@ -270,24 +285,30 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         }
     }
 
-    private IEnumerator NextQuestionFallback()
+private IEnumerator NextQuestionFallback()
     {
         yield return new WaitForSeconds(0.5f);
 
         ApplyQuestionUI(_currentIndex);
 
-        if (ButtonImageRoot != null)
-            ButtonImageRoot.SetActive(true);
-
         if (YesButton != null) YesButton.interactable = true;
         if (NoButton != null) NoButton.interactable = true;
+
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            var micBtn = mic.GetComponent<Button>();
+            if (micBtn != null) micBtn.interactable = true;
+            var hover = mic.GetComponent<ButtonHover>();
+            if (hover != null) hover.SetInteractable(true);
+        }
     }
 
     // ==================================================
     // 에러 메시지 (HanamText 에 일시 표시 후 복원)
     // ==================================================
 
-    private void ShowError(string msg)
+private void ShowError(string msg)
     {
         if (string.IsNullOrEmpty(msg))
             msg = DefaultErrorMessage;
@@ -295,19 +316,32 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (HanamTextLabel != null)
             HanamTextLabel.text = msg;
 
+        // 다음 질문 전환 시 ApplyQuestionUI()에서 자동 갱신됨
         if (_errorRoutine != null)
+        {
             StopCoroutine(_errorRoutine);
-
-        if (ErrorShowDuration > 0f)
-            _errorRoutine = StartCoroutine(RestoreHanamTextAfterDelay());
+            _errorRoutine = null;
+        }
     }
 
-    private IEnumerator RestoreHanamTextAfterDelay()
+private IEnumerator RestoreHanamTextAfterDelay()
     {
         yield return new WaitForSeconds(ErrorShowDuration);
 
         if (HanamTextLabel != null)
+        {
+            // ttsButton의 TTSTrigger를 일시 비활성화하여 텍스트 복원 시 TTS 재발생 방지
+            var tts = HanamTTSTrigger;
+            if (tts != null) tts.enabled = false;
+
             HanamTextLabel.text = _savedHanamText;
+
+            if (tts != null)
+            {
+                yield return null; // LateUpdate 한 프레임 건너뜀
+                tts.enabled = true;
+            }
+        }
 
         _errorRoutine = null;
     }
@@ -335,10 +369,36 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     // 완료 처리
     // ==================================================
 
-    private void CompleteStep()
+private void CompleteStep()
     {
         if (YesButton != null) YesButton.interactable = false;
         if (NoButton != null) NoButton.interactable = false;
+
+        // MicBtn: 활성화 유지하되 터치만 차단
+        var mic = MicIndicator;
+        if (mic != null)
+        {
+            mic.OnKeywordMatched -= OnSTTKeywordMatched;
+            mic.OnNoMatch -= OnSTTNoMatch;
+
+            var micBtn = mic.GetComponent<Button>();
+            if (micBtn != null) micBtn.interactable = false;
+
+            var hover = mic.GetComponent<ButtonHover>();
+            if (hover != null) hover.SetInteractable(false);
+        }
+
+        // 완료 텍스트 표시 (TTSTrigger 비활성화하여 중복 TTS 방지)
+        if (HanamTextLabel != null && CompleteTextId > 0)
+        {
+            var tts = HanamTTSTrigger;
+            if (tts != null) tts.enabled = false;
+            HanamTextLabel.text = ProblemRuntime.L(CompleteTextId);
+        }
+
+        // 완료 TTS 직접 재생
+        if (CompleteTextId > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(CompleteTextId);
 
         SaveRebuttalAttempt();
 
