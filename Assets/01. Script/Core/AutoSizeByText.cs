@@ -78,10 +78,10 @@ public class AutoSizeByText : MonoBehaviour
         if (fitHeight)
         {
             if (fitWidth)
-            {
                 _rt.sizeDelta = new Vector2(size.x, _rt.sizeDelta.y);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(textRt);
-            }
+
+            // preferredHeight를 정확히 읽으려면 항상 레이아웃 강제 갱신
+            LayoutRebuilder.ForceRebuildLayoutImmediate(textRt);
 
             float h = targetText.preferredHeight
                     + Mathf.Max(textTopOffset, 0f) + Mathf.Max(textBottomOffset, 0f)
@@ -91,7 +91,7 @@ public class AutoSizeByText : MonoBehaviour
             size.y = h;
         }
 
-        //Debug.Log($"[AutoSizeByText] \"{gameObject.name}\" | final sizeDelta=({size.x:F1}, {size.y:F1})");
+        //Debug.Log($"[AutoSizeByText] \"{gameObject.name}\" | preferredH={targetText.preferredHeight:F1} fitH={fitHeight} final=({size.x:F1}, {size.y:F1})");
         _rt.sizeDelta = size;
     }
 

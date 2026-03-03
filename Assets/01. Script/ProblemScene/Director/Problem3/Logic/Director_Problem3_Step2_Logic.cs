@@ -405,7 +405,12 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         if (GuideText != null && afterTextId != 0)
             GuideText.text = ProblemRuntime.L(afterTextId);
 
-        if (afterTextId != 0 && SoundManager.Instance != null)
+        // BetweenRounds 텍스트(중간 라운드 완료)는 TTS 재생 안 함
+        if (!isLastStep && GuideTextId_BetweenRounds != 0)
+        {
+            // TTS 없음
+        }
+        else if (afterTextId != 0 && SoundManager.Instance != null)
             SoundManager.Instance.PlayTTS(afterTextId);
 
         SetAfterCompleteUI();

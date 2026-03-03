@@ -17,8 +17,14 @@ public class Director_Problem6_Step2 : Director_Problem6_Step2_Logic
     [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
+    [Header("하남박스")]
+    [SerializeField] private Text guideText;
+    [SerializeField] private int guideTextId;
+
     // ---- Logic 베이스에 넘겨줄 프로퍼티 구현 ----
     protected override StressCardSlot[] Cards => cardSlots;
     protected override StudioLightSlot[] Lights => studioLights;
     protected override StepCompletionGate StepCompletionGateRef => completionGate;
+    protected override Text GuideText => guideText;
+    protected override int GuideTextId => guideTextId;
 }

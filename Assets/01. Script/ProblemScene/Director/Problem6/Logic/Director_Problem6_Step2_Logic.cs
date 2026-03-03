@@ -51,6 +51,12 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     /// <summary>완료 게이트 (completeRoot 안에 버튼 있음)</summary>
     protected abstract StepCompletionGate StepCompletionGateRef { get; }
 
+    /// <summary>하남박스 텍스트</summary>
+    protected abstract Text GuideText { get; }
+
+    /// <summary>하남박스 텍스트 ID</summary>
+    protected abstract int GuideTextId { get; }
+
     // ===== 설정값 =====
 
     protected virtual int MinSelectCount => 3;
@@ -90,6 +96,13 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
         if (nextStepButtonRoot != null)
             nextStepButtonRoot.SetActive(false);
+
+        // 하남박스 텍스트 + TTS
+        if (GuideText != null && GuideTextId > 0)
+            GuideText.text = ProblemRuntime.L(GuideTextId);
+
+        if (GuideTextId > 0 && SoundManager.Instance != null)
+            SoundManager.Instance.PlayTTS(GuideTextId);
     }
 
     protected override void OnStepExit()
