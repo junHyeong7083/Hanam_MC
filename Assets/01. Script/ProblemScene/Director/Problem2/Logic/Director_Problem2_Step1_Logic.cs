@@ -11,9 +11,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     [Header("Drop Box 영역")]
     protected abstract UIDropBoxArea DropBoxArea { get; }
 
-    [Header("UI After Drop")]
-    protected abstract GameObject ResultPanelRoot { get; }
-
     [Header("Intro Animation Roots")]
     protected abstract RectTransform LeftEnterRoot { get; }
     protected abstract RectTransform RightEnterRoot { get; }
@@ -33,6 +30,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     [Header("Inventory (Step1 전용)")]
     [SerializeField] private StepInventory stepInventory;
     [SerializeField] private GameObject hanamBox;
+
+    [Header("드롭 후 전환 (옵션 - 할당 시에만 동작)")]
+    [SerializeField] private GameObject hideAfterDrop;
+    [SerializeField] private GameObject showAfterDrop;
 
     private bool _interactionLocked = true;
 
@@ -96,16 +97,11 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         _isCompleted = false;
 
         var dropBoxArea = DropBoxArea;
-        var resultPanelRoot = ResultPanelRoot;
         var gate = CompletionGate;
 
         // 드롭 박스 초기화
         if (dropBoxArea != null)
             dropBoxArea.ResetVisual();
-
-        // 결과 패널 숨기기
-        if (resultPanelRoot != null)
-            resultPanelRoot.SetActive(false);
 
         // 인벤토리 초기화
         if (stepInventory != null)
@@ -212,9 +208,11 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         if (hanamBox != null)
             hanamBox.SetActive(true);
 
-        var resultPanelRoot = ResultPanelRoot;
-        if (resultPanelRoot != null)
-            resultPanelRoot.SetActive(true);
+        // 드롭 후 전환
+        if (hideAfterDrop != null)
+            hideAfterDrop.SetActive(false);
+        if (showAfterDrop != null)
+            showAfterDrop.SetActive(true);
 
         if (!_isCompleted)
         {

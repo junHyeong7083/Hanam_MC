@@ -4,14 +4,8 @@ using UnityEngine;
 
 public class StepFlowController : MonoBehaviour
 {
-    [Header("�� �帧���� ����� �г� ����")]
     [SerializeField] private List<GameObject> stepPanels = new List<GameObject>();
-
-    [Header("Skip ���� (Intro �ǳʶٱ� ��)")]
-    [Tooltip("Skip ��ư�� ������� ����")]
     [SerializeField] private bool useSkip = false;
-
-    [Tooltip("Skip �� �̵��� step �ε��� (0 ���)")]
     [SerializeField] private int skipTargetStepIndex = 0;
 
     private int _currentIndex = -1;

@@ -10,9 +10,6 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [Header("Drop Box 영역 (공통 컴포넌트)")]
     [SerializeField] private UIDropBoxArea dropBoxArea;
 
-    [Header("UI After Drop")]
-    [SerializeField] private GameObject resultPanelRoot;
-
     [Header("Intro Animation Roots")]
     [SerializeField] private RectTransform leftEnterRoot;
     [SerializeField] private RectTransform rightEnterRoot;
@@ -26,18 +23,12 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [Header("완료 게이트 (Next 버튼용)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    // ===== 베이스에 값 주입용 프로퍼티 구현 =====
-
     protected override UIDropBoxArea DropBoxArea => dropBoxArea;
-    protected override GameObject ResultPanelRoot => resultPanelRoot;
-
     protected override RectTransform LeftEnterRoot => leftEnterRoot;
     protected override RectTransform RightEnterRoot => rightEnterRoot;
-
     protected override float IntroDuration => introDuration;
     protected override float LeftStartOffsetX => leftStartOffsetX;
     protected override float RightStartOffsetX => rightStartOffsetX;
     protected override float IntroDelay => introDelay;
-
     protected override StepCompletionGate CompletionGate => completionGate;
 }

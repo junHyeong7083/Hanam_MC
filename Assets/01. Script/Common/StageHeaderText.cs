@@ -1,20 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum StageHeaderMode
+{
+    TITLE   ,
+    DESCRIPTION,
+    REVIEW,
+    START,
+}
+
 /// <summary>
 /// 스테이지 타이틀/설명 텍스트 자동 세팅
-/// - isTitle=true → 101000010 + stageIndex (타이틀)
-/// - isTitle=false → 101000020 + stageIndex (설명)
-/// - showReviewLabel=true → "지난 주 복습" 표시 (설명 전용)
+/// - Title → 101000010 + stageIndex
+/// - Description → 101000020 + stageIndex
+/// - Review → textId 900000050
+/// - Start → textId 900000051
 /// </summary>
 [RequireComponent(typeof(Text))]
 public class StageHeaderText : MonoBehaviour
 {
-    [Tooltip("체크: 타이틀 / 해제: 설명")]
-    [SerializeField] private bool isTitle = true;
+    [SerializeField] private StageHeaderMode mode = StageHeaderMode.TITLE;
 
-    [Tooltip("체크 시 '지난 주 복습' 표시 (설명 텍스트 전용)")]
-    [SerializeField] private bool showReviewLabel = false;
+    private const int ReviewTextId = 900000050;
+    private const int StartTextId = 900000051;
 
     private Text _text;
 
@@ -27,16 +35,20 @@ public class StageHeaderText : MonoBehaviour
     {
         if (_text == null) return;
 
-        if (showReviewLabel)
+        switch (mode)
         {
-            _text.text = "지난 주 복습";
-            return;
+            case StageHeaderMode.REVIEW:
+                _text.text = ProblemRuntime.L(ReviewTextId);
+                return;
+            case StageHeaderMode.START:
+                _text.text = ProblemRuntime.L(StartTextId);
+                return;
         }
 
         int stageIndex = ProblemSession.CurrentProblemIndex;
         if (stageIndex <= 0) return;
 
-        int baseId = isTitle ? 101000010 : 101000020;
+        int baseId = mode == StageHeaderMode.TITLE ? 101000010 : 101000020;
         _text.text = ProblemRuntime.L(baseId + stageIndex);
     }
 }

@@ -31,6 +31,49 @@
 챕터 1 스테이지 9 설명,101000029,1,01,00,0,029,건강한 감정 표현,Healthy emotional expression
 챕터 1 스테이지 10 설명,101000030,1,01,00,0,030,나의 인생 영화 완성,My life movie completed
 [튜토리얼] 1회기 첫 화면 영화감독 테마 소개 문구,101000031,1,01,00,0,031,"우리는 살아가면서 수많은 장면을 마주합니다.\n때로는 슬픈 장면도 있고, 피하고 싶은 아찔한 장면도 있죠.\n하지만 기억하세요.\n이 인생이라는 영화의 카메라는 당신이 쥐고 있습니다.\n''마음 영화감독' 프로그램은\n내 마음속 부정적인 생각들을 객관적인 렌즈로 바라보고,\n나만의 긍정적인 스토리로 다시 편집해 나가는 과정입니다.\n자, 이제 당신 인생의 명작을 완성할 큐 사인을 외쳐볼까요?\n액션!","We encounter countless scenes as we live.\nSometimes there are sad scenes, and there are thrilling scenes that we want to avoid.\nBut remember.\nYou are holding the camera of this movie called life.\nThe 'Mind Movie Director' program\nis a process of looking at the negative thoughts in my mind through an objective lens\nand re-editing them into my own positive story.\nNow, shall we shout the cue sign that will complete the masterpiece of your life?\nAction!"
+챕터 1 스테이지 1 우측 텍스트 1,101000032,1,01,00,0,032,먼지 속 생각 필름 확인하기,
+챕터 1 스테이지 1 우측 텍스트 2,101000033,1,01,00,0,033,생각'과 '사실' 필름 분류하기,
+챕터 1 스테이지 2 우측 텍스트 1,101000034,1,01,00,0,034,NG 장면과 감정 조명 연결하기,
+챕터 1 스테이지 2 우측 텍스트 2,101000035,1,01,00,0,035,다른 관점으로 재촬영하기,
+챕터 1 스테이지 3 우측 텍스트 1,101000036,1,01,00,0,036,시나리오 재해석하기,
+챕터 1 스테이지 3 우측 텍스트 2,101000037,1,01,00,0,037,주인공의 숨겨진 강점 찾기,
+챕터 1 스테이지 4 우측 텍스트 1,101000038,1,01,00,0,038,사실'과 '내 생각' 필름 분리하기,
+챕터 1 스테이지 4 우측 텍스트 2,101000039,1,01,00,0,039,AI의 반박 질문에 답하기,
+챕터 1 스테이지 5 우측 텍스트 1,101000040,1,01,00,0,040,줌 아웃으로 다른 관점 찾기,
+챕터 1 스테이지 5 우측 텍스트 2,101000041,1,01,00,0,041,AI와 함께하는 대사 연습,
+챕터 1 스테이지 6 우측 텍스트 1,101000042,1,01,00,0,042,스트레스 반응 알아차리고 조명 안정시키기,
+챕터 1 스테이지 6 우측 텍스트 2,101000043,1,01,00,0,043,AI와 함께하는 이완 훈련,
+챕터 1 스테이지 7 우측 텍스트 1,101000044,1,01,00,0,044,'보여지는 나'와 '진짜 나' 알아보기,
+챕터 1 스테이지 7 우측 텍스트 2,101000045,1,01,00,0,045,AI와 함께 명대사를 만들기,
+챕터 1 스테이지 8 우측 텍스트 1,101000046,1,01,00,0,046,5단계 한 걸음씩 계획표 완성하기,
+챕터 1 스테이지 8 우측 텍스트 2,101000047,1,01,00,0,047,AI와 함께하는 첫 장면(Action!) 정하기,
+챕터 1 스테이지 9 우측 텍스트 1,101000048,1,01,00,0,048,대사 선택지로 OK컷 만들기,
+챕터 1 스테이지 9 우측 텍스트 2,101000049,1,01,00,0,049,'나-전달법'으로 명대사 만들기,
+챕터 1 스테이지 10 우측 텍스트 1,101000050,1,01,00,0,050,나의 영화 장르 정하기,
+챕터 1 스테이지 10 우측 텍스트 2,101000051,1,01,00,0,051,나의 영화 제목과 개봉 선언하기,
+[요점 정리 화면] 우측 텍스트,101000052,1,01,00,0,052,요점 정리,
+[리워드 획득 화면] 우측 텍스트,101000053,1,01,00,0,053,다음 도구 획득,
+[리워드 획득 화면] 10스테이지 한정 우측 텍스트,101000054,1,01,00,0,054,수료,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 1,101000055,1,01,00,0,055,내 마음 스튜디오 청소하기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 2,101000056,1,01,00,0,056,NG 장면 다시 보기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 3,101000057,1,01,00,0,057,숨겨진 강점 캐스팅,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 4,101000058,1,01,00,0,058,흑백 필름 컬러로 복원하기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 5,101000059,1,01,00,0,059,줌 아웃으로 진실 찾기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 6,101000060,1,01,00,0,060,감독석에서 숨 고르기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 7,101000061,1,01,00,0,061,나를 향한 응원 확성기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 8,101000062,1,01,00,0,062,한 걸음씩 계획표 세우기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 9,101000063,1,01,00,0,063,건강한 대사로 소통하기,
+[스테이지 첫 화면] 요약 화면 타이틀 스테이지 10,101000064,1,01,00,0,064,내가 주인공인 내 인생 영화,
+[스테이지 첫 화면] 요약 화면 설명 스테이지 1,101000065,1,01,00,0,065,"떠다니는 생각들을 살펴보고,\n사실과 생각을 구분해 봅시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 2,101000066,1,01,00,0,066,"부정적인 생각이 만든 감정을\n알아차리고, 긍정적인 방향으로\n장면을 전환해봅시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 3,101000067,1,01,00,0,067,"과거의 우울했던 시나리오를\n다시 읽어보고, 내 안에 숨겨진\n진짜 강점을 찾아냅시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 4,101000068,1,01,00,0,068,"모 아니면 도! 극단적인\n흑백논리를 잘라내고,\n다양한 가능성을 찾아봅시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 5,101000069,1,01,00,0,069,"섣불리 남의 마음을 넘겨짚는\n오해를 풀고, 넓은 시야로\n전체 상황을 이해합시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 6,101000070,1,01,00,0,070,"내 몸이 보내는 스트레스 신호를\n눈치채고, 편안한 호흡으로\n긴장을 풀어줍시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 7,101000071,1,01,00,0,071,"스스로를 자책하던\n목소리를 끄고, 따뜻한 격려와\n지지의 대사를 연습합시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 8,101000072,1,01,00,0,072,"막막한 문제 앞에서도\n당황하지 않고, 5단계로 쪼개어\n해결책을 구상해 봅시다.",
+[스테이지 첫 화면] 요약 화면 설명 스테이지 9,101000073,1,01,00,0,073,갈등 상황에서 상처 주지 않고\n내 마음을 부드럽게 전하는\n'나-전달법'을 배웁시다.,
+[스테이지 첫 화면] 요약 화면 설명 스테이지 10,101000074,1,01,00,0,074,"앞으로 펼쳐질 내 인생 영화의\n장르를 정하고, 멋진 다짐으로\n마무리를 장식합시다.",
 [순차적] 처음 조감독 하남이 등장 할 때 마음 스튜디오 소개 문구 1,101010001,1,01,01,0,001,"안녕하세요, 감독님! 저는 앞으로 감독님의 든든한 파트너가 될 조감독 하남이입니다.",
 [순차적] 처음 조감독 하남이 등장 할 때 마음 스튜디오 소개 문구 2,101010002,1,01,01,0,002,"이곳은 감독님의 생각과 감정이 만들어지는 '마음 스튜디오'예요. 그런데 오랫동안 사용하지 않아서인지, 부정적인 생각들이 뽀얀 먼지처럼 쌓여 있네요.",
 [순차적] 처음 조감독 하남이 등장 할 때 마음 스튜디오 소개 문구 3,101010003,1,01,01,0,003,훌륭한 영화를 찍으려면 깨끗한 세트장이 필수겠죠? 저와 함께 스튜디오에 쌓인 먼지들을 털어내고 본격적인 촬영 준비를 시작해 볼까요?,
@@ -141,21 +184,24 @@ Select the protagonist's strengths in the scenario above and press the speak but
 [순차적] 지난주 복습 : 화면 진입 후 대사 1,101040001,1,01,04,0,001,"감독님, 이 필름은 세상을 온통 흑과 백, '성공' 아니면 '실패'로만 보는 '흑백논리'로 촬영되었네요.","Director, this film was shot with a 'black and white logic' that sees the world only in black and white, 'success' or 'failure'."
 [순차적] 지난주 복습 : 화면 진입 후 대사 2,101040002,1,01,04,0,002,지난주에 얻은 '편집용 가위'로 불필요한 생각들을 잘라내고 색을 되찾아봐요.,Let's cut out unnecessary thoughts and bring back color with the 'editing scissors' we got last week.
 [오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기,101040003,1,01,04,0,003,필름에 뒤섞인 '내 생각'을 잘라내고 '사실'만 남기면 색이 돌아올 거예요!,"If you cut out the 'my thoughts' mixed in the film and leave only the 'facts', the color will return!"
-미션 1 시작 대사,101040004,1,01,04,0,004,"이 컷이 '내 생각' 인가요, 아니면 '사실' 인가요?\n생각이라면 컷으로 제거하고, 사실이라면 통과 시켜주세요!","Is this cut 'my opinion' or 'fact'?\nIf it's an opinion, please cut it out, and if it's a fact, please pass it!"
+미션 1 시작 대사,101040004,1,01,04,0,004,"필름의 색을 되찾았으니, 다시는 흑백으로 찍지 않도록 마음을 단단하게 만들어 봐요.","Now that you've restored the color of your film, make up your mind never to shoot in black and white again."
 미션 1 실패 대사,101040005,1,01,04,0,005,다시 한 번 생각해볼까요?,Should we think about it again?
 미션 1 성공 대사,101040006,1,01,04,0,006,완벽해요! 생각과 사실을 구분하니 필름에 색이 돌아왔네요\n이제 생각을 반박하는 질문을 준비해볼까요?,"Perfect! Now that you've separated thoughts from facts, the colors have returned to the film.\nNow, let's prepare a question to refute the thoughts."
 미션 2 라운드 1 안내 대사,101040007,1,01,04,0,007,아래는 '나는 면접에서 떨어졌다' 에 대한 반박 질문이에요\n이 말이 사실인지 말하기 버튼을 눌러 '네' 또는 '아니오' 라고\n말해주세요 ,Below are some counter questions to the statement 'I failed the interview'.\nPlease tell me 'Yes' or 'No' by clicking the button to tell me if this statement is true.
 미션 2 라운드 2 안내 대사,101040008,1,01,04,0,008,"좋아요, 새로운 시나리오가 열렸어요!\n이 말에 동의하는지 말하기 버튼을 눌러 '네' 또는 '아니오' 라고 말해주세요 ","Okay, a new scenario has opened!\nPlease press the speak button to say 'Yes' or 'No' if you agree with this statement."
-[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기,101041001,1,01,04,1,001,오늘 면접에 지각하지 않고 참여했다.,I attended the interview today without being late.
-,101041002,1,01,04,1,002,"자격증이 없으니, 이력서를 내봤자 어차피 모든 회사가 나를 거들떠보지도 않을 거야.","Since I don't have any qualifications, no company will even consider my resume."
-,101041003,1,01,04,1,003,"면접 과정에서 긴장하여 말이 한 번 엉켰고, 약 3초 정도 멈췄다.","During the interview, I was so nervous that I slurred my words and paused for about three seconds."
-,101041004,1,01,04,1,004,"면접 준비를 100% 완벽하게 하지 못했으니, 차라리 오늘 면접은 안 가는 게 나아.","Since I didn't prepare 100% for the interview, it would be better not to go to the interview today."
-,101041005,1,01,04,1,005,"면접관이 나를 쳐다보지 않고 질문하는 건, 나를 무시했기 때문이야.","If the interviewer doesn't look at me when he asks me a question, it means he's ignoring me."
-,101041006,1,01,04,1,006,"면접을 볼 때 내 목소리가 평소보다 약간 떨렸고, 손에 땀이 났다","During the interview, my voice was a little shaky than usual and my hands were sweaty."
-,101041007,1,01,04,1,007,"대답을 완벽하게 하지 못하고 한 번 버벅거렸으니, 이번 면접은 완전히 망친 0점짜리야.",
-,101041008,1,01,04,1,008,"내 옆에 앉은 다른 회원이 말을 더 유창하게 했으니, 나는 보나 마나 무조건 탈락할 거야.",
-,101042001,1,01,04,2,001,이번에 떨어졌으니 앞으로도 계속 떨어질 거야,"Since I fell this time, I will continue to fall in the future."
-,101042002,1,01,04,2,002,이번 경험을 통해 다음 면접은 더 잘 준비할 수 있어,This experience will help me prepare better for my next interview.
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_사실,101041001,1,01,04,1,001,오늘 면접에 지각하지 않고 참여했다.,I attended the interview today without being late.
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_생각,101041002,1,01,04,1,002,"자격증이 없으니, 이력서를 내봤자 어차피 모든 회사가 나를 거들떠보지도 않을 거야.","Since I don't have any qualifications, no company will even consider my resume."
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_사실,101041003,1,01,04,1,003,"면접 과정에서 긴장하여 말이 한 번 엉켰고, 약 3초 정도 멈췄다.","During the interview, I was so nervous that I slurred my words and paused for about three seconds."
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_생각,101041004,1,01,04,1,004,"면접 준비를 100% 완벽하게 하지 못했으니, 차라리 오늘 면접은 안 가는 게 나아.","Since I didn't prepare 100% for the interview, it would be better not to go to the interview today."
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_생각,101041005,1,01,04,1,005,"면접관이 나를 쳐다보지 않고 질문하는 건, 나를 무시했기 때문이야.","If the interviewer doesn't look at me when he asks me a question, it means he's ignoring me."
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_사실,101041006,1,01,04,1,006,"면접을 볼 때 내 목소리가 평소보다 약간 떨렸고, 손에 땀이 났다","During the interview, my voice was a little shaky than usual and my hands were sweaty."
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_생각,101041007,1,01,04,1,007,"대답을 완벽하게 하지 못하고 한 번 버벅거렸으니, 이번 면접은 완전히 망친 0점짜리야.",
+[오늘의 촬영 준비] '사실'과 '내 생각' 필름 분리하기_생각,101041008,1,01,04,1,008,"내 옆에 앉은 다른 회원이 말을 더 유창하게 했으니, 나는 보나 마나 무조건 탈락할 거야.",
+[마음 깊이 보기] AI의 반박 질문에 답하기_질문 1,101042001,1,01,04,2,001,이번 회사와는 인연이 닿지 않았을 뿐이야. 이번 면접 경험을 발판 삼아 다음번에는 더 잘 준비해서 도전하면 돼. 평생 취업을 못 하는 건 결코 아니야.,It's just that I wasn't meant to be with this company. Use this interview experience as a stepping stone to prepare better for the next time. It's not like you'll never find a job.
+[마음 깊이 보기] AI의 반박 질문에 답하기_질문 2,101042002,1,01,04,2,002,"대답을 하다 한 번 버벅거리긴 했지만, 포기하지 않고 끝까지 대답을 마친 점은 스스로 칭찬해 줄 만해. 100점은 아니더라도 70점짜리 노력은 했어.","I stumbled once while answering, but I deserve some credit for not giving up and finishing the answer. Even if it wasn't a perfect score, I put in at least a 70-point effort."
+[마음 깊이 보기] AI의 반박 질문에 답하기_질문 3,101042003,1,01,04,2,003,불합격 통보는 단지 그 회사의 현재 상황과 내가 맞지 않았다는 뜻일 뿐이야. 나를 필요로 하는 곳이 분명 있을 거야.,
+[마음 깊이 보기] AI의 반박 질문에 답하기_질문 4,101042004,1,01,04,2,004,면접관이 나를 보지 않은 건 서류를 검토하느라 바빴기 때문일 수도 있어. 섣불리 나를 무시했다고 넘겨짚어 상처받을 필요는 없어.,
+[마음 깊이 보기] AI의 반박 질문에 답하기_질문 5,101042005,1,01,04,2,005,조금 늦게 출발한다고 해서 영원한 낙오자가 되는 건 아니야. 지금의 시간들은 내 마음을 더 단단하게 다지고 나에게 맞는 길을 찾아가는 소중한 준비 기간이야.,
 [요점 정리] 요점 텍스트 1,101043001,1,01,04,3,001,'모 아니면 도'라고 생각했던 극단적인 흑백 필름 장면을 시청했습니다.,I watched extreme black and white film footage that I thought was 'all or nothing'.
 [요점 정리] 요점 텍스트 2,101043002,1,01,04,3,002,편집용 가위를 사용해 사실과 다르게 너무 과장된 부정적 장면을 과감히 잘라냈습니다.,"Using editing scissors, we boldly cut out negative scenes that were too exaggerated and different from the facts."
 [요점 정리] 요점 텍스트 3,101043003,1,01,04,3,003,완벽한 성공과 완전한 실패 사이에도 수많은 단계와 긍정적인 가능성이 존재함을 배웠습니다.,I learned that there are countless steps and positive possibilities between complete success and complete failure.
@@ -164,26 +210,24 @@ Select the protagonist's strengths in the scenario above and press the speak but
 [리워드] 다음 도구 획득_도구 이름,101044001,1,01,04,4,001,줌 렌즈,zoom lens
 [리워드] 다음 도구 획득_도구 설명,101044002,1,01,04,4,002,"어떤 효과가 있나요? '완벽한 성공 아니면 완전한 실패'라는 좁고 답답한 생각에서 벗어나게 해줘요. 줌 렌즈로 시야를 넓혀보면, 세상에는 흑백 말고도 알록달록 다양한 색깔의 기회들이 있다는 걸 알게 된답니다.","What effect does it have? It frees you from the narrow, stifling mindset of ""perfect success or complete failure."" By broadening your perspective with a zoom lens, you discover that the world offers a multitude of colorful opportunities, not just black and white."
 미션 2 시작 대사,101040009,1,01,04,0,009,이제 다시는 흑백논리에 빠지지 않도록 마음을 단단하게 만들어볼까요?,
-스테이지 시작 대사 1,101050001,1,01,05,0,001,"감독님, 이 장면은 배우의 표정만 너무 가까이 찍어서 오해를 부르는 '독심술 오류' 장면이에요.","Director, this scene is a 'mind-reading error' scene that causes misunderstandings because it only takes a close-up shot of the actor's expression."
-리워드 사용 대사,101050002,1,01,05,0,002,줌 렌즈를 드래그하여 모니터 위에 올려주세요,Drag the zoom lens and place it on the monitor.
-미션 1 시작 대사,101050003,1,01,05,0,003,아하! 나 때문에 굳은 표정이 아니었네요. 다른 장면들도 줌 아웃 해볼까요?,Aha! It wasn't because of me that you had such a stiff expression. Should we zoom out to other scenes?
-미션 1 안내 대사,101050004,1,01,05,0,004,오해 장면들을 터치해서 확인해보세요!,Tap on the misunderstanding scenes to check them out!
-미션 1 성공 대사,101050005,1,01,05,0,005,완벽해요! 줌 아웃하니 전혀 다른 상황이 보이죠?\n이제 직접 대화하는 연습을 해볼까요?,"Perfect! Zooming out, you see a completely different situation, don't you? \nNow, let's practice having a real conversation."
-미션 2 시작 대사 1,101050006,1,01,05,0,006,"전체 상황을 봤으니, 이제 직접 물어보는 대사 연습을 해봐요.","Now that you've seen the full situation, let's practice asking questions directly."
-미션 2 시작 대사 2,101050007,1,01,05,0,007,"저를 동료라고 생각하고, 제가 ""무슨 일 있으세요?"" 라고 물으면\n화면에서 가장 적절한 대사를 골라 말해주세요!","Think of me as your colleague, and when I ask you ""What's wrong?""\nPlease pick the most appropriate line on the screen and say it!"
-미션 2 안내 대사,101050008,1,01,05,0,008,화면에서 가장 적절한 대사를 고르고 말하기 버튼을 눌러 말해주세요!,Choose the most appropriate line on the screen and press the speak button to say it!
-미션 2 실패 대사,101050009,1,01,05,0,009,"지금 답변은 자신을 보호하는 데는 도움이 되지만, 오해를 풀기에는 조금 부족했어요.","The answer now helps protect yourself, but it falls short of clearing up the misunderstanding."
-미션 2 성공 대사,101050010,1,01,05,0,010,완벽해요! 건강한 자기 표현이에요.,Perfect! It's healthy self-expression.
-,101051001,1,01,05,1,001,동료의 화난 표정,A colleague's angry expression
-,101051002,1,01,05,1,002,친구의 차가운 얼굴,My friend's cold face
-,101051003,1,01,05,1,003,상사의 무표정,The boss's expressionless face
-,101051004,1,01,05,1,004,복잡한 엑셀 때문에\n인상을 쓰고 있어요,I'm writing this because of the complicated Excel.
-,101051005,1,01,05,1,005,친구는 피곤해서\n잠시 쉬고 있어요,"My friend is tired, so he is taking a short break."
-,101051006,1,01,05,1,006,상사는 일정을 확인하며\n집중하고 있어요,The boss is checking the schedule and concentrating.
-,101052001,1,01,05,2,001,"아니요, 아무 문제 없어요","No, there's no problem."
-,101052002,1,01,05,2,002,혹시 제가 뭘 잘못했을까요?,Could it be that I did something wrong?
-,101052003,1,01,05,2,003,왜 그러세요?,Why are you like that?
-미션 2 완료 텍스트,101052004,1,01,05,2,004,아니요! 그냥 오늘 처리할 일이 많아서 그래요...,No! I just have a lot to do today...
+[순차적] 지난주 복습 : 화면 진입 후 대사 1,101050001,1,01,05,0,001,"감독님, 이 장면은 배우의 표정만 너무 가까이 찍어서 오해를 부르는 '독심술 오류' 장면이에요.","Director, this scene is a 'mind-reading error' scene that causes misunderstandings because it only takes a close-up shot of the actor's expression."
+[순차적] 지난주 복습 : 화면 진입 후 대사 2,101050002,1,01,05,0,002,지난주에 얻은 '줌 렌즈'로 카메라를 뒤로 당겨 전체 상황을 살펴볼까요?,Let's pull back the camera with the 'zoom lens' we got last week and get a full view of the situation.
+[오늘의 촬영 준비] 줌 아웃으로 다른 관점 찾기_성공 대사,101050003,1,01,05,0,003,아하! 나 때문에 굳은 표정이 아니었네요. 다른 장면들도 줌 아웃 해볼까요?,Aha! It wasn't because of me that you had such a stiff expression. Should we zoom out to other scenes?
+[순차적] 마음 깊이 보기 : AI와 함께하는 대사 연습 1,101050004,1,01,05,0,004,"전체 상황을 봤으니, 이제 직접 물어보는 대사를 연습해봐요.","Now that you've seen the full situation, let's practice asking the question directly."
+[순차적] 마음 깊이 보기 : AI와 함께하는 대사 연습 2,101050007,1,01,05,0,007,"저를 동료라고 생각하고, 제가 ""무슨 일 있으세요?"" 라고 물으면 화면에서 가장 적절한 대사를 골라 말해주세요.","Think of me as a colleague, and when I ask, ""What's wrong?"", pick the most appropriate line from the screen and say it."
+[마음 깊이 보기] 질문 대사 1,101050008,1,01,05,0,008,“어? 언제 왔어? 프로그램 신청하려고 센터 통화하느라 오는 줄도 몰랐어. 넌 신청 했어?”,"""Huh? When did you get here? I didn't even realize you were coming because I was on the phone with the center to apply for the program. Did you apply?"""
+[마음 깊이 보기] 질문 대사 2,101050009,1,01,05,0,009,"“아휴, 눈부셔. 햇볕 때문에 눈을 제대로 뜰 수가 없네요. 혹시 커튼을 쳐 주실 수 있나요?”","""Ugh, it's so bright. I can't open my eyes properly because of the sunlight. Could you please close the curtains?"""
+[마음 깊이 보기] 질문 대사 3,101050010,1,01,05,0,010,"“미안해, 어제 몸이 너무 아파서 하루 종일 자느라 연락을 못 봤어.”","“I’m sorry, I was so sick yesterday that I slept all day and couldn’t contact you.”"
+[마음 깊이 보기] AI와 함께하는 대사 연습_오해1,101051001,1,01,05,1,001,친구가 나와 눈이 마주쳤는데 인사도 없이 고개를 휙 돌렸다. 나를 싫어한다.,"My friend made eye contact with me, but he turned his head away without saying a word. He hates me."
+[마음 깊이 보기] AI와 함께하는 대사 연습_오해2,101051002,1,01,05,1,002,프로그램 강사님이 오늘 유독 내 쪽을 보며 인상을 찌푸리신다. 내 태도가 마음에 안 드시는 거다.,The program instructor is frowning at me today. He doesn't like my attitude.
+[마음 깊이 보기] AI와 함께하는 대사 연습_오해3,101051003,1,01,05,1,003,친구가 내 문자에 하루 종일 답장이 없고 전화도 받지 않는다. 나를 손절하려는 것이다.,My friend hasn't responded to my texts or answered my calls all day. He's trying to cut me off.
+[마음 깊이 보기] AI와 함께하는 대사 연습_줌 아웃(진실) 1,101051004,1,01,05,1,004,친구는 귀에 무선 이어폰을 꽂고 전화를 받는 중이라 나를 미처 보지 못했다.,My friend didn't see me because he was on the phone with his wireless earphones in his ears.
+[마음 깊이 보기] AI와 함께하는 대사 연습_줌 아웃(진실) 2,101051005,1,01,05,1,005,내 뒤쪽 창가에 반사되는 햇빛 때문에 눈이 부셔 인상을 쓰게 되었다.,The sunlight reflecting off the window behind me was blinding and made me frown.
+[마음 깊이 보기] AI와 함께하는 대사 연습_줌 아웃(진실) 3,101051006,1,01,05,1,006,친구가 심한 감기몸살로 약을 먹고 하루 종일 휴대폰을 꺼둔 채 잠들어 있었다.,"My friend had a bad cold, took some medicine, and slept with his phone turned off all day."
+[마음 깊이 보기] 답변 1,101052001,1,01,05,2,001,“아 통화중이었구나. 그럼 나도 센터 프로그램 신청해야겠다. 알려줘서 고마워.”,"""Oh, you were on the phone. Then I should apply for the center program too. Thanks for letting me know."""
+[마음 깊이 보기] 답변 2,101052002,1,01,05,2,002,"“아, 햇볕 때문에 눈이 부셨나봐요! 제가 커튼을 쳐드리겠습니다.”","“Oh, I guess the sun is blinding you! I’ll close the curtains.”"
+[마음 깊이 보기] 답변 3,101052003,1,01,05,2,003,“그랬구나. 나는 혹시 내게 서운한 일이 있는 줄 알고 걱정했거든. 아픈 건 좀 괜찮아졌어?”,"""I see. I was worried, thinking something might be wrong with me. Are you feeling better now?"""
+[마음 깊이 보기] 성공 대사,101052004,1,01,05,2,004,잘했어요! 직접 물어보는 용기 있는 대사 덕분에 오해가 풀렸네요.,"Well done! Thanks to your courageous direct question, the misunderstanding was cleared up."
 [요점 정리] 요점 텍스트 1,101053001,1,01,05,3,001,상대방의 표정만 보고 마음을 부정적으로 단정 지었던 클로즈업 장면을 보았습니다.,I saw a close-up scene where I made a negative judgment based solely on the other person's expression.
 [요점 정리] 요점 텍스트 2,101053002,1,01,05,3,002,줌 렌즈를 활용해 화면을 넓혀(줌 아웃) 상황의 전체적인 진짜 원인을 파악했습니다.,We used the zoom lens to enlarge the screen (zoom out) to get a full picture of the real cause of the situation.
 [요점 정리] 요점 텍스트 3,101053003,1,01,05,3,003,우리는 타인의 마음을 완벽하게 읽거나 짐작할 수 없다는 인지적 오류를 깨달았습니다.,We have realized the cognitive error that we cannot perfectly read or guess the minds of others.
@@ -191,24 +235,25 @@ Select the protagonist's strengths in the scenario above and press the speak but
 [요점 정리] 요점 텍스트 5,101053005,1,01,05,3,005,"[감독의 미션] 다른 사람의 사소한 행동이나 표정이 자꾸 신경 쓰일 때, 줌 아웃을 외치며 상황 전체를 여유롭게 바라보는 연습을 해보세요!",
 [리워드] 다음 도구 획득_도구 이름,101054001,1,01,05,4,001,휴식용 감독의자,Director's chair for relaxation
 [리워드] 다음 도구 획득_도구 설명,101054002,1,01,05,4,002,"어떤 효과가 있나요? 머리가 복잡하고 스트레스가 꽉 찼을 때, 털썩 앉아 한숨 돌릴 수 있는 나만의 안식처예요. 화가 나거나 불안할 때 이 의자에 앉는 상상을 하면 마음이 차분해지고 여유가 생겨요.","What effect does it have? When my head feels cluttered and stressed, it's my personal sanctuary where I can sit down and catch my breath. When I'm angry or anxious, imagining myself sitting in this chair calms my mind and brings me peace."
-스테이지 시작 대사 2,101050011,1,01,05,0,011,지난주에 얻은 '줌 렌즈'로 전체 상황을 살펴볼까요?,
-스테이지 시작 대사,101060001,1,01,06,0,001,"감독님, 좋은 영화를 만들려면 휴식도 중요해요.\n지난주에 얻은 '휴식용 감독 의자' 를 저 곳에 놓아 우리만의 휴식 공간을 만들어봐요.","Director, rest is also important to making a good movie.\nLet's put the 'relaxing director's chair' we got last week over there and create our own resting space."
-리워드 사용 대사,101060002,1,01,06,0,002,휴식용 감독 의자를 드래그하여 저 곳에 배치해주세요.,Please drag the director's chair for relaxation and place it there.
-미션 1 시작 대사,101060003,1,01,06,0,003,이런! 스트레스 때문에 전력 공급이 불안정한 것 같아요.\n먼저 감독님의 스트레스 반응을 알아차려 조명을 안정시켜요.,"Oh! I think the power supply is unstable due to stress.\nFirst, I'll notice the director's stress reaction and stabilize the lighting."
-미션 1 안내 대사,101060004,1,01,06,0,004,스트레스를 받을 때 어떤 반응이 나타나나요?\n아래에서 3개의 카드를 선택해주세요!,How do you react when you're stressed?\nChoose 3 cards below!
-미션 1 성공 대사,101060005,1,01,06,0,005,"좋아요, 조명이 안정되었어요! 계속 해볼까요?","Okay, the lighting is stable! Shall we continue?"
-미션 2 시작 대사,101060006,1,01,06,0,006,이제 편안한 분위기를 위해 배경 음악을 틀어봐요.\n제가 안내하는대로 따라하면서 몸과 마음의 긴장을 풀어주세요.,"Now, let's play some background music to create a relaxing atmosphere.\nFollow my instructions and relax your body and mind."
-신체적,101061001,1,01,06,1,001,두통,headache
-신체적,101061002,1,01,06,1,002,심장 두근거림,heart palpitations
-신체적,101061003,1,01,06,1,003,피로감,fatigue
-신체적,101061004,1,01,06,1,004,짜증,petulance
-정서적,101061005,1,01,06,1,005,불안,unrest
-정서적,101061006,1,01,06,1,006,우울,melancholy
-행동적,101061007,1,01,06,1,007,과식,surfeit
-행동적,101061008,1,01,06,1,008,회피,evasion
-,101061009,1,01,06,1,009,신체적,physical
-,101061010,1,01,06,1,010,정서적,emotional
-,101061011,1,01,06,1,011,행동적,Behavioral
+스테이지 시작 대사 2_사용하지 않음,101050011,1,01,05,0,011,지난주에 얻은 '줌 렌즈'로 전체 상황을 살펴볼까요?,
+[순차적] 지난주 복습 : 화면 진입 후 대사 1,101060001,1,01,06,0,001,"감독님, 좋은 영화를 만들려면 휴식도 중요해요.","Director, rest is also important to making a good movie."
+[순차적] 지난주 복습 : 화면 진입 후 대사 2,101060002,1,01,06,0,002,지난주에 얻은 '휴식용 감독 의자' 를 저곳에 놓아 우리만의 휴식 공간을 만들어봐요.,Let's create our own relaxation space by placing the 'relaxing director's chair' we got last week there.
+[순차적] 오늘의 촬영 준비 대사 1,101060003,1,01,06,0,003,이런! 스트레스 때문에 전력 공급이 불안정한 것 같아요.,Oh no! I think the power supply is unstable due to stress.
+[순차적] 오늘의 촬영 준비 대사 2,101060004,1,01,06,0,004,먼저 감독님의 스트레스 반응을 알아차려 조명을 안정시켜요.,"First, we notice the director's stress response and stabilize the lighting."
+[순차적] 오늘의 촬영 준비 대사 3,101060005,1,01,06,0,005,스트레스를 받을 때 어떤 반응이 나타나나요?,How do you react when you are stressed?
+[순차적] 마음 깊이 보기 대사 1,101060006,1,01,06,0,006,조명이 안정됐네요. 이제 편안한 분위기를 위해 배경 음악을 틀어봐요.,"The lighting is stable. Now, let's play some background music to create a relaxing atmosphere."
+[순차적] 마음 깊이 보기 대사 2,101060007,1,01,06,0,007,제가 안내하는 대로 따라 하면서 몸과 마음의 긴장을 풀어주세요. 감독 의자에 편안히 앉아 눈을 감아주세요.,
+[오늘의 촬영 준비] 스트레스 반응 1,101061001,1,01,06,1,001,두통,headache
+[오늘의 촬영 준비] 스트레스 반응 2,101061002,1,01,06,1,002,짜증,petulance
+[오늘의 촬영 준비] 스트레스 반응 3,101061003,1,01,06,1,003,피로감,fatigue
+[오늘의 촬영 준비] 스트레스 반응 4,101061004,1,01,06,1,004,불면증,Insomnia
+[오늘의 촬영 준비] 스트레스 반응 5,101061005,1,01,06,1,005,우울,melancholy
+[오늘의 촬영 준비] 스트레스 반응 6,101061006,1,01,06,1,006,소화 불량,indigestion
+[오늘의 촬영 준비] 스트레스 반응 7,101061007,1,01,06,1,007,폭식,voracity
+[오늘의 촬영 준비] 스트레스 반응 8,101061008,1,01,06,1,008,음주,drink
+[오늘의 촬영 준비] 스트레스 반응 9,101061009,1,01,06,1,009,불안,unrest
+[오늘의 촬영 준비] 스트레스 반응 10,101061010,1,01,06,1,010,과수면,Oversleeping
+삭제 예정,101061011,1,01,06,1,011,행동적,Behavioral
 ,101062001,1,01,06,2,001,편안한 자세,comfortable posture
 ,101062002,1,01,06,2,002,눈 감기,Close your eyes
 ,101062003,1,01,06,2,003,복식 호흡 1,Abdominal breathing 1
@@ -230,19 +275,19 @@ Select the protagonist's strengths in the scenario above and press the speak but
 [요점 정리] 요점 텍스트 1,101063001,1,01,06,3,001,내 몸과 마음이 나에게 보내는 경고 신호인 다양한 스트레스 반응들을 점검했습니다.,I checked the various stress responses that my body and mind were sending me as warning signals.
 [요점 정리] 요점 텍스트 2,101063002,1,01,06,3,002,쉴 틈 없이 돌아가는 일상 속에서 감독 의자에 앉아 잠시 '멈춤'을 실천했습니다.,"In the midst of my busy daily life, I sat in the director's chair and took a moment to 'pause'."
 [요점 정리] 요점 텍스트 3,101063003,1,01,06,3,003,긴장된 근육을 풀고 마음을 진정시키는 이완 훈련과 복식 호흡법을 연습했습니다.,I practiced relaxation exercises and abdominal breathing to relax tense muscles and calm my mind.
-[요점 정리] 요점 텍스트 4,101063004,1,01,06,3,004,언제든 나를 위해 힘찬 목소리를 내어줄 '격려의 메가폰'을 획득했습니다.,
+[요점 정리] 요점 텍스트 4,101063004,1,01,06,3,004,언제든 나를 위해 힘찬 목소리를 내어줄 '격려의 확성기'을 획득했습니다.,
 [요점 정리] 요점 텍스트 5,101063005,1,01,06,3,005,"[감독의 미션] 스트레스로 어깨가 무겁고 답답할 때, 오늘 배운 호흡법으로 감독 의자에 앉은 듯 편안한 휴식을 나에게 꼭 선물하세요!",
 [리워드] 다음 도구 획득_도구 이름,101064001,1,01,06,4,001,격려의 확성기,Megaphone of encouragement
 [리워드] 다음 도구 획득_도구 설명,101064002,1,01,06,4,002,"어떤 효과가 있나요? ""너는 왜 그 모양이니""라고 나를 괴롭히던 목소리를 끄고, ""괜찮아, 지금도 충분히 잘하고 있어!""라고 나를 진심으로 응원하게 해줘요. 세상에서 제일 든든한 내 편이 되어주는 확성기입니다.","What effect does it have? It silences the voice that used to torment me with, ""Why are you like that?"" and gives me a genuine, encouraging voice that says, ""It's okay. You're doing great!"" It's like a megaphone, the strongest voice in the world, supporting me."
-스테이지 시작 대사,101070001,1,01,07,0,001,"감독님, 이 장면은 주인공이 자기비난을 하다가 NG가 났어요.\n지난주에 얻은 '격려의 메가폰' 으로 자기자비의 명대사를 들어볼까요?","Director, this scene was cut short because the main character was criticizing himself.\nLet's listen to some famous lines of self-compassion using the 'megaphone of encouragement' we got last week."
-리워드 사용 대사,101070002,1,01,07,0,002,메가폰을 드래그해주세요,Please drag the megaphone
-미션 1 시작 대사,101070003,1,01,07,0,003,주인공은 다른 사람에게 보여주기 위한 가면을 쓰고 있어요.\n가면 뒤에 숨겨진 진짜 마음을 알아주면 힘을 낼 거예요.,"The protagonist wears a mask to show others.\nIf you know the true heart hidden behind the mask, you will gain strength."
-미션 1 라운드 1 안내 대사,101070004,1,01,07,0,004,주인공이 쓰고 있는 가면은 무엇일까요? 화면에서 골라주세요.,What mask is the protagonist wearing? Please choose from the options on the screen.
+[순차적] 지난주 복습 : 화면 진입 후 대사 1,101070001,1,01,07,0,001,"감독님, 이 장면은 주인공이 너무 자책하고 있어서 NG가 났어요.","Director, this scene was a NG because the main character was blaming himself too much."
+[순차적] 지난주 복습 : 화면 진입 후 대사 2,101070002,1,01,07,0,002,지난주에 얻은 '격려의 확성기'로 주인공에게 힘을 주는 말을 외쳐볼까요?,How about shouting out some encouraging words to the protagonist with the 'Encouragement Megaphone' you got last week?
+[순차적] 오늘의 촬영 준비 대사 1,101070003,1,01,07,0,003,주인공은 다른 사람에게 보여주기 위한 가면을 쓰고 있어요.,The protagonist wears a mask to show off to others.
+[순차적] 오늘의 촬영 준비 대사 2,101070004,1,01,07,0,004,가면 뒤에 숨겨진 진짜 마음을 알아주면 힘을 낼 거예요.,"If you know the true heart hidden behind the mask, you will gain strength."
 미션 1 라운드 2 안내 대사,101070005,1,01,07,0,005,그 가면 뒤에 숨겨진 진짜 마음은 무엇이었나요?,What was the real heart hidden behind that mask?
 미션 1 성공 대사,101070006,1,01,07,0,006,"좋아요, 주인공이 조금씩 고개를 들기 시작했어요!","Okay, the main character is starting to raise his head little by little!"
-미션 2 시작 대사 1,101070007,1,01,07,0,007,이제 주인공을 일으켜 세울 명대사를 외쳐줄 시간이에요.,Now it's time to shout out the famous line that will wake up the main character.
-미션 2 시작 대사 2,101070008,1,01,07,0,008,제가 '주인공에게' 라고 하면 이어서 해주고 싶은 말을 화면에서 골라\n메가폰에 대고 힘차게 말해주세요!,"When I say 'to the main character', please choose what you want to say next on the screen and say it loudly into the megaphone!"
-미션 2 안내 대사,101070009,1,01,07,0,009,주인공에게 해주고 싶은 말 하나를 선택하고 말하기 버튼을 눌러 말해주세요!,Choose one thing you want to say to the main character and press the speak button to say it!
+미션 2 시작 대사 1,101070007,1,01,07,0,007,이제 주인공을 일으켜 세울 명대사를 외쳐줄 시간이에요!,Now it's time to shout out the famous line that will wake up the main character!
+미션 2 시작 대사 2,101070008,1,01,07,0,008,"제가 '주인공에게', 라고 하면 이어서 해주고 싶은 말을 화면에서 골라 확성기에 대고 힘차게 말해주세요.","When I say, ""To the protagonist,"" please choose what you want to say on the screen and say it loudly into the loudspeaker."
+미션 2 안내 대사_사용하지 않음,101070009,1,01,07,0,009,주인공에게 해주고 싶은 말 하나를 선택하고 말하기 버튼을 눌러 말해주세요!,Choose one thing you want to say to the main character and press the speak button to say it!
 미션 2 성공 대사,101070010,1,01,07,0,010,따뜻한 격려로 주인공이 활짝 웃게 되었어요!,The warm encouragement made the main character smile brightly!
 ,101071001,1,01,07,1,001,쿨한 척,Pretend to be cool
 ,101071002,1,01,07,1,002,아무렇지 않은 척,Pretend nothing happened
@@ -256,18 +301,18 @@ Select the protagonist's strengths in the scenario above and press the speak but
 ,101072002,1,01,07,2,002,너의 잘못이 아니야,It's not your fault
 ,101072003,1,01,07,2,003,너는 소중한 사람이야,You are a precious person
 [요점 정리] 요점 텍스트 1,101073001,1,01,07,3,001,실수했을 때 스스로를 매섭게 자책하고 비난하던 NG 장면을 다시 돌아보았습니다.,I looked back at the NG scene where I harshly criticized and blamed myself when I made a mistake.
-[요점 정리] 요점 텍스트 2,101073002,1,01,07,3,002,격려의 메가폰을 들고 나 자신에게 진심 어린 위로와 응원의 메시지를 건넸습니다.,I held up a megaphone of encouragement and delivered a heartfelt message of comfort and support to myself.
+[요점 정리] 요점 텍스트 2,101073002,1,01,07,3,002,격려의 확성기을 들고 나 자신에게 진심 어린 위로와 응원의 메시지를 건넸습니다.,I held up a megaphone of encouragement and sent myself a heartfelt message of comfort and support.
 [요점 정리] 요점 텍스트 3,101073003,1,01,07,3,003,세상에서 가장 소중한 나에게는 차가운 비난보다 따뜻한 격려가 필요함을 배웠습니다.,I learned that the most precious thing in the world to me is warm encouragement rather than cold criticism.
-[요점 정리] 요점 텍스트 4,101073004,1,01,07,3,004,앞으로 닥칠 복잡한 문제들을 단계별로 스케치할 '스토리보드'를 얻었습니다.,
+[요점 정리] 요점 텍스트 4,101073004,1,01,07,3,004,앞으로 닥칠 복잡한 문제들을 단계별로 스케치할 '한 걸음씩 계획표'를 얻었습니다.,
 [요점 정리] 요점 텍스트 5,101073005,1,01,07,3,005,"[감독의 미션] 무언가 실수하더라도 괜찮아요. 세상에서 제일 든든한 내 편이 되어, 스스로에게 수고했다고 따뜻하게 말해주세요!",
 [리워드] 다음 도구 획득_도구 이름,101074001,1,01,07,4,001,한 걸음씩 계획표,Step by step plan
 [리워드] 다음 도구 획득_도구 설명,101074002,1,01,07,4,002,"어떤 효과가 있나요? 문제가 너무 커 보여서 뭐부터 해야 할지 막막할 때, 복잡한 문제를 작은 조각으로 나눠서 보여줘요. 그림을 그리듯 하나씩 차근차근 해결해 나갈 수 있는 자신감을 줍니다.","How does it work? When a problem seems so overwhelming that you're at a loss as to where to begin, break it down into smaller pieces and present them to them. This gives you the confidence to tackle them one step at a time, like drawing a picture."
-스테이지 시작 대사,101080001,1,01,08,0,001,"감독님, 이제 다음 챕터를 기획 할 시간이에요.\n지난주에 얻은 '스토리보드' 에 새로운 이야기의 첫 장면을 그려봐요!","Director, it's time to plan the next chapter.\nLet's draw the first scene of the new story on the 'storyboard' we got last week!"
-리워드 사용 대사,101080002,1,01,08,0,002,스토리보드를 드래그해주세요.,Please drag the storyboard.
-미션 1 안내 대사,101080003,1,01,08,0,003,칠판에 있는 5가지 장면을 순서에 맞춰 스토리보드에 배치해주세요!,Please arrange the five scenes on the board in order on the storyboard!
+스테이지 시작 대사,101080001,1,01,08,0,001,"감독님, 이제 다음 챕터를 기획 할 시간이에요.\n지난주에 얻은 '한 걸음씩 계획표' 에 새로운 이야기의 첫 장면을 그려봐요!","Director, it's time to plan the next chapter.\nLet's draw the first scene of the new story using the 'Step by Step Planner' we got last week!"
+리워드 사용 대사,101080002,1,01,08,0,002,한 걸음씩 계획표를 드래그해주세요.,Please drag the schedule one step at a time.
+미션 1 안내 대사,101080003,1,01,08,0,003,칠판에 있는 5가지 장면을 순서에 맞춰 한 걸음씩 계획표에 배치해주세요!,"Please arrange the five scenes on the board in order, one step at a time, on the schedule!"
 미션 1 실패 대사,101080004,1,01,08,0,004,다시 생각해 볼까요?,Should we reconsider?
 미션 1 성공 대사,101080005,1,01,08,0,005,"좋아요, 나의 문제 해결 이야기를 함께 이어가봐요!","Okay, let's continue my problem-solving story together!"
-미션 2 시작 대사,101080006,1,01,08,0,006,"스토리보드가 완성됐어요! 이제 가장 중요한 첫 장면,\n'액션' 을 정해봐요.","The storyboard is complete! Now, let's decide on the first, most important scene: the 'action'."
+미션 2 시작 대사,101080006,1,01,08,0,006,"한 걸음씩 계획표가 완성됐어요! 이제 가장 중요한 첫 장면,\n'액션' 을 정해봐요.","Step by step, the plan is complete! Now, let's decide on the first and most important scene: the 'action'."
 미션 2 안내 대사,101080007,1,01,08,0,007,재취업이라는 이야기를 위해 지금 당장 촬영할 수 있는 가장 작은 액션 하나를 고르고\n말하기 버튼을 눌러 말해주세요.,"To tell the story of re-employment, please choose the smallest action you can film right now and press the speak button to say it."
 ,101081001,1,01,08,1,001,문제 정의,Problem definition
 ,101081002,1,01,08,1,002,대안 탐색,Explore alternatives
@@ -278,10 +323,10 @@ Select the protagonist's strengths in the scenario above and press the speak but
 ,101082002,1,01,08,2,002,이력서 파일 열어보는 장면,A scene where a resume file is opened
 ,101082003,1,01,08,2,003,센터 선생님께 연락하는 장면,A scene where you contact the center teacher
 [요점 정리] 요점 텍스트 1,101083001,1,01,08,3,001,도저히 풀리지 않을 것 같던 막막하고 거대한 문제 상황을 마주했습니다.,I was faced with a daunting and enormous problem that seemed impossible to solve.
-[요점 정리] 요점 텍스트 2,101083002,1,01,08,3,002,스토리보드를 활용해 그 거대한 문제를 해결 가능한 5개의 작은 단계로 쪼개보았습니다.,"Using a storyboard, we broke that huge problem down into five small, solvable steps."
+[요점 정리] 요점 텍스트 2,101083002,1,01,08,3,002,한 걸음씩 계획표를 활용해 그 거대한 문제를 해결 가능한 5개의 작은 단계로 쪼개보았습니다.,"Using a step-by-step plan, I broke that huge problem down into five small, solvable steps."
 [요점 정리] 요점 텍스트 3,101083003,1,01,08,3,003,"다양한 해결 방법을 자유롭게 떠올려 보고, 그중 가장 현실적인 대안을 선택했습니다.",I freely thought of various solutions and chose the most realistic one.
 [요점 정리] 요점 텍스트 4,101083004,1,01,08,3,004,나의 구체적인 행동 계획을 빈틈없이 적어 내려갈 '영화 대본'을 완성했습니다.,
-[요점 정리] 요점 텍스트 5,101083005,1,01,08,3,005,[감독의 미션] 앞으로 막막한 일이 생기면 당황하지 말고 마음속 스토리보드를 꺼내어 한 걸음씩 차근차근 풀어나가 보세요!,
+[요점 정리] 요점 텍스트 5,101083005,1,01,08,3,005,[감독의 미션] 앞으로 막막한 일이 생기면 당황하지 말고 마음속 한 걸음씩 계획표를 꺼내어 한 걸음씩 차근차근 풀어나가 보세요!,
 [리워드] 다음 도구 획득_도구 이름,101084001,1,01,08,4,001,영화 대본,movie script
 [리워드] 다음 도구 획득_도구 설명,101084002,1,01,08,4,002,어떤 효과가 있나요? '그냥 무조건 잘해봐야지' 같은 막연한 다짐을 '오늘 저녁 8시에 10분간 걷기'처럼 당장 실천할 수 있는 아주 쉬운 행동으로 바꿔줘요. 무기력함을 털고 일어나 당장 움직이게 만드는 힘이 있죠!,"What effect does it have? It transforms vague resolutions like, ""I just have to do my best,"" into simple actions you can put into practice right away, like, ""I'll take a 10-minute walk tonight at 8 p.m.,"" which has the power to shake off lethargy and get you moving right away!"
 스테이지 시작 대사,101090001,1,01,09,0,001,"감독님, 이 장면은 대사가 엉망이라 NG가 났어요.\n지난주에 얻은 '대본'을 보고 더 좋은 대사로 바꿔볼까요?","Director, this scene was a NG because the dialogue was a mess.\nShould we look at the 'script' we got last week and change it to a better dialogue?"
@@ -335,20 +380,24 @@ Choose the best line that fits this situation."
 [요점 정리] 요점 텍스트 5,101093005,1,01,09,3,005,"[감독의 미션] 누군가에게 서운한 마음이 들 때, 상처 주지 않고 내 진심만 부드럽게 전하는 '나-전달법'을 용기 내어 꼭 사용해 보세요!","[Director's Mission] When you feel hurt by someone, be sure to use the 'I-Conveyance Method' to gently convey your true feelings without hurting them!"
 [리워드] 다음 도구 획득_도구 이름,101094001,1,01,09,4,001,영화 포스터,movie poster
 [리워드] 다음 도구 획득_도구 설명,101094002,1,01,09,4,002,"어떤 효과가 있나요? 다른 사람과 오해가 생겼을 때, 서로 상처 주지 않고 내 마음만 부드럽게 전하는 '소통의 기술'을 알려줘요. 사람들과 훨씬 더 편안하고 건강하게 잘 지낼 수 있도록 도와줍니다.","What effect does it have? It teaches you the art of communication, allowing you to gently convey your feelings without hurting others when misunderstandings arise. It helps you get along with others more comfortably and healthily."
-스테이지 시작 대사 1,101100001,1,01,10,0,001,"감독님, 10주간의 대장정이 거의 끝나가요.\n지난주에 얻은 '영화 포스터' 에 영화의 제목과 주제를 정해 완성해봐요.","Director, the 10-week journey is almost over.\nLet's complete the movie's title and theme using the 'movie poster' we got last week."
-리워드 사용 대사,101100002,1,01,10,0,002,영화 포스터를 드래그해 배치해주세요.,Please drag and place the movie posters.
-스테이지 시작 대사 2,101100003,1,01,10,0,003,멋져요! 이제 이 영화 포스터를 완성해서 감독님의 영화를 세상에 알려봐요!,Awesome! Now let's finish this movie poster and share your film with the world!
-미션 1 시작 대사,101100004,1,01,10,0,004,영화의 주제는 감독님이 가장 중요하게 생각하는 '가치' 가 될 거예요.\n나의 인생 영화를 어떤 장르로 만들고 싶나요?,The theme of the film will be the 'value' that the director considers most important.\nWhat genre would you like to make the film of your life in?
-미션 2 시작 대사 1,101100005,1,01,10,0,005,정말 멋진 장르예요! 이제 이 영화에 제목을 붙여볼까요?,"What a wonderful genre! Now, let's give this movie a title."
-미션 2 시작 대사 2,101100006,1,01,10,0,006,"말하기 버튼을 누르고 ""나의 용기 있는 첫걸음"" 이라고 영화 제목을 말해주시면 포스터에 새겨 드릴게요.","Press the speak button and say the title of the movie ""My Courageous First Step"" and we will put it on the poster."
-미션 2 라운드 1 안내 대사,101100007,1,01,10,0,007,말하기 버튼을 누르고 ‘나의 용기 있는 첫걸음’이라고 영화 제목을 말해주세요.,"Press the speak button and say the title of the movie, ‘My Courageous First Step’."
-미션 2 라운드 2 안내 대사 1,101100008,1,01,10,0,008,말하기 버튼을 누르고 “완벽하지 않아도 괜찮아”라는 다짐을 말해주세요.,"Press the speak button and say the affirmation, “It’s okay to not be perfect.”"
-미션 2 성공 대사,101100009,1,01,10,0,009,완벽해요! 감독님만의 영화가 세상에 개봉될 준비가 되었어요.,Perfect! Your very own film is ready to be released to the world.
-미션 2 라운드 2 안내 대사 2,101100010,1,01,10,0,010,좋아요! 마지막으로 이 영화를 세상에 공개하며 당신의 다짐을 선언해주세요!,
-,101101001,1,01,10,1,001,성장 드라마,Coming-of-age drama
-,101101002,1,01,10,1,002,따뜻한 휴먼 코미디,A warm human comedy
-,101101003,1,01,10,1,003,사회에 기여하는 다큐멘터리,Documentaries that contribute to society
-,101101004,1,01,10,1,004,안정적인 가족 영화,A stable family film
+[순차적] 지난주 복습 : 화면 진입 후 대사 1,101100001,1,01,10,0,001,"감독님, 10주간의 대장정이 거의 끝나가요.","Director, the 10-week journey is almost over."
+[순차적] 지난주 복습 : 화면 진입 후 대사 2,101100002,1,01,10,0,002,지난주에 얻은 '영화 포스터'에 감독님 영화의 제목과 주제를 정해 완성해봐요.,Let's complete the 'movie poster' we got last week by deciding on the title and theme of the director's movie.
+스테이지 시작 대사 2_사용하지 않음,101100003,1,01,10,0,003,멋져요! 이제 이 영화 포스터를 완성해서 감독님의 영화를 세상에 알려봐요!,Awesome! Now let's finish this movie poster and share your film with the world!
+[순차적] 오늘의 촬영 준비 1,101100004,1,01,10,0,004,영화의 주제는 감독님이 가장 중요하게 생각하는 '가치' 가 될 거예요.,The theme of the movie will be the 'value' that the director considers most important.
+[순차적] 오늘의 촬영 준비 2,101100005,1,01,10,0,005,나의 인생 영화를 어떤 장르로 만들고 싶나요?,What genre would you like to make the movie of your life in?
+[순차적] [마음 깊이 보기] 공통 대사,101100006,1,01,10,0,006,"정말 멋진 장르예요! 마지막으로, 이 영화를 세상에 공개하며 당신의 다짐을 선언해주세요!","What a wonderful genre! Finally, declare your commitment by releasing this film to the world!"
+[순차적] [마음 깊이 보기] 역경을 딛고 일어서는 휴먼 드라마 선택 시 대사,101100007,1,01,10,0,007,"말하기 버튼을 누르고 ""내 인생의 속도는 내가 결정한다. 오늘 하루도 묵묵히 한 걸음 더 전진!“이라고 다짐을 말해주세요.","Press the speak button and say your pledge, ""I decide the pace of my life. Today, I will silently take one more step forward!"""
+[순차적] [마음 깊이 보기] 따뜻하고 유쾌한 힐링 코미디 선택 시 대사,101100008,1,01,10,0,008,"말하기 버튼을 누르고 ""완벽하지 않아도 괜찮아! 실수마저도 웃어넘길 수 있는 여유를 가지자.""라고 다짐을 말해주세요.","Press the speak button and say, ""It's okay to be imperfect! Let's have the leeway to laugh off even our mistakes."""
+[순차적] [마음 깊이 보기] 진짜 나를 찾아가는 다큐멘터리 선택 시 대사,101100009,1,01,10,0,009,"말하기 버튼을 누르고 ""있는 그대로의 나를 받아들여, 매일 조금씩 나의 가능성을 관찰하고 기록할 것이다.""라고 다짐을 말해주세요.",
+[순차적] [마음 깊이 보기] 소중한 사람들의 지지가 돋보이는 영화 선택 시 대사,101100010,1,01,10,0,010,"말하기 버튼을 누르고 ""기쁨과 슬픔 모두 소중한 내 편. 주변 사람들과 마음을 나누며 함께 성장하겠다.""라고 다짐을 말해주세요.",
+[마음 깊이 보기] 영화 장르 1,101101001,1,01,10,1,001,역경을 딛고 일어서는 휴먼 드라마,A human drama about overcoming adversity
+[마음 깊이 보기] 영화 장르 2,101101002,1,01,10,1,002,따뜻하고 유쾌한 힐링 코미디,A warm and cheerful healing comedy
+[마음 깊이 보기] 영화 장르 3,101101003,1,01,10,1,003,진짜 나를 찾아가는 다큐멘터리,A documentary that finds the real me
+[마음 깊이 보기] 영화 장르 4,101101004,1,01,10,1,004,소중한 사람들의 지지가 돋보이는 영화,A film that highlights the support of loved ones
+[마음 깊이 보기] 영화 제목 1,101101005,1,01,10,1,005,포레스트 검프,
+[마음 깊이 보기] 영화 제목 2,101101006,1,01,10,1,006,이보다 더 좋을 순 없다,
+[마음 깊이 보기] 영화 제목 3,101101007,1,01,10,1,007,나의 문어 선생님,
+[마음 깊이 보기] 영화 제목 4,101101008,1,01,10,1,008,인사이드 아웃,
 [요점 정리] 요점 텍스트 1,101103001,1,01,10,3,001,내 인생의 다음 챕터를 장식할 멋진 영화의 장르를 내 손으로 직접 선택했습니다.,I have personally chosen the genre of the wonderful movie that will decorate the next chapter of my life.
 [요점 정리] 요점 텍스트 2,101103002,1,01,10,3,002,앞으로의 긍정적인 희망과 굳은 다짐을 듬뿍 담아 나만의 영화 제목을 지었습니다.,I titled my own film with lots of positive hope and firm determination for the future.
 [요점 정리] 요점 텍스트 3,101103003,1,01,10,3,003,영화 속 주인공인 내가 앞으로 실천해 나갈 구체적이고 현실적인 목표들을 세웠습니다.,"As the main character in the movie, I have set specific and realistic goals to achieve in the future."
@@ -408,3 +457,5 @@ Choose the best line that fits this situation."
 버튼,900000047,9,00,00,0,047,촬영 정리,Filming summary
 챕터 선택 화면_종료 팝업,900000048,9,00,00,0,048,어떻게 종료할까요?,How do I quit?
 챕터 선택 화면_종료 팝업,900000049,9,00,00,0,049,로그아웃 하거나 앱을 종료할 수 있어요.\n원하는 방법을 선택해주세요.,You can log out or exit the app.\nPlease choose the method you prefer.
+,900000050,9,00,00,0,050,지난 주 복습,
+,900000051,9,00,00,0,051,요약 정리,
