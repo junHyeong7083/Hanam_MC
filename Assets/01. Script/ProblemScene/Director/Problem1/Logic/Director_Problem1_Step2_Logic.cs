@@ -15,6 +15,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
         public Graphic dimTarget;
         public Text buttonText;
         public FilmCardWiggle wiggle;
+        public IntroElement introElement;
+        public ShakeTrigger shakeTrigger;
     }
 
     protected abstract FilmFragment[] Films { get; }
@@ -41,6 +43,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
     private readonly Dictionary<int, FilmFragment> _filmMap = new Dictionary<int, FilmFragment>();
     private readonly HashSet<int> _checkedIds = new HashSet<int>();
+    private readonly List<(IntroElement intro, System.Action handler)> _shakeBindings
+        = new List<(IntroElement, System.Action)>();
 
     private bool _completed = false;
 
@@ -56,10 +60,13 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
         CacheStepFlowController();
         BindNextShootButton();
+
+        BindShakeTriggers();
     }
 
     protected override void OnStepExit()
     {
+        UnbindShakeTriggers();
         UnbindNextShootButton();
 
         _checkedIds.Clear();
@@ -130,6 +137,10 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
             return;
 
         _checkedIds.Add(id);
+
+        // 터치했으니 떨림 정지
+        if (fragment.shakeTrigger != null)
+            fragment.shakeTrigger.StopShake();
 
         if (fragment.checkMark != null) fragment.checkMark.SetActive(true);
         if (fragment.buttonText != null) fragment.buttonText.gameObject.SetActive(true);
@@ -227,6 +238,34 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
         _flowController.NextStep();
         return true;
+    }
+
+    private void BindShakeTriggers()
+    {
+        UnbindShakeTriggers();
+
+        var films = Films;
+        if (films == null) return;
+
+        foreach (var f in films)
+        {
+            if (f == null || f.introElement == null || f.shakeTrigger == null) continue;
+
+            var shake = f.shakeTrigger;
+            System.Action handler = () => shake.StartShake();
+            f.introElement.OnArrived += handler;
+            _shakeBindings.Add((f.introElement, handler));
+        }
+    }
+
+    private void UnbindShakeTriggers()
+    {
+        foreach (var (intro, handler) in _shakeBindings)
+        {
+            if (intro != null)
+                intro.OnArrived -= handler;
+        }
+        _shakeBindings.Clear();
     }
 
     private IEnumerator FlashRoutine(GameObject overlay, float duration)

@@ -102,7 +102,7 @@ public class Director_Problem3_Step3
         HideAllOutlines();
 
         if (micButtonRoot != null)
-            micButtonRoot.SetActive(true);
+            micButtonRoot.SetActive(false);
 
         if (summaryButtonRoot != null)
             summaryButtonRoot.SetActive(false);
@@ -113,8 +113,32 @@ public class Director_Problem3_Step3
             micIndicator.OnKeywordMatched += OnSTTKeywordMatched;
             micIndicator.OnNoMatch -= OnSTTNoMatch;
             micIndicator.OnNoMatch += OnSTTNoMatch;
+            micIndicator.OnRecordingChanged -= OnMicRecordingChanged;
+            micIndicator.OnRecordingChanged += OnMicRecordingChanged;
         }
+    }
 
+    protected override void ShowQuestion(int index)
+    {
+        base.ShowQuestion(index);
+
+        // 버튼 클릭은 선택(아웃라인)만 — 즉시 판정하지 않음
+        if (optionButtons != null)
+        {
+            for (int i = 0; i < optionButtons.Length; i++)
+            {
+                int idx = i;
+                optionButtons[i].onClick.RemoveAllListeners();
+                optionButtons[i].onClick.AddListener(() =>
+                {
+                    HideAllOutlines();
+                    ShowOutline(idx);
+
+                    if (micButtonRoot != null)
+                        micButtonRoot.SetActive(true);
+                });
+            }
+        }
     }
 
     protected override void ApplyQuestionUI(int index, Question q)
@@ -138,45 +162,64 @@ public class Director_Problem3_Step3
 
     protected override void HandleWrong(int optionIndex)
     {
-        ShowOutline(optionIndex);
+        HideAllOutlines();
 
         var q = GetQuestion(_currentQuestionIndex);
-        if (q != null && guideText != null)
+        if (q == null) return;
+
+        var wrongHints = q.WrongHints;
+        string hint = null;
+
+        if (wrongHints != null &&
+            optionIndex >= 0 &&
+            optionIndex < wrongHints.Length &&
+            !string.IsNullOrEmpty(wrongHints[optionIndex]))
         {
-            var wrongHints = q.WrongHints;
-            string hint = null;
-
-            if (wrongHints != null &&
-                optionIndex >= 0 &&
-                optionIndex < wrongHints.Length &&
-                !string.IsNullOrEmpty(wrongHints[optionIndex]))
-            {
-                hint = wrongHints[optionIndex];
-            }
-
-            if (!string.IsNullOrEmpty(hint))
-            {
-                if (_wrongHintRoutine != null)
-                    StopCoroutine(_wrongHintRoutine);
-                _wrongHintRoutine = StartCoroutine(WrongHintRoutine(hint));
-            }
+            hint = wrongHints[optionIndex];
         }
+
+        // guideText에 오답 힌트 표시 (원래 텍스트로 돌아가지 않음)
+        if (!string.IsNullOrEmpty(hint) && guideText != null)
+            guideText.text = hint;
+
+        // 오답 후 MicRoot 숨김 (재선택 유도)
+        if (micButtonRoot != null)
+            micButtonRoot.SetActive(false);
+
+        // 버튼 잠금 코루틴
+        if (_wrongHintRoutine != null)
+            StopCoroutine(_wrongHintRoutine);
+        _wrongHintRoutine = StartCoroutine(WrongHintRoutine());
     }
 
-    private IEnumerator WrongHintRoutine(string hint)
+    private IEnumerator WrongHintRoutine()
     {
-        guideText.text = hint;
+        // 오답 힌트 표시 중 버튼 잠금
+        if (optionButtons != null)
+            foreach (var btn in optionButtons)
+                if (btn != null)
+                {
+                    btn.interactable = false;
+                    btn.GetComponent<ButtonHover>()?.SetInteractable(false);
+                }
+
         yield return new WaitForSeconds(wrongHintDuration);
-        SetGuideToQuestion();
-        HideAllOutlines();
+
+        // 버튼 잠금 해제 (guideText는 오답 힌트 유지, 아웃라인도 유지)
+        if (optionButtons != null)
+            foreach (var btn in optionButtons)
+                if (btn != null)
+                {
+                    btn.interactable = true;
+                    btn.GetComponent<ButtonHover>()?.SetInteractable(true);
+                }
+
         _wrongHintRoutine = null;
     }
 
     protected override void HandleCorrect(int optionIndex)
     {
         ShowOutline(optionIndex);
-
-        SetGuideAfter();
 
         FadeOutIncorrectOptions(optionIndex);
 
@@ -196,6 +239,13 @@ public class Director_Problem3_Step3
 
         if (summaryButtonRoot != null)
             summaryButtonRoot.SetActive(true);
+
+        if (guideText != null && guideTextIdAfter != 0)
+        {
+            guideText.text = ProblemRuntime.L(guideTextIdAfter);
+            if (SoundManager.Instance != null)
+                SoundManager.Instance.PlayTTS(guideTextIdAfter);
+        }
     }
 
     protected override void OnStepExit()
@@ -206,6 +256,7 @@ public class Director_Problem3_Step3
         {
             micIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
             micIndicator.OnNoMatch -= OnSTTNoMatch;
+            micIndicator.OnRecordingChanged -= OnMicRecordingChanged;
         }
 
         HideAllOutlines();
@@ -240,6 +291,16 @@ public class Director_Problem3_Step3
 
     private void OnSTTNoMatch(string sttResult)
     {
+    }
+
+    private void OnMicRecordingChanged(bool isRecording)
+    {
+        if (optionButtons == null) return;
+        foreach (var btn in optionButtons)
+        {
+            if (btn == null) continue;
+            btn.GetComponent<ButtonHover>()?.SetInteractable(!isRecording);
+        }
     }
 
     // ====== 아웃라인 ======

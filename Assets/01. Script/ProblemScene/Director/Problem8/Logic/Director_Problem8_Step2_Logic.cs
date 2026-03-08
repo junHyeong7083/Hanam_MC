@@ -521,7 +521,18 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
         // 다음 스텝 버튼
         if (NextStepButtonRoot != null)
+        {
             NextStepButtonRoot.SetActive(true);
+
+            var nextBtn = NextStepButtonRoot.GetComponentInChildren<Button>(true);
+            if (nextBtn != null)
+            {
+                nextBtn.onClick.AddListener(() =>
+                {
+                    nextBtn.GetComponent<ButtonHover>()?.SetInteractable(false);
+                });
+            }
+        }
 
         SaveAttempt(_placements);
     }

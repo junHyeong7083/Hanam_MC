@@ -12,6 +12,9 @@ public class HomeSceneManager : MonoBehaviour
     [SerializeField] private CanvasGroup optionCanvasGroup;
     [SerializeField] private float animationDuration = 0.1f;
 
+    [Header("Linked Panel (옵션과 함께 켜졌다 꺼질 패널 1개)")]
+    [SerializeField] private GameObject linkedPanel;
+
     private bool _isOptionOpen = false;
     private Coroutine _optionAnimCoroutine;
 
@@ -22,8 +25,19 @@ public class HomeSceneManager : MonoBehaviour
         {
             optionPanel.SetActive(false);
             _isOptionOpen = false;
+
+            Vector3 s = optionPanel.transform.localScale;
+            s.y = 0f;
+            optionPanel.transform.localScale = s;
         }
+
+        if (optionCanvasGroup != null)
+            optionCanvasGroup.alpha = 0f;
+
+        if (linkedPanel != null)
+            linkedPanel.SetActive(false);
     }
+
 
     /// <summary>
     /// 로그아웃 후 로그인 화면으로 이동
@@ -60,30 +74,40 @@ public class HomeSceneManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 옵션 패널 토글 - 버튼 OnClick에 연결
-    /// </summary>
+    /// <summary>옵션 패널 열기 - 버튼 OnClick에 연결 (닫기는 패널 내 닫기 버튼으로)</summary>
     public void ToggleOptionPanel()
     {
-        if (optionPanel == null) return;
+        ShowOptionPanel();
+    }
 
-        if (_optionAnimCoroutine != null)
-            StopCoroutine(_optionAnimCoroutine);
+    /// <summary>옵션 열기</summary>
+    public void ShowOptionPanel()
+    {
+        if (optionPanel == null || _isOptionOpen) return;
+        if (_optionAnimCoroutine != null) StopCoroutine(_optionAnimCoroutine);
+        _optionAnimCoroutine = StartCoroutine(OpenOptionPanel());
+    }
 
-        if (_isOptionOpen)
-        {
-            _optionAnimCoroutine = StartCoroutine(CloseOptionPanel());
-        }
-        else
-        {
-            _optionAnimCoroutine = StartCoroutine(OpenOptionPanel());
-        }
+    /// <summary>옵션 닫기 - 패널 내 닫기 버튼 OnClick에 연결</summary>
+    public void HideOptionPanel()
+    {
+        if (optionPanel == null || !_isOptionOpen) return;
+        if (_optionAnimCoroutine != null) StopCoroutine(_optionAnimCoroutine);
+        _optionAnimCoroutine = StartCoroutine(CloseOptionPanel());
     }
 
     private IEnumerator OpenOptionPanel()
     {
         _isOptionOpen = true;
         optionPanel.SetActive(true);
+        if (linkedPanel != null)
+            linkedPanel.SetActive(true);
+
+        if (optionCanvasGroup != null)
+        {
+            optionCanvasGroup.blocksRaycasts = true;
+            optionCanvasGroup.interactable = true;
+        }
 
         float elapsed = 0f;
         Vector3 scale = optionPanel.transform.localScale;
@@ -91,7 +115,7 @@ public class HomeSceneManager : MonoBehaviour
         while (elapsed < animationDuration)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / animationDuration;
+            float t = Mathf.Clamp01(elapsed / animationDuration);
 
             if (optionCanvasGroup != null)
                 optionCanvasGroup.alpha = t;
@@ -110,13 +134,19 @@ public class HomeSceneManager : MonoBehaviour
 
     private IEnumerator CloseOptionPanel()
     {
+        if (optionCanvasGroup != null)
+        {
+            optionCanvasGroup.blocksRaycasts = false;
+            optionCanvasGroup.interactable = false;
+        }
+
         float elapsed = 0f;
         Vector3 scale = optionPanel.transform.localScale;
 
         while (elapsed < animationDuration)
         {
             elapsed += Time.deltaTime;
-            float t = 1f - (elapsed / animationDuration);
+            float t = 1f - Mathf.Clamp01(elapsed / animationDuration);
 
             if (optionCanvasGroup != null)
                 optionCanvasGroup.alpha = t;
@@ -133,6 +163,8 @@ public class HomeSceneManager : MonoBehaviour
         optionPanel.transform.localScale = scale;
 
         optionPanel.SetActive(false);
+        if (linkedPanel != null)
+            linkedPanel.SetActive(false);
         _isOptionOpen = false;
     }
 }

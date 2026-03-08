@@ -193,9 +193,6 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 
         if (FilmIndexLabel != null)
             FilmIndexLabel.text = string.Format("{0} / {1}", idx + 1, cuts.Length);
-
-        if (HanamText != null && !string.IsNullOrEmpty(GuideText))
-            HanamText.text = GuideText;
     }
 
     // =========================================

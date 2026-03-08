@@ -147,19 +147,11 @@ public class ProblemSceneController : MonoBehaviour
     }
 
     /// <summary>
-    /// 옵션 패널 토글 - 버튼 OnClick에 연결
+    /// 옵션 패널 열기 - 버튼 OnClick에 연결 (닫기는 패널 내 닫기 버튼으로)
     /// </summary>
     public void ToggleOptionPanel()
     {
-        if (optionPanel == null) return;
-
-        if (_optionAnimCoroutine != null)
-            StopCoroutine(_optionAnimCoroutine);
-
-        if (_isOptionOpen)
-            _optionAnimCoroutine = StartCoroutine(CloseOptionPanel());
-        else
-            _optionAnimCoroutine = StartCoroutine(OpenOptionPanel());
+        ShowOptionPanel();
     }
 
     /// <summary>옵션 열기 - 기본 버튼(Button1) OnClick에 연결</summary>

@@ -40,6 +40,9 @@ public class ThemePanelsController : MonoBehaviour
     [SerializeField] private GameObject directorEndingPanel;
     [SerializeField] private Button levelSelectBackButton;
 
+    [Header("옵션 버튼 (레벨 선택 중 비활성화)")]
+    [SerializeField] private GameObject optionButtonRoot;
+
     ProblemTheme? _selectedTheme = null;
 
     // 🔹 패널별로 구독한 핸들러를 저장해두는 딕셔너리
@@ -157,6 +160,9 @@ public class ThemePanelsController : MonoBehaviour
                     entry.panel.gameObject.SetActive(false);
             }
         }
+
+        if (optionButtonRoot != null)
+            optionButtonRoot.SetActive(true);
     }
 
     /// <summary>
@@ -185,6 +191,9 @@ public class ThemePanelsController : MonoBehaviour
             }
         }
 
+        if (optionButtonRoot != null)
+            optionButtonRoot.SetActive(false);
+
         Debug.Log($"[ThemePanels] 테마 선택: {theme}");
     }
 
@@ -206,6 +215,9 @@ public class ThemePanelsController : MonoBehaviour
     void ShowDirectorLevelSelect()
     {
         _selectedTheme = ProblemTheme.Director;
+
+        if (optionButtonRoot != null)
+            optionButtonRoot.SetActive(false);
 
         if (themeSelectPanel != null)
         {
@@ -249,6 +261,9 @@ public class ThemePanelsController : MonoBehaviour
     void ShowDirectorEnding()
     {
         _selectedTheme = ProblemTheme.Director;
+
+        if (optionButtonRoot != null)
+            optionButtonRoot.SetActive(false);
 
         if (themeSelectPanel != null)
             themeSelectPanel.SetActive(false);

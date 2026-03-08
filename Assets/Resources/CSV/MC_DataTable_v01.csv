@@ -48,14 +48,14 @@
 ,101011006,1,01,01,1,006,흐릿한 인상,blurry impression
 ,101011007,1,01,01,1,007,막인한 두려움,A fear of being blocked
 ,101011008,1,01,01,1,008,숨겨진 감정,Hidden emotions
-생각 필름,101012001,1,01,01,2,001,모두가 나를 싫어한다,Everyone hates me
-생각 필름,101012002,1,01,01,2,002,나는 실패할 것이다,I will fail
-생각 필름,101012003,1,01,01,2,003,그때의 선택이 내 인생을 망쳤다,That choice back then ruined my life.
-생각 필름,101012004,1,01,01,2,004,나는 충분하지 않다,I am not enough
-사실 필름,101012005,1,01,01,2,005,친구가 인사를 안 했다,My friend didn't say hello
-사실 필름,101012006,1,01,01,2,006,프로젝트 일정이 지연되었다,The project schedule was delayed.
-사실 필름,101012007,1,01,01,2,007,시험에서 80점을 받았다,I got 80 points on the test.
-사실 필름,101012008,1,01,01,2,008,표정 변화가 거의 없었다,There was almost no change in facial expression.
+생각 필름,101012001,1,01,01,2,001,모두가 나를\n싫어한다,Everyone hates me
+생각 필름,101012002,1,01,01,2,002,나는 실패할\n것이다,I will fail
+생각 필름,101012003,1,01,01,2,003,그때의 선택이\n내 인생을 망쳤다,That choice back then ruined my life.
+생각 필름,101012004,1,01,01,2,004,나는 충분하지\n않다,I am not enough
+사실 필름,101012005,1,01,01,2,005,친구가 인사를\n안 했다,My friend didn't say hello
+사실 필름,101012006,1,01,01,2,006,프로젝트 일정이\n지연되었다,The project schedule was delayed.
+사실 필름,101012007,1,01,01,2,007,시험에서 80점을\n받았다,I got 80 points on the test.
+사실 필름,101012008,1,01,01,2,008,표정 변화가\n거의 없었다,There was almost no change in facial expression.
 UI 텍스트,101012009,1,01,01,2,009,생각 필름통,Thought Film Canister
 UI 텍스트,101012010,1,01,01,2,010,사실 필름통,"Actually, a film canister"
 UI 텍스트,101012011,1,01,01,2,011,생각,thought
@@ -95,7 +95,7 @@ UI 텍스트,101012012,1,01,01,2,012,사실,actually
 리워드 사용 대사,101030002,1,01,03,0,002,시나리오 펜을 드래그하여 책 위에 올려주세요,Drag the scenario pen over the book
 미션 1 시작 대사,101030003,1,01,03,0,003,"감독님, 새로운 관점을 선택해서 과거의 장면을 재해석 해볼까요?","Director, would you like to reinterpret a scene from the past from a new perspective?"
 미션 1 안내 대사,101030004,1,01,03,0,004,"화살표 버튼을 눌러 새로운 관점을 선택하고, 말하기 버튼을 눌러 대답해주세요!",Please select a new perspective by pressing the arrow buttons and answer by pressing the speak button!
-미션 2 시작 대사,101030005,1,01,03,0,005,방금 수정한 이야기를 보면 주인공의 강점이 보여요\n제가 질문하면 주인공의 강점을 말해주세요!,"If you look at the story I just edited, you can see the main character's strengths.\nIf I ask you a question, tell me the main character's strengths!"
+미션 2 시작 대사,101030005,1,01,03,0,005,방금 수정한 이야기를 보면 주인공의 강점이 보여요\n제가 질문하면 주인공의 강점을 말해주세요!,"If you look at the story you just edited, you can see the main character's strengths.\nIf I ask you a question, tell me the main character's strengths!"
 미션 2 안내 대사,101030006,1,01,03,0,006,"""공백기 : 주인공이 다음 도약을 위해 에너지를 재충전 했다""
 위 시나리오에서 주인공의 강점을 선택하고 말하기 버튼을 눌러 말해주세요!","""Blank Period: The protagonist recharges his energy for the next leap.""
 Select the protagonist's strengths in the scenario above and press the speak button to speak!"
@@ -117,14 +117,14 @@ Select the protagonist's strengths in the scenario above and press the speak but
 ,101032001,1,01,03,2,001,성실함,sincerity
 ,101032002,1,01,03,2,002,자기관리 능력,self-management skills
 ,101032003,1,01,03,2,003,인내심,patience
-요점 정리 텍스트,101033001,1,01,03,3,001,과거 시나리오는 재해석할 수 있다,Past scenarios can be reinterpreted
+요점 정리 텍스트,101033001,1,01,03,3,001,과거 시나리오는 재해석할 수 있다,Past scenarios can be reinterpreted.
 요점 정리 텍스트,101033002,1,01,03,3,002,다른 관점을 찾으면 새로운 힘이 보인다,Finding a different perspective reveals new strengths.
 요점 정리 텍스트,101033003,1,01,03,3,003,감독의 시선이 영화를 바꾼다,The director's perspective changes the film.
 리워드 텍스트,101034001,1,01,03,4,001,편집용 가위,editing scissors
 리워드 텍스트,101034002,1,01,03,4,002,"다음 주 흑백 논리로 촬영된 필름 편집을 위해, 불필요한 장면을 잘라낼 편집용 가위를 드릴게요!","Next week, for editing a film shot in black and white, I'll give you some editing scissors to cut out any unnecessary scenes!"
 미션 1 라운드 1 성공 대사,101030007,1,01,03,0,007,좋아요 감독님 다음 시나리오도 새로운 관점을 선택해주세요.,
 미션 2 성공 대사,101030008,1,01,03,0,008,잘하셨어요 감독님!,
-스테이지 시작 대사 1,101040001,1,01,04,0,001,"감독님, 이 필름은 세상을 '성공' 아니면 '실패' 로만 보게 하는\n흑백 논리로 촬영되었어요","Director, this film was shot in black and white logic that only sees the world as either 'success' or 'failure'."
+스테이지 시작 대사 1,101040001,1,01,04,0,001,"감독님, 이 필름은 세상을 '성공' 아니면 '실패' 로만 보게 하는 흑백 논리로 촬영되었어요","Director, this film was shot with a black-and-white logic that only sees the world as either 'success' or 'failure.'"
 스테이지 시작 대사 2,101040002,1,01,04,0,002,지난주에 얻은 편집용 가위로 불필요한 생각 컷들은 잘라내볼까요?,Should I cut out the unnecessary thought cuts with the editing scissors I got last week?
 리워드 사용 대사,101040003,1,01,04,0,003,편집용 가위를 드래그하여 필름 위에 올려주세요,Drag the editing scissors and place them on the film.
 미션 1 시작 대사,101040004,1,01,04,0,004,"이 컷이 '내 생각' 인가요, 아니면 '사실' 인가요?\n생각이라면 컷으로 제거하고, 사실이라면 통과 시켜주세요!","Is this cut 'my opinion' or 'fact'?\nIf it's an opinion, please cut it out, and if it's a fact, please pass it!"
@@ -152,7 +152,7 @@ Select the protagonist's strengths in the scenario above and press the speak but
 미션 1 안내 대사,101050004,1,01,05,0,004,오해 장면들을 터치해서 확인해보세요!,Tap on the misunderstanding scenes to check them out!
 미션 1 성공 대사,101050005,1,01,05,0,005,완벽해요! 줌 아웃하니 전혀 다른 상황이 보이죠?\n이제 직접 대화하는 연습을 해볼까요?,"Perfect! Zooming out, you see a completely different situation, don't you? \nNow, let's practice having a real conversation."
 미션 2 시작 대사 1,101050006,1,01,05,0,006,"전체 상황을 봤으니, 이제 직접 물어보는 대사 연습을 해봐요.","Now that you've seen the full situation, let's practice asking questions directly."
-미션 2 시작 대사 2,101050007,1,01,05,0,007,"저를 동료라고 생각하고, 제가 ""무슨 일 있으세요?"" 라고 물으면\n화면에서 가장 적절한 대사를 골라 말해주세요!","Think of me as your colleague, and when I ask you ""What's wrong?""\nPlease pick the most appropriate line on the screen and say it!"
+미션 2 시작 대사 2,101050007,1,01,05,0,007,"저를 동료라고 생각하고, 제가 ""무슨 일 있으세요?"" 라고 물으면\n화면에서 가장 적절한 대사를 골라 말해주세요!","Think of me as your colleague, and when I ask you, ""What's wrong?""\nPlease pick the most appropriate line on the screen and say it!"
 미션 2 안내 대사,101050008,1,01,05,0,008,화면에서 가장 적절한 대사를 고르고 말하기 버튼을 눌러 말해주세요!,Choose the most appropriate line on the screen and press the speak button to say it!
 미션 2 실패 대사,101050009,1,01,05,0,009,"지금 답변은 자신을 보호하는 데는 도움이 되지만, 오해를 풀기에는 조금 부족했어요.","The answer now helps protect yourself, but it falls short of clearing up the misunderstanding."
 미션 2 성공 대사,101050010,1,01,05,0,010,완벽해요! 건강한 자기 표현이에요.,Perfect! It's healthy self-expression.
@@ -201,7 +201,7 @@ Select the protagonist's strengths in the scenario above and press the speak but
 ,101062010,1,01,06,2,010,"감독 의자에 편안히 앉아주세요.\n등을 의자에 기대고, 어깨의 힘을 빼주세요.",Please sit comfortably in the director's chair.\nLean your back against the chair and relax your shoulders.
 ,101062011,1,01,06,2,011,"천천히 눈을 감아주세요.\n주변의 소리와 빛을 차단하고, 내면의 평화에 집중해봐요.","Close your eyes slowly.\nBlock out any surrounding sounds or lights, and focus on your inner peace."
 ,101062012,1,01,06,2,012,코로 천천히 숨을 들이마시세요.\n1...2...3...4...\n배가 부풀어 오르는 것을 느껴보세요.,Inhale slowly through your nose.\n1...2...3...4...\nFeel your belly rise.
-,101062013,1,01,06,2,013,잠시 숨을 멈춰주세요.\n1...2...,Please hold your breath for a moment.\n1...2...
+,101062013,1,01,06,2,013,잠시 숨을 멈춰주세요.\n1...2...3...,Hold your breath for a moment.\n1...2...3...
 ,101062014,1,01,06,2,014,입으로 천천히 숨을 내쉬세요.\n1...2...3...4...5...6...\n몸의 긴장이 함께 빠져나가요.,Exhale slowly through your mouth.\n1...2...3...4...5...6...\nThe tension in your body will disappear with it.
 ,101062015,1,01,06,2,015,"이마, 눈 주변, 입 주변의 긴장을 풀어주세요.\n턱의 힘도 빼주세요.","Relax your forehead, around your eyes, and around your mouth.\nAlso relax your jaw."
 ,101062016,1,01,06,2,016,어깨를 살짝 으쓱했다가 천천히 내려주세요.\n긴장이 사라지는 것을 느껴보세요.,"Shrug your shoulders slightly, then slowly lower them. Feel the tension disappear."
@@ -237,7 +237,7 @@ Select the protagonist's strengths in the scenario above and press the speak but
 요점 정리 텍스트,101073002,1,01,07,3,002,스스로에게 따뜻한 말을 건넬 수 있어요,I can say warm words to myself
 요점 정리 텍스트,101073003,1,01,07,3,003,자기자비는 나를 일으켜 세우는 힘이에요,Self-compassion is the power that lifts me up.
 리워드 텍스트,101074001,1,01,07,4,001,스토리보드,storyboard
-리워드 텍스트,101074002,1,01,07,4,002,다음주에 앞으로의 이야기 뼈대를 세울 스토리보드를 드릴게요.,Next week I'll give you a storyboard that will lay the groundwork for the story going forward.
+리워드 텍스트,101074002,1,01,07,4,002,다음주에 앞으로의 이야기 뼈대를 세울 스토리보드를 드릴게요.,"Next week, I'll give you a storyboard that will lay the groundwork for the story going forward."
 스테이지 시작 대사,101080001,1,01,08,0,001,"감독님, 이제 다음 챕터를 기획 할 시간이에요.\n지난주에 얻은 '스토리보드' 에 새로운 이야기의 첫 장면을 그려봐요!","Director, it's time to plan the next chapter.\nLet's draw the first scene of the new story on the 'storyboard' we got last week!"
 리워드 사용 대사,101080002,1,01,08,0,002,스토리보드를 드래그해주세요.,Please drag the storyboard.
 미션 1 안내 대사,101080003,1,01,08,0,003,칠판에 있는 5가지 장면을 순서에 맞춰 스토리보드에 배치해주세요!,Please arrange the five scenes on the board in order on the storyboard!
@@ -254,7 +254,7 @@ Select the protagonist's strengths in the scenario above and press the speak but
 ,101082002,1,01,08,2,002,이력서 파일 열어보는 장면,A scene where a resume file is opened
 ,101082003,1,01,08,2,003,센터 선생님께 연락하는 장면,A scene where you contact the center teacher
 요점 정리 텍스트,101083001,1,01,08,3,001,막막한 목표도 단계를 나누면 실현 가능한\n이야기가 된다,Even a daunting goal becomes achievable if you break it down into steps.
-요점 정리 텍스트,101083002,1,01,08,3,002,"스토리보드 5단계를 통해 문제, 대안, 예측, 선택, 실행\n흐름을 정리할 수 있다","The five stages of a storyboard can be used to organize the flow of problems, alternatives, predictions, choices, and actions."
+요점 정리 텍스트,101083002,1,01,08,3,002,"스토리보드 5단계를 통해 문제, 대안, 예측, 선택, 실행 흐름을 정리할 수 있다","The five stages of a storyboard can help you organize problems, alternatives, predictions, choices, and action flow."
 요점 정리 텍스트,101083003,1,01,08,3,003,작은 첫 장면을 정하면 이야기가 실제로 시작된다,"Once you have a small opening scene, the story really begins."
 리워드 텍스트,101084001,1,01,08,4,001,대본,script
 리워드 텍스트,101084002,1,01,08,4,002,다음주에 다른 배우와 대사를 맞춰 볼 대본을 드릴게요.,"Next week, I'll give you a script to practice your lines with another actor."
@@ -272,7 +272,7 @@ Choose the best line for this situation."
 미션 1 라운드 3 안내 대사,101090006,1,01,09,0,006,"""가족이 내가 힘들어하는 걸 알면서도 계속 일을 시켜요.""
 위 상황에 맞는 최고의 대사를 골라주세요.","""My family knows I'm struggling, but they keep making me work.""
 
-Choose the best line that fits the situation above."
+Choose the best line that fits this situation."
 미션 1 실패 대사,101090007,1,01,09,0,007,다시 한 번 생각해볼까요?,Should we think about it again?
 미션 2 라운드 1 안내 대사,101090008,1,01,09,0,008,"먼저, 당신이 퉁명스럽게 말했을 때 '상황' 을 말하기 버튼을 눌러 따라 말해주세요.","First, when you speak bluntly, press the 'Situation' button and repeat after me."
 미션 2 라운드 2 안내 대사,101090009,1,01,09,0,009,이제 조금 당황스러웠던 '감정' 을 말하기 버튼을 눌러 따라 말해주세요.,"Now, press the button to say the 'feeling' that was a little embarrassing and repeat it."
@@ -373,3 +373,5 @@ Choose the best line that fits the situation above."
 버튼,900000045,9,00,00,0,045,명대사 선택하기,Select a famous line
 버튼,900000046,9,00,00,0,046,연습 완료,Practice complete
 버튼,900000047,9,00,00,0,047,촬영 정리,Filming summary
+챕터 선택 화면_종료 팝업,900000048,9,00,00,0,048,어떻게 종료할까요?,How do I quit?
+챕터 선택 화면_종료 팝업,900000049,9,00,00,0,049,로그아웃 하거나 앱을 종료할 수 있어요.\n원하는 방법을 선택해주세요.,You can log out or exit the app.\nPlease choose the method you prefer.

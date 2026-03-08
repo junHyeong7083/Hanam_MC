@@ -19,6 +19,12 @@ public class SoundManager : MonoBehaviour
     [Header("TTS Players")]
     [SerializeField] private AudioSource[] ttsPlayers;
 
+    [Header("BGM Player")]
+    [SerializeField] private AudioSource bgmPlayer;
+
+    [Header("SFX Player")]
+    [SerializeField] private AudioSource sfxPlayer;
+
     private Dictionary<int, AudioClip> _ttsClipsByTextId = new Dictionary<int, AudioClip>();
     private Dictionary<string, int> _textToIdMap;
 
@@ -171,5 +177,108 @@ public class SoundManager : MonoBehaviour
             if (player != null && player.isPlaying)
                 player.Stop();
         }
+    }
+
+    /// <summary>
+    /// TTS 일시정지 (현재 위치 유지)
+    /// </summary>
+    public void PauseTTS()
+    {
+        if (ttsPlayers == null) return;
+
+        foreach (var player in ttsPlayers)
+        {
+            if (player != null && player.isPlaying)
+                player.Pause();
+        }
+    }
+
+    /// <summary>
+    /// TTS 재개 (일시정지된 위치부터)
+    /// </summary>
+    public void ResumeTTS()
+    {
+        if (ttsPlayers == null) return;
+
+        foreach (var player in ttsPlayers)
+        {
+            if (player != null && !player.isPlaying && player.clip != null && player.time > 0f)
+                player.UnPause();
+        }
+    }
+
+    // ============== BGM ==============
+
+    /// <summary>
+    /// BGM 재생. Resources/BGM/{clipName} 에서 로드, loop=true
+    /// </summary>
+    public void PlayBGM(string clipName)
+    {
+        if (bgmPlayer == null)
+        {
+            Debug.LogWarning("[SoundManager] bgmPlayer가 할당되지 않았습니다");
+            return;
+        }
+
+        var clip = Resources.Load<AudioClip>($"BGM/{clipName}");
+        if (clip == null)
+        {
+            Debug.LogWarning($"[SoundManager] BGM 클립을 찾을 수 없음: Resources/BGM/{clipName}");
+            return;
+        }
+
+        bgmPlayer.clip = clip;
+        bgmPlayer.loop = true;
+        bgmPlayer.Play();
+    }
+
+    /// <summary>
+    /// BGM 정지
+    /// </summary>
+    public void StopBGM()
+    {
+        if (bgmPlayer != null)
+            bgmPlayer.Stop();
+    }
+
+    /// <summary>
+    /// BGM 일시정지 (현재 위치 유지)
+    /// </summary>
+    public void PauseBGM()
+    {
+        if (bgmPlayer != null && bgmPlayer.isPlaying)
+            bgmPlayer.Pause();
+    }
+
+    /// <summary>
+    /// BGM 재개 (일시정지된 위치부터)
+    /// </summary>
+    public void ResumeBGM()
+    {
+        if (bgmPlayer != null && !bgmPlayer.isPlaying)
+            bgmPlayer.UnPause();
+    }
+
+    // ============== SFX ==============
+
+    /// <summary>
+    /// SFX 1회 재생. Resources/SFX/{clipName} 에서 로드
+    /// </summary>
+    public void PlaySFX(string clipName)
+    {
+        if (sfxPlayer == null)
+        {
+            Debug.LogWarning("[SoundManager] sfxPlayer가 할당되지 않았습니다");
+            return;
+        }
+
+        var clip = Resources.Load<AudioClip>($"SFX/{clipName}");
+        if (clip == null)
+        {
+            Debug.LogWarning($"[SoundManager] SFX 클립을 찾을 수 없음: Resources/SFX/{clipName}");
+            return;
+        }
+
+        sfxPlayer.PlayOneShot(clip);
     }
 }

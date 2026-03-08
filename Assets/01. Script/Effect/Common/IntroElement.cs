@@ -29,6 +29,16 @@ public class IntroElement : MonoBehaviour
     [SerializeField] private bool enableScale = false;
     [SerializeField] private float startScale = 0.9f;
 
+    [Header("===== 날라오기 (경유점 곡선) =====")]
+    [SerializeField] private bool enableFlyIn = false;
+    [Tooltip("시작 위치 오프셋 (현재 위치 기준 상대값, 픽셀)")]
+    [SerializeField] private Vector2 flyStartOffset = new Vector2(-400f, -200f);
+    [Tooltip("경유 꼭짓점들 (현재 위치 기준 상대값, 픽셀) — 커브가 이 점들을 통과합니다")]
+    [SerializeField] private Vector2[] flyWaypoints = new Vector2[] { new Vector2(-100f, 150f) };
+
+    /// <summary>도착 시 호출되는 이벤트 (ShakeTrigger 등에서 구독)</summary>
+    public event Action OnArrived;
+
     // 내부
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
@@ -111,7 +121,9 @@ public class IntroElement : MonoBehaviour
         if (_rectTransform == null) return;
 
         // 시작 상태 설정
-        if (slideFrom != SlideDirection.None)
+        if (enableFlyIn)
+            _rectTransform.anchoredPosition = _basePosition + flyStartOffset;
+        else if (slideFrom != SlideDirection.None)
             _rectTransform.anchoredPosition = _basePosition + GetSlideOffset();
 
         if (enableFade && _canvasGroup != null)
@@ -120,8 +132,30 @@ public class IntroElement : MonoBehaviour
         if (enableScale)
             _rectTransform.localScale = Vector3.one * startScale;
 
+        // 날라오기 (Catmull-Rom 곡선 — 경유점 통과)
+        if (enableFlyIn)
+        {
+            // 경로 구축: start → waypoints → end
+            Vector2 start = _basePosition + flyStartOffset;
+            Vector2 end   = _basePosition;
+
+            // Catmull-Rom 보간에 필요한 점 배열 (양 끝 가상점 포함)
+            int wpCount  = flyWaypoints != null ? flyWaypoints.Length : 0;
+            int pCount   = 2 + wpCount;                     // start + waypoints + end
+            Vector2[] pts = new Vector2[pCount];
+            pts[0] = start;
+            for (int i = 0; i < wpCount; i++)
+                pts[1 + i] = _basePosition + flyWaypoints[i];
+            pts[pCount - 1] = end;
+
+            _slideTween = DOTween.To(
+                () => 0f,
+                t => _rectTransform.anchoredPosition = EvalCatmullRom(pts, t),
+                1f, duration
+            ).SetEase(easeType).SetDelay(delay);
+        }
         // 슬라이드
-        if (slideFrom != SlideDirection.None)
+        else if (slideFrom != SlideDirection.None)
         {
             _slideTween = _rectTransform
                 .DOAnchorPos(_basePosition, duration)
@@ -138,6 +172,13 @@ public class IntroElement : MonoBehaviour
                 .SetDelay(delay);
         }
 
+        // onComplete + OnArrived 이벤트 래핑
+        Action completionCallback = () =>
+        {
+            onComplete?.Invoke();
+            OnArrived?.Invoke();
+        };
+
         // 스케일
         if (enableScale)
         {
@@ -145,19 +186,23 @@ public class IntroElement : MonoBehaviour
                 .DOScale(1f, duration)
                 .SetEase(easeType)
                 .SetDelay(delay)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => completionCallback());
         }
-        else if (slideFrom != SlideDirection.None)
+        else if (enableFlyIn && _slideTween != null)
         {
-            _slideTween.OnComplete(() => onComplete?.Invoke());
+            _slideTween.OnComplete(() => completionCallback());
+        }
+        else if (slideFrom != SlideDirection.None && _slideTween != null)
+        {
+            _slideTween.OnComplete(() => completionCallback());
         }
         else if (enableFade && _canvasGroup != null)
         {
-            _fadeTween.OnComplete(() => onComplete?.Invoke());
+            _fadeTween.OnComplete(() => completionCallback());
         }
         else
         {
-            onComplete?.Invoke();
+            completionCallback();
         }
     }
 
@@ -189,7 +234,9 @@ public class IntroElement : MonoBehaviour
 
         if (_rectTransform != null)
         {
-            if (slideFrom != SlideDirection.None)
+            if (enableFlyIn)
+                _rectTransform.anchoredPosition = _basePosition + flyStartOffset;
+            else if (slideFrom != SlideDirection.None)
                 _rectTransform.anchoredPosition = _basePosition + GetSlideOffset();
 
             if (enableScale)
@@ -206,6 +253,39 @@ public class IntroElement : MonoBehaviour
     public void SetDelay(float newDelay)
     {
         delay = newDelay;
+    }
+
+    #endregion
+
+    #region Catmull-Rom
+
+    /// <summary>
+    /// Catmull-Rom 스플라인 보간 (pts 배열의 모든 점을 통과)
+    /// </summary>
+    private static Vector2 EvalCatmullRom(Vector2[] pts, float t)
+    {
+        int segCount = pts.Length - 1;
+        if (segCount <= 0) return pts[0];
+
+        float scaled = t * segCount;
+        int seg = Mathf.Min((int)scaled, segCount - 1);
+        float lt = scaled - seg;
+
+        // Catmull-Rom에는 4점 필요 (p0, p1, p2, p3)
+        Vector2 p0 = pts[Mathf.Max(seg - 1, 0)];
+        Vector2 p1 = pts[seg];
+        Vector2 p2 = pts[Mathf.Min(seg + 1, pts.Length - 1)];
+        Vector2 p3 = pts[Mathf.Min(seg + 2, pts.Length - 1)];
+
+        // Catmull-Rom 공식
+        float lt2 = lt * lt;
+        float lt3 = lt2 * lt;
+        return 0.5f * (
+            (2f * p1) +
+            (-p0 + p2) * lt +
+            (2f * p0 - 5f * p1 + 4f * p2 - p3) * lt2 +
+            (-p0 + 3f * p1 - 3f * p2 + p3) * lt3
+        );
     }
 
     #endregion

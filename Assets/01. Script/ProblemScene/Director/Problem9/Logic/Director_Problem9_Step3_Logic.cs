@@ -22,6 +22,7 @@ public abstract class Director_Problem9_Step3_Logic : ProblemStepBase
         public int guideTextId;        // HanamBox 가이드
         public int keywordTextId;      // 키워드 textId ("상황"/"감정"/"바람") - 흰색
         public int fullTextId;         // 전체 문장 textId - 검정
+        public int altFullTextId;      // 추가 STT 인식 키워드 (선택, 0이면 무시)
         public Sprite questionSprite;  // puzzleImg 질문 스프라이트
         public Sprite answerSprite;    // puzzleImg 답변 스프라이트
     }
@@ -172,10 +173,15 @@ public abstract class Director_Problem9_Step3_Logic : ProblemStepBase
             PuzzleText.color = KeywordColor;
         }
 
-        // STT 키워드: 현재 라운드의 fullText 1개만 설정
+        // STT 키워드: fullTextId + altFullTextId (있으면 추가)
         var mic = MicIndicator;
         if (mic != null && data.fullTextId > 0)
-            mic.SetKeywords(new[] { ProblemRuntime.L(data.fullTextId) });
+        {
+            if (data.altFullTextId > 0)
+                mic.SetKeywords(new[] { ProblemRuntime.L(data.fullTextId), ProblemRuntime.L(data.altFullTextId) });
+            else
+                mic.SetKeywords(new[] { ProblemRuntime.L(data.fullTextId) });
+        }
 
         // 마이크 버튼 활성화
         if (MicButton != null)

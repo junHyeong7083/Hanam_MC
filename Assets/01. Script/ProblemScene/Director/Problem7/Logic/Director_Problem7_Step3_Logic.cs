@@ -213,10 +213,20 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
         if (_selectedIndex < 0) return;
 
         _isRecording = !_isRecording;
+        SetChoicesHoverEnabled(!_isRecording);
 
         var mic = MicIndicator;
         if (mic != null)
             mic.ToggleRecording();
+    }
+
+    private void SetChoicesHoverEnabled(bool enabled)
+    {
+        if (SelectDialogueRoot == null) return;
+
+        var hovers = SelectDialogueRoot.GetComponentsInChildren<ButtonHover>(true);
+        foreach (var hover in hovers)
+            hover.enabled = enabled;
     }
 
     // =========================
@@ -269,6 +279,9 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
 private void ShowRetryGuide()
     {
+        // 녹음 종료 → hover 재활성화
+        SetChoicesHoverEnabled(true);
+
         // 선택된 selectImg 비활성화
         if (_selectedDialogue?.selectImg != null)
             _selectedDialogue.selectImg.SetActive(false);

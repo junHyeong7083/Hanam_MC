@@ -105,6 +105,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 944357243542320843}
+  - {fileID: 7602790379009161052}
   m_Father: {fileID: 3561114866458435343}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -124,8 +125,9 @@ GameObject:
   - component: {fileID: 2680894284633582298}
   - component: {fileID: 1046191958508270462}
   - component: {fileID: 1399079860302732405}
+  - component: {fileID: 6280326859499439213}
   m_Layer: 5
-  m_Name: BGImage
+  m_Name: HanamBGImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,14 +148,13 @@ RectTransform:
   - {fileID: 1465645190383713922}
   - {fileID: 8220387926581820373}
   - {fileID: 8769339344122534526}
-  - {fileID: 7602790379009161052}
   m_Father: {fileID: 6254507675245673137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -15}
-  m_SizeDelta: {x: 1412.2, y: 167}
-  m_Pivot: {x: 0, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 706.1, y: 210}
+  m_SizeDelta: {x: 1412.2, y: 210}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2680894284633582298
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -213,6 +214,32 @@ MonoBehaviour:
   enableFade: 1
   enableScale: 1
   startScale: 0.7
+  enableFlyIn: 0
+  flyStartOffset: {x: -400, y: -200}
+  flyControlPoint: {x: -100, y: 150}
+--- !u!114 &6280326859499439213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390923844816874027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ade4f06b6902874dbcdc49736617b81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetText: {fileID: 2284999823666659041}
+  fitWidth: 0
+  fitHeight: 1
+  paddingLeft: 10
+  paddingRight: 230
+  paddingTop: 5
+  paddingBottom: 50
+  minWidth: 0
+  maxWidth: 0
+  minHeight: 150
+  maxHeight: 0
 --- !u!1 &2192528029290321117
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,8 +251,10 @@ GameObject:
   - component: {fileID: 7602790379009161052}
   - component: {fileID: 8639104493232466142}
   - component: {fileID: 4443363284267109475}
+  - component: {fileID: 6727015729588813445}
+  - component: {fileID: 953634627260911762}
   m_Layer: 5
-  m_Name: HanamIcon
+  m_Name: HanamIntroIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -238,18 +267,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2192528029290321117}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6942300927338605041}
   - {fileID: 3815104477101186947}
-  m_Father: {fileID: 944357243542320843}
+  m_Father: {fileID: 6254507675245673137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 63, y: 74.5}
+  m_AnchoredPosition: {x: 63, y: -717}
   m_SizeDelta: {x: 340, y: 325}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8639104493232466142
@@ -290,6 +319,42 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6727015729588813445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2192528029290321117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e829c03afb5844a93d652a510bb3ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playOnEnable: 1
+  delay: 0
+  duration: 0.3
+  easeType: 6
+  slideFrom: 2
+  slideDistance: 30
+  enableFade: 1
+  enableScale: 0
+  startScale: 0.9
+  enableFlyIn: 0
+  flyStartOffset: {x: -400, y: -200}
+  flyControlPoint: {x: -100, y: 150}
+--- !u!225 &953634627260911762
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2192528029290321117}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4159490614623299952
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,7 +589,7 @@ GameObject:
   - component: {fileID: 6356294747021822595}
   - component: {fileID: 2284999823666659041}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: HanamIntroText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -544,11 +609,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 944357243542320843}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 191.82016, y: -28}
-  m_SizeDelta: {x: 818.5, y: 30}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -510, y: -66}
+  m_SizeDelta: {x: 836.2, y: 30}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6356294747021822595
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -965,7 +1030,7 @@ GameObject:
   - component: {fileID: 7636703315702449357}
   - component: {fileID: 6561261138023830320}
   m_Layer: 5
-  m_Name: NextBtn
+  m_Name: NexDialogueBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

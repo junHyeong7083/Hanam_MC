@@ -118,7 +118,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -96, y: 38.666668}
+  m_AnchoredPosition: {x: -62, y: 38.666668}
   m_SizeDelta: {x: 227.5, y: 69}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1029459529535916623
@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 4476352624649297674}
   - component: {fileID: 6379891089059316041}
   m_Layer: 5
-  m_Name: ttsButton
+  m_Name: HanammissionttsBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -295,11 +295,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9028510621098595656}
+  m_Father: {fileID: 3800654576310936355}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 63, y: 62}
+  m_AnchoredPosition: {x: 146.5, y: 47.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5503724255648395374
@@ -454,7 +454,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: -586, y: -66}
-  m_SizeDelta: {x: 1018, y: 30}
+  m_SizeDelta: {x: 1027.9, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7184905031373248313
 CanvasRenderer:
@@ -533,15 +533,13 @@ RectTransform:
   m_Children:
   - {fileID: 574262250262035315}
   - {fileID: 249760935714064060}
-  - {fileID: 3800654576310936355}
-  - {fileID: 8970521025392149111}
   m_Father: {fileID: 3091593816852724184}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 631.1, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 631.1, y: -858}
   m_SizeDelta: {x: 1412.2, y: 189}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &2721475689562261700
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -655,6 +653,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9028510621098595656}
+  - {fileID: 3800654576310936355}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -698,6 +697,8 @@ GameObject:
   - component: {fileID: 3800654576310936355}
   - component: {fileID: 4543513884265123399}
   - component: {fileID: 6794543957124186539}
+  - component: {fileID: 9067041076950272670}
+  - component: {fileID: 8370699782504813119}
   m_Layer: 5
   m_Name: HanamIcon
   m_TagString: Untagged
@@ -712,17 +713,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8687763158273991852}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8662700521260769823}
-  m_Father: {fileID: 9028510621098595656}
+  - {fileID: 8970521025392149111}
+  m_Father: {fileID: 3091593816852724184}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -9, y: 89}
+  m_AnchoredPosition: {x: -9, y: -771}
   m_SizeDelta: {x: 149, y: 149}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4543513884265123399
@@ -763,6 +765,39 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9067041076950272670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8687763158273991852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20e829c03afb5844a93d652a510bb3ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playOnEnable: 1
+  delay: 0
+  duration: 0.3
+  easeType: 6
+  slideFrom: 2
+  slideDistance: 30
+  enableFade: 1
+  enableScale: 0
+  startScale: 0.9
+--- !u!225 &8370699782504813119
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8687763158273991852}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &9045829166419572082
 GameObject:
   m_ObjectHideFlags: 0

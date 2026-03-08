@@ -364,16 +364,25 @@ private void OnMicRecordingChanged(bool isRecording)
         }
         else
         {
-            // 하남이 오답 텍스트
+            // 하남이 오답 텍스트 + TTS 직접 재생
+            // (연속 오답 시 텍스트가 이미 같으면 TTSTrigger가 발동 안 되므로 직접 호출)
             ApplyHanamText(hanamTextIdOnWrong);
+            if (hanamTextIdOnWrong > 0 && SoundManager.Instance != null)
+                SoundManager.Instance.PlayTTS(hanamTextIdOnWrong);
 
-            // 잠시 대기 후 복원
-            float dur = Mathf.Max(0f, wrongFeedbackShowDuration);
-            if (dur > 0f)
-                yield return new WaitForSeconds(dur);
+            // TTS 재생 중 마이크 숨김
+            if (micButtonRoot != null)
+                micButtonRoot.SetActive(false);
 
-            // 가이드 텍스트 복원
-            ApplyHanamText(hanamTextIdOnEnter);
+            // 1프레임 대기 (IsTTSPlaying 체크 전 안전 여유)
+            yield return null;
+
+            // 오답 TTS 완료까지 대기
+            if (SoundManager.Instance != null)
+                yield return new WaitUntil(() => !SoundManager.Instance.IsTTSPlaying);
+
+            if (micButtonRoot != null)
+                micButtonRoot.SetActive(true);
         }
 
         _optionRoutine = null;

@@ -102,6 +102,10 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
 
+        // BGM 시작 (편안한 자세 화면부터 loop)
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlayBGM("BGM_C01_S06");
+
         // IntroStep3에서 넘어오므로 자동 시작
         AutoStart();
     }
@@ -114,6 +118,13 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         {
             StopCoroutine(_playRoutine);
             _playRoutine = null;
+        }
+
+        // BGM, TTS 정지 (촬영 종료)
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.StopTTS();
         }
     }
 
@@ -178,6 +189,13 @@ private void ApplyStepUI(IRelaxationStepData step, int index, int total)
 
         _isPlaying = false;
 
+        // TTS, BGM 일시정지
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PauseTTS();
+            SoundManager.Instance.PauseBGM();
+        }
+
         SetRootActive(PlayingRoot, false);
         SetRootActive(PausedRoot, true);
     }
@@ -189,6 +207,13 @@ private void ApplyStepUI(IRelaxationStepData step, int index, int total)
         if (_isPlaying) return;
 
         _isPlaying = true;
+
+        // TTS, BGM 재개
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.ResumeTTS();
+            SoundManager.Instance.ResumeBGM();
+        }
 
         SetRootActive(PlayingRoot, true);
         SetRootActive(PausedRoot, false);
@@ -234,6 +259,10 @@ private void ApplyStepUI(IRelaxationStepData step, int index, int total)
 
             // 다음 단계로
             _currentStepIndex++;
+
+            // 다음 단계가 있으면 전환 SFX 재생
+            if (_currentStepIndex < total && SoundManager.Instance != null)
+                SoundManager.Instance.PlaySFX("SFX_C01_S06_nextStep");
         }
 
         // 모두 끝났을 때
