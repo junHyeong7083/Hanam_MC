@@ -28,10 +28,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     protected abstract string GetFilmText(int index);
     protected abstract Sprite GetFilmSprite(int index);
     protected abstract bool IsFilmThought(int index);
-
-    protected abstract Text HanamiDialogueText { get; }
-    protected abstract int GetHanamiDialogueTextId(int index);
-    protected abstract float WrongHanamiMessageDuration { get; }
+    protected abstract int GetFilmHanamiTextId(int index);
 
     protected abstract RectTransform CurrentFilmRoot { get; }
     protected abstract GameObject CurrentFilmPrefab { get; }
@@ -47,6 +44,12 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
+
+    [Header("피드백 TextId")]
+    [SerializeField] private int correctThoughtTextId = 101010019;
+    [SerializeField] private int correctFactTextId = 101010018;
+    [SerializeField] private int wrongFeedbackTextId;
+    [SerializeField] private float wrongFeedbackDuration = 2f;
 
     protected abstract GameObject StepRoot { get; }
     protected abstract GameObject SummaryPanelRoot { get; }
@@ -81,7 +84,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         _sortedFilmIds.Clear();
         _logs.Clear();
 
-        StopHanamiTempMessageCoroutineIfRunning();
+        StopWrongFeedbackCoroutineIfRunning();
         _isShowingHanamiWrongMessage = false;
 
         KillAllTweens();
@@ -105,7 +108,6 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             AnswerButtonsRoot.SetActive(true);
 
         DestroyCurrentFilmCard();
-        RenderHanamiDefaultDialogue();
 
         _interactionLocked = true;
         if (dialogueSequencer != null)
@@ -148,9 +150,6 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             if (AnswerButtonsRoot != null)
                 AnswerButtonsRoot.SetActive(false);
 
-            if (!_isShowingHanamiWrongMessage)
-                RenderHanamiDefaultDialogue();
-
             return;
         }
 
@@ -159,8 +158,13 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         SpawnOrUpdateCurrentFilmCard(text, sprite);
 
-        if (!_isShowingHanamiWrongMessage)
-            RenderHanamiDefaultDialogue();
+        // 카드별 하남이 대사
+        if (!_isShowingHanamiWrongMessage && dialogueSequencer != null)
+        {
+            int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
+            if (hanamiTextId > 0)
+                dialogueSequencer.SetText(hanamiTextId);
+        }
 
         if (_currentFilmAnimator != null)
             _currentFilmAnimator.PlayEnter();
@@ -174,9 +178,6 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         // 현재 카드는 분류 시 슬롯으로 이동시키므로 여기서 삭제하지 않음
         if (AnswerButtonsRoot != null)
             AnswerButtonsRoot.SetActive(false);
-
-        if (!_isShowingHanamiWrongMessage)
-            RenderHanamiDefaultDialogue();
     }
 
     protected override void OnCardProcessed(int logicalIndex)
@@ -195,8 +196,10 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         if (allSorted)
         {
-            RenderHanamiDefaultDialogue();
-            Debug.Log("[Director_Problem1_Step3_Logic] 모든 필름 분류 완료. 다음촬영 버튼 활성화.");
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
+
+            Debug.Log("[Director_Problem1_Step3_Logic] 모든 필름 분류 완료.");
         }
         else
         {
@@ -270,55 +273,35 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         _placedFactFilmInstances.Clear();
     }
 
-    private void RenderHanamiDefaultDialogue()
+    private void ShowWrongFeedbackTemp(int logicalIndex)
     {
-        if (HanamiDialogueText == null)
-            return;
+        if (dialogueSequencer == null || wrongFeedbackTextId <= 0) return;
 
-        int defaultTextId = GetHanamiDialogueTextId(0);
-        if (defaultTextId < 0)
-        {
-            HanamiDialogueText.text = string.Empty;
-            return;
-        }
-
-        HanamiDialogueText.text = ProblemRuntime.L(defaultTextId);
+        StopWrongFeedbackCoroutineIfRunning();
+        _hanamiTempMessageCoroutine = StartCoroutine(CoWrongFeedbackTemp(logicalIndex));
     }
 
-    private void RenderHanamiWrongDialogueTemp()
-    {
-        if (HanamiDialogueText == null)
-            return;
-
-        int wrongTextId = GetHanamiDialogueTextId(1);
-        if (wrongTextId < 0)
-        {
-            RenderHanamiDefaultDialogue();
-            return;
-        }
-
-        StopHanamiTempMessageCoroutineIfRunning();
-        _hanamiTempMessageCoroutine = StartCoroutine(CoHanamiWrongDialogueTemp());
-    }
-
-    private IEnumerator CoHanamiWrongDialogueTemp()
+    private IEnumerator CoWrongFeedbackTemp(int logicalIndex)
     {
         _isShowingHanamiWrongMessage = true;
 
-        int wrongTextId = GetHanamiDialogueTextId(1);
-        if (wrongTextId >= 0 && HanamiDialogueText != null)
-            HanamiDialogueText.text = ProblemRuntime.L(wrongTextId);
+        dialogueSequencer.SetText(wrongFeedbackTextId);
 
-        float wait = Mathf.Max(0f, WrongHanamiMessageDuration);
+        float wait = Mathf.Max(0f, wrongFeedbackDuration);
         if (wait > 0f)
             yield return new WaitForSeconds(wait);
 
         _isShowingHanamiWrongMessage = false;
-        RenderHanamiDefaultDialogue();
+
+        // 오답 후 다시 현재 카드의 하남이 대사로 복귀
+        int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
+        if (hanamiTextId > 0)
+            dialogueSequencer.SetText(hanamiTextId);
+
         _hanamiTempMessageCoroutine = null;
     }
 
-    private void StopHanamiTempMessageCoroutineIfRunning()
+    private void StopWrongFeedbackCoroutineIfRunning()
     {
         if (_hanamiTempMessageCoroutine != null)
         {
@@ -363,7 +346,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         // 오답: 메시지만 표시하고 다시 시도하게 함
         if (!userCorrect)
         {
-            RenderHanamiWrongDialogueTemp();
+            ShowWrongFeedbackTemp(logicalIndex);
             return;
         }
 
@@ -391,7 +374,14 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         _logs.Add(entry);
 
         PlaceCurrentFilmIntoCorrectSlot(correctIsThought);
-        RenderHanamiDefaultDialogue();
+
+        // 정답 피드백 표시
+        if (dialogueSequencer != null)
+        {
+            int feedbackId = correctIsThought ? correctThoughtTextId : correctFactTextId;
+            if (feedbackId > 0)
+                dialogueSequencer.SetText(feedbackId);
+        }
 
         _isAdvancing = true;
         StartCoroutine(AdvanceAfterDelayWithAnimation(true));
@@ -457,9 +447,9 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     {
         float delay = Mathf.Max(0f, SortAdvanceDelay);
 
-        // 오답이면 하남이 오답 문구 2초 유지 보장
+        // 오답이면 오답 문구 유지 보장
         if (!userCorrect)
-            delay = Mathf.Max(delay, Mathf.Max(0f, WrongHanamiMessageDuration));
+            delay = Mathf.Max(delay, Mathf.Max(0f, wrongFeedbackDuration));
 
         if (delay > 0f)
             yield return new WaitForSeconds(delay);

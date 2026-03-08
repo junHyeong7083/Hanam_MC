@@ -36,8 +36,6 @@ public class DialogueSequencer : MonoBehaviour
         if (nextStepBtn != null)
         {
             nextStepBtn.gameObject.SetActive(false);
-            nextStepBtn.onClick.RemoveListener(OnClickNextStep);
-            nextStepBtn.onClick.AddListener(OnClickNextStep);
         }
 
         PlaySequence(enterTextIds,
@@ -55,7 +53,6 @@ public class DialogueSequencer : MonoBehaviour
 
         if (nextStepBtn != null)
         {
-            nextStepBtn.onClick.RemoveListener(OnClickNextStep);
             nextStepBtn.gameObject.SetActive(false);
         }
 
@@ -68,6 +65,9 @@ public class DialogueSequencer : MonoBehaviour
 
     public void ShowCompletedText()
     {
+        if (completedTextIds == null || completedTextIds.Length == 0)
+            return;
+
         PlaySequence(completedTextIds,
             onLastShown: ShowNextStepBtn);
     }
@@ -149,10 +149,16 @@ public class DialogueSequencer : MonoBehaviour
             nextStepBtn.gameObject.SetActive(true);
     }
 
-    private void OnClickNextStep()
+    /// <summary>
+    /// 시퀀스 외부에서 직접 텍스트를 설정 (per-card 대사 등)
+    /// nextDialogueBtn은 숨김 처리
+    /// </summary>
+    public void SetText(int textId)
     {
-        var flow = GetComponentInParent<StepFlowController>();
-        if (flow != null)
-            flow.NextStep();
+        if (dialogueText != null)
+            dialogueText.text = ProblemRuntime.L(textId);
+
+        if (nextDialogueBtn != null)
+            nextDialogueBtn.gameObject.SetActive(false);
     }
 }

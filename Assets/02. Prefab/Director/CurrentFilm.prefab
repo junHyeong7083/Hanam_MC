@@ -133,7 +133,8 @@ MonoBehaviour:
   startScale: 0.9
   enableFlyIn: 0
   flyStartOffset: {x: -400, y: -200}
-  flyControlPoint: {x: -100, y: 150}
+  flyWaypoints:
+  - {x: -100, y: 150}
 --- !u!1 &7729086388656683804
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,7 +202,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 30
+    m_FontSize: 23
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -212,4 +213,5 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uB098\uB294 \uC2E4\uD328\uD560 \uAC83\uC774\uB2E4"
+  m_Text: "\uC624\uB298 \uC544\uCE68 \uAE30\uBD84\uC774 \uC6B0\uC6B8\uD55C \uAC78
+    \uBCF4\uB2C8, \uC624\uB298 \uD558\uB8E8\uB3C4 \uB9DD\uCE5C \uD558\uB8E8\uC57C."

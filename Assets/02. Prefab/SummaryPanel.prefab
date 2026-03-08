@@ -273,10 +273,10 @@ MonoBehaviour:
     targetPoint: {fileID: 8129544915672952959}
   - spawnPoint: {fileID: 5458710734193246621}
     targetPoint: {fileID: 1084546389878516370}
-  - spawnPoint: {fileID: 5458710734193246621}
-    targetPoint: {fileID: 1084546389878516370}
-  - spawnPoint: {fileID: 5458710734193246621}
-    targetPoint: {fileID: 1084546389878516370}
+  - spawnPoint: {fileID: 3774935271783888211}
+    targetPoint: {fileID: 2245902845048087239}
+  - spawnPoint: {fileID: 4350774413471978199}
+    targetPoint: {fileID: 8490314361059770156}
   spawnInterval: 0.3
   moveDuration: 0.15
   completionGate: {fileID: 8373559757049060961}
