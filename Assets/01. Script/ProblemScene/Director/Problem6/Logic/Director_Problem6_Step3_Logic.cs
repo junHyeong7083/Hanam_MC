@@ -46,6 +46,9 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
     [Header("프로그레스 바")]
     protected abstract Image ProgressFillImage { get; }
 
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
+
     [Header("완료 후 약간의 딜레이 (초)")]
     protected virtual float CompleteDelaySeconds => 2.0f;
 
@@ -106,13 +109,24 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlayBGM("BGM_C01_S06");
 
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+
         // IntroStep3에서 넘어오므로 자동 시작
         AutoStart();
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        // 이 스텝은 자동 재생이므로 별도 잠금 해제 필요 없음
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
 
         if (_playRoutine != null)
         {
@@ -286,5 +300,8 @@ private void ApplyStepUI(IRelaxationStepData step, int index, int total)
             CompletionGate.MarkOneDone();
         else
             Debug.LogWarning("[Problem6_Step3] CompletionGate가 설정되어 있지 않습니다.");
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 }

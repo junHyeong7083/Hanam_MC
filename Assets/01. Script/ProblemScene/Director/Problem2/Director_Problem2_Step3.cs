@@ -27,10 +27,8 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     [SerializeField] private int[] perspectiveTextIds;
     [SerializeField] private string[] perspectiveKeywords; // "키1|키2"
 
-    [Header("상단 안내 텍스트 (로컬라이즈 ID)")]
+    [Header("상단 안내 텍스트 (Retry용)")]
     [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextIdBefore = 0;
-    [SerializeField] private int guideTextIdAfter = 0;
     [SerializeField] private int guideTextIdRetry = 0;
 
     [Header("씬 카드 UI (NG / OK)")]
@@ -49,9 +47,6 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
 
     [Header("녹음 중 표시 이미지 (SetActive 토글)")]
     [SerializeField] private GameObject recordingOverlay;
-
-    [Header("STT 완료 후 표시할 NextStep 버튼 루트")]
-    [SerializeField] private GameObject nextStepButtonRoot;
 
     [Header("패널 전환")]
     [SerializeField] private GameObject stepRoot;
@@ -108,8 +103,6 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override IDirectorProblem2PerspectiveOption[] Perspectives => _options;
 
     protected override Text GuideText => guideText;
-    protected override int GuideTextId_Before => guideTextIdBefore;
-    protected override int GuideTextId_After => guideTextIdAfter;
     protected override int GuideTextId_Retry => guideTextIdRetry;
 
     protected override RectTransform SceneCardRect => sceneCardRect;
@@ -122,7 +115,6 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override MicRecordingIndicator MicIndicator => micIndicator;
 
     protected override GameObject RecordingOverlay => recordingOverlay;
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 
     protected override GameObject StepRoot => stepRoot;
 

@@ -77,6 +77,9 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     protected abstract string CompletionText { get; }
     protected abstract string ErrorText { get; }
 
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
+
     [Header("완료 시 UI")]
     protected abstract GameObject HideObjectOnComplete { get; }
     protected abstract RectTransform ShowImageOnComplete { get; }
@@ -86,6 +89,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     // 내부 상태
     // ======================
 
+    private bool _interactionLocked = true;
     private CutStatus[] _status;
     private bool _isColorRestored;
     private bool _stepCompleted;
@@ -145,11 +149,25 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         {
             effect.PlayAppearAnimation();
         }
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
-        // 필요시 정리 로직 추가
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
     }
 
     // =========================================
@@ -201,6 +219,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 
     public void OnClickCut()
     {
+        if (_interactionLocked) return;
         if (_stepCompleted) return;
 
         int idx = GetCurrentActiveIndex();
@@ -250,6 +269,7 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 
     public void OnClickPass()
     {
+        if (_interactionLocked) return;
         if (_stepCompleted) return;
 
         int idx = GetCurrentActiveIndex();
@@ -439,6 +459,9 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
             if (StepCompletionGate != null)
                 StepCompletionGate.MarkOneDone();
         }
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     private IEnumerator DelayedGateComplete()

@@ -68,13 +68,12 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     protected virtual Color CardSelectedColor =>
         new Color(1f, 0.54f, 0.24f, 1f); // #FF8A3D 느낌
 
-    // ===== NextStep 버튼 (조명 다 켜지면 활성화) =====
-
-    [Header("Next Step Button")]
-    [SerializeField] private GameObject nextStepButtonRoot;
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // ===== 내부 상태 =====
 
+    private bool _interactionLocked = true;
     private bool[] _selectedFlags;
     private int _selectedCount;
     private bool _initialized;
@@ -94,8 +93,11 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         InitializeLights();
         InitializeIfNeeded();
 
-        if (nextStepButtonRoot != null)
-            nextStepButtonRoot.SetActive(false);
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
 
         // 하남박스 텍스트 + TTS
         if (GuideText != null && GuideTextId > 0)
@@ -105,8 +107,18 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
             SoundManager.Instance.PlayTTS(GuideTextId);
     }
 
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
+    }
+
     protected override void OnStepExit()
     {
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
+
         RemoveCardListeners();
     }
 
@@ -220,6 +232,7 @@ private void SetupCardUI()
 
     private void OnClickCard(int index)
     {
+        if (_interactionLocked) return;
         var cards = Cards;
         if (!_initialized || cards == null) return;
         if (index < 0 || index >= cards.Length) return;
@@ -305,9 +318,9 @@ private void UpdateCardVisuals()
         var lights = Lights;
         bool allLightsLit = lights != null && _selectedCount >= lights.Length;
 
-        // NextStep 버튼: 조명 다 켜지면 활성화, 아니면 비활성화
-        if (nextStepButtonRoot != null)
-            nextStepButtonRoot.SetActive(allLightsLit);
+        // 조명 다 켜지면 완료 텍스트 표시
+        if (allLightsLit && dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
 
         // Gate: 최소 선택 수 이상이면 열기
         var gate = StepCompletionGateRef;

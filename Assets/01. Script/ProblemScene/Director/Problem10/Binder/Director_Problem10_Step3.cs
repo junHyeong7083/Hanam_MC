@@ -32,7 +32,6 @@ public class Director_Problem10_Step3 : Director_Problem10_Step3_Logic
     [SerializeField] private int guideTextId_Success = 101100009;
     [SerializeField] private string failGuideText = "잘 들리지 않았어요. 다시 말해주세요.";
     [SerializeField] private Button nextDialogueBtn;
-    [SerializeField] private GameObject nextStepButtonRoot;
 
     [Header("===== 마이크 =====")]
     [SerializeField] private GameObject micRoot;
@@ -53,7 +52,6 @@ public class Director_Problem10_Step3 : Director_Problem10_Step3_Logic
     protected override int GuideTextId_Success => guideTextId_Success;
     protected override string FailGuideText => failGuideText;
     protected override Button NextDialogueBtn => nextDialogueBtn;
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
     protected override GameObject MicRoot => micRoot;
     protected override Button MicButton => micButton;
     protected override MicRecordingIndicator MicIndicator => micIndicator;

@@ -15,7 +15,6 @@ public class Director_Problem10_Step2 : Director_Problem10_Step2_Logic
     [SerializeField] private Text guideText;
     [SerializeField] private int guideTextId;
     [SerializeField] private int guideTextId_Success;
-    [SerializeField] private GameObject nextStepButtonRoot;
 
     [Header("===== 선택 화면 =====")]
     [SerializeField] private GameObject selectRoot;
@@ -36,7 +35,6 @@ public class Director_Problem10_Step2 : Director_Problem10_Step2_Logic
     protected override Text GuideText => guideText;
     protected override int GuideTextId => guideTextId;
     protected override int GuideTextId_Success => guideTextId_Success;
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
     protected override GameObject SelectRoot => selectRoot;
     protected override Button[] GenreButtons => genreButtons;
     protected override GameObject[] SelectIndicators => selectIndicators;

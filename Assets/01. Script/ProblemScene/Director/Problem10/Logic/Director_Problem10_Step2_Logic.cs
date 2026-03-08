@@ -41,7 +41,9 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
     protected abstract Text GuideText { get; }
     protected abstract int GuideTextId { get; }
     protected abstract int GuideTextId_Success { get; }
-    protected abstract GameObject NextStepButtonRoot { get; }
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // 선택 화면
     protected abstract GameObject SelectRoot { get; }
@@ -68,6 +70,7 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
     // 내부 상태
     private bool _selected;
     private Coroutine _transitionRoutine;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -80,6 +83,8 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         // 가이드 텍스트
         if (GuideText != null && GuideTextId > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId);
+
+        _interactionLocked = true;
 
         // 장르 라벨 설정
         var data = GenreCardsData;
@@ -104,14 +109,28 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         // 루트 설정
         if (SelectRoot != null) SelectRoot.SetActive(true);
         if (CompleteRoot != null) CompleteRoot.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
-
         RegisterListeners();
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (_transitionRoutine != null)
         {
@@ -157,6 +176,7 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
 
     private void OnGenreClicked(int index)
     {
+        if (_interactionLocked) return;
         if (_selected) return;
         _selected = true;
 
@@ -201,9 +221,9 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         if (GuideText != null && GuideTextId_Success > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Success);
 
-        // NextStepBtn 활성화
-        if (NextStepButtonRoot != null)
-            NextStepButtonRoot.SetActive(true);
+        // 완료 처리
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
 
         // SharedData에 선택 결과 저장 (Step3에서 사용)
         if (SharedData != null && data != null && index < data.Length)

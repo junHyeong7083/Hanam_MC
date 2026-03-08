@@ -24,9 +24,6 @@ public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
     [Tooltip("4개 감정: id/labelTextId/button 설정")]
     [SerializeField] private ChoiceItem[] feelingChoices;
 
-    [Header("===== 완료 후 NextStep 버튼 =====")]
-    [SerializeField] private GameObject nextStepButtonRoot;
-
     [Header("===== 전환 딜레이 (초) =====")]
     [SerializeField] private float maskSelectDelay = 2.0f;
     [SerializeField] private float feelingSelectDelay = 2.0f;
@@ -42,8 +39,6 @@ public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
 
     protected override GameObject SelectFeelingRoot => selectFeelingRoot;
     protected override ChoiceItem[] FeelingChoices => feelingChoices;
-
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 
     protected override float MaskSelectDelay => maskSelectDelay;
     protected override float FeelingSelectDelay => feelingSelectDelay;

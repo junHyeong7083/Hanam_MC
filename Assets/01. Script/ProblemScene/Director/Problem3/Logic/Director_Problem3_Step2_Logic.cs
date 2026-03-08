@@ -46,7 +46,9 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
     [Header("상단/하단 다음 버튼")]
     protected abstract GameObject NextDialogButtonRoot { get; }
-    protected abstract GameObject NextStepButtonRoot { get; }
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     [Header("완료 게이트 (옵션)")]
     protected abstract StepCompletionGate CompletionGate { get; }
@@ -58,6 +60,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     private int _currentOptionIndex;
     private bool _isRecording;
     private bool _isStepCompleted;
+    private bool _interactionLocked = true;
 
     [Serializable]
     private class AttemptStepLog
@@ -111,11 +114,27 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
         BindCarouselButtons();
         BindMicEvents();
 
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+
         EnterInnerStep(_stepIndex);
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
+
         UnbindCarouselButtons();
         UnbindMicEvents();
     }
@@ -269,6 +288,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
     private void OnClickPrev()
     {
+        if (_interactionLocked) return;
         if (_isStepCompleted || IsAnimating) return;
 
         var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
@@ -283,6 +303,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
     private void OnClickNext()
     {
+        if (_interactionLocked) return;
         if (_isStepCompleted || IsAnimating) return;
 
         var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
@@ -297,6 +318,7 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
     public void OnClickMic()
     {
+        if (_interactionLocked) return;
         if (_isStepCompleted || IsAnimating) return;
 
         var options = Steps[_stepIndex].Options ?? Array.Empty<string>();
@@ -444,8 +466,8 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
             if (CompletionGate != null)
                 CompletionGate.MarkOneDone();
 
-            if (NextStepButtonRoot != null)
-                NextStepButtonRoot.SetActive(true);
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
         }
     }
 
@@ -453,7 +475,6 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     {
         if (MicButtonRoot != null) MicButtonRoot.SetActive(true);
         if (NextDialogButtonRoot != null) NextDialogButtonRoot.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
         if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
 
         if (PrevButton != null) PrevButton.gameObject.SetActive(true);
@@ -467,7 +488,6 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 
         if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
         if (NextDialogButtonRoot != null) NextDialogButtonRoot.SetActive(true);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
 
         // gameObject 비활성화로 완전히 숨김 (interactable=false 시 dim 방지)
         if (PrevButton != null) PrevButton.gameObject.SetActive(false);

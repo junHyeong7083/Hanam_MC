@@ -46,7 +46,9 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     protected abstract int GuideTextId_Success { get; }
     protected abstract string FailGuideText { get; }
     protected abstract Button NextDialogueBtn { get; }
-    protected abstract GameObject NextStepButtonRoot { get; }
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // 마이크
     protected abstract GameObject MicRoot { get; }
@@ -73,6 +75,7 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     private int _currentRound;
     private bool _speaking;
     private Coroutine _guideRevertRoutine;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -94,11 +97,27 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
         RegisterListeners();
         ShowSpeakingPhase(0);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (_guideRevertRoutine != null)
         {
@@ -185,7 +204,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         if (MicRoot != null) MicRoot.SetActive(true);
         if (MicButton != null) MicButton.interactable = true;
         if (NextDialogueBtn != null) NextDialogueBtn.gameObject.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
     }
 
     // =========================
@@ -310,9 +328,9 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         if (GuideText != null && GuideTextId_Success > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Success);
 
-        // NextStepBtn 활성화
-        if (NextStepButtonRoot != null)
-            NextStepButtonRoot.SetActive(true);
+        // 완료 처리
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
 
         // 나머지 숨김
         if (MicRoot != null) MicRoot.SetActive(false);

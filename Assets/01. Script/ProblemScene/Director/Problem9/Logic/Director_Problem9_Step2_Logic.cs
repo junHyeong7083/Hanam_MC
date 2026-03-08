@@ -46,7 +46,9 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
     protected abstract Text GuideText { get; }
     protected abstract int GuideTextId_Fail { get; }
     protected abstract Button NextDialogueButton { get; }
-    protected abstract GameObject NextStepButtonRoot { get; }
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // 씬 이미지
     protected abstract Image SceneCardImage { get; }
@@ -70,6 +72,7 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
     private int _currentRound;
     private bool _answering;
     private List<ChoiceAttemptDto> _attempts;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -83,11 +86,27 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
 
         RegisterListeners();
         ShowRound(0);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
         RemoveListeners();
     }
 
@@ -183,7 +202,6 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
 
         // 버튼 숨기기
         if (NextDialogueButton != null) NextDialogueButton.gameObject.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
     }
 
     // =========================
@@ -192,6 +210,7 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
 
     private void OnChoiceClicked(int index)
     {
+        if (_interactionLocked) return;
         if (_answering) return;
 
         var rounds = Rounds;
@@ -252,10 +271,10 @@ public abstract class Director_Problem9_Step2_Logic : ProblemStepBase
         }
         else
         {
-            if (NextStepButtonRoot != null)
-                NextStepButtonRoot.SetActive(true);
-
             SaveAttempt(_attempts);
+
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
         }
     }
 

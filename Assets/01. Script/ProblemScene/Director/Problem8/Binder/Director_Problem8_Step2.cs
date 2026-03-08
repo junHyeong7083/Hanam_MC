@@ -31,9 +31,6 @@ public class Director_Problem8_Step2 : Director_Problem8_Step2_Logic
     [SerializeField] private int guideTextId_Fail;
     [SerializeField] private int guideTextId_Success;
 
-    [Header("===== 완료 =====")]
-    [SerializeField] private GameObject nextStepButtonRoot;
-
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override Button PrevButton => prevButton;
     protected override Button NextButton => nextButton;
@@ -51,6 +48,4 @@ public class Director_Problem8_Step2 : Director_Problem8_Step2_Logic
     protected override int GuideTextId_Main => guideTextId_Main;
     protected override int GuideTextId_Fail => guideTextId_Fail;
     protected override int GuideTextId_Success => guideTextId_Success;
-
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 }

@@ -53,7 +53,9 @@ public class Director_Problem3_Step3
 
     [Header("상단 버튼들")]
     [SerializeField] private GameObject micButtonRoot;
-    [SerializeField] private GameObject summaryButtonRoot;
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     [Header("버튼 아웃라인 (각 옵션 버튼별)")]
     [SerializeField] private GameObject[] outlineImages;
@@ -94,6 +96,8 @@ public class Director_Problem3_Step3
         return questions[index];
     }
 
+    private bool _interactionLocked = true;
+
     protected override void OnStepEnter()
     {
         base.OnStepEnter();
@@ -104,9 +108,6 @@ public class Director_Problem3_Step3
         if (micButtonRoot != null)
             micButtonRoot.SetActive(false);
 
-        if (summaryButtonRoot != null)
-            summaryButtonRoot.SetActive(false);
-
         if (micIndicator != null)
         {
             micIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
@@ -116,6 +117,17 @@ public class Director_Problem3_Step3
             micIndicator.OnRecordingChanged -= OnMicRecordingChanged;
             micIndicator.OnRecordingChanged += OnMicRecordingChanged;
         }
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void ShowQuestion(int index)
@@ -237,20 +249,25 @@ public class Director_Problem3_Step3
         if (micButtonRoot != null)
             micButtonRoot.SetActive(false);
 
-        if (summaryButtonRoot != null)
-            summaryButtonRoot.SetActive(true);
-
         if (guideText != null && guideTextIdAfter != 0)
         {
             guideText.text = ProblemRuntime.L(guideTextIdAfter);
             if (SoundManager.Instance != null)
                 SoundManager.Instance.PlayTTS(guideTextIdAfter);
         }
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (micIndicator != null)
         {

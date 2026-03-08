@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTitle: 1
+  showReviewLabel: 0
 --- !u!1 &6787746114058807766
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,6 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTitle: 0
+  showReviewLabel: 0
 --- !u!1 &7648538049836361050
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +255,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 93803ef6677deb74d9c08dd512671224, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 12d1caa24fb1d4a4d8a9ee4565444069, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

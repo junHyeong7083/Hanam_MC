@@ -23,9 +23,6 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
     [SerializeField] private MicRecordingIndicator micIndicator;
     [SerializeField] private GameObject micButtonRoot;
 
-    [Header("===== 완료 후 NextStep 버튼 =====")]
-    [SerializeField] private GameObject nextStepButtonRoot;
-
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override Text GuideText => guideText;
     protected override int GuideTextId_Select => guideTextId_Select;
@@ -37,6 +34,4 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
 
     protected override MicRecordingIndicator MicIndicator => micIndicator;
     protected override GameObject MicButtonRoot => micButtonRoot;
-
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 }

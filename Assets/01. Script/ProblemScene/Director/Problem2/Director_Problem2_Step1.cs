@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine;
 
 /// <summary>
 /// Director / Problem2 / Step1
@@ -11,14 +10,8 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [Header("Drop Box 영역 (공통 컴포넌트)")]
     [SerializeField] private UIDropBoxArea dropBoxArea;
 
-    [Header("Items")]
-    [SerializeField] private Director_Problem2_DragItem[] dragItems;
-
     [Header("UI After Drop")]
     [SerializeField] private GameObject resultPanelRoot;
-
-    [Header("Icon Images")]
-    [SerializeField] private Image iconImage;
 
     [Header("Intro Animation Roots")]
     [SerializeField] private RectTransform leftEnterRoot;
@@ -33,24 +26,10 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     [Header("완료 게이트 (Next 버튼용)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    [Header("상단 가이드 텍스트")]
-    [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextId = 101020002;
-
-    [Header("드래그 완료 후 다음 버튼")]
-    [SerializeField] private GameObject nextButton;
-
-    [Header("드래그 연출")]
-    [SerializeField] private GameObject dragOutlineImage;
-    [SerializeField] private GameObject textBox;
-
     // ===== 베이스에 값 주입용 프로퍼티 구현 =====
 
     protected override UIDropBoxArea DropBoxArea => dropBoxArea;
-    protected override Director_Problem2_DragItem[] DragItems => dragItems;
     protected override GameObject ResultPanelRoot => resultPanelRoot;
-
-    protected override Image IconImage => iconImage;
 
     protected override RectTransform LeftEnterRoot => leftEnterRoot;
     protected override RectTransform RightEnterRoot => rightEnterRoot;
@@ -61,11 +40,4 @@ public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
     protected override float IntroDelay => introDelay;
 
     protected override StepCompletionGate CompletionGate => completionGate;
-
-    protected override Text GuideText => guideText;
-    protected override int GuideTextId => guideTextId;
-    protected override GameObject NextButton => nextButton;
-
-    protected override GameObject DragOutlineImage => dragOutlineImage;
-    protected override GameObject TextBox => textBox;
 }

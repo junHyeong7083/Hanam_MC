@@ -32,10 +32,8 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract string NgSentence { get; }
     protected abstract IDirectorProblem2PerspectiveOption[] Perspectives { get; }
 
-    // ===== Guide Text =====
+    // ===== Guide Text (Retry만 스텝 로직에서 직접 사용) =====
     protected abstract Text GuideText { get; }
-    protected abstract int GuideTextId_Before { get; }
-    protected abstract int GuideTextId_After { get; }
     protected abstract int GuideTextId_Retry { get; }
 
     // ===== UI =====
@@ -51,7 +49,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
     protected abstract GameObject RecordingOverlay { get; }
-    protected abstract GameObject NextStepButtonRoot { get; }
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // 패널
     protected abstract GameObject StepRoot { get; }
@@ -64,6 +64,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     private bool _isRecording;
     private bool _hasRecordedAnswer;
     private bool _isFinished;
+    private bool _interactionLocked = true;
 
     protected override void OnStepEnter()
     {
@@ -87,10 +88,26 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         BindSelectionButtons();
         BindMicButton();
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
+
         var indicator = MicIndicator;
         if (indicator != null)
         {
@@ -125,9 +142,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         _isFinished = false;
 
         if (StepRoot != null) StepRoot.SetActive(true);
-
-        if (GuideText != null && GuideTextId_Before != 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Before);
 
         if (SceneCardRect != null) SceneCardRect.gameObject.SetActive(true);
         if (OkSceneCard != null) OkSceneCard.SetActive(false);
@@ -166,7 +180,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     private void SetBeforeCompleteUI()
     {
         if (MicButtonRoot != null) MicButtonRoot.SetActive(true);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
         if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
     }
 
@@ -174,7 +187,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     {
         if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
         if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(true);
         SetMicInteractable(false);
     }
 
@@ -219,6 +231,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
     private void OnSlotClicked(int index)
     {
+        if (_interactionLocked) return;
         if (_isFinished) return;
 
         var p = Perspectives;
@@ -294,9 +307,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     // ===== Complete =====
     private void PlayRefilmComplete()
     {
-        if (GuideText != null && GuideTextId_After != 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_After);
-
         // 선택 버튼 비활성화
         SetSelectionButtonsInteractable(false);
 
@@ -313,6 +323,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         var gate = CompletionGate;
         if (gate != null)
             gate.MarkOneDone();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     public void OnClickSummaryButton()

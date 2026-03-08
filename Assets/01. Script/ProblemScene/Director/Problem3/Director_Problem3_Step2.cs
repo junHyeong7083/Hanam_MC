@@ -100,7 +100,6 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
 
     [Header("Next Buttons")]
     [SerializeField] private GameObject nextDialogButtonRoot; // "다음 대사" 버튼 루트
-    [SerializeField] private GameObject nextStepButtonRoot;   // 마지막 완료 후 "다음 스텝" 루트(선택)
 
     [Header("Completion Gate (optional)")]
     [SerializeField] private StepCompletionGate completionGate;
@@ -125,7 +124,6 @@ public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
     protected override GameObject[] ProgressDots => progressDots;
 
     protected override GameObject NextDialogButtonRoot => nextDialogButtonRoot;
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
 
     protected override StepCompletionGate CompletionGate => completionGate;
 

@@ -15,7 +15,6 @@ public class Director_Problem9_Step3 : Director_Problem9_Step3_Logic
     [SerializeField] private Text guideText;
     [SerializeField] private int guideTextId_Fail;
     [SerializeField] private int guideTextId_Success;
-    [SerializeField] private GameObject nextStepButtonRoot;
 
     [Header("===== 퍼즐 이미지 =====")]
     [SerializeField] private Image puzzleImage;
@@ -34,7 +33,6 @@ public class Director_Problem9_Step3 : Director_Problem9_Step3_Logic
     protected override Text GuideText => guideText;
     protected override int GuideTextId_Fail => guideTextId_Fail;
     protected override int GuideTextId_Success => guideTextId_Success;
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
     protected override Image PuzzleImage => puzzleImage;
     protected override Text PuzzleText => puzzleText;
     protected override Button MicButton => micButton;

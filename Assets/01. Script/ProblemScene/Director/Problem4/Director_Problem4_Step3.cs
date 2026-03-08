@@ -49,9 +49,6 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
     [Header("버튼 이미지")]
     [SerializeField] private GameObject buttonImageRoot;
 
-    [Header("하남 버튼 (완료 시 활성화)")]
-    [SerializeField] private GameObject hanamBtn;
-
     [Header("마이크 STT (옵션)")]
     [SerializeField] private MicRecordingIndicator micIndicator;
 
@@ -78,8 +75,6 @@ public class Director_Problem4_Step3 : Director_Problem4_Step3_Logic
     protected override float ErrorShowDuration => errorShowDuration;
 
     protected override GameObject ButtonImageRoot => buttonImageRoot;
-
-    protected override GameObject HanamBtn => hanamBtn;
 
     protected override MicRecordingIndicator MicIndicator => micIndicator;
 

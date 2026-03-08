@@ -18,7 +18,7 @@ public interface IYesNoQuestionData
 /// - Q1~Q3 순서대로 '네 / 아니오' 로 답하는 반박 질문
 /// - 필름 애니메이션: Right→Center 등장, Center→Left 퇴장
 /// - 에러 메시지는 HanamText 에 일시 표시 후 복원
-/// - 모든 질문 완료 시 HanamBtn 활성화
+/// - 모든 질문 완료 시 DialogueSequencer 완료 텍스트 표시
 /// </summary>
 public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 {
@@ -53,9 +53,10 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
     protected abstract GameObject ButtonImageRoot { get; }
 
-    protected abstract GameObject HanamBtn { get; }
-
     protected abstract MicRecordingIndicator MicIndicator { get; }
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     protected virtual Problem4_Step3_EffectController EffectController => null;
     protected virtual TTSTrigger HanamTTSTrigger => null;
@@ -66,6 +67,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     // 내부 상태
     // ==========================
 
+    private bool _interactionLocked = true;
     private int _currentIndex;
     private bool _stepCompleted;
     private Coroutine _errorRoutine;
@@ -109,10 +111,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         if (ButtonImageRoot != null)
             ButtonImageRoot.SetActive(true);
 
-        // HanamBtn 숨김
-        if (HanamBtn != null)
-            HanamBtn.SetActive(false);
-
         // MicIndicator 활성화 + STT 이벤트 구독
         var mic = MicIndicator;
         if (mic != null)
@@ -131,10 +129,26 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         var effect = EffectController;
         if (effect != null)
             effect.PlayQuestionEnter();
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
+
         if (_errorRoutine != null)
         {
             StopCoroutine(_errorRoutine);
@@ -195,6 +209,7 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
     private void HandleAnswer(bool isYes)
     {
+        if (_interactionLocked) return;
         if (_stepCompleted) return;
 
         var questions = Questions;
@@ -402,11 +417,11 @@ private void CompleteStep()
 
         SaveRebuttalAttempt();
 
-        Debug.Log("[Problem4_Step3] 반박 질문 완료 - HanamBtn 활성화");
+        Debug.Log("[Problem4_Step3] 반박 질문 완료");
         _stepCompleted = true;
 
-        if (HanamBtn != null)
-            HanamBtn.SetActive(true);
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     private void SaveRebuttalAttempt()

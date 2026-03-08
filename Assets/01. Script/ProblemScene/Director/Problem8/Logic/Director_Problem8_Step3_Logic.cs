@@ -56,8 +56,8 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
     protected abstract int GuideTextId_Fail { get; }
     protected abstract int GuideTextId_Success { get; }
 
-    // 완료
-    protected abstract GameObject NextStepButtonRoot { get; }
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     #endregion
 
@@ -68,6 +68,7 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
     private float _recordingStartTime;
     private bool _isComplete;
     private Coroutine _guideRevertRoutine;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -86,11 +87,27 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
 
         if (GuideText != null && GuideTextId_Main > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Main);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (_guideRevertRoutine != null)
         {
@@ -125,8 +142,6 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
         if (MicButton != null)
             MicButton.gameObject.SetActive(false);
 
-        if (NextStepButtonRoot != null)
-            NextStepButtonRoot.SetActive(false);
     }
 
     private void RegisterListeners()
@@ -185,6 +200,7 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
 
     private void OnCardSelected(ActionItem choice, int index)
     {
+        if (_interactionLocked) return;
         if (_isRecording || _isComplete) return;
 
         _selectedAction = choice;
@@ -296,8 +312,8 @@ public abstract class Director_Problem8_Step3_Logic : ProblemStepBase
         if (MicButton != null)
             MicButton.gameObject.SetActive(false);
 
-        // 다음 버튼 표시
-        if (NextStepButtonRoot != null)
-            NextStepButtonRoot.SetActive(true);
+        // 완료 처리
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 }

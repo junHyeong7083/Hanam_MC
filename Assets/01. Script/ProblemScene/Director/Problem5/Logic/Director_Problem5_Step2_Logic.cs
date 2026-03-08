@@ -31,6 +31,9 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     protected abstract IZoomOutSceneData[] Scenes { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
+
     [Header("하남 박스")]
     protected abstract Text HanamText { get; }
     protected abstract int GuideTextId { get; }
@@ -38,6 +41,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 
     // ==== 내부 상태 ====
 
+    private bool _interactionLocked = true;
     private bool[] _revealedFlags;
     private int _revealedCount;
 
@@ -92,11 +96,27 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         // Gate 초기화
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
     }
 
     // ======================================================
@@ -105,6 +125,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 
     public void OnClickScene(int index)
     {
+        if (_interactionLocked) return;
         var scenes = Scenes;
         if (scenes == null || index < 0 || index >= scenes.Length) return;
 
@@ -137,6 +158,9 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
             var gate = CompletionGate;
             if (gate != null)
                 gate.MarkOneDone();
+
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
         }
     }
 }

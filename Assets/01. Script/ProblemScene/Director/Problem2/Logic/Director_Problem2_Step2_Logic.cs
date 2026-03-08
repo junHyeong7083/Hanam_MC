@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
-using TMPro;
 
 public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 {
@@ -41,25 +38,11 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
     [Header("�Ϸ� ����Ʈ (�ڽĿ��� ����)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // =======================
-    // �߰�: Problem1 Step2 ��Ÿ��(guide text + next button)
-    // =======================
-    [Header("Guide Text (Localized)")]
-    [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextIdOnEnter = 0;
-
-    [Header("Next Shoot Button")]
-    [SerializeField] private GameObject nextShootButtonRoot;
-    [SerializeField] private Button nextShootButton;
-
-    [Header("NextStep Auto Call")]
-    [SerializeField] private bool autoCallNextStep = true;
-
-    [Header("Fallback Callback")]
-    [SerializeField] private UnityEvent onClickNextShootFallback;
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     private bool _completed = false;
-    private StepFlowController _flowController;
+    private bool _interactionLocked = true;
 
     protected override void OnStepEnter()
     {
@@ -73,17 +56,25 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
             CompletionGate.ResetGate(total);
         }
 
-        ApplyGuideText(guideTextIdOnEnter);
-        SetNextShootButtonVisible(false);
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
 
-        CacheStepFlowController();
-        BindNextShootButton();
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
-        UnbindNextShootButton();
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
         _completed = false;
+        _interactionLocked = true;
     }
 
     private void InitSlots()
@@ -168,8 +159,8 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
     private void OnFilmClicked(EmotionLightSlot slot)
     {
-        if (slot.revealed)
-            return;
+        if (_interactionLocked) return;
+        if (slot.revealed) return;
 
         SetRevealState(slot, true);
 
@@ -198,63 +189,8 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
 
         _completed = true;
 
-        SetNextShootButtonVisible(true);
-    }
-
-    private void ApplyGuideText(int textId)
-    {
-        if (guideText == null) return;
-        guideText.text = ProblemRuntime.L(textId);
-    }
-
-    private void SetNextShootButtonVisible(bool visible)
-    {
-        if (nextShootButtonRoot != null)
-            nextShootButtonRoot.SetActive(visible);
-
-        if (nextShootButton != null)
-            nextShootButton.interactable = visible;
-    }
-
-    private void BindNextShootButton()
-    {
-        if (nextShootButton == null) return;
-        nextShootButton.onClick.RemoveListener(OnClickNextShoot);
-        nextShootButton.onClick.AddListener(OnClickNextShoot);
-    }
-
-    private void UnbindNextShootButton()
-    {
-        if (nextShootButton == null) return;
-        nextShootButton.onClick.RemoveListener(OnClickNextShoot);
-    }
-
-    private void OnClickNextShoot()
-    {
-        if (!_completed) return;
-
-        if (autoCallNextStep && TryCallNextStep())
-            return;
-
-        onClickNextShootFallback?.Invoke();
-    }
-
-    private void CacheStepFlowController()
-    {
-        _flowController = null;
-        if (!autoCallNextStep) return;
-        _flowController = GetComponentInParent<StepFlowController>();
-    }
-
-    private bool TryCallNextStep()
-    {
-        if (_flowController == null)
-            _flowController = GetComponentInParent<StepFlowController>();
-
-        if (_flowController == null) return false;
-
-        _flowController.NextStep();
-        return true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     private IEnumerator PlayLightAppear(Transform target)

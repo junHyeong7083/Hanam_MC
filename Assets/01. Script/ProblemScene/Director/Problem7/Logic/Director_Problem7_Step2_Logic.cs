@@ -63,8 +63,8 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     protected abstract GameObject SelectFeelingRoot { get; }
     protected abstract ChoiceItem[] FeelingChoices { get; }
 
-    [Header("완료 후 NextStep 버튼")]
-    protected abstract GameObject NextStepButtonRoot { get; }
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     #endregion
 
@@ -80,6 +80,7 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     private ChoiceItem _selectedMask;
     private ChoiceItem _selectedFeeling;
     private Coroutine _transitionRoutine;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -94,11 +95,27 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
         SetupAllPhases();
         ApplyLabelsFromTextId();
         ShowPhase(Phase.SelectMask);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (_transitionRoutine != null)
         {
@@ -117,7 +134,6 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     {
         if (SelectMaskRoot != null) SelectMaskRoot.SetActive(false);
         if (SelectFeelingRoot != null) SelectFeelingRoot.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
 
         ResetClickImages(MaskChoices);
         ResetClickImages(FeelingChoices);
@@ -229,6 +245,7 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     private void OnMaskSelected(ChoiceItem choice)
     {
+        if (_interactionLocked) return;
         if (_currentPhase != Phase.SelectMask) return;
         if (_selectedMask != null) return;
 
@@ -242,6 +259,7 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     private void OnFeelingSelected(ChoiceItem choice)
     {
+        if (_interactionLocked) return;
         if (_currentPhase != Phase.SelectFeeling) return;
         if (_selectedFeeling != null) return;
 
@@ -278,9 +296,9 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
         if (GuideText != null && GuideTextId_Complete > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Complete);
 
-        // NextStepButton 표시
-        if (NextStepButtonRoot != null)
-            NextStepButtonRoot.SetActive(true);
+        // 완료 처리
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     // =========================

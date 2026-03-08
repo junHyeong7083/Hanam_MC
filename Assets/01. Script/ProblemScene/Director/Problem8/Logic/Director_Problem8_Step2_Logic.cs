@@ -71,8 +71,8 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     protected abstract int GuideTextId_Fail { get; }
     protected abstract int GuideTextId_Success { get; }
 
-    // 완료
-    protected abstract GameObject NextStepButtonRoot { get; }
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     #endregion
 
@@ -95,6 +95,7 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
     private bool _isDragging;
     private SceneCardItem _draggingCard;
     private Coroutine _snapBackRoutine;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -125,18 +126,31 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
         if (DragProxy != null)
             DragProxy.gameObject.SetActive(false);
 
-        if (NextStepButtonRoot != null)
-            NextStepButtonRoot.SetActive(false);
-
         UpdateCarouselDisplay();
 
         if (GuideText != null && GuideTextId_Main > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Main);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (_snapBackRoutine != null)
         {
@@ -264,6 +278,7 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
     private void OnPrevClicked()
     {
+        if (_interactionLocked) return;
         if (_isDragging || _isComplete) return;
 
         _currentCarouselIndex--;
@@ -275,6 +290,7 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
     private void OnNextClicked()
     {
+        if (_interactionLocked) return;
         if (_isDragging || _isComplete) return;
 
         _currentCarouselIndex++;
@@ -290,6 +306,7 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
 
     private void OnBeginDrag(PointerEventData eventData)
     {
+        if (_interactionLocked) return;
         if (_isComplete || _isDragging) return;
         if (_unplacedIndices == null || _unplacedIndices.Count == 0) return;
 
@@ -519,20 +536,9 @@ public abstract class Director_Problem8_Step2_Logic : ProblemStepBase
         if (GuideText != null && GuideTextId_Success > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Success);
 
-        // 다음 스텝 버튼
-        if (NextStepButtonRoot != null)
-        {
-            NextStepButtonRoot.SetActive(true);
-
-            var nextBtn = NextStepButtonRoot.GetComponentInChildren<Button>(true);
-            if (nextBtn != null)
-            {
-                nextBtn.onClick.AddListener(() =>
-                {
-                    nextBtn.GetComponent<ButtonHover>()?.SetInteractable(false);
-                });
-            }
-        }
+        // 완료 처리
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
 
         SaveAttempt(_placements);
     }

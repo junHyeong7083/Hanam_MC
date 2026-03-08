@@ -45,9 +45,13 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
+
     protected abstract GameObject StepRoot { get; }
     protected abstract GameObject SummaryPanelRoot { get; }
 
+    private bool _interactionLocked = true;
     private GameObject _currentFilmInstance;
     private Director_Problem1_Step3_FilmCardAnimator _currentFilmAnimator;
 
@@ -102,6 +106,30 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         DestroyCurrentFilmCard();
         RenderHanamiDefaultDialogue();
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
+    }
+
+    protected override void OnStepExit()
+    {
+        base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
+
+        if (MicIndicator != null)
+            MicIndicator.OnKeywordMatched -= OnSTTKeywordMatched;
     }
 
     private void OnSTTKeywordMatched(int index)
@@ -321,6 +349,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
     private void HandleSort(bool userChoseThought)
     {
+        if (_interactionLocked) return;
         int logicalIndex = GetCurrentLogicalIndex();
         if (logicalIndex < 0) return;
         if (_isAdvancing) return;

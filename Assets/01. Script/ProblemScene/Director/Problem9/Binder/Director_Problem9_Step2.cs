@@ -15,7 +15,6 @@ public class Director_Problem9_Step2 : Director_Problem9_Step2_Logic
     [SerializeField] private Text guideText;
     [SerializeField] private int guideTextId_Fail;
     [SerializeField] private Button nextDialogueButton;
-    [SerializeField] private GameObject nextStepButtonRoot;
 
     [Header("===== 씬 이미지 =====")]
     [SerializeField] private Image sceneCardImage;
@@ -38,7 +37,6 @@ public class Director_Problem9_Step2 : Director_Problem9_Step2_Logic
     protected override Text GuideText => guideText;
     protected override int GuideTextId_Fail => guideTextId_Fail;
     protected override Button NextDialogueButton => nextDialogueButton;
-    protected override GameObject NextStepButtonRoot => nextStepButtonRoot;
     protected override Image SceneCardImage => sceneCardImage;
     protected override GameObject QuestionRoot => questionRoot;
     protected override Button[] QuestionButtons => questionButtons;

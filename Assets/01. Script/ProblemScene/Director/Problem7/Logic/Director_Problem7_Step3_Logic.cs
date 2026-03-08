@@ -53,8 +53,8 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
     protected abstract MicRecordingIndicator MicIndicator { get; }
     protected abstract GameObject MicButtonRoot { get; }
 
-    [Header("완료 후 NextStep 버튼")]
-    protected abstract GameObject NextStepButtonRoot { get; }
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     #endregion
 
@@ -63,6 +63,7 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
     private DialogueItem _selectedDialogue;
     private bool _isRecording;
     private bool _isFinished;
+    private bool _interactionLocked = true;
 
     // =========================
     // ProblemStepBase 구현
@@ -81,15 +82,30 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
         if (SelectDialogueRoot != null) SelectDialogueRoot.SetActive(true);
         if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
-        if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
 
         if (GuideText != null && GuideTextId_Select > 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_Select);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
         _isRecording = false;
         RemoveAllListeners();
     }
@@ -183,6 +199,7 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
     private void OnDialogueClicked(int index)
     {
+        if (_interactionLocked) return;
         if (_isFinished) return;
 
         var dialogues = DialogueChoices;
@@ -261,7 +278,9 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
                 GuideText.text = ProblemRuntime.L(GuideTextId_Complete);
 
             if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
-            if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(true);
+
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
         }
         else
         {

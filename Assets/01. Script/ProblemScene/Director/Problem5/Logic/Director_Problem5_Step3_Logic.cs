@@ -97,7 +97,9 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
     [Header("Complete UI Toggle")]
     [SerializeField] private GameObject micButtonRoot;
-    [SerializeField] private GameObject nextStepButtonRoot;
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // ===== Timing =====
 
@@ -108,6 +110,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
     private int _currentDisplayIndex;
     private int _selectedIndex = -1;
+    private bool _interactionLocked = true;
     private bool _hasAnswered;
     private bool _npcResponded;
     private string _inputMode = "button";
@@ -150,9 +153,6 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         // 마이크 보이고, 다음 버튼 숨기기
         if (micButtonRoot != null)
             micButtonRoot.SetActive(true);
-        if (nextStepButtonRoot != null)
-            nextStepButtonRoot.SetActive(false);
-
         // 첫 번째 옵션 표시
         ShowCurrentOption();
 
@@ -165,11 +165,27 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         // 게이트 리셋
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
 protected override void OnStepExit()
     {
         base.OnStepExit();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
+        _interactionLocked = true;
 
         if (_optionRoutine != null) StopCoroutine(_optionRoutine);
         _optionRoutine = null;
@@ -211,6 +227,7 @@ protected override void OnStepExit()
 
     private void OnPrevOption()
     {
+        if (_interactionLocked) return;
         if (_hasAnswered) return;
         var options = Options;
         if (options == null || options.Length == 0) return;
@@ -220,6 +237,7 @@ protected override void OnStepExit()
 
     private void OnNextOption()
     {
+        if (_interactionLocked) return;
         if (_hasAnswered) return;
         var options = Options;
         if (options == null || options.Length == 0) return;
@@ -315,6 +333,7 @@ private void OnMicRecordingChanged(bool isRecording)
 
     public void OnSelectOption(int index)
     {
+        if (_interactionLocked) return;
         if (_hasAnswered) return;
 
         var options = Options;
@@ -352,15 +371,16 @@ private void OnMicRecordingChanged(bool isRecording)
             if (NpcResponseText != null && NpcResponseTextId > 0)
                 NpcResponseText.text = ProblemRuntime.L(NpcResponseTextId);
 
-            // 마이크 숨기고 다음 버튼 보이기
+            // 마이크 숨기고 완료 처리
             if (micButtonRoot != null)
                 micButtonRoot.SetActive(false);
-            if (nextStepButtonRoot != null)
-                nextStepButtonRoot.SetActive(true);
 
             // 게이트 완료
             if (CompletionGate != null)
                 CompletionGate.MarkOneDone();
+
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
         }
         else
         {

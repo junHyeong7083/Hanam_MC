@@ -24,6 +24,7 @@ public class DialogueSequencer : MonoBehaviour
     [SerializeField] private int[] completedTextIds;
 
     public event Action OnEnterComplete;
+    public event Action OnEnterSequenceDone;
 
     private int[] _activeTextIds;
     private int _currentIndex;
@@ -40,7 +41,8 @@ public class DialogueSequencer : MonoBehaviour
         }
 
         PlaySequence(enterTextIds,
-            onLastShown: () => OnEnterComplete?.Invoke());
+            onLastShown: () => OnEnterComplete?.Invoke(),
+            onDone: () => OnEnterSequenceDone?.Invoke());
     }
 
     private void OnDisable()

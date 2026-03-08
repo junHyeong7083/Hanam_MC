@@ -1,31 +1,19 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Director / Problem2 / Step1 ���� ���� ���̽�.
-/// - ��� �ڽ� + �巡�� ������ + ��Ʈ�� �ִϸ��̼� + ����Ʈ ó��.
-/// - ���� ���� ��ũ��Ʈ(Director_Problem2_Step1)��
-///   ���⼭ �䱸�ϴ� ������Ƽ�鸸 SerializeField�� ���ε��ؼ� �Ѱ��ش�.
+/// Director / Problem2~9 / Step1 공통 로직.
+/// - DialogueSequencer 대사 → 인벤토리 드래그 → 드롭 → 완료 대사.
 /// </summary>
 public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 {
-    // ====== �ڽĿ��� ������ ������Ƽ�� ======
-
-    [Header("Drop Box ���� (���� ������Ʈ)")]
+    [Header("Drop Box 영역")]
     protected abstract UIDropBoxArea DropBoxArea { get; }
-
-    [Header("Items")]
-    protected abstract Director_Problem2_DragItem[] DragItems { get; }
 
     [Header("UI After Drop")]
     protected abstract GameObject ResultPanelRoot { get; }
 
-    [Header("Icon Images")]
-    protected abstract Image IconImage { get; }
-
-    // ===== ���� �ִϸ��̼ǿ� ��Ʈ =====
     [Header("Intro Animation Roots")]
     protected abstract RectTransform LeftEnterRoot { get; }
     protected abstract RectTransform RightEnterRoot { get; }
@@ -36,19 +24,19 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     protected abstract float RightStartOffsetX { get; }
     protected abstract float IntroDelay { get; }
 
-    [Header("�Ϸ� ����Ʈ (Next ��ư��)")]
+    [Header("완료 게이트 (Next 버튼용)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // ===== 가이드 텍스트 / 다음 버튼 =====
-    protected abstract Text GuideText { get; }
-    protected abstract int GuideTextId { get; }
-    protected abstract GameObject NextButton { get; }
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
-    // ===== 드래그 연출 =====
-    protected abstract GameObject DragOutlineImage { get; }
-    protected abstract GameObject TextBox { get; }
+    [Header("Inventory (Step1 전용)")]
+    [SerializeField] private StepInventory stepInventory;
+    [SerializeField] private GameObject hanamBox;
 
-    // ===== ���� ĳ�� =====
+    private bool _interactionLocked = true;
+
+    // ===== 인트로 캐시 =====
     private bool _leftInit;
     private bool _rightInit;
     private Vector2 _leftBasePos;
@@ -56,107 +44,202 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     private CanvasGroup _leftCg;
     private CanvasGroup _rightCg;
 
-    // ���� ��ӵ� ������(���õ� ���)
-    private Director_Problem2_DragItem _selectedItem;
-    // �� �� ��� �����ߴ��� (����Ʈ �ߺ� ȣ�� ����)
     private bool _isCompleted;
 
     // =========================================
-    // ProblemStepBase ����
+    // ProblemStepBase 구현
     // =========================================
     protected override void OnStepEnter()
     {
         Debug.Log("[Step1] OnStepEnter 호출됨");
         InitState();
+
+        _interactionLocked = true;
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterSequenceDone += OnEnterSequenceDone;
+        else
+            _interactionLocked = false;
+
         StartCoroutine(PlayIntroAnimationRoutine());
+    }
+
+    private void OnEnterSequenceDone()
+    {
+        _interactionLocked = false;
+
+        // hanamBox 숨기고 인벤토리 표시
+        if (hanamBox != null)
+            hanamBox.SetActive(false);
+
+        if (stepInventory != null)
+        {
+            stepInventory.gameObject.SetActive(true);
+            SetupInventoryDragCallbacks();
+        }
     }
 
     protected override void OnStepExit()
     {
-        // �ʿ��ϸ� ���⼭ ���� ����
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterSequenceDone -= OnEnterSequenceDone;
+
+        CleanupInventoryDragCallbacks();
+        _interactionLocked = true;
     }
 
     // =========================================
-    // �ʱ�ȭ / ��Ʈ�� �ִϸ��̼�
+    // 초기화
     // =========================================
-
     private void InitState()
     {
-        _selectedItem = null;
         _isCompleted = false;
 
         var dropBoxArea = DropBoxArea;
-        var dragItems = DragItems;
         var resultPanelRoot = ResultPanelRoot;
-        var icon = IconImage;
         var gate = CompletionGate;
-
-        Debug.Log($"[Step1] InitState - dropBoxArea={dropBoxArea != null}, dragItems={dragItems?.Length ?? 0}개");
 
         // 드롭 박스 초기화
         if (dropBoxArea != null)
             dropBoxArea.ResetVisual();
-        else
-            Debug.LogWarning("[Step1] dropBoxArea가 null! 인스펙터에서 할당하세요.");
 
         // 결과 패널 숨기기
         if (resultPanelRoot != null)
             resultPanelRoot.SetActive(false);
 
-        // 드래그 아이템 초기화
-        if (dragItems != null && dragItems.Length > 0)
+        // 인벤토리 초기화
+        if (stepInventory != null)
         {
-            foreach (var item in dragItems)
+            stepInventory.gameObject.SetActive(false);
+
+            if (stepInventory.slots != null)
             {
-                if (item != null)
+                foreach (var slot in stepInventory.slots)
                 {
-                    item.ResetToOriginalState();
-                    item.SetStepController(this);
-                    Debug.Log($"[Step1] SetStepController 호출: {item.name}");
+                    if (slot.itemComponent != null)
+                    {
+                        slot.itemComponent.draggable = slot.draggableThisStep;
+                        slot.itemComponent.SetLocked(!slot.draggableThisStep);
+                    }
                 }
             }
         }
-        else
-        {
-            Debug.LogWarning("[Step1] dragItems가 null이거나 비어있음! 인스펙터에서 할당하세요.");
-        }
 
-        // ���� �ִϸ��̼ǿ� ��Ʈ �ʱ� ��ġ/���� ����
+        // hanamBox 초기 표시
+        if (hanamBox != null)
+            hanamBox.SetActive(true);
+
+        // 인트로 애니메이션용 루트 초기 위치/투명 설정
         InitIntroRoot(LeftEnterRoot, ref _leftInit, ref _leftBasePos, LeftStartOffsetX, ref _leftCg);
         InitIntroRoot(RightEnterRoot, ref _rightInit, ref _rightBasePos, RightStartOffsetX, ref _rightCg);
 
-        if (icon != null)
-            icon.gameObject.SetActive(true);
-
-        // 가이드 텍스트 설정
-        if (GuideText != null && GuideTextId > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId);
-
-        // 다음 버튼 숨기기
-        if (NextButton != null)
-            NextButton.SetActive(false);
-
-        // 드래그 연출 초기화
-        if (DragOutlineImage != null)
-            DragOutlineImage.SetActive(false);
-        if (TextBox != null)
-            TextBox.SetActive(false);
-
-        // �Ϸ� ����Ʈ �ʱ�ȭ (��� ���� 1���̸� �Ϸ�)
+        // 완료 게이트 초기화 (목표 1개 드롭)
         if (gate != null)
             gate.ResetGate(1);
     }
 
+    // =========================================
+    // 인벤토리 드래그 콜백
+    // =========================================
+    private void SetupInventoryDragCallbacks()
+    {
+        if (stepInventory?.slots == null) return;
+
+        foreach (var slot in stepInventory.slots)
+        {
+            if (slot.itemComponent == null) continue;
+
+            slot.itemComponent.OnItemDragBegin += OnInventoryDragBegin;
+            slot.itemComponent.OnItemDragging += OnInventoryDragging;
+            slot.itemComponent.OnItemDragEnd += OnInventoryDragEnd;
+        }
+    }
+
+    private void CleanupInventoryDragCallbacks()
+    {
+        if (stepInventory?.slots == null) return;
+
+        foreach (var slot in stepInventory.slots)
+        {
+            if (slot.itemComponent == null) continue;
+
+            slot.itemComponent.OnItemDragBegin -= OnInventoryDragBegin;
+            slot.itemComponent.OnItemDragging -= OnInventoryDragging;
+            slot.itemComponent.OnItemDragEnd -= OnInventoryDragEnd;
+        }
+    }
+
+    private void OnInventoryDragBegin(StepInventoryItem item)
+    {
+        var dropBoxArea = DropBoxArea;
+        if (dropBoxArea != null)
+            dropBoxArea.SetOutlineVisible(true);
+    }
+
+    private void OnInventoryDragging(StepInventoryItem item, PointerEventData eventData)
+    {
+        var dropBoxArea = DropBoxArea;
+        if (dropBoxArea != null)
+            dropBoxArea.UpdateHighlight(eventData);
+    }
+
+    private void OnInventoryDragEnd(StepInventoryItem item, PointerEventData eventData)
+    {
+        if (_interactionLocked) return;
+
+        var dropBoxArea = DropBoxArea;
+        if (dropBoxArea == null) return;
+
+        dropBoxArea.SetOutlineVisible(false);
+
+        if (dropBoxArea.IsPointerOver(eventData))
+        {
+            OnInventoryItemDropped(item);
+        }
+        else
+        {
+            item.ResetIconPosition();
+        }
+    }
+
+    private void OnInventoryItemDropped(StepInventoryItem item)
+    {
+        item.ResetIconPosition();
+
+        // 인벤토리 숨기고 hanamBox 다시 표시
+        if (stepInventory != null)
+            stepInventory.gameObject.SetActive(false);
+        if (hanamBox != null)
+            hanamBox.SetActive(true);
+
+        var resultPanelRoot = ResultPanelRoot;
+        if (resultPanelRoot != null)
+            resultPanelRoot.SetActive(true);
+
+        if (!_isCompleted)
+        {
+            _isCompleted = true;
+
+            var gate = CompletionGate;
+            if (gate != null)
+                gate.MarkOneDone();
+
+            if (dialogueSequencer != null)
+                dialogueSequencer.ShowCompletedText();
+        }
+    }
+
+    // =========================================
+    // 인트로 애니메이션
+    // =========================================
     private void InitIntroRoot(
         RectTransform root,
         ref bool inited,
         ref Vector2 basePos,
         float offsetX,
-        ref CanvasGroup cg
-    )
+        ref CanvasGroup cg)
     {
-        if (root == null)
-            return;
+        if (root == null) return;
 
         if (!inited)
         {
@@ -237,90 +320,6 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         {
             rightRoot.anchoredPosition = _rightBasePos;
             if (_rightCg != null) _rightCg.alpha = 1f;
-        }
-    }
-
-    // ====================================================
-    //   DragItem ���� �ݹ����� �Ҹ��� API
-    // ====================================================
-
-    public void NotifyDragBegin(Director_Problem2_DragItem item)
-    {
-        var dropBoxArea = DropBoxArea;
-        if (dropBoxArea != null)
-            dropBoxArea.SetOutlineVisible(false);
-
-        if (DragOutlineImage != null)
-            DragOutlineImage.SetActive(true);
-    }
-
-    public void NotifyDragging(Director_Problem2_DragItem item, PointerEventData eventData)
-    {
-        var dropBoxArea = DropBoxArea;
-        if (dropBoxArea == null)
-        {
-            Debug.LogWarning("[Step1] NotifyDragging: dropBoxArea가 null!");
-            return;
-        }
-
-        dropBoxArea.UpdateHighlight(eventData);
-    }
-
-    public void NotifyDragEnd(Director_Problem2_DragItem item, PointerEventData eventData)
-    {
-        var dropBoxArea = DropBoxArea;
-        if (dropBoxArea == null)
-        {
-            Debug.LogWarning("[Step1] NotifyDragEnd: dropBoxArea가 null!");
-            return;
-        }
-
-        dropBoxArea.SetOutlineVisible(false);
-
-        bool isOver = dropBoxArea.IsPointerOver(eventData);
-        Debug.Log($"[Step1] NotifyDragEnd - isOver={isOver}, position={eventData.position}");
-
-        if (isOver)
-        {
-            OnItemDroppedIntoBox(item);
-        }
-        else
-        {
-            if (DragOutlineImage != null)
-                DragOutlineImage.SetActive(false);
-
-            item.ReturnToOriginalPosition();
-        }
-    }
-
-    private void OnItemDroppedIntoBox(Director_Problem2_DragItem item)
-    {
-        _selectedItem = item;
-
-        // 원래 위치로 복귀
-        item.ReturnToOriginalPosition();
-
-        var resultPanelRoot = ResultPanelRoot;
-        var gate = CompletionGate;
-
-        if (resultPanelRoot != null)
-            resultPanelRoot.SetActive(true);
-
-        // 드래그 연출: 아웃라인 끄고 텍스트박스 표시
-        if (DragOutlineImage != null)
-            DragOutlineImage.SetActive(false);
-        if (TextBox != null)
-            TextBox.SetActive(true);
-
-        // 다음 버튼 표시
-        if (NextButton != null)
-            NextButton.SetActive(true);
-
-        if (!_isCompleted)
-        {
-            _isCompleted = true;
-            if (gate != null)
-                gate.MarkOneDone();
         }
     }
 }
