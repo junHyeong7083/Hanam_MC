@@ -22,7 +22,7 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
         public string[] Keywords => _keywords;
     }
 
-    [Header("데이터 (인덱스 기반: 캐러셀 순서대로 넣기)")]
+    [Header("데이터 (슬롯 순서대로 넣기)")]
     [SerializeField] private int ngSentenceTextId = 0;
     [SerializeField] private int[] perspectiveTextIds;
     [SerializeField] private string[] perspectiveKeywords; // "키1|키2"
@@ -37,14 +37,10 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     [SerializeField] private RectTransform sceneCardRect;
     [SerializeField] private GameObject okSceneCard;
 
-    [Header("관점 선택 UI (캐러셀)")]
-    [SerializeField] private GameObject carouselRoot;
-    [SerializeField] private Button prevButton;
-    [SerializeField] private Button nextButton;
-    [SerializeField] private Text carouselText;
+    [Header("관점 선택 버튼 (3개)")]
+    [SerializeField] private SelectionSlot[] selectionSlots;
 
-    [Header("관점별 이미지 (perspectiveTextIds 순서와 동일)")]
-    [SerializeField] private Image perspectiveImage;
+    [Header("관점별 이미지 (selectionSlots 순서와 동일)")]
     [SerializeField] private Sprite[] perspectiveSprites;
 
     [Header("마이크 UI")]
@@ -119,11 +115,7 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override RectTransform SceneCardRect => sceneCardRect;
     protected override GameObject OkSceneCard => okSceneCard;
 
-    protected override GameObject CarouselRoot => carouselRoot;
-    protected override Button PrevButton => prevButton;
-    protected override Button NextButton => nextButton;
-    protected override Text CarouselText => carouselText;
-    protected override Image PerspectiveImage => perspectiveImage;
+    protected override SelectionSlot[] SelectionSlots => selectionSlots;
     protected override Sprite[] PerspectiveSprites => perspectiveSprites;
 
     protected override GameObject MicButtonRoot => micButtonRoot;

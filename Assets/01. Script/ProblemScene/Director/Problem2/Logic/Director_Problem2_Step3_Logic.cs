@@ -12,6 +12,14 @@ public interface IDirectorProblem2PerspectiveOption
 public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 {
     [Serializable]
+    public class SelectionSlot
+    {
+        public Button button;
+        public GameObject outline;
+        public Image image;
+    }
+
+    [Serializable]
     private class RefilmLogPayload
     {
         public string ngText;
@@ -34,24 +42,15 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract RectTransform SceneCardRect { get; }
     protected abstract GameObject OkSceneCard { get; }
 
-    // 캐러셀
-    protected abstract GameObject CarouselRoot { get; }
-    protected abstract Button PrevButton { get; }
-    protected abstract Button NextButton { get; }
-    protected abstract Text CarouselText { get; }
-
-    // 관점별 이미지
-    protected abstract Image PerspectiveImage { get; }
+    // 버튼 선택 UI
+    protected abstract SelectionSlot[] SelectionSlots { get; }
     protected abstract Sprite[] PerspectiveSprites { get; }
 
     // 마이크
     protected abstract GameObject MicButtonRoot { get; }
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
-    // ✅ 추가: 녹음 중 표시(이미지) 오브젝트
     protected abstract GameObject RecordingOverlay { get; }
-
-    // ✅ 추가: STT 완료 후 보여줄 다음 버튼(요약/다음 단계 버튼) 루트
     protected abstract GameObject NextStepButtonRoot { get; }
 
     // 패널
@@ -60,7 +59,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     protected abstract Text CompletionText { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    private int _currentIndex;
+    private int _selectedIndex = -1;
     private IDirectorProblem2PerspectiveOption _selected;
     private bool _isRecording;
     private bool _hasRecordedAnswer;
@@ -86,7 +85,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         var gate = CompletionGate;
         if (gate != null) gate.ResetGate(1);
 
-        BindCarouselButtons();
+        BindSelectionButtons();
         BindMicButton();
     }
 
@@ -100,7 +99,7 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
             indicator.OnRecordingChanged -= OnMicRecordingChanged;
         }
 
-        UnbindCarouselButtons();
+        UnbindSelectionButtons();
         UnbindMicButton();
     }
 
@@ -111,16 +110,15 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (RecordingOverlay != null)
             RecordingOverlay.SetActive(isRecording);
 
-        if (PrevButton != null) PrevButton.gameObject.SetActive(!isRecording);
-        if (NextButton != null) NextButton.gameObject.SetActive(!isRecording);
+        // 녹음 중에는 선택 버튼 비활성화
+        SetSelectionButtonsInteractable(!isRecording);
 
-        // 녹음 중에는 마이크 버튼 비활성화 (중복 클릭 방지)
         SetMicInteractable(!isRecording);
     }
 
     private void ResetState()
     {
-        _currentIndex = 0;
+        _selectedIndex = -1;
         _selected = null;
         _isRecording = false;
         _hasRecordedAnswer = false;
@@ -134,195 +132,142 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         if (SceneCardRect != null) SceneCardRect.gameObject.SetActive(true);
         if (OkSceneCard != null) OkSceneCard.SetActive(false);
 
-        if (CarouselRoot != null) CarouselRoot.SetActive(true);
+        // 슬롯 초기화: 스프라이트 세팅 + 아웃라인 끄기
+        InitSlots();
 
-        ClampIndex();
-        RefreshCarouselUI();
-
-        // ✅ 완료 전 UI 상태로 세팅
         SetBeforeCompleteUI();
 
-        // 마이크 아이들 텍스트 원복
+        // 선택 전이므로 마이크 비활성
+        SetMicInteractable(false);
+
         var indicator2 = MicIndicator;
         if (indicator2 != null)
             indicator2.ResetIdleText();
     }
 
+    private void InitSlots()
+    {
+        var slots = SelectionSlots;
+        var sprites = PerspectiveSprites;
+        if (slots == null) return;
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            var s = slots[i];
+            if (s == null) continue;
+
+            if (s.outline != null) s.outline.SetActive(false);
+
+            if (s.image != null && sprites != null && i < sprites.Length && sprites[i] != null)
+                s.image.sprite = sprites[i];
+        }
+    }
+
     private void SetBeforeCompleteUI()
     {
-        // STT 완료 전: 마이크 보임, Next 숨김, 녹음 표시 꺼짐
         if (MicButtonRoot != null) MicButtonRoot.SetActive(true);
         if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(false);
         if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
-
-        SetMicInteractable(true);
     }
 
     private void SetAfterCompleteUI()
     {
-        // STT 완료 후: 마이크 숨김, Next 보임, 녹음 표시 꺼짐
         if (RecordingOverlay != null) RecordingOverlay.SetActive(false);
-
         if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
         if (NextStepButtonRoot != null) NextStepButtonRoot.SetActive(true);
-
         SetMicInteractable(false);
     }
 
-    private void BindCarouselButtons()
+    // ===== Selection Buttons =====
+    private void BindSelectionButtons()
     {
-        if (PrevButton != null)
-        {
-            PrevButton.onClick.RemoveListener(OnClickPrev);
-            PrevButton.onClick.AddListener(OnClickPrev);
-        }
+        var slots = SelectionSlots;
+        if (slots == null) return;
 
-        if (NextButton != null)
+        for (int i = 0; i < slots.Length; i++)
         {
-            NextButton.onClick.RemoveListener(OnClickNext);
-            NextButton.onClick.AddListener(OnClickNext);
+            if (slots[i] == null || slots[i].button == null) continue;
+            int idx = i; // 클로저 캡처
+            slots[i].button.onClick.RemoveAllListeners();
+            slots[i].button.onClick.AddListener(() => OnSlotClicked(idx));
         }
     }
 
-    private void UnbindCarouselButtons()
+    private void UnbindSelectionButtons()
     {
-        if (PrevButton != null) PrevButton.onClick.RemoveListener(OnClickPrev);
-        if (NextButton != null) NextButton.onClick.RemoveListener(OnClickNext);
-    }
+        var slots = SelectionSlots;
+        if (slots == null) return;
 
-    private void ClampIndex()
-    {
-        var p = Perspectives;
-        if (p == null || p.Length == 0)
+        foreach (var s in slots)
         {
-            _currentIndex = 0;
-            return;
+            if (s?.button != null)
+                s.button.onClick.RemoveAllListeners();
         }
-
-        if (_currentIndex < 0) _currentIndex = 0;
-        if (_currentIndex >= p.Length) _currentIndex = p.Length - 1;
     }
 
-    private void RefreshCarouselUI()
+    private void SetSelectionButtonsInteractable(bool interactable)
     {
-        var p = Perspectives;
-        if (p == null || p.Length == 0)
+        var slots = SelectionSlots;
+        if (slots == null) return;
+
+        foreach (var s in slots)
         {
-            _selected = null;
-
-            if (PrevButton != null) PrevButton.interactable = false;
-            if (NextButton != null) NextButton.interactable = false;
-
-            SetMicInteractable(false);
-            return;
+            if (s?.button != null)
+                s.button.interactable = interactable;
         }
-
-        ClampIndex();
-        _selected = p[_currentIndex];
-
-        if (CarouselText != null && _selected != null)
-            CarouselText.text = _selected.Text;
-
-        // 관점 인덱스에 맞는 스프라이트 교체
-        var sprites = PerspectiveSprites;
-        var img = PerspectiveImage;
-        if (img != null && sprites != null && _currentIndex < sprites.Length && sprites[_currentIndex] != null)
-            img.sprite = sprites[_currentIndex];
-
-        bool canNavigate = !_isFinished && p.Length > 1;
-        if (PrevButton != null) PrevButton.interactable = canNavigate;
-        if (NextButton != null) NextButton.interactable = canNavigate;
     }
 
-    private void OnClickPrev()
+    private void OnSlotClicked(int index)
     {
         if (_isFinished) return;
 
         var p = Perspectives;
-        if (p == null || p.Length == 0) return;
+        if (p == null || index < 0 || index >= p.Length) return;
 
-        _currentIndex--;
-        if (_currentIndex < 0) _currentIndex = p.Length - 1;
+        _selectedIndex = index;
+        _selected = p[index];
 
-        RefreshCarouselUI();
-    }
+        // 아웃라인 갱신: 선택된 것만 켜기
+        var slots = SelectionSlots;
+        if (slots != null)
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i]?.outline != null)
+                    slots[i].outline.SetActive(i == index);
+            }
+        }
 
-    private void OnClickNext()
-    {
-        if (_isFinished) return;
+        // 선택했으니 마이크 활성화
+        SetMicInteractable(true);
 
-        var p = Perspectives;
-        if (p == null || p.Length == 0) return;
-
-        _currentIndex++;
-        if (_currentIndex >= p.Length) _currentIndex = 0;
-
-        RefreshCarouselUI();
+        // MicIndicator에 현재 선택의 키워드 세팅
+        var indicator = MicIndicator;
+        if (indicator != null && _selected.Keywords != null)
+            indicator.SetKeywords(_selected.Keywords);
     }
 
     // ===== Mic =====
     public void OnClickMic()
     {
-        Debug.Log($"[Step3] OnClickMic / indicator={(MicIndicator != null)} / finished={_isFinished}");
         if (_isFinished) return;
-
-        var p = Perspectives;
-        if (p == null || p.Length == 0) return;
-
-        ClampIndex();
-        _selected = p[_currentIndex];
-
-        // UI 업데이트는 MicRecordingIndicator.OnRecordingChanged 이벤트가 처리
-        // ToggleRecording은 인스펙터에서 버튼에 직접 연결
+        if (_selectedIndex < 0) return; // 선택 안 됨
     }
 
     // ===== STT =====
     private void OnSTTKeywordMatched(int matchedIndex)
     {
         if (_isFinished) return;
+        if (_selectedIndex < 0) return;
 
-        var p = Perspectives;
-        if (p == null || p.Length == 0) return;
+        // 선택된 관점의 키워드만 세팅했으므로, 매칭 = 성공
+        _hasRecordedAnswer = true;
+        _isRecording = false;
 
-        ClampIndex();
+        if (RecordingOverlay != null)
+            RecordingOverlay.SetActive(false);
 
-        if (matchedIndex == _currentIndex)
-        {
-            _hasRecordedAnswer = true;
-            _isRecording = false;
-
-            // ✅ 녹음 표시 끄기
-            if (RecordingOverlay != null)
-                RecordingOverlay.SetActive(false);
-
-            PlayRefilmComplete();
-        }
-        else
-        {
-            // 다른 관점의 키워드가 매칭됨 → 재시도 처리
-            _isRecording = false;
-            if (RecordingOverlay != null)
-                RecordingOverlay.SetActive(false);
-            ShowNavButtons();
-
-            if (GuideText != null)
-            {
-                var retryTextId = GuideTextId_Retry;
-                GuideText.text = retryTextId != 0
-                    ? ProblemRuntime.L(retryTextId)
-                    : "조금 더 가까이서 힘차게 말해주세요!";
-            }
-
-            var ind = MicIndicator;
-            if (ind != null)
-                ind.SetIdleText("다시 말하기");
-        }
-    }
-
-    private void ShowNavButtons()
-    {
-        if (PrevButton != null) PrevButton.gameObject.SetActive(true);
-        if (NextButton != null) NextButton.gameObject.SetActive(true);
+        PlayRefilmComplete();
     }
 
     private void OnSTTNoMatch(string sttResult)
@@ -330,9 +275,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         _isRecording = false;
         if (RecordingOverlay != null)
             RecordingOverlay.SetActive(false);
-        ShowNavButtons();
 
-        // 재시도 안내 텍스트 표시
+        SetSelectionButtonsInteractable(true);
+
         if (GuideText != null)
         {
             var retryTextId = GuideTextId_Retry;
@@ -341,20 +286,19 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
                 : "조금 더 가까이서 힘차게 말해주세요!";
         }
 
-        // 마이크 버튼 텍스트를 "다시 말하기"로 변경
         var indicator = MicIndicator;
         if (indicator != null)
             indicator.SetIdleText("다시 말하기");
     }
 
-    // ===== Complete Sequence =====
+    // ===== Complete =====
     private void PlayRefilmComplete()
     {
         if (GuideText != null && GuideTextId_After != 0)
             GuideText.text = ProblemRuntime.L(GuideTextId_After);
 
-        if (PrevButton != null) PrevButton.interactable = false;
-        if (NextButton != null) NextButton.interactable = false;
+        // 선택 버튼 비활성화
+        SetSelectionButtonsInteractable(false);
 
         if (StepRoot != null) StepRoot.SetActive(false);
         if (OkSceneCard != null) OkSceneCard.SetActive(true);
@@ -364,7 +308,6 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
         _isFinished = true;
 
-        // 완료 UI 전환: 마이크 숨기고 Next 보이기
         SetAfterCompleteUI();
 
         var gate = CompletionGate;
@@ -380,10 +323,9 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
     private void SaveRefilmLogToDb()
     {
         var p = Perspectives;
-        if (p == null || p.Length == 0) return;
+        if (p == null || p.Length == 0 || _selectedIndex < 0) return;
 
-        ClampIndex();
-        _selected = p[_currentIndex];
+        _selected = p[_selectedIndex];
         if (_selected == null) return;
 
         var body = new RefilmLogPayload

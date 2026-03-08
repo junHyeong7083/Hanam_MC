@@ -12,6 +12,10 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         public RectTransform targetPoint;
     }
 
+    [Header("타이틀")]
+    [SerializeField] private Text titleText;
+    [SerializeField] private int titleTextId;
+
     [Header("요약 텍스트 ID 목록")]
     [SerializeField] private int[] summaryTextIds;
 
@@ -72,6 +76,10 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
 
     private IEnumerator SequenceRoutine()
     {
+        // 타이틀 세팅
+        if (titleText != null && titleTextId != 0)
+            titleText.text = ProblemRuntime.L(titleTextId);
+
         if (summaryTextIds == null || summaryTextIds.Length == 0)
             yield break;
 

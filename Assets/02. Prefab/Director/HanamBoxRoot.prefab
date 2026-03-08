@@ -245,6 +245,10 @@ MonoBehaviour:
   enableFade: 1
   enableScale: 0
   startScale: 0.9
+  enableFlyIn: 0
+  flyStartOffset: {x: -400, y: -200}
+  flyWaypoints:
+  - {x: -100, y: 150}
 --- !u!114 &3933441981021058881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,7 +435,7 @@ GameObject:
   - component: {fileID: 7184905031373248313}
   - component: {fileID: 5572876634498317439}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: HanamBoxText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -599,6 +603,10 @@ MonoBehaviour:
   enableFade: 1
   enableScale: 1
   startScale: 0.7
+  enableFlyIn: 0
+  flyStartOffset: {x: -400, y: -200}
+  flyWaypoints:
+  - {x: -100, y: 150}
 --- !u!114 &455095630962163872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -632,7 +640,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3091593816852724184}
   - component: {fileID: 7663280735900586899}
-  - component: {fileID: 2755501466578333923}
   m_Layer: 5
   m_Name: HanamBoxRoot
   m_TagString: Untagged
@@ -669,23 +676,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8041676033199524769}
   m_CullTransparentMesh: 1
---- !u!114 &2755501466578333923
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8041676033199524769}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 042785f6ab1a2fa4cb00341d16ed4880, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  floatDistance: 10
-  floatSpeed: 1.5
-  randomOffset: 0
-  enableRotation: 0
-  rotationAmount: 5
 --- !u!1 &8687763158273991852
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,6 +776,10 @@ MonoBehaviour:
   enableFade: 1
   enableScale: 0
   startScale: 0.9
+  enableFlyIn: 0
+  flyStartOffset: {x: -400, y: -200}
+  flyWaypoints:
+  - {x: -100, y: 150}
 --- !u!225 &8370699782504813119
 CanvasGroup:
   m_ObjectHideFlags: 0
