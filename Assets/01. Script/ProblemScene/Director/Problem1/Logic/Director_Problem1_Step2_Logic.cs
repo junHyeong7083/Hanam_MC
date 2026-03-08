@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
@@ -24,22 +23,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
     protected abstract float NormalAlpha { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    [Header("Guide Text (Localized)")]
-    [SerializeField] private Text guideText;
-    [Tooltip("���� ���� �� �ȳ� ���� textId")]
-    [SerializeField] private int guideTextIdOnEnter = 0;
-    [Tooltip("�ʸ� ���� ���� �Ϸ� �� �ȳ� ���� textId")]
-    [SerializeField] private int guideTextIdOnCompleted = 0;
-
-    [Header("Next Shoot Button")]
-    [SerializeField] private GameObject nextShootButtonRoot;
-    [SerializeField] private Button nextShootButton;
-
-    [Header("NextStep Auto Call")]
-    [SerializeField] private bool autoCallNextStep = true;
-
-    [Header("Fallback Callback")]
-    [SerializeField] private UnityEvent onClickNextShootFallback;
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     private readonly Dictionary<int, FilmFragment> _filmMap = new Dictionary<int, FilmFragment>();
     private readonly HashSet<int> _checkedIds = new HashSet<int>();
@@ -47,31 +32,38 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
         = new List<(IntroElement, System.Action)>();
 
     private bool _completed = false;
-
-    private StepFlowController _flowController;
+    private bool _interactionLocked = true;
 
     protected override void OnStepEnter()
     {
         BuildFilmMap();
         ResetState();
 
-        ApplyGuideText(guideTextIdOnEnter);
-        SetNextShootButtonVisible(false);
-
-        CacheStepFlowController();
-        BindNextShootButton();
-
         BindShakeTriggers();
+
+        _interactionLocked = true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        else
+            _interactionLocked = false;
+    }
+
+    private void OnDialogueEnterComplete()
+    {
+        _interactionLocked = false;
     }
 
     protected override void OnStepExit()
     {
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+
         UnbindShakeTriggers();
-        UnbindNextShootButton();
 
         _checkedIds.Clear();
         _filmMap.Clear();
         _completed = false;
+        _interactionLocked = true;
     }
 
     private void BuildFilmMap()
@@ -127,6 +119,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
     public void OnFilmClicked(int id)
     {
+        if (_interactionLocked) return;
+
         if (!_filmMap.TryGetValue(id, out var fragment))
             return;
 
@@ -180,64 +174,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
         _completed = true;
 
-        ApplyGuideText(guideTextIdOnCompleted);
-        SetNextShootButtonVisible(true);
-    }
-
-    private void ApplyGuideText(int textId)
-    {
-        if (guideText == null) return;
-        guideText.text = ProblemRuntime.L(textId);
-    }
-
-    private void SetNextShootButtonVisible(bool visible)
-    {
-        if (nextShootButtonRoot != null)
-            nextShootButtonRoot.SetActive(visible);
-
-        if (nextShootButton != null)
-            nextShootButton.interactable = visible;
-    }
-
-    private void BindNextShootButton()
-    {
-        if (nextShootButton == null) return;
-        nextShootButton.onClick.RemoveListener(OnClickNextShoot);
-        nextShootButton.onClick.AddListener(OnClickNextShoot);
-    }
-
-    private void UnbindNextShootButton()
-    {
-        if (nextShootButton == null) return;
-        nextShootButton.onClick.RemoveListener(OnClickNextShoot);
-    }
-
-    private void OnClickNextShoot()
-    {
-        if (!_completed) return;
-
-        if (autoCallNextStep && TryCallNextStep())
-            return;
-
-        onClickNextShootFallback?.Invoke();
-    }
-
-    private void CacheStepFlowController()
-    {
-        _flowController = null;
-        if (!autoCallNextStep) return;
-        _flowController = GetComponentInParent<StepFlowController>();
-    }
-
-    private bool TryCallNextStep()
-    {
-        if (_flowController == null)
-            _flowController = GetComponentInParent<StepFlowController>();
-
-        if (_flowController == null) return false;
-
-        _flowController.NextStep();
-        return true;
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     private void BindShakeTriggers()

@@ -1449,6 +1449,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: 901c0b1f3072aff4f98249d79f8e17d9, type: 2}
   stepKeyConfig:
     stepId: 1
+  bgmClipName: 
+  stopBgmOnExit: 1
   nextStepButtonRoot: {fileID: 1829685939}
   cardSlots:
   - id: headache
@@ -2126,6 +2128,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: fc7d6d9ba68b61e4c904351e423eeba7, type: 2}
   stepKeyConfig:
     stepId: 1
+  bgmClipName: 
+  stopBgmOnExit: 1
   guideText: {fileID: 309017327}
   guideTextId_SelectMask: 101070004
   guideTextId_SelectFeeling: 101070005
@@ -3646,6 +3650,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 831358587}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000024
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -8055,6 +8063,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: b91396bd07ae85344a7cb1272b453a95, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 894937078}
@@ -8325,8 +8335,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &209187143
 MonoBehaviour:
@@ -8350,7 +8360,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -8588,7 +8598,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &230823318
 GameObject:
@@ -8625,7 +8635,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &230823320
 MonoBehaviour:
@@ -9393,6 +9403,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: f1805782b11bc9d49bde5c5e75ab91e2, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 1604268404}
@@ -9876,7 +9888,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &276117064
 GameObject:
@@ -10197,8 +10209,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &280816266
 MonoBehaviour:
@@ -10222,7 +10234,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -10431,6 +10443,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 2007803668}
   dragItems:
   - {fileID: 51294589}
@@ -10829,6 +10843,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   steps:
   - id: 1
     title: "\uD3B8\uC548\uD55C \uC790\uC138"
@@ -11148,7 +11164,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &307177600
 GameObject:
@@ -11580,7 +11596,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &313009551
 GameObject:
@@ -11891,7 +11907,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &337855976
 GameObject:
@@ -12036,6 +12052,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: 8875f04155d778942b9313b923dd7483, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   ngSentenceTextId: 101022004
   perspectiveTextIds: 317905063279050633790506
   perspectiveKeywords:
@@ -14087,8 +14105,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &368426604
 MonoBehaviour:
@@ -14112,7 +14130,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -18423,6 +18441,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: a8792ba666d6d484ea9453bda9cc11f1, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   questionLabel: {fileID: 0}
   optionButtons:
   - {fileID: 14338024}
@@ -18741,6 +18761,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 1462025936}
   dragItems:
   - {fileID: 1599240350}
@@ -19295,6 +19317,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   scenes:
   - id: 0
     iconButton: {fileID: 623310103}
@@ -20405,6 +20429,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   guideText: {fileID: 959832793}
   guideTextIdOnEnter: 101020003
   nextShootButtonRoot: {fileID: 959832792}
@@ -25671,6 +25697,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: a1d8d22fc32ac5143880f42e5f513d7f, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 1225763465}
@@ -26296,6 +26324,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: fc7d6d9ba68b61e4c904351e423eeba7, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 767121011}
@@ -26469,6 +26499,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: b91396bd07ae85344a7cb1272b453a95, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   rounds:
   - guideTextId: 101090008
     keywordTextId: 101092001
@@ -27722,6 +27754,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 901887672}
   dragItems:
   - {fileID: 1099255121}
@@ -29089,6 +29123,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 588613694}
   dragItems:
   - {fileID: 1138617203}
@@ -29382,7 +29418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &798336391
 RectTransform:
   m_ObjectHideFlags: 0
@@ -29458,15 +29494,9 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
-  guideText: {fileID: 266132174}
-  guideTextIdOnEnter: 101010002
-  guideTextIdOnCompleted: 101010002
-  nextShootButtonRoot: {fileID: 1504775999}
-  nextShootButton: {fileID: 1504776000}
-  autoCallNextStep: 0
-  onClickNextShootFallback:
-    m_PersistentCalls:
-      m_Calls: []
+  bgmClipName: 
+  stopBgmOnExit: 1
+  dialogueSequencer: {fileID: 783553535854693021}
   films:
   - id: 0
     checkMark: {fileID: 899564379}
@@ -30064,6 +30094,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344623977}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000023
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: 'SummaryPanel '
@@ -31718,6 +31752,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1147054798}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000026
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -31871,6 +31909,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 652796992}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000027
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -34974,6 +35016,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: cf1e5d3485bb5964a911b5d669df31f3, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 758512982}
@@ -36171,6 +36215,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: 5b8727cf7775a70429911375199dc7a4, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   actionChoices:
   - id: action1
     textId: 101082001
@@ -36869,6 +36915,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: b91396bd07ae85344a7cb1272b453a95, type: 2}
   stepKeyConfig:
     stepId: 1
+  bgmClipName: 
+  stopBgmOnExit: 1
   rounds:
   - situationTextId: 101090004
     choiceTextIds: b9860606ba860606bb860606
@@ -37978,6 +38026,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: fc7d6d9ba68b61e4c904351e423eeba7, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   guideText: {fileID: 2119988914}
   guideTextId_Select: 101070009
   guideTextId_Complete: 101070010
@@ -38613,6 +38663,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 1007428049}
   dragItems:
   - {fileID: 1831754665}
@@ -39300,6 +39352,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 638486808}
   dragItems:
   - {fileID: 945729303}
@@ -40420,7 +40474,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1092100496
 RectTransform:
   m_ObjectHideFlags: 0
@@ -40993,6 +41047,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1629263204}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000022
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: 'SummaryPanel '
@@ -41236,6 +41294,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 803559097}
   dragItems:
   - {fileID: 1401476137}
@@ -43117,6 +43177,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1548563494}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000025
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -43587,6 +43651,116 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1216945975}
   m_CullTransparentMesh: 1
+--- !u!1001 &1217584082
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1649135706}
+    m_Modifications:
+    - target: {fileID: 2667176327786595258, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5c9a9592fe0699344b2bb07f8ec07c12, type: 3}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 134
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 140.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -748
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 467
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7786960799043356402, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_Name
+      value: BackBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 8746566698733862916, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 110495402}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+--- !u!224 &1217584083 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
+  m_PrefabInstance: {fileID: 1217584082}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1218491013
 GameObject:
   m_ObjectHideFlags: 0
@@ -43827,8 +44001,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1230878156
 MonoBehaviour:
@@ -43852,7 +44026,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -43955,6 +44129,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1323669042}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000030
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -46973,6 +47151,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   prevButton: {fileID: 452406552}
   nextButton: {fileID: 27349179}
   cardDisplayImage: {fileID: 609818869}
@@ -47443,8 +47623,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1370336222
 MonoBehaviour:
@@ -47468,7 +47648,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -47936,8 +48116,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1375201510
 MonoBehaviour:
@@ -47961,7 +48141,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -49527,6 +49707,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: a8792ba666d6d484ea9453bda9cc11f1, type: 2}
   stepKeyConfig:
     stepId: 1
+  bgmClipName: 
+  stopBgmOnExit: 1
   steps:
   - id: 1
     originalTextId: 101031004
@@ -52480,17 +52662,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4204970337983992360, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
   m_PrefabInstance: {fileID: 783553535854693020}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1504776000 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9036537916854351307, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
-  m_PrefabInstance: {fileID: 783553535854693020}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1504775999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1504776007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54817,6 +54988,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 361698387}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000028
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -57253,6 +57428,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 870931251}
+  - {fileID: 1217584083}
   - {fileID: 1889123608}
   - {fileID: 2753304021757613739}
   m_Father: {fileID: 32909219}
@@ -58913,6 +59089,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: 901c0b1f3072aff4f98249d79f8e17d9, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 647188407}
@@ -62845,7 +63023,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -848, y: 446}
+  m_AnchoredPosition: {x: -848, y: 222}
   m_SizeDelta: {x: 160, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1830917668
@@ -63088,6 +63266,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 1280967154}
   dragItems:
   - {fileID: 831657688}
@@ -65535,6 +65715,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1071971823}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000029
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -66018,6 +66202,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: cf1e5d3485bb5964a911b5d669df31f3, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   rounds:
   - guideTextId: 101100007
     hardcodedGuide: 
@@ -66770,6 +66956,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: f1805782b11bc9d49bde5c5e75ab91e2, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   hanamText: {fileID: 1619418631}
   hanamTextIdOnEnter: 101050008
   hanamTextIdOnCompleted: 101050010
@@ -67258,6 +67446,8 @@ MonoBehaviour:
   context: {fileID: 0}
   stepKeyConfig:
     stepId: 0
+  bgmClipName: 
+  stopBgmOnExit: 1
   dropBoxArea: {fileID: 142527273}
   dragItems:
   - {fileID: 1070447882}
@@ -67560,7 +67750,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1996361268
 GameObject:
@@ -69664,6 +69854,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   progressLabel: {fileID: 0}
   completionGate: {fileID: 2046801912}
   films:
@@ -69700,7 +69892,7 @@ MonoBehaviour:
     filmSprite: {fileID: 21300000, guid: 4d1414833465bbe41823a5f66c01ddac, type: 3}
     isThought: 0
   hanamiDialogueText: {fileID: 193490506}
-  hanamiDialogueTextIds: 534a0506544a0506
+  hanamiDialogueTextIds: 584a0506594a0506
   wrongHanamiMessageDuration: 2
   currentFilmRoot: {fileID: 444466310}
   currentFilmPrefab: {fileID: 1500329242432800110, guid: 0f3d1b75dba99714a97ef32106da8e8d, type: 3}
@@ -70152,8 +70344,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -79.6}
+  m_SizeDelta: {x: 0, y: 86.799995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2066423285
 MonoBehaviour:
@@ -70177,7 +70369,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 25
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -70568,7 +70760,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 213.816, y: 288.32}
+  m_SizeDelta: {x: 244, y: 308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2082470277
 GameObject:
@@ -72170,6 +72362,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: cf1e5d3485bb5964a911b5d669df31f3, type: 2}
   stepKeyConfig:
     stepId: 1
+  bgmClipName: 
+  stopBgmOnExit: 1
   genreCardsData:
   - labelTextId: 101101001
     cardSprite: {fileID: 21300000, guid: f8a19558aa4f5b548ac2bfc8850393d5, type: 3}
@@ -72836,6 +73030,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: 5b8727cf7775a70429911375199dc7a4, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 2043069280}
@@ -73541,10 +73737,34 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -534
       objectReference: {fileID: 0}
+    - target: {fileID: 1556027566371948995, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: textId
+      value: 101000011
+      objectReference: {fileID: 0}
     - target: {fileID: 2734844767887725856, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1413835133}
+    - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: enterTextIds.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: 'enterTextIds.Array.data[0]'
+      value: 101010006
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: 'enterTextIds.Array.data[1]'
+      value: 101010007
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: completedTextIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: 'completedTextIds.Array.data[0]'
+      value: 101010008
+      objectReference: {fileID: 0}
     - target: {fileID: 3091593816852724184, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -73715,6 +73935,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1504776007}
   m_SourcePrefab: {fileID: 100100000, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+--- !u!114 &783553535854693021 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+  m_PrefabInstance: {fileID: 783553535854693020}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a57de7e448493eb458e2ee3c8c0ee869, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &917850809171337316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74002,6 +74233,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1092100496}
     m_Modifications:
+    - target: {fileID: 538157768563651910, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
+      propertyPath: titleTextId
+      value: 101000021
+      objectReference: {fileID: 0}
     - target: {fileID: 1852868585338496533, guid: ca47101f3776bce46a020c5f9c7ad45d, type: 3}
       propertyPath: m_Name
       value: SummaryPanel
@@ -75685,6 +75920,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: a8792ba666d6d484ea9453bda9cc11f1, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 4363316946325749937}
@@ -75740,6 +75977,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: 8875f04155d778942b9313b923dd7483, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 4363316947072887435}
@@ -76169,7 +76408,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 944357243542320843, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 185
+      value: 195
       objectReference: {fileID: 0}
     - target: {fileID: 944357243542320843, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -76199,10 +76438,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -488
       objectReference: {fileID: 0}
+    - target: {fileID: 2255943690651128413, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: textId
+      value: 101000011
+      objectReference: {fileID: 0}
     - target: {fileID: 2284999823666659041, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
+    - target: {fileID: 2284999823666659041, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 3561114866458435343, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -76293,15 +76540,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: dialogueTextIds.Array.size
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: 'dialogueTextIds.Array.data[0]'
-      value: 101010001
+      value: 101000031
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: 'dialogueTextIds.Array.data[1]'
-      value: 0
+      value: 101010001
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: 'dialogueTextIds.Array.data[2]'
+      value: 101010002
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: 'dialogueTextIds.Array.data[3]'
+      value: 101010003
+      objectReference: {fileID: 0}
+    - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: 'dialogueTextIds.Array.data[4]'
+      value: 101010005
       objectReference: {fileID: 0}
     - target: {fileID: 3891912619101627182, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: onFinished.m_PersistentCalls.m_Calls.Array.size
@@ -76361,7 +76620,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6969127894265614571, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7441537722732430763, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -76540,11 +76799,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -861
+      value: -886
       objectReference: {fileID: 0}
     - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -440
+      value: 467
       objectReference: {fileID: 0}
     - target: {fileID: 4371787148236708238, guid: c1c5fac5eb3d21a4abe811b4cfdd8522, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -77533,6 +77792,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: a1d8d22fc32ac5143880f42e5f513d7f, type: 2}
   stepKeyConfig:
     stepId: 1
+  bgmClipName: 
+  stopBgmOnExit: 1
   filmCuts:
   - cutID: cut_01
     textId: 101041001
@@ -77761,6 +78022,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: fd1b57a38cbc6f140a203be0244742ce, type: 2}
   stepKeyConfig:
     stepId: 4
+  bgmClipName: 
+  stopBgmOnExit: 1
   sequenceItems:
   - name: TextGroup
     root: {fileID: 1250504053134525910}
@@ -77853,6 +78116,8 @@ MonoBehaviour:
   context: {fileID: 11400000, guid: a1d8d22fc32ac5143880f42e5f513d7f, type: 2}
   stepKeyConfig:
     stepId: 2
+  bgmClipName: 
+  stopBgmOnExit: 1
   questions:
   - questionId: P4S3_Q1
     mainTextId: 101041001

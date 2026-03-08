@@ -90,6 +90,15 @@ public class StepFlowController : MonoBehaviour
     }
 
     /// <summary>
+    /// 현재 스텝을 재시작 (OnDisable → OnEnable 재호출)
+    /// </summary>
+    public void RestartCurrentStep()
+    {
+        if (_currentIndex < 0 || stepPanels == null || stepPanels.Count == 0) return;
+        GoToStep(_currentIndex);
+    }
+
+    /// <summary>
     /// Intro �г� ��� "�ǳʶٱ�" ������ �� ȣ���� �Լ�
     /// </summary>
     public void SkipFlow()

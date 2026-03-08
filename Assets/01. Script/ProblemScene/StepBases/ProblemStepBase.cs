@@ -11,8 +11,26 @@ public abstract class ProblemStepBase : MonoBehaviour
     [Header("이 스텝의 고유 키 (Enum 기반)")]
     [SerializeField] protected StepKeyConfig stepKeyConfig;
 
-    protected virtual void OnEnable() => OnStepEnter();
-    protected virtual void OnDisable() => OnStepExit();
+    [Header("BGM (비어있으면 재생 안 함)")]
+    [Tooltip("Resources/BGM/ 하위 클립명 (예: BGM_C01_S06)")]
+    [SerializeField] private string bgmClipName;
+    [SerializeField] private bool stopBgmOnExit = true;
+
+    protected virtual void OnEnable()
+    {
+        if (!string.IsNullOrEmpty(bgmClipName) && SoundManager.Instance != null)
+            SoundManager.Instance.PlayBGM(bgmClipName);
+
+        OnStepEnter();
+    }
+
+    protected virtual void OnDisable()
+    {
+        OnStepExit();
+
+        if (stopBgmOnExit && !string.IsNullOrEmpty(bgmClipName) && SoundManager.Instance != null)
+            SoundManager.Instance.StopBGM();
+    }
 
     protected abstract void OnStepEnter();
     protected virtual void OnStepExit() { }
