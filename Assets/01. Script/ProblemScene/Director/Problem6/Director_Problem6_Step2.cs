@@ -2,12 +2,12 @@ using UnityEngine;
 
 /// <summary>
 /// Director / Problem6 / Step2
-/// - �ν����Ϳ��� ī�� / ���� / ��ư / ���� �������ְ�,
-///   ������ ������ Director_Problem6_Step2_Logic(�θ�)���� ó��.
+/// - 인스펙터에서 카드 / 조명 / 버튼 / 게이트 참조를 받고,
+///   실제 로직은 Director_Problem6_Step2_Logic(부모)에서 처리.
 /// </summary>
 public class Director_Problem6_Step2 : Director_Problem6_Step2_Logic
 {
-    [Header("��Ʈ���� ī�� ���Ե� (8��)")]
+    [Header("스트레스 카드 슬롯 (8개)")]
     [SerializeField] private StressCardSlot[] cardSlots;
 
     [Header("조명 슬롯 (3개)")]

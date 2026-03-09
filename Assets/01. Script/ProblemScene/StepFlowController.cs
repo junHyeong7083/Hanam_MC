@@ -51,7 +51,7 @@ public class StepFlowController : MonoBehaviour
         if (stepPanels == null || stepPanels.Count == 0) return;
         if (index < 0 || index >= stepPanels.Count)
         {
-            Debug.LogError($"[ProblemFlowController] �߸��� step index: {index}");
+            Debug.LogError($"[ProblemFlowController] 잘못된 step index: {index}");
             return;
         }
 
@@ -104,25 +104,25 @@ public class StepFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// Intro �г� ��� "�ǳʶٱ�" ������ �� ȣ���� �Լ�
+    /// Intro 패널 위의 "건너뛰기" 버튼에서 호출되는 함수
     /// </summary>
     public void SkipFlow()
     {
         if (!useSkip)
         {
-            Debug.LogWarning($"[ProblemFlowController] {name} ���� useSkip=false �ε� SkipFlow�� ȣ��Ǿ����ϴ�.");
+            Debug.LogWarning($"[ProblemFlowController] {name} 에서 useSkip=false 인데 SkipFlow가 호출되었습니다.");
             return;
         }
 
         if (stepPanels == null || stepPanels.Count == 0)
         {
-            Debug.LogWarning("[ProblemFlowController] stepPanels ��� ����. Skip �Ұ�.");
+            Debug.LogWarning("[ProblemFlowController] stepPanels 할당 없음. Skip 불가.");
             return;
         }
 
         int target = skipTargetStepIndex;
 
-        // ���� ����
+        // 범위 보정
         if (target < 0) target = 0;
         if (target >= stepPanels.Count) target = stepPanels.Count - 1;
 
@@ -142,12 +142,12 @@ public class StepFlowController : MonoBehaviour
             var res = ds.Progress.MarkProblemSolvedForCurrentUser(theme, index);
             if (!res.Ok)
             {
-                Debug.LogWarning($"[StepFlow] MarkProblemSolved ����: {res.Error}");
+                Debug.LogWarning($"[StepFlow] MarkProblemSolved 실패: {res.Error}");
             }
         }
         else
         {
-            Debug.LogWarning("[StepFlow] ���൵ ���� ���� - ���� �Ǵ� DataService.Progress ����");
+            Debug.LogWarning("[StepFlow] 문제 완료 저장 실패 - 세션 또는 DataService.Progress 없음");
         }
 
         // Director 테마: LevelSelectPanel 또는 EndingPanel로 복귀
@@ -163,7 +163,7 @@ public class StepFlowController : MonoBehaviour
 
     protected virtual void OnFlowFinished()
     {
-        Debug.Log($"[ProblemFlowController] ���� �帧 ����: {name}");
-        // TODO: ���⼭ ���� "��� ���� �� ��� ȭ�� ��ȯ" ���� ��ó�� ���� ��.
+        Debug.Log($"[ProblemFlowController] 전체 흐름 완료: {name}");
+        // TODO: 여기서 추후 "모든 스텝 완료 후 홈 화면 전환" 등의 후처리 추가 가능.
     }
 }

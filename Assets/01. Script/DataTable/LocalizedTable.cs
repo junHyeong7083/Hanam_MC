@@ -14,10 +14,10 @@ public class LocalizedTable
 
         var headerMap = CsvHeader.Build(rows[0]);
 
-        // �÷��� �ĺ��� ���� �� �θ� ��Ʈ�� ���� �ٲ� �� ����
+        // 컬럼 식별자 여러 개 등록 (헤더 문자열이 바뀔 수 있음)
         int idxId = CsvHeader.GetIndex(headerMap, "index", "id", "textId");
-        int idxKo = CsvHeader.GetIndex(headerMap, "ko", "�ѱ���");
-        int idxEn = CsvHeader.GetIndex(headerMap, "en", "����");
+        int idxKo = CsvHeader.GetIndex(headerMap, "ko", "한국어");
+        int idxEn = CsvHeader.GetIndex(headerMap, "en", "영어");
 
         for (int i = 1; i < rows.Count; i++)
         {

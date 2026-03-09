@@ -11,7 +11,7 @@ public static class AuthValidator
         return EmailRx.IsMatch(email);
     }
 
-    // 8�� �̻� + ����/���� ���� 1�� �̻�
+    // 6자 이상 + 문자/숫자 각각 1자 이상
     public static bool IsStrongPassword(string pw)
     {
         if (string.IsNullOrEmpty(pw) || pw.Length < 6) return false;

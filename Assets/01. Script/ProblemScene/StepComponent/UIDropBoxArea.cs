@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// �巡�� ������ UI ��ҵ��� "���⿡ �������� ����"�ϴ� ��� �ڽ� ����.
-/// - RectTransform �������� �����Ͱ� ��/�ۿ� �ִ��� ����
-/// - �ܰ���(���̶���Ʈ) On/Off ����
+/// 드래그 아이템의 UI 드롭 "여기에 놓으세요" 영역 박스 컴포넌트.
+/// - RectTransform 영역으로 포인터가 안/밖에 있는지 판정
+/// - 외곽선(하이라이트) On/Off 제어
 /// </summary>
 public class UIDropBoxArea : MonoBehaviour
 {
@@ -45,7 +45,7 @@ public class UIDropBoxArea : MonoBehaviour
         }
     }
 
-    /// <summary>�ʱ� ���·� ���� (���� ����)</summary>
+    /// <summary>초기 상태로 리셋 (외곽선 숨김)</summary>
     public void ResetVisual()
     {
         if (outline != null)
@@ -53,8 +53,8 @@ public class UIDropBoxArea : MonoBehaviour
     }
 
     /// <summary>
-    /// ���� �����Ͱ� ��� ���� �ȿ� �ִ��� ����.
-    /// (true�� ��� ���� ������ �� �� ����)
+    /// 현재 포인터가 드롭 영역 안에 있는지 판정.
+    /// (true면 드롭 가능 영역에 들어온 상태)
     /// </summary>
     public bool IsPointerOver(PointerEventData eventData)
     {
@@ -92,7 +92,7 @@ public class UIDropBoxArea : MonoBehaviour
         outline.SetActive(over);
     }
 
-    /// <summary>�ܰ��� ���� On/Off</summary>
+    /// <summary>외곽선 강제 On/Off</summary>
     public void SetOutlineVisible(bool visible)
     {
         if (outline == null) return;

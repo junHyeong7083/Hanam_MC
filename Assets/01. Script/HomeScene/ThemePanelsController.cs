@@ -296,7 +296,7 @@ public class ThemePanelsController : MonoBehaviour
         if (binding?.panel == null) return;
 
         var sfc = binding.panel.GetComponent<StepFlowController>();
-        if (sfc != null) sfc.JumpToStep(3);
+        if (sfc != null) sfc.JumpToStep(1);
     }
 
     ThemePanelBinding GetDirectorBinding()
