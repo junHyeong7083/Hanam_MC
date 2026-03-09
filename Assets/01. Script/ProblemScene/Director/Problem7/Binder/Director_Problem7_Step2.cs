@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem7 / Step2
@@ -8,11 +7,8 @@ using UnityEngine.UI;
 /// </summary>
 public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
 {
-    [Header("===== HanamBox 가이드 텍스트 =====")]
-    [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextId_SelectMask;
-    [SerializeField] private int guideTextId_SelectFeeling;
-    [SerializeField] private int guideTextId_Complete;
+    [Header("===== 페이즈 전환 텍스트 =====")]
+    [SerializeField] private int maskSelectedTextId;
 
     [Header("===== 가면 선택 화면 =====")]
     [SerializeField] private GameObject selectMaskRoot;
@@ -29,10 +25,8 @@ public class Director_Problem7_Step2 : Director_Problem7_Step2_Logic
     [SerializeField] private float feelingSelectDelay = 2.0f;
 
     // ----- 부모 추상 프로퍼티 구현 -----
-    protected override Text GuideText => guideText;
-    protected override int GuideTextId_SelectMask => guideTextId_SelectMask;
-    protected override int GuideTextId_SelectFeeling => guideTextId_SelectFeeling;
-    protected override int GuideTextId_Complete => guideTextId_Complete;
+
+    protected override int MaskSelectedTextId => maskSelectedTextId;
 
     protected override GameObject SelectMaskRoot => selectMaskRoot;
     protected override ChoiceItem[] MaskChoices => maskChoices;

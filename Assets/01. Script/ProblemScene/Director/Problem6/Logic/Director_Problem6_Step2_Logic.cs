@@ -7,14 +7,12 @@ using UnityEngine.UI;
 public class StressCardSlot
 {
     [Header("논리 데이터")]
-    public string id;          // headache, heartbeat, ...
-    public string label;       // 두통, 심장 두근거림 ...
-    public string category;    // 신체적 / 정서적 / 행동적
+    public string id;              // headache, heartbeat, ...
+    public int labelTextId;        // CSV textId (ProblemRuntime.L로 읽음)
 
     [Header("UI 참조")]
     public Button button;          // 카드 전체 버튼
     public Text labelText;         // 카드 안 텍스트
-    public Text categoryText;      // 카테고리 텍스트
     public Image backgroundImage;  // 카드 배경 Image (색 바꿀 대상)
 
     [Header("선택 시 표시")]
@@ -50,12 +48,6 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 
     /// <summary>완료 게이트 (completeRoot 안에 버튼 있음)</summary>
     protected abstract StepCompletionGate StepCompletionGateRef { get; }
-
-    /// <summary>하남박스 텍스트</summary>
-    protected abstract Text GuideText { get; }
-
-    /// <summary>하남박스 텍스트 ID</summary>
-    protected abstract int GuideTextId { get; }
 
     // ===== 설정값 =====
 
@@ -99,12 +91,6 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
         else
             _interactionLocked = false;
 
-        // 하남박스 텍스트 + TTS
-        if (GuideText != null && GuideTextId > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId);
-
-        if (GuideTextId > 0 && SoundManager.Instance != null)
-            SoundManager.Instance.PlayTTS(GuideTextId);
     }
 
     private void OnDialogueEnterComplete()
@@ -188,17 +174,13 @@ private void SetupCardUI()
             int index = i;
             var slot = cards[i];
 
-            // 텍스트 세팅 (항상 검정)
+            // 텍스트 세팅 (CSV에서 읽기)
             if (slot.labelText != null)
             {
-                slot.labelText.text = slot.label;
+                slot.labelText.text = slot.labelTextId > 0
+                    ? ProblemRuntime.L(slot.labelTextId)
+                    : "";
                 slot.labelText.color = Color.black;
-            }
-
-            if (slot.categoryText != null)
-            {
-                slot.categoryText.text = slot.category;
-                slot.categoryText.color = Color.black;
             }
 
             // 선택 전: backgroundImage ON, selectImage OFF
@@ -280,8 +262,6 @@ private void UpdateCardVisuals()
             // 텍스트 색상: 항상 검정 유지
             if (slot.labelText != null)
                 slot.labelText.color = Color.black;
-            if (slot.categoryText != null)
-                slot.categoryText.color = Color.black;
         }
     }
 
@@ -367,8 +347,7 @@ private void UpdateCardVisuals()
                     selectedList.Add(new
                     {
                         id = slot.id,
-                        label = slot.label,
-                        category = slot.category
+                        label = slot.labelTextId > 0 ? ProblemRuntime.L(slot.labelTextId) : ""
                     });
                 }
             }

@@ -11,11 +11,6 @@ public class Director_Problem10_Step2 : Director_Problem10_Step2_Logic
     [Header("===== 장르 데이터 =====")]
     [SerializeField] private GenreCardData[] genreCardsData;
 
-    [Header("===== 하남박스 =====")]
-    [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextId;
-    [SerializeField] private int guideTextId_Success;
-
     [Header("===== 선택 화면 =====")]
     [SerializeField] private GameObject selectRoot;
     [SerializeField] private Button[] genreButtons;
@@ -32,9 +27,6 @@ public class Director_Problem10_Step2 : Director_Problem10_Step2_Logic
 
     // ----- 부모 추상 프로퍼티 구현 -----
     protected override GenreCardData[] GenreCardsData => genreCardsData;
-    protected override Text GuideText => guideText;
-    protected override int GuideTextId => guideTextId;
-    protected override int GuideTextId_Success => guideTextId_Success;
     protected override GameObject SelectRoot => selectRoot;
     protected override Button[] GenreButtons => genreButtons;
     protected override GameObject[] SelectIndicators => selectIndicators;

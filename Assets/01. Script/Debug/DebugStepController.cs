@@ -8,7 +8,8 @@ using UnityEngine;
 public class DebugStepController : MonoBehaviour
 {
     private StepFlowController _cachedController;
-
+    [SerializeField] private GameObject debugPanel;
+    bool isPanelOpen = false;
     /// <summary>
     /// 현재 활성화된 StepFlowController 찾기
     /// </summary>
@@ -53,6 +54,15 @@ public class DebugStepController : MonoBehaviour
         if (controller != null)
         {
             controller.PrevStep();
+        }
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.F12))
+        {
+            debugPanel.SetActive(!isPanelOpen);
+            isPanelOpen = !isPanelOpen;
         }
     }
 }

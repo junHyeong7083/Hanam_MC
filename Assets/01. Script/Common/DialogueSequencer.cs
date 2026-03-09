@@ -27,6 +27,14 @@ public class DialogueSequencer : MonoBehaviour
     public event Action OnEnterComplete;
     public event Action OnEnterSequenceDone;
 
+    /// <summary>
+    /// OnEnable 전에 enterTextIds를 동적으로 교체
+    /// </summary>
+    public void SetEnterTextIds(int[] textIds)
+    {
+        enterTextIds = textIds;
+    }
+
     private int[] _activeTextIds;
     private int _currentIndex;
     private Action _onLastShown;

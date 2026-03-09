@@ -49,11 +49,8 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
 
     #region Abstract Properties
 
-    [Header("HanamBox 가이드 텍스트")]
-    protected abstract Text GuideText { get; }
-    protected abstract int GuideTextId_SelectMask { get; }
-    protected abstract int GuideTextId_SelectFeeling { get; }
-    protected abstract int GuideTextId_Complete { get; }
+    [Header("페이즈 전환 텍스트")]
+    protected abstract int MaskSelectedTextId { get; }
 
     [Header("가면 선택 화면")]
     protected abstract GameObject SelectMaskRoot { get; }
@@ -228,15 +225,9 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
         if (SelectMaskRoot != null) SelectMaskRoot.SetActive(phase == Phase.SelectMask);
         if (SelectFeelingRoot != null) SelectFeelingRoot.SetActive(phase == Phase.SelectFeeling);
 
-        if (GuideText != null)
-        {
-            int textId = phase == Phase.SelectMask
-                ? GuideTextId_SelectMask
-                : GuideTextId_SelectFeeling;
-
-            if (textId > 0)
-                GuideText.text = ProblemRuntime.L(textId);
-        }
+        // Mask 선택 완료 → SelectFeeling 전환 시 텍스트 변경
+        if (phase == Phase.SelectFeeling && dialogueSequencer != null && MaskSelectedTextId > 0)
+            dialogueSequencer.SetText(MaskSelectedTextId);
     }
 
     // =========================
@@ -292,11 +283,7 @@ public abstract class Director_Problem7_Step2_Logic : ProblemStepBase
     {
         yield return new WaitForSeconds(delay);
 
-        // 완료 가이드 텍스트
-        if (GuideText != null && GuideTextId_Complete > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Complete);
-
-        // 완료 처리
+        // 완료 처리: completedTextIds[0]에 feeling 완료 텍스트 → 마지막에 NextStepBtn 표시
         if (dialogueSequencer != null)
             dialogueSequencer.ShowCompletedText();
     }

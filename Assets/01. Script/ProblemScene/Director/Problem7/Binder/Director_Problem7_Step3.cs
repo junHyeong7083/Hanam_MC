@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem7 / Step3
@@ -8,11 +7,8 @@ using UnityEngine.UI;
 /// </summary>
 public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
 {
-    [Header("===== HanamBox 가이드 텍스트 =====")]
-    [SerializeField] private Text guideText;
-    [SerializeField] private int guideTextId_Select;
-    [SerializeField] private int guideTextId_Complete;
-    [SerializeField] private int guideTextId_Retry;
+    [Header("===== 재시도 텍스트 =====")]
+    [SerializeField] private int retryTextId;
 
     [Header("===== 대사 선택 화면 =====")]
     [SerializeField] private GameObject selectDialogueRoot;
@@ -24,10 +20,7 @@ public class Director_Problem7_Step3 : Director_Problem7_Step3_Logic
     [SerializeField] private GameObject micButtonRoot;
 
     // ----- 부모 추상 프로퍼티 구현 -----
-    protected override Text GuideText => guideText;
-    protected override int GuideTextId_Select => guideTextId_Select;
-    protected override int GuideTextId_Complete => guideTextId_Complete;
-    protected override int GuideTextId_Retry => guideTextId_Retry;
+    protected override int RetryTextId => retryTextId;
 
     protected override GameObject SelectDialogueRoot => selectDialogueRoot;
     protected override DialogueItem[] DialogueChoices => dialogueChoices;

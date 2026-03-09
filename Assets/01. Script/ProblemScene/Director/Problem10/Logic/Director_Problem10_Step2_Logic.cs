@@ -37,11 +37,6 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
 
     protected abstract GenreCardData[] GenreCardsData { get; }
 
-    // 하남박스
-    protected abstract Text GuideText { get; }
-    protected abstract int GuideTextId { get; }
-    protected abstract int GuideTextId_Success { get; }
-
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
 
@@ -79,11 +74,6 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
     protected override void OnStepEnter()
     {
         _selected = false;
-
-        // 가이드 텍스트
-        if (GuideText != null && GuideTextId > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId);
-
         _interactionLocked = true;
 
         // 장르 라벨 설정
@@ -217,11 +207,7 @@ public abstract class Director_Problem10_Step2_Logic : ProblemStepBase
         if (SelectRoot != null) SelectRoot.SetActive(false);
         if (CompleteRoot != null) CompleteRoot.SetActive(true);
 
-        // 성공 가이드
-        if (GuideText != null && GuideTextId_Success > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Success);
-
-        // 완료 처리
+        // 완료 처리: completedTextIds 재생 → NextStepBtn 표시
         if (dialogueSequencer != null)
             dialogueSequencer.ShowCompletedText();
 

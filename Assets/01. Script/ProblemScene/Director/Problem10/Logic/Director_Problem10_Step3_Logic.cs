@@ -5,10 +5,9 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem10 / Step3 로직 베이스
-/// - 2라운드 말하기 (영화 제목 → 다짐 선언)
-/// - 각 라운드: 가이드 → 말하기 → STT 인식 → 포스터에 텍스트 작성
-/// - 라운드 사이 전환 대사 + NextBtn으로 진행
-/// - 2라운드 완료 후 성공 가이드 + NextStepBtn
+/// - Step2에서 선택한 장르 인덱스에 따라 다짐 안내 대사 결정
+/// - 마이크로 다짐 말하기 → STT 인식 → 포스터에 텍스트 작성
+/// - 완료 후 ShowCompletedText → NextStepBtn
 /// </summary>
 public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 {
@@ -17,19 +16,16 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     // =========================
 
     [Serializable]
-    public class RoundData
+    public class GenreCommitmentData
     {
-        public int guideTextId;              // 말하기 안내 (textId, 0이면 hardcodedGuide 사용)
-        [TextArea(1, 2)]
-        public string hardcodedGuide;        // guideTextId == 0일 때 사용
-        public string sttKeyword;            // STT 키워드 = 포스터에 표시할 텍스트
-        public int transitionGuideTextId;    // 성공 후 전환 대사 textId (0이면 바로 Complete)
+        public int guideTextId;     // 다짐 안내 textId (101100007~010)
+        public string sttKeyword;   // STT 키워드 = 포스터에 표시할 텍스트
+        public Sprite cardSprite;   // 장르별 포스터 스프라이트
     }
 
     [Serializable]
     private class PosterCreationDto
     {
-        public string title;
         public string commitment;
     }
 
@@ -39,16 +35,19 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     #region Abstract Properties
 
-    protected abstract RoundData[] Rounds { get; }
+    /// <summary>
+    /// 장르 인덱스(0~3)별 다짐 데이터
+    /// Step2에서 선택한 인덱스로 결정
+    /// </summary>
+    protected abstract GenreCommitmentData[] GenreCommitments { get; }
 
-    // 하남박스
-    protected abstract Text GuideText { get; }
-    protected abstract int GuideTextId_Success { get; }
-    protected abstract string FailGuideText { get; }
-    protected abstract Button NextDialogueBtn { get; }
+    protected abstract int FailGuideTextId { get; }
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
+
+    [Header("Completion")]
+    [SerializeField] private StepCompletionGate completionGate;
 
     // 마이크
     protected abstract GameObject MicRoot { get; }
@@ -57,7 +56,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     // 포스터
     protected abstract Image GenreCardImage { get; }
-    protected abstract Text PosterTitleText { get; }
     protected abstract Text PosterCommitmentText { get; }
 
     // 공유 데이터
@@ -67,13 +65,13 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     #region Virtual Config
 
-    protected virtual float TransitionDelay => 1.0f;
+    protected virtual float CompleteDelay => 1.0f;
 
     #endregion
 
     // 내부 상태
-    private int _currentRound;
     private bool _speaking;
+    private GenreCommitmentData _activeData;
     private Coroutine _guideRevertRoutine;
     private bool _interactionLocked = true;
 
@@ -83,31 +81,47 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     protected override void OnStepEnter()
     {
-        _currentRound = 0;
         _speaking = false;
-
-        // SharedData에서 포스터 스프라이트 로드
-        var shared = SharedData;
-        if (shared != null && shared.selectedSprite != null && GenreCardImage != null)
-            GenreCardImage.sprite = shared.selectedSprite;
+        _activeData = null;
 
         // 포스터 텍스트 초기화
-        if (PosterTitleText != null) PosterTitleText.text = "";
         if (PosterCommitmentText != null) PosterCommitmentText.text = "";
 
+        // 선택한 장르에 따른 다짐 데이터 결정
+        var shared = SharedData;
+        var commitments = GenreCommitments;
+        if (shared != null && commitments != null
+            && shared.selectedGenreIndex >= 0
+            && shared.selectedGenreIndex < commitments.Length)
+        {
+            _activeData = commitments[shared.selectedGenreIndex];
+        }
+
+        // 장르별 포스터 스프라이트 설정
+        if (_activeData != null && _activeData.cardSprite != null && GenreCardImage != null)
+            GenreCardImage.sprite = _activeData.cardSprite;
+
+        // 장르별 가이드 텍스트를 enterTextIds로 동적 설정
+        if (dialogueSequencer != null && _activeData != null && _activeData.guideTextId > 0)
+            dialogueSequencer.SetEnterTextIds(new[] { _activeData.guideTextId });
+
         RegisterListeners();
-        ShowSpeakingPhase(0);
+
+        // 초기에 마이크 숨김 (enterTextIds 끝난 후 표시)
+        if (MicRoot != null) MicRoot.SetActive(false);
+        if (completionGate != null) completionGate.ResetGate(1);
 
         _interactionLocked = true;
         if (dialogueSequencer != null)
             dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
         else
-            _interactionLocked = false;
+            ShowSpeakingPhase();
     }
 
     private void OnDialogueEnterComplete()
     {
         _interactionLocked = false;
+        ShowSpeakingPhase();
     }
 
     protected override void OnStepExit()
@@ -149,13 +163,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
             mic.OnNoMatch -= OnNoMatch;
             mic.OnNoMatch += OnNoMatch;
         }
-
-        var nextBtn = NextDialogueBtn;
-        if (nextBtn != null)
-        {
-            nextBtn.onClick.RemoveAllListeners();
-            nextBtn.onClick.AddListener(OnNextDialogueClicked);
-        }
     }
 
     private void RemoveListeners()
@@ -169,41 +176,24 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
             mic.OnKeywordMatched -= OnKeywordMatched;
             mic.OnNoMatch -= OnNoMatch;
         }
-
-        var nextBtn = NextDialogueBtn;
-        if (nextBtn != null) nextBtn.onClick.RemoveAllListeners();
     }
 
     // =========================
     // 말하기 페이즈
     // =========================
 
-    private void ShowSpeakingPhase(int round)
+    private void ShowSpeakingPhase()
     {
-        var rounds = Rounds;
-        if (rounds == null || round >= rounds.Length) return;
-
-        var data = rounds[round];
         _speaking = false;
-
-        // 가이드 텍스트
-        if (GuideText != null)
-        {
-            if (data.guideTextId > 0)
-                GuideText.text = ProblemRuntime.L(data.guideTextId);
-            else if (!string.IsNullOrEmpty(data.hardcodedGuide))
-                GuideText.text = data.hardcodedGuide;
-        }
 
         // STT 키워드 설정
         var mic = MicIndicator;
-        if (mic != null && !string.IsNullOrEmpty(data.sttKeyword))
-            mic.SetKeywords(new[] { data.sttKeyword });
+        if (mic != null && _activeData != null && !string.IsNullOrEmpty(_activeData.sttKeyword))
+            mic.SetKeywords(new[] { _activeData.sttKeyword });
 
-        // UI: MicRoot 표시, 버튼들 숨김
+        // UI: MicRoot 표시
         if (MicRoot != null) MicRoot.SetActive(true);
         if (MicButton != null) MicButton.interactable = true;
-        if (NextDialogueBtn != null) NextDialogueBtn.gameObject.SetActive(false);
     }
 
     // =========================
@@ -213,7 +203,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     private void OnMicClicked()
     {
         if (_speaking) return;
-        // ToggleRecording은 인스펙터에서 직접 연결 — 여기서는 상태만 관리
     }
 
     // =========================
@@ -239,42 +228,22 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         if (_speaking) return;
         _speaking = true;
 
-        var rounds = Rounds;
-        if (rounds == null || _currentRound >= rounds.Length) return;
-
-        var data = rounds[_currentRound];
-
-        // 포스터 텍스트 작성
-        if (_currentRound == 0 && PosterTitleText != null)
-            PosterTitleText.text = data.sttKeyword;
-        else if (_currentRound == 1 && PosterCommitmentText != null)
-            PosterCommitmentText.text = data.sttKeyword;
+        // 포스터에 다짐 텍스트 작성
+        if (PosterCommitmentText != null && _activeData != null)
+            PosterCommitmentText.text = _activeData.sttKeyword;
 
         // 마이크 숨김
         if (MicRoot != null) MicRoot.SetActive(false);
 
-        // 전환 대사가 있으면 → 대사 표시 + NextBtn
-        if (data.transitionGuideTextId > 0)
-        {
-            if (GuideText != null)
-                GuideText.text = ProblemRuntime.L(data.transitionGuideTextId);
-
-            if (NextDialogueBtn != null)
-                NextDialogueBtn.gameObject.SetActive(true);
-        }
-        else
-        {
-            // 전환 대사 없으면 → 딜레이 후 Complete
-            StartCoroutine(DelayedComplete());
-        }
+        // 딜레이 후 Complete
+        StartCoroutine(DelayedComplete());
     }
 
     private void OnSpeakFail()
     {
         if (_speaking) return;
 
-        string failText = FailGuideText;
-        if (GuideText != null && !string.IsNullOrEmpty(failText))
+        if (FailGuideTextId > 0)
         {
             if (_guideRevertRoutine != null)
                 StopCoroutine(_guideRevertRoutine);
@@ -284,32 +253,19 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     private IEnumerator ShowFailGuideAndRevert()
     {
-        var rounds = Rounds;
-        var data = (rounds != null && _currentRound < rounds.Length) ? rounds[_currentRound] : null;
+        if (dialogueSequencer != null)
+            dialogueSequencer.SetText(FailGuideTextId);
 
-        GuideText.text = FailGuideText;
         yield return new WaitForSeconds(2f);
 
         // 원래 가이드로 복귀
-        if (GuideText != null && data != null && !_speaking)
+        if (dialogueSequencer != null && _activeData != null
+            && !_speaking && _activeData.guideTextId > 0)
         {
-            if (data.guideTextId > 0)
-                GuideText.text = ProblemRuntime.L(data.guideTextId);
-            else if (!string.IsNullOrEmpty(data.hardcodedGuide))
-                GuideText.text = data.hardcodedGuide;
+            dialogueSequencer.SetText(_activeData.guideTextId);
         }
 
         _guideRevertRoutine = null;
-    }
-
-    // =========================
-    // NextDialogue 클릭
-    // =========================
-
-    private void OnNextDialogueClicked()
-    {
-        _currentRound++;
-        ShowSpeakingPhase(_currentRound);
     }
 
     // =========================
@@ -318,30 +274,25 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
 
     private IEnumerator DelayedComplete()
     {
-        yield return new WaitForSeconds(TransitionDelay);
+        yield return new WaitForSeconds(CompleteDelay);
         ShowComplete();
     }
 
     private void ShowComplete()
     {
-        // 성공 가이드
-        if (GuideText != null && GuideTextId_Success > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Success);
-
-        // 완료 처리
-        if (dialogueSequencer != null)
-            dialogueSequencer.ShowCompletedText();
+        // 완료 처리: gate가 NextStepBtn 표시
+        if (completionGate != null)
+            completionGate.MarkOneDone();
 
         // 나머지 숨김
         if (MicRoot != null) MicRoot.SetActive(false);
-        if (NextDialogueBtn != null) NextDialogueBtn.gameObject.SetActive(false);
 
         // SharedData에 포스터 텍스트 저장 (엔딩에서 사용)
         var shared = SharedData;
         if (shared != null)
         {
             shared.SetPosterTexts(
-                PosterTitleText != null ? PosterTitleText.text : "",
+                "",
                 PosterCommitmentText != null ? PosterCommitmentText.text : ""
             );
         }
@@ -349,7 +300,6 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
         // DB 저장
         SaveAttempt(new PosterCreationDto
         {
-            title = PosterTitleText != null ? PosterTitleText.text : "",
             commitment = PosterCommitmentText != null ? PosterCommitmentText.text : ""
         });
     }

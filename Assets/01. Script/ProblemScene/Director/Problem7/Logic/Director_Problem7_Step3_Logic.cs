@@ -39,11 +39,8 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
     #region Abstract Properties
 
-    [Header("HanamBox 가이드 텍스트")]
-    protected abstract Text GuideText { get; }
-    protected abstract int GuideTextId_Select { get; }
-    protected abstract int GuideTextId_Complete { get; }
-    protected abstract int GuideTextId_Retry { get; }
+    [Header("재시도 텍스트")]
+    protected abstract int RetryTextId { get; }
 
     [Header("대사 선택 화면")]
     protected abstract GameObject SelectDialogueRoot { get; }
@@ -82,9 +79,6 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
         if (SelectDialogueRoot != null) SelectDialogueRoot.SetActive(true);
         if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
-
-        if (GuideText != null && GuideTextId_Select > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Select);
 
         _interactionLocked = true;
         if (dialogueSequencer != null)
@@ -274,9 +268,6 @@ public abstract class Director_Problem7_Step3_Logic : ProblemStepBase
 
             SaveDialogueAttempt();
 
-            if (GuideText != null && GuideTextId_Complete > 0)
-                GuideText.text = ProblemRuntime.L(GuideTextId_Complete);
-
             if (MicButtonRoot != null) MicButtonRoot.SetActive(false);
 
             if (dialogueSequencer != null)
@@ -305,12 +296,14 @@ private void ShowRetryGuide()
         if (_selectedDialogue?.selectImg != null)
             _selectedDialogue.selectImg.SetActive(false);
 
-        if (GuideText != null && GuideTextId_Retry > 0)
-            GuideText.text = ProblemRuntime.L(GuideTextId_Retry);
+        if (RetryTextId > 0)
+        {
+            if (dialogueSequencer != null)
+                dialogueSequencer.SetText(RetryTextId);
 
-        // 재시도 TTS 재생
-        if (GuideTextId_Retry > 0 && SoundManager.Instance != null)
-            SoundManager.Instance.PlayTTS(GuideTextId_Retry);
+            if (SoundManager.Instance != null)
+                SoundManager.Instance.PlayTTS(RetryTextId);
+        }
 
         var mic = MicIndicator;
         if (mic != null)

@@ -27,29 +27,36 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
     [SerializeField] private SummaryLineConfig[] lineConfigs;
 
     [Header("타이밍")]
-    [SerializeField] private float spawnInterval = 0.3f;
     [SerializeField] private float moveDuration = 0.5f;
+
+    [Header("다음 클릭 버튼 (투명 1920x1080)")]
+    [SerializeField] private Button nextLineButton;
 
     [Header("다음 스텝 처리")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    private Coroutine _sequenceRoutine;
+    private int _currentLineIndex;
+    private int _totalLineCount;
+    private bool _isAnimating;
 
     private void OnEnable()
     {
         if (completionGate != null)
             completionGate.ResetGate(1);
 
+        if (nextLineButton != null)
+        {
+            nextLineButton.onClick.RemoveAllListeners();
+            nextLineButton.onClick.AddListener(OnNextLineClicked);
+        }
+
         StartSequence();
     }
 
     private void OnDisable()
     {
-        if (_sequenceRoutine != null)
-        {
-            StopCoroutine(_sequenceRoutine);
-            _sequenceRoutine = null;
-        }
+        if (nextLineButton != null)
+            nextLineButton.onClick.RemoveAllListeners();
     }
 
     public void SetSummaryContent(int[] textIds)
@@ -59,11 +66,8 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
 
     public void StartSequence()
     {
-        if (_sequenceRoutine != null)
-            StopCoroutine(_sequenceRoutine);
-
         ClearLines();
-        _sequenceRoutine = StartCoroutine(SequenceRoutine());
+        PrepareSequence();
     }
 
     private void ClearLines()
@@ -74,106 +78,127 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             Destroy(linesRoot.GetChild(i).gameObject);
     }
 
-    private IEnumerator SequenceRoutine()
+    private void PrepareSequence()
     {
         // 타이틀 세팅
         if (titleText != null && titleTextId != 0)
             titleText.text = ProblemRuntime.L(titleTextId);
 
-        if (summaryTextIds == null || summaryTextIds.Length == 0)
-            yield break;
+        int textCount = (summaryTextIds != null) ? summaryTextIds.Length : 0;
+        int configCount = (lineConfigs != null) ? lineConfigs.Length : 0;
+        _totalLineCount = Mathf.Min(textCount, configCount);
+        _currentLineIndex = 0;
+        _isAnimating = false;
 
+        if (_totalLineCount <= 0)
+        {
+            Debug.LogWarning("[SummaryPanel] summaryTextIds 또는 lineConfigs가 비어있습니다.");
+            return;
+        }
+
+        // 첫 번째 라인 즉시 표시
+        SpawnLine(_currentLineIndex);
+    }
+
+    private void OnNextLineClicked()
+    {
+        if (_isAnimating) return;
+
+        _currentLineIndex++;
+
+        if (_currentLineIndex >= _totalLineCount) return;
+
+        SpawnLine(_currentLineIndex);
+
+        // 마지막 라인이면 즉시 버튼 비활성화 + 완료 처리
+        if (_currentLineIndex >= _totalLineCount - 1)
+        {
+            if (nextLineButton != null)
+                nextLineButton.gameObject.SetActive(false);
+
+            if (completionGate != null)
+                completionGate.MarkOneDone();
+        }
+    }
+
+    private void SpawnLine(int i)
+    {
         if (linePrefab == null || linesRoot == null)
         {
             Debug.LogWarning("[SummaryPanel] linePrefab 또는 linesRoot가 null 입니다.");
-            yield break;
+            return;
         }
 
-        int textCount = summaryTextIds.Length;
-        int configCount = (lineConfigs != null) ? lineConfigs.Length : 0;
-        int count = Mathf.Min(textCount, configCount);
+        var cfg = lineConfigs[i];
 
-        if (count <= 0)
+        RectTransform spawn = cfg.spawnPoint;
+        RectTransform target = cfg.targetPoint;
+
+        if (spawn == null && lineConfigs.Length > 0)
         {
-            Debug.LogWarning("[SummaryPanel] summaryTextIds 또는 lineConfigs가 비어있습니다.");
-            yield break;
+            spawn = lineConfigs[0].spawnPoint;
+            Debug.LogWarning($"[SummaryPanel] line {i} spawnPoint null -> element0으로 대체");
         }
 
-        for (int i = 0; i < count; i++)
+        if (target == null && lineConfigs.Length > 0)
         {
-            var cfg = lineConfigs[i];
-
-            RectTransform spawn = cfg.spawnPoint;
-            RectTransform target = cfg.targetPoint;
-
-            if (spawn == null && lineConfigs.Length > 0)
-            {
-                spawn = lineConfigs[0].spawnPoint;
-                Debug.LogWarning($"[SummaryPanel] line {i} spawnPoint null -> element0으로 대체");
-            }
-
-            if (target == null && lineConfigs.Length > 0)
-            {
-                target = lineConfigs[0].targetPoint;
-                Debug.LogWarning($"[SummaryPanel] line {i} targetPoint null -> element0으로 대체");
-            }
-
-            if (spawn == null || target == null)
-            {
-                Debug.LogWarning($"[SummaryPanel] line {i} 생성 불가 - spawn/target null");
-                continue;
-            }
-
-            var go = Instantiate(linePrefab, linesRoot);
-            go.name = $"SummaryLine_{i}";
-
-            var rt = go.GetComponent<RectTransform>();
-            if (rt == null)
-            {
-                Debug.LogWarning($"[SummaryPanel] line {i} RectTransform이 없습니다.");
-                Destroy(go);
-                continue;
-            }
-
-            // 프리팹 구조 가정:
-            // linePrefab
-            //  - Icon(0)
-            //    - NumberText (Icon 내부 Text)
-            //  - DescriptionText (linePrefab 하위 Text)
-            Transform iconTr = go.transform.childCount > 0 ? go.transform.GetChild(0) : null;
-
-            if (iconTr != null)
-            {
-                var numberText = iconTr.GetComponentInChildren<Text>();
-                if (numberText != null)
-                    numberText.text = (i + 1).ToString();
-            }
-
-            // 설명 텍스트 설정
-            var descTexts = go.GetComponentsInChildren<Text>();
-            for (int tIdx = 0; tIdx < descTexts.Length; tIdx++)
-            {
-                var t = descTexts[tIdx];
-                if (iconTr != null && t.transform.IsChildOf(iconTr))
-                    continue;
-
-                t.text = ProblemRuntime.L(summaryTextIds[i]);
-                break;
-            }
-
-            // 시작 위치에서 목표 위치로 이동
-            rt.position = spawn.position;
-            StartCoroutine(MoveLine(rt, target.position, moveDuration));
-
-            yield return new WaitForSeconds(spawnInterval);
+            target = lineConfigs[0].targetPoint;
+            Debug.LogWarning($"[SummaryPanel] line {i} targetPoint null -> element0으로 대체");
         }
 
-        // 마지막 라인 이동 완료까지 대기
-        yield return new WaitForSeconds(moveDuration);
+        if (spawn == null || target == null)
+        {
+            Debug.LogWarning($"[SummaryPanel] line {i} 생성 불가 - spawn/target null");
+            return;
+        }
 
-        // 여기서 완료 처리 -> StepCompletionGate가 completeRoot(버튼 루트)를 켬
-        if (completionGate != null)
-            completionGate.MarkOneDone();
+        var go = Instantiate(linePrefab, linesRoot);
+        go.name = $"SummaryLine_{i}";
+
+        var rt = go.GetComponent<RectTransform>();
+        if (rt == null)
+        {
+            Debug.LogWarning($"[SummaryPanel] line {i} RectTransform이 없습니다.");
+            Destroy(go);
+            return;
+        }
+
+        // 프리팹 구조 가정:
+        // linePrefab
+        //  - Icon(0)
+        //    - NumberText (Icon 내부 Text)
+        //  - DescriptionText (linePrefab 하위 Text)
+        Transform iconTr = go.transform.childCount > 0 ? go.transform.GetChild(0) : null;
+
+        if (iconTr != null)
+        {
+            var numberText = iconTr.GetComponentInChildren<Text>();
+            if (numberText != null)
+                numberText.text = (i + 1).ToString();
+        }
+
+        // 설명 텍스트 설정
+        var descTexts = go.GetComponentsInChildren<Text>();
+        for (int tIdx = 0; tIdx < descTexts.Length; tIdx++)
+        {
+            var t = descTexts[tIdx];
+            if (iconTr != null && t.transform.IsChildOf(iconTr))
+                continue;
+
+            t.text = ProblemRuntime.L(summaryTextIds[i]);
+            break;
+        }
+
+        // 시작 위치에서 목표 위치로 이동
+        rt.position = spawn.position;
+        StartCoroutine(MoveLineWithLock(rt, target.position, moveDuration));
+    }
+
+    private IEnumerator MoveLineWithLock(RectTransform rt, Vector3 targetPos, float duration)
+    {
+        _isAnimating = true;
+        yield return StartCoroutine(MoveLine(rt, targetPos, duration));
+        _isAnimating = false;
     }
 
     private IEnumerator MoveLine(RectTransform rt, Vector3 targetPos, float duration)
