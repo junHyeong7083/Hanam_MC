@@ -42,12 +42,8 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
     [Header("이펙트 컨트롤러")]
     [SerializeField] private Problem4_Step2_EffectController effectController;
 
-    [Header("하남 박스")]
-    [SerializeField] private Text hanamText;
-    [SerializeField] private int guideTextId;
-    [SerializeField] private int completionTextId;
+    [Header("오답 피드백")]
     [SerializeField] private int errorTextId;
-    [SerializeField] private string errorTextFallback = "다시 생각해주세요";
 
     [Header("완료 시 UI")]
     [SerializeField] private GameObject hideObjectOnComplete;
@@ -68,10 +64,7 @@ public class Director_Problem4_Step2 : Director_Problem4_Step2_Logic
 
     protected override Problem4_Step2_EffectController EffectController => effectController;
 
-    protected override Text HanamText => hanamText;
-    protected override string GuideText => ProblemRuntime.L(guideTextId);
-    protected override string CompletionText => ProblemRuntime.L(completionTextId);
-    protected override string ErrorText => errorTextId > 0 ? ProblemRuntime.L(errorTextId) : errorTextFallback;
+    protected override int ErrorTextId => errorTextId;
 
     protected override GameObject HideObjectOnComplete => hideObjectOnComplete;
     protected override RectTransform ShowImageOnComplete => showImageOnComplete;

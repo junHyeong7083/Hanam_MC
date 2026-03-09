@@ -15,12 +15,11 @@ public class ProblemRuntime : MonoBehaviour
     private void Awake()
     {
         if (I != null) { Destroy(gameObject); return; }
-        I = this;
-
-        // 이 씬 안에서만 쓰는 전역이면 DontDestroyOnLoad 굳이 필요 없음
-        // 씬 넘어가도 유지 원하면 아래 주석 해제
-        // DontDestroyOnLoad(gameObject);
-
+        else
+        {
+            I = this;
+            DontDestroyOnLoad(gameObject);
+        }
         LoadLocalized();
     }
 

@@ -34,11 +34,6 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
 
-    [Header("하남 박스")]
-    protected abstract Text HanamText { get; }
-    protected abstract int GuideTextId { get; }
-    protected abstract int CompletionTextId { get; }
-
     // ==== 내부 상태 ====
 
     private bool _interactionLocked = true;
@@ -89,10 +84,6 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
                 scene.RevealedText.text = ProblemRuntime.L(scene.RevealedTextId);
         }
 
-        // 가이드 텍스트
-        if (HanamText != null && GuideTextId > 0)
-            HanamText.text = ProblemRuntime.L(GuideTextId);
-
         // Gate 초기화
         if (CompletionGate != null)
             CompletionGate.ResetGate(1);
@@ -107,6 +98,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     private void OnDialogueEnterComplete()
     {
         _interactionLocked = false;
+        Debug.Log("[Problem5_Step2] OnDialogueEnterComplete → _interactionLocked = false");
     }
 
     protected override void OnStepExit()
@@ -125,6 +117,7 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 
     public void OnClickScene(int index)
     {
+        Debug.Log($"[Problem5_Step2] OnClickScene({index}) called, _interactionLocked={_interactionLocked}");
         if (_interactionLocked) return;
         var scenes = Scenes;
         if (scenes == null || index < 0 || index >= scenes.Length) return;
@@ -151,10 +144,6 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
         var allScenes = Scenes;
         if (allScenes != null && _revealedCount >= allScenes.Length)
         {
-            // 완료 텍스트
-            if (HanamText != null && CompletionTextId > 0)
-                HanamText.text = ProblemRuntime.L(CompletionTextId);
-
             var gate = CompletionGate;
             if (gate != null)
                 gate.MarkOneDone();

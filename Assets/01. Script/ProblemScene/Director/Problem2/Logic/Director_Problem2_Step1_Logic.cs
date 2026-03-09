@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem2~9 / Step1 공통 로직.
@@ -23,6 +25,12 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 
     [Header("완료 게이트 (Next 버튼용)")]
     protected abstract StepCompletionGate CompletionGate { get; }
+
+    // ===== 드래그 상태 텍스트 (옵션) =====
+    protected virtual Text DragStateText => null;
+    protected virtual int BeforeDragTextId => 0;
+    protected virtual int AfterDragTextId => 0;
+    protected virtual Color AfterDragTextColor => Color.white;
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
@@ -78,6 +86,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
             stepInventory.gameObject.SetActive(true);
             SetupInventoryDragCallbacks();
         }
+
+        // 드래그 전 텍스트 설정 (옵션)
+        if (DragStateText != null && BeforeDragTextId > 0)
+            DragStateText.text = ProblemRuntime.L(BeforeDragTextId);
     }
 
     protected override void OnStepExit()
@@ -108,15 +120,24 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         {
             stepInventory.gameObject.SetActive(false);
 
+            // DB에서 획득한 아이템 목록 조회
+            var ownedItemIds = LoadOwnedItemIds();
+
             if (stepInventory.slots != null)
             {
                 foreach (var slot in stepInventory.slots)
                 {
-                    if (slot.itemComponent != null)
-                    {
-                        slot.itemComponent.draggable = slot.draggableThisStep;
-                        slot.itemComponent.SetLocked(!slot.draggableThisStep);
-                    }
+                    if (slot.itemComponent == null) continue;
+
+                    // 이번 스텝에서 드래그 가능한 아이템 설정
+                    slot.itemComponent.draggable = slot.draggableThisStep;
+
+                    // DB에 있거나 이번 스텝 드래그 대상이면 잠금 해제
+                    bool owned = ownedItemIds != null
+                        && !string.IsNullOrEmpty(slot.itemId)
+                        && ownedItemIds.Contains(slot.itemId);
+
+                    slot.itemComponent.SetLocked(!slot.draggableThisStep && !owned);
                 }
             }
         }
@@ -132,6 +153,31 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         // 완료 게이트 초기화 (목표 1개 드롭)
         if (gate != null)
             gate.ResetGate(1);
+    }
+
+    // =========================================
+    // DB 인벤토리 조회
+    // =========================================
+    private HashSet<string> LoadOwnedItemIds()
+    {
+        var ds = DataService.Instance;
+        if (ds == null || ds.Reward == null) return null;
+
+        var session = SessionManager.Instance;
+        var user = session?.CurrentUser;
+        if (user == null || string.IsNullOrEmpty(user.Email)) return null;
+
+        var result = ds.Reward.GetInventory(user.Email);
+        if (!result.Ok || result.Value == null) return null;
+
+        var set = new HashSet<string>();
+        foreach (var item in result.Value)
+        {
+            if (item != null && !string.IsNullOrEmpty(item.ItemId))
+                set.Add(item.ItemId);
+        }
+
+        return set;
     }
 
     // =========================================
@@ -213,6 +259,13 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
             hideAfterDrop.SetActive(false);
         if (showAfterDrop != null)
             showAfterDrop.SetActive(true);
+
+        // 드래그 후 텍스트 변경 (옵션)
+        if (DragStateText != null && AfterDragTextId > 0)
+        {
+            DragStateText.text = ProblemRuntime.L(AfterDragTextId);
+            DragStateText.color = AfterDragTextColor;
+        }
 
         if (!_isCompleted)
         {

@@ -16,6 +16,7 @@ public class StepInventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
     public GameObject unlockedRoot;
     public Image iconImage;          // BackgroundImageClcik — 드래그 시 커서 따라감
     public Image backgroundImage;    // BackgroundImageAlpha — 원위치에 남음
+    public GlowEffect glowEffect;
     public RectTransform iconRect;
     public Canvas rootCanvas;
     public float hoverScale = 1.05f;
@@ -32,10 +33,13 @@ public class StepInventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
     private Vector2 _iconOriginalPos;
     private bool _isDragging;
 
-    private void Awake()
+    private void OnEnable()
     {
         if (rootCanvas == null)
             rootCanvas = GetComponentInParent<Canvas>();
+
+        if (glowEffect == null && iconImage != null)
+            glowEffect = iconImage.GetComponentInChildren<GlowEffect>(true);
     }
 
     public void SetLocked(bool locked)

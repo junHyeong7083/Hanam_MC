@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem3 / Step1
@@ -19,6 +20,12 @@ public class Director_Problem3_Step1 : Director_Problem2_Step1_Logic
     [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
+    [Header("드래그 상태 텍스트")]
+    [SerializeField] private Text dragStateText;
+    [SerializeField] private int beforeDragTextId;
+    [SerializeField] private int afterDragTextId;
+    [SerializeField] private Color afterDragTextColor = Color.white;
+
     protected override UIDropBoxArea DropBoxArea => dropBoxArea;
     protected override RectTransform LeftEnterRoot => leftEnterRoot;
     protected override RectTransform RightEnterRoot => rightEnterRoot;
@@ -27,4 +34,9 @@ public class Director_Problem3_Step1 : Director_Problem2_Step1_Logic
     protected override float RightStartOffsetX => rightStartOffsetX;
     protected override float IntroDelay => introDelay;
     protected override StepCompletionGate CompletionGate => completionGate;
+
+    protected override Text DragStateText => dragStateText;
+    protected override int BeforeDragTextId => beforeDragTextId;
+    protected override int AfterDragTextId => afterDragTextId;
+    protected override Color AfterDragTextColor => afterDragTextColor;
 }

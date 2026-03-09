@@ -8,8 +8,6 @@ public interface IYesNoQuestionData
 {
     string QuestionId { get; }
     string MainText { get; }
-    string SubText { get; }
-    int SubTextId { get; }
     bool IsYesCorrect { get; }
 }
 
@@ -43,24 +41,20 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     protected abstract IYesNoQuestionData[] Questions { get; }
 
     protected abstract Text MainTextLabel { get; }
-    protected abstract Text HanamTextLabel { get; }
 
     protected abstract Button YesButton { get; }
     protected abstract Button NoButton { get; }
 
-    protected abstract string DefaultErrorMessage { get; }
-    protected abstract float ErrorShowDuration { get; }
+    protected abstract int ErrorTextId { get; }
 
     protected abstract GameObject ButtonImageRoot { get; }
 
-    protected abstract MicRecordingIndicator MicIndicator { get; }
+    protected abstract StepCompletionGate StepCompletionGate { get; }
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
 
     protected virtual Problem4_Step3_EffectController EffectController => null;
-    protected virtual TTSTrigger HanamTTSTrigger => null;
-    protected virtual int CompleteTextId => 0;
 
 
     // ==========================
@@ -70,8 +64,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     private bool _interactionLocked = true;
     private int _currentIndex;
     private bool _stepCompleted;
-    private Coroutine _errorRoutine;
-    private string _savedHanamText;
     private readonly List<QuestionActionLog> _actionLogs = new List<QuestionActionLog>();
 
     // ==================================================
@@ -88,8 +80,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
             if (MainTextLabel != null)
                 MainTextLabel.text = "";
-            if (HanamTextLabel != null)
-                HanamTextLabel.text = "";
 
             return;
         }
@@ -98,11 +88,8 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         _stepCompleted = false;
         _actionLogs.Clear();
 
-        if (_errorRoutine != null)
-        {
-            StopCoroutine(_errorRoutine);
-            _errorRoutine = null;
-        }
+        if (StepCompletionGate != null)
+            StepCompletionGate.ResetGate(1);
 
         if (YesButton != null) YesButton.interactable = true;
         if (NoButton != null) NoButton.interactable = true;
@@ -110,18 +97,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         // 버튼 이미지 표시
         if (ButtonImageRoot != null)
             ButtonImageRoot.SetActive(true);
-
-        // MicIndicator 활성화 + STT 이벤트 구독
-        var mic = MicIndicator;
-        if (mic != null)
-        {
-            mic.gameObject.SetActive(true);
-
-            mic.OnKeywordMatched -= OnSTTKeywordMatched;
-            mic.OnKeywordMatched += OnSTTKeywordMatched;
-            mic.OnNoMatch -= OnSTTNoMatch;
-            mic.OnNoMatch += OnSTTNoMatch;
-        }
 
         // 첫 질문 텍스트 설정 + 등장 애니메이션
         ApplyQuestionUI(_currentIndex);
@@ -148,19 +123,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
             dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
 
         _interactionLocked = true;
-
-        if (_errorRoutine != null)
-        {
-            StopCoroutine(_errorRoutine);
-            _errorRoutine = null;
-        }
-
-        var mic = MicIndicator;
-        if (mic != null)
-        {
-            mic.OnKeywordMatched -= OnSTTKeywordMatched;
-            mic.OnNoMatch -= OnSTTNoMatch;
-        }
     }
 
     // ==================================================
@@ -181,16 +143,6 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
         if (MainTextLabel != null)
             MainTextLabel.text = q.MainText;
-
-        if (HanamTextLabel != null)
-        {
-            HanamTextLabel.text = q.SubText;
-            _savedHanamText = q.SubText;
-        }
-
-        // TTS 재생
-        if (q.SubTextId > 0 && SoundManager.Instance != null)
-            SoundManager.Instance.PlayTTS(q.SubTextId);
     }
 
     // ==================================================
@@ -235,23 +187,15 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
         }
         else
         {
-            ShowError(DefaultErrorMessage);
+            if (dialogueSequencer != null && ErrorTextId > 0)
+                dialogueSequencer.SetText(ErrorTextId);
         }
     }
 
-private void OnCorrectAnswer()
+    private void OnCorrectAnswer()
     {
         if (YesButton != null) YesButton.interactable = false;
         if (NoButton != null) NoButton.interactable = false;
-
-        var mic = MicIndicator;
-        if (mic != null)
-        {
-            var micBtn = mic.GetComponent<Button>();
-            if (micBtn != null) micBtn.interactable = false;
-            var hover = mic.GetComponent<ButtonHover>();
-            if (hover != null) hover.SetInteractable(false);
-        }
 
         var questions = Questions;
         var effect = EffectController;
@@ -273,15 +217,6 @@ private void OnCorrectAnswer()
                     {
                         if (YesButton != null) YesButton.interactable = true;
                         if (NoButton != null) NoButton.interactable = true;
-
-                        var mic2 = MicIndicator;
-                        if (mic2 != null)
-                        {
-                            var micBtn2 = mic2.GetComponent<Button>();
-                            if (micBtn2 != null) micBtn2.interactable = true;
-                            var hover2 = mic2.GetComponent<ButtonHover>();
-                            if (hover2 != null) hover2.SetInteractable(true);
-                        }
                     });
                 }
             });
@@ -300,7 +235,7 @@ private void OnCorrectAnswer()
         }
     }
 
-private IEnumerator NextQuestionFallback()
+    private IEnumerator NextQuestionFallback()
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -308,120 +243,26 @@ private IEnumerator NextQuestionFallback()
 
         if (YesButton != null) YesButton.interactable = true;
         if (NoButton != null) NoButton.interactable = true;
-
-        var mic = MicIndicator;
-        if (mic != null)
-        {
-            var micBtn = mic.GetComponent<Button>();
-            if (micBtn != null) micBtn.interactable = true;
-            var hover = mic.GetComponent<ButtonHover>();
-            if (hover != null) hover.SetInteractable(true);
-        }
-    }
-
-    // ==================================================
-    // 에러 메시지 (HanamText 에 일시 표시 후 복원)
-    // ==================================================
-
-private void ShowError(string msg)
-    {
-        if (string.IsNullOrEmpty(msg))
-            msg = DefaultErrorMessage;
-
-        if (HanamTextLabel != null)
-            HanamTextLabel.text = msg;
-
-        // 다음 질문 전환 시 ApplyQuestionUI()에서 자동 갱신됨
-        if (_errorRoutine != null)
-        {
-            StopCoroutine(_errorRoutine);
-            _errorRoutine = null;
-        }
-    }
-
-private IEnumerator RestoreHanamTextAfterDelay()
-    {
-        yield return new WaitForSeconds(ErrorShowDuration);
-
-        if (HanamTextLabel != null)
-        {
-            // ttsButton의 TTSTrigger를 일시 비활성화하여 텍스트 복원 시 TTS 재발생 방지
-            var tts = HanamTTSTrigger;
-            if (tts != null) tts.enabled = false;
-
-            HanamTextLabel.text = _savedHanamText;
-
-            if (tts != null)
-            {
-                yield return null; // LateUpdate 한 프레임 건너뜀
-                tts.enabled = true;
-            }
-        }
-
-        _errorRoutine = null;
-    }
-
-    // ==================================================
-    // STT 이벤트 핸들러
-    // ==================================================
-
-    protected void OnSTTKeywordMatched(int matchedIndex)
-    {
-        Debug.Log($"[Problem4_Step3] STT 매칭: index={matchedIndex}");
-
-        if (_stepCompleted) return;
-
-        bool isYes = (matchedIndex == 0);
-        HandleAnswer(isYes);
-    }
-
-    protected void OnSTTNoMatch(string sttResult)
-    {
-        Debug.Log($"[Problem4_Step3] STT 매칭 실패: {sttResult}");
     }
 
     // ==================================================
     // 완료 처리
     // ==================================================
 
-private void CompleteStep()
+    private void CompleteStep()
     {
         if (YesButton != null) YesButton.interactable = false;
         if (NoButton != null) NoButton.interactable = false;
 
-        // MicBtn: 활성화 유지하되 터치만 차단
-        var mic = MicIndicator;
-        if (mic != null)
-        {
-            mic.OnKeywordMatched -= OnSTTKeywordMatched;
-            mic.OnNoMatch -= OnSTTNoMatch;
-
-            var micBtn = mic.GetComponent<Button>();
-            if (micBtn != null) micBtn.interactable = false;
-
-            var hover = mic.GetComponent<ButtonHover>();
-            if (hover != null) hover.SetInteractable(false);
-        }
-
-        // 완료 텍스트 표시 (TTSTrigger 비활성화하여 중복 TTS 방지)
-        if (HanamTextLabel != null && CompleteTextId > 0)
-        {
-            var tts = HanamTTSTrigger;
-            if (tts != null) tts.enabled = false;
-            HanamTextLabel.text = ProblemRuntime.L(CompleteTextId);
-        }
-
-        // 완료 TTS 직접 재생
-        if (CompleteTextId > 0 && SoundManager.Instance != null)
-            SoundManager.Instance.PlayTTS(CompleteTextId);
-
         SaveRebuttalAttempt();
 
-        Debug.Log("[Problem4_Step3] 반박 질문 완료");
         _stepCompleted = true;
 
         if (dialogueSequencer != null)
             dialogueSequencer.ShowCompletedText();
+
+        if (StepCompletionGate != null)
+            StepCompletionGate.MarkOneDone();
     }
 
     private void SaveRebuttalAttempt()

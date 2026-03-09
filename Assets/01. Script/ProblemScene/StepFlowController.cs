@@ -8,6 +8,11 @@ public class StepFlowController : MonoBehaviour
     [SerializeField] private bool useSkip = false;
     [SerializeField] private int skipTargetStepIndex = 0;
 
+    [Header("BGM (비어있으면 재생 안 함)")]
+    [Tooltip("Resources/BGM/ 하위 클립명 (예: BGM_C01_S06)")]
+    [SerializeField] private string bgmClipName;
+    [SerializeField] private bool stopBgmOnExit = true;
+
     private int _currentIndex = -1;
 
     private void Awake()
@@ -17,14 +22,23 @@ public class StepFlowController : MonoBehaviour
 
     private void OnEnable()
     {
+        if (!string.IsNullOrEmpty(bgmClipName) && SoundManager.Instance != null)
+            SoundManager.Instance.PlayBGM(bgmClipName);
+
         if (stepPanels.Count > 0)
         {
-            GoToStep(0); // �׻� 0�� ���ܺ��� ���� (��Ʈ�� �г� ��)
+            GoToStep(0);
         }
         else
         {
-            Debug.LogWarning($"[ProblemFlowController] {name} �� ��ϵ� �г��� �����ϴ�.");
+            Debug.LogWarning($"[ProblemFlowController] {name} 에 할당된 패널이 없습니다.");
         }
+    }
+
+    private void OnDisable()
+    {
+        if (stopBgmOnExit && !string.IsNullOrEmpty(bgmClipName) && SoundManager.Instance != null)
+            SoundManager.Instance.StopBGM();
     }
 
     public void SetAllInactive()

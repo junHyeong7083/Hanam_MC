@@ -43,17 +43,8 @@ public class Director_Problem5_Step2 : Director_Problem5_Step2_Logic
     [Header("완료 게이트 (다음 스텝 진행)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    [Header("하남 박스")]
-    [SerializeField] private Text hanamText;
-    [SerializeField] private int guideTextId;
-    [SerializeField] private int completionTextId;
-
     // ==== 베이스에 값 주입용 override ====
 
     protected override IZoomOutSceneData[] Scenes => scenes;
     protected override StepCompletionGate CompletionGate => completionGate;
-
-    protected override Text HanamText => hanamText;
-    protected override int GuideTextId => guideTextId;
-    protected override int CompletionTextId => completionTextId;
 }

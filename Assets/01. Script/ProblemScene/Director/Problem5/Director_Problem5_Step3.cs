@@ -4,59 +4,49 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Director / Problem5 / Step3
-/// - 인스펙터에서 선택지/UI 참조 바인딩
-/// - 실제 로직은 Director_Problem5_Step3_Logic(부모)에서 처리
+/// - 시나리오 카드 순차 진행 + NPC 응답
 /// </summary>
 public class Director_Problem5_Step3 : Director_Problem5_Step3_Logic
 {
     [Serializable]
-    public class DialogueOptionData : IDialogueOptionData
+    public class ScenarioData : IScenarioCardData
     {
-        [Tooltip("옵션 ID (로그용)")]
+        [Tooltip("시나리오 ID (로그용)")]
         public int id = 1;
 
-        [Tooltip("CSV textId (대사 텍스트)")]
+        [Tooltip("CSV textId (시나리오 텍스트)")]
         public int textId;
 
-        [Tooltip("옵션 타입 (회피형 / 건강한 / 도전적)")]
-        public DialogueOptionType type = DialogueOptionType.Avoidant;
-
-        [Tooltip("이 옵션이 정답(건강한 표현)인지 여부")]
-        public bool isCorrect = false;
-
-        [Tooltip("이 옵션의 카메라 이미지 스프라이트")]
-        public Sprite optionSprite;
+        [Tooltip("CSV textId (NPC 응답 텍스트)")]
+        public int responseTextId;
 
         // ==== 인터페이스 구현 ====
         public int Id => id;
         public int TextId => textId;
-        public DialogueOptionType Type => type;
-        public bool IsCorrect => isCorrect;
-        public Sprite OptionSprite => optionSprite;
+        public int ResponseTextId => responseTextId;
     }
 
-    [Header("선택지")]
-    [SerializeField] private DialogueOptionData[] options;
+    [Header("시나리오 데이터")]
+    [SerializeField] private ScenarioData[] scenarios;
 
     [Header("NPC 응답 UI")]
     [SerializeField] private GameObject npcResponseRoot;
     [SerializeField] private Text npcResponseText;
-    [SerializeField] private int npcResponseTextId;
-
-    [Header("마이크 STT")]
-    [SerializeField] private MicRecordingIndicator micIndicator;
 
     [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
+    [Header("마이크 (STT)")]
+    [SerializeField] private MicRecordingIndicator micIndicator;
+
     // ===== 베이스에 값 주입용 override =====
 
-    protected override IDialogueOptionData[] Options => options;
+    protected override IScenarioCardData[] Scenarios => scenarios;
 
     protected override GameObject NpcResponseRoot => npcResponseRoot;
     protected override Text NpcResponseText => npcResponseText;
-    protected override int NpcResponseTextId => npcResponseTextId;
+
+    protected override StepCompletionGate CompletionGate => completionGate;
 
     protected override MicRecordingIndicator MicIndicator => micIndicator;
-    protected override StepCompletionGate CompletionGate => completionGate;
 }

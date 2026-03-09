@@ -250,22 +250,6 @@ namespace STT
             return bestSimilarity >= threshold ? bestIndex : -1;
         }
 
-        /// <summary>
-        /// IDirectorProblem2PerspectiveOption 배열에서 STT 텍스트와 가장 일치하는 옵션의 인덱스 반환
-        /// </summary>
-        public static int FindBestMatchingPerspectiveIndex(
-            string sttText,
-            IDirectorProblem2PerspectiveOption[] options,
-            float threshold = 0.5f)
-        {
-            return FindBestMatchingOptionIndex(
-                sttText,
-                options,
-                opt => opt.Keywords,
-                opt => opt.Text,
-                threshold
-            );
-        }
 
         /// <summary>
         /// Levenshtein Distance 계산

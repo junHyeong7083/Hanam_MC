@@ -71,11 +71,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     [Header("이펙트 컨트롤러")]
     protected abstract Problem4_Step2_EffectController EffectController { get; }
 
-    [Header("하남 박스")]
-    protected abstract Text HanamText { get; }
-    protected abstract string GuideText { get; }
-    protected abstract string CompletionText { get; }
-    protected abstract string ErrorText { get; }
+    [Header("오답 피드백")]
+    protected abstract int ErrorTextId { get; }
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
@@ -136,10 +133,6 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         // 완료 게이트 리셋
         if (StepCompletionGate != null)
             StepCompletionGate.ResetGate(1);
-
-        // 시작 가이드 텍스트 설정
-        if (HanamText != null && !string.IsNullOrEmpty(GuideText))
-            HanamText.text = GuideText;
 
         // 첫 카드 표시
         RefreshCurrentCutUI();
@@ -257,8 +250,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         }
         else
         {
-            if (HanamText != null && !string.IsNullOrEmpty(ErrorText))
-                HanamText.text = ErrorText;
+            if (dialogueSequencer != null && ErrorTextId > 0)
+                dialogueSequencer.SetText(ErrorTextId);
 
             if (effect != null)
             {
@@ -307,8 +300,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         }
         else
         {
-            if (HanamText != null && !string.IsNullOrEmpty(ErrorText))
-                HanamText.text = ErrorText;
+            if (dialogueSequencer != null && ErrorTextId > 0)
+                dialogueSequencer.SetText(ErrorTextId);
 
             if (effect != null)
             {
@@ -433,10 +426,6 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
         // 완료 시 UI 처리
         if (HideObjectOnComplete != null)
             HideObjectOnComplete.SetActive(false);
-
-        // 완료 텍스트 설정
-        if (HanamText != null && !string.IsNullOrEmpty(CompletionText))
-            HanamText.text = CompletionText;
 
         // 팝업 애니메이션으로 이미지 등장
         var effect = EffectController;

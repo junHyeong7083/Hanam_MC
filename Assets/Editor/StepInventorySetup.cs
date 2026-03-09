@@ -60,6 +60,7 @@ public static class StepInventorySetup
 
                     item.iconImage = bgClick != null ? bgClick.GetComponent<Image>() : null;
                     item.backgroundImage = bgAlpha != null ? bgAlpha.GetComponent<Image>() : null;
+                    item.glowEffect = bgClick != null ? bgClick.GetComponentInChildren<GlowEffect>(true) : null;
                 }
 
                 // iconRect = 아이템 자체의 RectTransform
@@ -79,7 +80,7 @@ public static class StepInventorySetup
                     itemComponent = item
                 };
 
-                Debug.Log($"[StepInventorySetup] {item.itemId}: locked={item.lockedRoot != null}, unlocked={item.unlockedRoot != null}, icon={item.iconImage != null}, bg={item.backgroundImage != null}");
+                Debug.Log($"[StepInventorySetup] {item.itemId}: locked={item.lockedRoot != null}, unlocked={item.unlockedRoot != null}, icon={item.iconImage != null}, bg={item.backgroundImage != null}, glow={item.glowEffect != null}");
             }
 
             inventory.slots = slots;

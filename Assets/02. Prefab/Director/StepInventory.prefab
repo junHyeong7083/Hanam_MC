@@ -161,6 +161,7 @@ GameObject:
   - component: {fileID: 7133545233452045793}
   - component: {fileID: 8564333252669182665}
   - component: {fileID: 3892030425974896177}
+  - component: {fileID: 8589067849255200143}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -225,6 +226,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8589067849255200143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295535531291576780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &295707352343224640
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,6 +258,7 @@ GameObject:
   - component: {fileID: 5414596261957747770}
   - component: {fileID: 2084741407124694591}
   - component: {fileID: 4893267955880688276}
+  - component: {fileID: 7293645560579016796}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -300,6 +323,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7293645560579016796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295707352343224640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &348624037520218222
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,6 +355,7 @@ GameObject:
   - component: {fileID: 614783867825473204}
   - component: {fileID: 1728061575602534689}
   - component: {fileID: 2467593869941440536}
+  - component: {fileID: 1781164474179265945}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -375,6 +420,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1781164474179265945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348624037520218222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &420953721218244595
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,6 +569,7 @@ GameObject:
   - component: {fileID: 696200732409085692}
   - component: {fileID: 2240955012763651364}
   - component: {fileID: 5130854585000122571}
+  - component: {fileID: 7820188670258915533}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -567,6 +634,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7820188670258915533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 533531225382514044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &640128947204158578
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +732,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 1724850127330887250}
   iconImage: {fileID: 1214258167922756581}
   backgroundImage: {fileID: 872916472290971668}
+  glowEffect: {fileID: 7121787398702705625}
   iconRect: {fileID: 4255018849256620060}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -725,6 +814,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 6919415786717741623}
   iconImage: {fileID: 436338153281303343}
   backgroundImage: {fileID: 8354183888479855407}
+  glowEffect: {fileID: 6913080924500286933}
   iconRect: {fileID: 8899897674786116928}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -806,6 +896,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 1845480311463029770}
   iconImage: {fileID: 3834385273643717555}
   backgroundImage: {fileID: 8111431424971468593}
+  glowEffect: {fileID: 2222138186419346758}
   iconRect: {fileID: 6782649282415240477}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -821,6 +912,7 @@ GameObject:
   - component: {fileID: 2538212911163196018}
   - component: {fileID: 588881778384995718}
   - component: {fileID: 1214258167922756581}
+  - component: {fileID: 7121787398702705625}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -885,6 +977,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7121787398702705625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1340273152521285985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &1724850127330887250
 GameObject:
   m_ObjectHideFlags: 0
@@ -1271,6 +1384,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 8658384552801287348}
   iconImage: {fileID: 3680775277581197270}
   backgroundImage: {fileID: 2377853636800880612}
+  glowEffect: {fileID: 3095522190550154860}
   iconRect: {fileID: 8328730646933917053}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -1469,6 +1583,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 8156982220222520704}
   iconImage: {fileID: 584576406504788600}
   backgroundImage: {fileID: 1609161144752019091}
+  glowEffect: {fileID: 6861993152286354605}
   iconRect: {fileID: 3538030850846577077}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -1484,6 +1599,7 @@ GameObject:
   - component: {fileID: 5912094080968720395}
   - component: {fileID: 1549562567806549602}
   - component: {fileID: 436338153281303343}
+  - component: {fileID: 6913080924500286933}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -1548,6 +1664,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6913080924500286933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918753624801147964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &3047175082957520482
 GameObject:
   m_ObjectHideFlags: 0
@@ -2064,6 +2201,7 @@ GameObject:
   - component: {fileID: 3590841574005119596}
   - component: {fileID: 6753113557661320662}
   - component: {fileID: 6111711348206755099}
+  - component: {fileID: 8969769752036323373}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -2128,6 +2266,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8969769752036323373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3450782197413736190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &3539892223940575722
 GameObject:
   m_ObjectHideFlags: 0
@@ -2322,6 +2481,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 3637828788214595236}
   iconImage: {fileID: 4893267955880688276}
   backgroundImage: {fileID: 4024598931573119512}
+  glowEffect: {fileID: 7293645560579016796}
   iconRect: {fileID: 2184087842318751587}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -2478,6 +2638,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 2336645347426864537}
   iconImage: {fileID: 6111711348206755099}
   backgroundImage: {fileID: 4619137818073109471}
+  glowEffect: {fileID: 8969769752036323373}
   iconRect: {fileID: 2442124395825182038}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -2634,6 +2795,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 7491376069623285685}
   iconImage: {fileID: 3892030425974896177}
   backgroundImage: {fileID: 7727649022098016105}
+  glowEffect: {fileID: 8589067849255200143}
   iconRect: {fileID: 5119446318384446050}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -2883,6 +3045,7 @@ GameObject:
   - component: {fileID: 5841620915326612858}
   - component: {fileID: 8530599384017708899}
   - component: {fileID: 584576406504788600}
+  - component: {fileID: 6861993152286354605}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -2947,6 +3110,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6861993152286354605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7256428549792883818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &7298930954269545410
 GameObject:
   m_ObjectHideFlags: 0
@@ -3024,6 +3208,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 6910592933914491808}
   iconImage: {fileID: 5130854585000122571}
   backgroundImage: {fileID: 1968615686136442495}
+  glowEffect: {fileID: 7820188670258915533}
   iconRect: {fileID: 5517711564135279458}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -3231,6 +3416,7 @@ GameObject:
   - component: {fileID: 5188392140105713151}
   - component: {fileID: 6751623737369499849}
   - component: {fileID: 3834385273643717555}
+  - component: {fileID: 2222138186419346758}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -3295,6 +3481,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2222138186419346758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7639988114497362171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &8156982220222520704
 GameObject:
   m_ObjectHideFlags: 0
@@ -3531,6 +3738,7 @@ MonoBehaviour:
   unlockedRoot: {fileID: 420953721218244595}
   iconImage: {fileID: 2467593869941440536}
   backgroundImage: {fileID: 5740248294839477928}
+  glowEffect: {fileID: 1781164474179265945}
   iconRect: {fileID: 1211628348301559475}
   rootCanvas: {fileID: 0}
   hoverScale: 1.05
@@ -3546,6 +3754,7 @@ GameObject:
   - component: {fileID: 1021599301076046136}
   - component: {fileID: 3695747717461790752}
   - component: {fileID: 3680775277581197270}
+  - component: {fileID: 3095522190550154860}
   m_Layer: 5
   m_Name: BackgroundImageClcik
   m_TagString: Untagged
@@ -3610,6 +3819,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3095522190550154860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8918095666994395647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6757f3729c8eb4f96c5a64c16abdc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleAxis: 3
+  scaleMin: 1
+  scaleMax: 1.2
+  useAlpha: 0
+  alphaMin: 0.5
+  alphaMax: 1
+  duration: 2
+  easeType: 4
+  playOnEnable: 1
 --- !u!1 &9185862278869108021
 GameObject:
   m_ObjectHideFlags: 0

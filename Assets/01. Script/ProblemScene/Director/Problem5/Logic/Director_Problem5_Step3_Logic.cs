@@ -5,162 +5,96 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 대사 선택 타입
+/// 시나리오 카드 데이터 인터페이스
 /// </summary>
-public enum DialogueOptionType
-{
-    Avoidant,
-    Healthy,
-    Confrontational
-}
-
-/// <summary>
-/// 대사 선택지 데이터 인터페이스 (textId + sprite 기반)
-/// </summary>
-public interface IDialogueOptionData
+public interface IScenarioCardData
 {
     int Id { get; }
     int TextId { get; }
-    DialogueOptionType Type { get; }
-    bool IsCorrect { get; }
-    Sprite OptionSprite { get; }
+    int ResponseTextId { get; }
 }
 
 /// <summary>
-/// Problem5 / Step3 대사 연습 로직 베이스.
-/// - 좌우 네비게이션으로 대사 탐색 (텍스트 + 이미지 교체)
-/// - 말하기 → STT로 선택한 대사 확인
-/// - 정답: 하남이 성공 텍스트 + NPC 반응 + 게이트 완료
-/// - 오답: 하남이 오답 피드백 → 재시도
-/// - 모든 텍스트는 CSV textId 기반
+/// Problem5 / Step3 시나리오 순차 진행 로직.
+/// - 시나리오 카드를 순서대로 표시
+/// - 유저 확인 → NPC 응답 표시
+/// - NPC 응답 확인 → 다음 시나리오로 이동
+/// - 모든 시나리오 완료 시 게이트 완료
 /// </summary>
 public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 {
     [Serializable]
-    private class ClickLogEntry
+    private class ScenarioLogEntry
     {
         public int id;
-        public string text;
-        public string type;
-        public string inputMode;
+        public string scenarioText;
+        public string responseText;
         public float time;
     }
 
     [Serializable]
-    private class DialogueAttemptBody
+    private class ScenarioAttemptBody
     {
-        public int selectedId;
-        public string selectedText;
-        public string selectedType;
-        public string inputMode;
-        public bool npcResponded;
-        public ClickLogEntry[] clickLogs;
+        public ScenarioLogEntry[] entries;
     }
 
     // ===== 자식에서 주입할 추상 프로퍼티 =====
 
-    protected abstract IDialogueOptionData[] Options { get; }
+    protected abstract IScenarioCardData[] Scenarios { get; }
 
     protected abstract GameObject NpcResponseRoot { get; }
     protected abstract Text NpcResponseText { get; }
-    protected abstract int NpcResponseTextId { get; }
 
-    protected abstract MicRecordingIndicator MicIndicator { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
 
-    // ===== Hanam Guide Text (CSV textId) =====
+    protected abstract MicRecordingIndicator MicIndicator { get; }
 
-    [Header("Hanam Guide Text")]
-    [SerializeField] private Text hanamText;
-    [SerializeField] private int hanamTextIdOnEnter = 0;
-    [SerializeField] private int hanamTextIdOnCompleted = 0;
-    [SerializeField] private int hanamTextIdOnWrong = 0;
-
-    // ===== Option Display (공유, 네비게이션으로 교체) =====
+    // ===== Option Display =====
 
     [Header("Option Display")]
     [SerializeField] private Text optionDisplayText;
-    [SerializeField] private Image optionDisplayImage;
-
-    // ===== Navigation =====
-
-    [Header("Navigation")]
-    [SerializeField] private Button prevButton;
-    [SerializeField] private Button nextButton;
-
-    // ===== Select Outline (STT 인식 중 활성화) =====
-
-    [Header("Select Outline")]
-    [SerializeField] private GameObject selectOutline;
-
-    // ===== Complete UI Toggle =====
-
-    [Header("Complete UI Toggle")]
-    [SerializeField] private GameObject micButtonRoot;
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
 
-    // ===== Timing =====
-
-    [Header("Timing")]
-    [SerializeField] private float wrongFeedbackShowDuration = 1.5f;
-
     // ===== 내부 상태 =====
 
-    private int _currentDisplayIndex;
-    private int _selectedIndex = -1;
+    private int _currentIndex;
     private bool _interactionLocked = true;
-    private bool _hasAnswered;
-    private bool _npcResponded;
-    private string _inputMode = "button";
+    private bool _waitingForNpcDismiss;
 
-    private Coroutine _optionRoutine;
-
-    private readonly List<ClickLogEntry> _clickLogList = new List<ClickLogEntry>();
+    private readonly List<ScenarioLogEntry> _logEntries = new List<ScenarioLogEntry>();
     private float _stepStartTime;
 
     // ===== ProblemStepBase Hooks =====
 
     protected override void OnStepEnter()
     {
-        var options = Options;
-        if (options == null || options.Length == 0)
+        var scenarios = Scenarios;
+        if (scenarios == null || scenarios.Length == 0)
         {
-            Debug.LogWarning("[Problem5_Step3] Options 가 비어 있음");
+            Debug.LogWarning("[Problem5_Step3] Scenarios 가 비어 있음");
             return;
         }
 
-        _selectedIndex = -1;
-        _hasAnswered = false;
-        _npcResponded = false;
-        _inputMode = "button";
-        _currentDisplayIndex = 0;
+        _currentIndex = 0;
+        _waitingForNpcDismiss = false;
 
-        _clickLogList.Clear();
+        _logEntries.Clear();
         _stepStartTime = Time.time;
-
-        // 하남이 가이드 텍스트
-        ApplyHanamText(hanamTextIdOnEnter);
 
         // NPC 응답 초기 숨김
         if (NpcResponseRoot != null) NpcResponseRoot.SetActive(false);
 
-        // 아웃라인 초기 숨김
-        if (selectOutline != null)
-            selectOutline.SetActive(false);
+        // 첫 시나리오 표시
+        ShowCurrentScenario();
 
-        // 마이크 보이고, 다음 버튼 숨기기
-        if (micButtonRoot != null)
-            micButtonRoot.SetActive(true);
-        // 첫 번째 옵션 표시
-        ShowCurrentOption();
-
-        // 네비게이션 버튼 바인딩
-        BindNavButtons();
-
-        // MicIndicator STT 설정
-        SetupSTT();
+        // MicIndicator 이벤트 구독
+        if (MicIndicator != null)
+        {
+            MicIndicator.OnKeywordMatched += OnSttMatched;
+            MicIndicator.OnNoMatch += OnSttNoMatch;
+        }
 
         // 게이트 리셋
         if (CompletionGate != null)
@@ -178,281 +112,141 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
         _interactionLocked = false;
     }
 
-protected override void OnStepExit()
+    protected override void OnStepExit()
     {
         base.OnStepExit();
 
         if (dialogueSequencer != null)
             dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
 
+        if (MicIndicator != null)
+        {
+            MicIndicator.OnKeywordMatched -= OnSttMatched;
+            MicIndicator.OnNoMatch -= OnSttNoMatch;
+        }
+
         _interactionLocked = true;
-
-        if (_optionRoutine != null) StopCoroutine(_optionRoutine);
-        _optionRoutine = null;
-
-        UnbindNavButtons();
-
-        var mic = MicIndicator;
-        if (mic != null)
-        {
-            mic.OnKeywordMatched -= OnSTTKeywordMatched;
-            mic.OnNoMatch -= OnSTTNoMatch;
-            mic.OnRecordingChanged -= OnMicRecordingChanged;
-        }
     }
 
-    // ===== 네비게이션 =====
+    // ===== 시나리오 표시 =====
 
-    private void BindNavButtons()
+    private void ShowCurrentScenario()
     {
-        if (prevButton != null)
-        {
-            prevButton.onClick.RemoveAllListeners();
-            prevButton.onClick.AddListener(OnPrevOption);
-        }
-        if (nextButton != null)
-        {
-            nextButton.onClick.RemoveAllListeners();
-            nextButton.onClick.AddListener(OnNextOption);
-        }
+        var scenarios = Scenarios;
+        if (scenarios == null || _currentIndex >= scenarios.Length) return;
+
+        var s = scenarios[_currentIndex];
+
+        if (optionDisplayText != null && s.TextId > 0)
+            optionDisplayText.text = ProblemRuntime.L(s.TextId);
+
+        // 현재 시나리오 텍스트를 STT 키워드로 설정
+        if (MicIndicator != null && s.TextId > 0)
+            MicIndicator.SetKeywords(new[] { ProblemRuntime.L(s.TextId) });
     }
 
-    private void UnbindNavButtons()
+    // ===== STT 콜백 =====
+
+    private void OnSttMatched(int index)
     {
-        if (prevButton != null)
-            prevButton.onClick.RemoveAllListeners();
-        if (nextButton != null)
-            nextButton.onClick.RemoveAllListeners();
+        if (_interactionLocked || _waitingForNpcDismiss) return;
+        ShowNpcResponse();
     }
 
-    private void OnPrevOption()
+    private void OnSttNoMatch(string rawText)
     {
-        if (_interactionLocked) return;
-        if (_hasAnswered) return;
-        var options = Options;
-        if (options == null || options.Length == 0) return;
-        _currentDisplayIndex = (_currentDisplayIndex - 1 + options.Length) % options.Length;
-        ShowCurrentOption();
+        if (MicIndicator != null)
+            MicIndicator.SetIdleText("다시 말해주세요");
     }
 
-    private void OnNextOption()
+    // ===== Mic =====
+
+    public void OnClickMic()
     {
-        if (_interactionLocked) return;
-        if (_hasAnswered) return;
-        var options = Options;
-        if (options == null || options.Length == 0) return;
-        _currentDisplayIndex = (_currentDisplayIndex + 1) % options.Length;
-        ShowCurrentOption();
+        if (_interactionLocked || _waitingForNpcDismiss) return;
+
+        var indicator = MicIndicator;
+        if (indicator != null)
+            indicator.ToggleRecording();
     }
 
-    private void ShowCurrentOption()
-    {
-        var options = Options;
-        if (options == null || options.Length == 0) return;
-
-        var opt = options[_currentDisplayIndex];
-
-        if (optionDisplayText != null && opt.TextId > 0)
-            optionDisplayText.text = ProblemRuntime.L(opt.TextId);
-
-        if (optionDisplayImage != null && opt.OptionSprite != null)
-            optionDisplayImage.sprite = opt.OptionSprite;
-    }
-
-    // ===== Hanam Text =====
-
-    private void ApplyHanamText(int textId)
-    {
-        if (hanamText == null || textId <= 0) return;
-        hanamText.text = ProblemRuntime.L(textId);
-    }
-
-    // ===== STT 설정 =====
-
-private void SetupSTT()
-    {
-        var mic = MicIndicator;
-        if (mic == null) return;
-
-        var options = Options;
-        if (options == null) return;
-
-        var keywordList = new List<string>();
-        foreach (var opt in options)
-        {
-            keywordList.Add(ProblemRuntime.L(opt.TextId));
-        }
-        mic.SetKeywords(keywordList.ToArray());
-
-        mic.OnKeywordMatched -= OnSTTKeywordMatched;
-        mic.OnKeywordMatched += OnSTTKeywordMatched;
-        mic.OnNoMatch -= OnSTTNoMatch;
-        mic.OnNoMatch += OnSTTNoMatch;
-        mic.OnRecordingChanged -= OnMicRecordingChanged;
-        mic.OnRecordingChanged += OnMicRecordingChanged;
-    }
-
-    // ===== STT 이벤트 =====
-
-protected void OnSTTKeywordMatched(int matchedIndex)
-    {
-        Debug.Log($"[Problem5_Step3] STT 매칭: index={matchedIndex}");
-
-        if (_hasAnswered) return;
-
-        _inputMode = "voice";
-        OnSelectOption(matchedIndex);
-    }
-
-protected void OnSTTNoMatch(string sttResult)
-    {
-        Debug.Log($"[Problem5_Step3] STT 매칭 실패: {sttResult}");
-    }
+    // ===== NPC 응답 닫기 (버튼에서 호출) =====
 
     /// <summary>
-    /// 말하기 버튼에서 호출 → 아웃라인 활성화
+    /// NPC 응답 확인 버튼. NPC 응답을 닫고 다음 시나리오로 이동.
     /// </summary>
-public void OnStartRecording()
-    {
-        // 녹음 상태 변경은 OnMicRecordingChanged에서 처리
-    }
-
-private void OnMicRecordingChanged(bool isRecording)
-    {
-        if (selectOutline != null)
-            selectOutline.SetActive(isRecording);
-
-        if (prevButton != null)
-            prevButton.gameObject.SetActive(!isRecording);
-        if (nextButton != null)
-            nextButton.gameObject.SetActive(!isRecording);
-    }
-
-
-    // ===== 선택 흐름 =====
-
-    public void OnSelectOption(int index)
+    public void OnConfirmNpcResponse()
     {
         if (_interactionLocked) return;
-        if (_hasAnswered) return;
+        if (!_waitingForNpcDismiss) return;
 
-        var options = Options;
-        if (options == null || index < 0 || index >= options.Length) return;
-
-        _selectedIndex = index;
-        LogClick(index);
-
-        if (_optionRoutine != null)
-        {
-            StopCoroutine(_optionRoutine);
-            _optionRoutine = null;
-        }
-        _optionRoutine = StartCoroutine(OptionSelectFlow(index));
+        DismissNpcAndAdvance();
     }
 
-    private IEnumerator OptionSelectFlow(int index)
+    private void ShowNpcResponse()
     {
-        var options = Options;
-        if (options == null || index < 0 || index >= options.Length) yield break;
+        var scenarios = Scenarios;
+        if (scenarios == null || _currentIndex >= scenarios.Length) return;
 
-        var opt = options[index];
-        bool isCorrect = opt.IsCorrect;
+        var s = scenarios[_currentIndex];
 
-        if (isCorrect)
+        // 로그 기록
+        _logEntries.Add(new ScenarioLogEntry
         {
-            // 하남이 성공 텍스트
-            ApplyHanamText(hanamTextIdOnCompleted);
+            id = s.Id,
+            scenarioText = ProblemRuntime.L(s.TextId),
+            responseText = s.ResponseTextId > 0 ? ProblemRuntime.L(s.ResponseTextId) : "",
+            time = Time.time - _stepStartTime
+        });
 
-            _hasAnswered = true;
-            _npcResponded = true;
+        // NPC 응답 표시
+        if (NpcResponseRoot != null) NpcResponseRoot.SetActive(true);
+        if (NpcResponseText != null && s.ResponseTextId > 0)
+            NpcResponseText.text = ProblemRuntime.L(s.ResponseTextId);
 
-            // NPC 응답
-            if (NpcResponseRoot != null) NpcResponseRoot.SetActive(true);
-            if (NpcResponseText != null && NpcResponseTextId > 0)
-                NpcResponseText.text = ProblemRuntime.L(NpcResponseTextId);
+        _waitingForNpcDismiss = true;
+    }
 
-            // 마이크 숨기고 완료 처리
-            if (micButtonRoot != null)
-                micButtonRoot.SetActive(false);
+    private void DismissNpcAndAdvance()
+    {
+        if (NpcResponseRoot != null) NpcResponseRoot.SetActive(false);
+        _waitingForNpcDismiss = false;
 
-            // 게이트 완료
-            if (CompletionGate != null)
-                CompletionGate.MarkOneDone();
+        _currentIndex++;
 
-            if (dialogueSequencer != null)
-                dialogueSequencer.ShowCompletedText();
+        var scenarios = Scenarios;
+        if (scenarios == null || _currentIndex >= scenarios.Length)
+        {
+            CompleteAllScenarios();
         }
         else
         {
-            // 하남이 오답 텍스트 + TTS 직접 재생
-            // (연속 오답 시 텍스트가 이미 같으면 TTSTrigger가 발동 안 되므로 직접 호출)
-            ApplyHanamText(hanamTextIdOnWrong);
-            if (hanamTextIdOnWrong > 0 && SoundManager.Instance != null)
-                SoundManager.Instance.PlayTTS(hanamTextIdOnWrong);
-
-            // TTS 재생 중 마이크 숨김
-            if (micButtonRoot != null)
-                micButtonRoot.SetActive(false);
-
-            // 1프레임 대기 (IsTTSPlaying 체크 전 안전 여유)
-            yield return null;
-
-            // 오답 TTS 완료까지 대기
-            if (SoundManager.Instance != null)
-                yield return new WaitUntil(() => !SoundManager.Instance.IsTTSPlaying);
-
-            if (micButtonRoot != null)
-                micButtonRoot.SetActive(true);
+            ShowCurrentScenario();
         }
-
-        _optionRoutine = null;
     }
 
-    // ===== 클릭 로그 =====
+    // ===== 완료 =====
 
-    private void LogClick(int index)
+    private void CompleteAllScenarios()
     {
-        var options = Options;
-        if (options == null || index < 0 || index >= options.Length) return;
+        SaveScenarioAttempt();
 
-        var opt = options[index];
-        _clickLogList.Add(new ClickLogEntry
-        {
-            id = opt.Id,
-            text = ProblemRuntime.L(opt.TextId),
-            type = ToTypeString(opt.Type),
-            inputMode = _inputMode,
-            time = Time.time - _stepStartTime
-        });
+        if (CompletionGate != null)
+            CompletionGate.MarkOneDone();
+
+        if (dialogueSequencer != null)
+            dialogueSequencer.ShowCompletedText();
     }
 
     // ===== DB 저장 =====
 
-    public void OnClickContinue()
+    private void SaveScenarioAttempt()
     {
-        var options = Options;
-        if (options == null || _selectedIndex < 0 || _selectedIndex >= options.Length) return;
-
-        var opt = options[_selectedIndex];
-        SaveAttempt(new DialogueAttemptBody
+        var body = new ScenarioAttemptBody
         {
-            selectedId = opt.Id,
-            selectedText = ProblemRuntime.L(opt.TextId),
-            selectedType = ToTypeString(opt.Type),
-            inputMode = _inputMode,
-            npcResponded = _npcResponded,
-            clickLogs = _clickLogList.ToArray()
-        });
-    }
+            entries = _logEntries.ToArray()
+        };
 
-    private string ToTypeString(DialogueOptionType type)
-    {
-        switch (type)
-        {
-            case DialogueOptionType.Avoidant: return "avoidant";
-            case DialogueOptionType.Healthy: return "healthy";
-            case DialogueOptionType.Confrontational: return "confrontational";
-        }
-        return type.ToString();
+        SaveAttempt(body);
     }
 }

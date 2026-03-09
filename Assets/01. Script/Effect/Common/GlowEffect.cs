@@ -35,7 +35,7 @@ public class GlowEffect : MonoBehaviour
     [SerializeField] private Ease easeType = Ease.InOutSine;
 
     [Header("자동 시작")]
-    [SerializeField] private bool playOnEnable = true;
+    public bool playOnEnable = true;
 
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;

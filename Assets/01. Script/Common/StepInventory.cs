@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -19,6 +20,42 @@ public class StepInventory : MonoBehaviour
 
     public InventorySlot[] slots;
 
+    private void OnEnable()
+    {
+        // 1프레임 대기: 모든 자식 컴포넌트(GlowEffect 포함) OnEnable 완료 후 적용
+        StartCoroutine(ApplyDraggableGlowDelayed());
+    }
+
+    private IEnumerator ApplyDraggableGlowDelayed()
+    {
+        yield return null;
+        ApplyDraggableGlow();
+    }
+
+    /// <summary>
+    /// slots의 draggableThisStep 값에 따라 glow Play/Stop 적용
+    /// </summary>
+    public void ApplyDraggableGlow()
+    {
+        if (slots == null) return;
+        foreach (var slot in slots)
+        {
+            if (slot.itemComponent == null || slot.itemComponent.glowEffect == null)
+                continue;
+
+            if (slot.draggableThisStep)
+            {
+                slot.itemComponent.glowEffect.playOnEnable = true;
+                slot.itemComponent.glowEffect.Play();
+            }
+            else
+            {
+                slot.itemComponent.glowEffect.playOnEnable = false;
+                slot.itemComponent.glowEffect.Stop();
+            }
+        }
+    }
+
     /// <summary>
     /// 모든 슬롯의 draggableThisStep을 false로 리셋
     /// </summary>
@@ -26,7 +63,11 @@ public class StepInventory : MonoBehaviour
     {
         if (slots == null) return;
         foreach (var slot in slots)
+        {
             slot.draggableThisStep = false;
+            if (slot.itemComponent != null && slot.itemComponent.glowEffect != null)
+                slot.itemComponent.glowEffect.Stop();
+        }
     }
 
     /// <summary>
@@ -40,6 +81,19 @@ public class StepInventory : MonoBehaviour
             if (slot.itemId == itemId)
             {
                 slot.draggableThisStep = draggable;
+                if (slot.itemComponent != null && slot.itemComponent.glowEffect != null)
+                {
+                    if (draggable)
+                    {
+                        slot.itemComponent.glowEffect.playOnEnable = true;
+                        slot.itemComponent.glowEffect.Play();
+                    }
+                    else
+                    {
+                        slot.itemComponent.glowEffect.playOnEnable = false;
+                        slot.itemComponent.glowEffect.Stop();
+                    }
+                }
                 break;
             }
         }

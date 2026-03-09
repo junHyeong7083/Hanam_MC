@@ -173,6 +173,14 @@ public class CommonRewardStep : ProblemStepBase
                 yield return new WaitForSeconds(item.delay);
 
             yield return PlayItemRoutine(item);
+
+            // 시퀀스 아이템 등장 완료 후 SweepHighlightTrigger 실행
+            if (item.root != null)
+            {
+                var sweep = item.root.GetComponentInChildren<SweepHighlightTrigger>(true);
+                if (sweep != null)
+                    sweep.PlaySweep();
+            }
         }
     }
 

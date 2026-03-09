@@ -44,7 +44,7 @@ public class SweepHighlightTrigger : MonoBehaviour
 
     // ── 초기화 ────────────────────────────────────────────────────────
 
-    private void Awake()
+    private void OnEnable()
     {
         _image = GetComponent<Image>();
         if (_image == null)
@@ -62,6 +62,7 @@ public class SweepHighlightTrigger : MonoBehaviour
         // 공유 머티리얼을 건드리지 않도록 복사본 생성
         _matInstance = Instantiate(_image.material);
         _image.material = _matInstance;
+        _image.SetMaterialDirty();
 
         // 인스펙터 값으로 색상 / 방향 재정의
         _matInstance.SetColor(PropSweepColor, sweepColor);
@@ -71,7 +72,7 @@ public class SweepHighlightTrigger : MonoBehaviour
         _matInstance.SetFloat(PropSweepT, 0f);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (_matInstance != null)
             Destroy(_matInstance);
@@ -124,13 +125,15 @@ public class SweepHighlightTrigger : MonoBehaviour
             elapsed += Time.deltaTime;
             float t      = Mathf.Clamp01(elapsed / sweepDuration);
             float eased  = Mathf.SmoothStep(0f, 1f, t);
-            float sweepT = Mathf.Lerp(0.25f, 1f, eased); // 0.3 위치에서 시작
+            float sweepT = Mathf.Lerp(0.25f, 1f, eased);
             _matInstance.SetFloat(PropSweepT, sweepT);
+            if (_image != null) _image.SetMaterialDirty();
             yield return null;
         }
 
         // 재생 완료 → 원상복구
         _matInstance.SetFloat(PropSweepT, 0f);
+        if (_image != null) _image.SetMaterialDirty();
         _routine = null;
     }
 }

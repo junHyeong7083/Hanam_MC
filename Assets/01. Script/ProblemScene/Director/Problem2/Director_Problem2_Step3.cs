@@ -1,31 +1,10 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
 {
-    private sealed class RuntimeOption : IDirectorProblem2PerspectiveOption
-    {
-        private readonly int _id;
-        private readonly int _textId;
-        private readonly string[] _keywords;
-
-        public RuntimeOption(int id, int textId, string[] keywords)
-        {
-            _id = id;
-            _textId = textId;
-            _keywords = keywords;
-        }
-
-        public int Id => _id;
-        public string Text => ProblemRuntime.L(_textId);
-        public string[] Keywords => _keywords;
-    }
-
-    [Header("데이터 (슬롯 순서대로 넣기)")]
+    [Header("데이터")]
     [SerializeField] private int ngSentenceTextId = 0;
-    [SerializeField] private int[] perspectiveTextIds;
-    [SerializeField] private string[] perspectiveKeywords; // "키1|키2"
 
     [Header("상단 안내 텍스트 (Retry용)")]
     [SerializeField] private Text guideText;
@@ -35,11 +14,8 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     [SerializeField] private RectTransform sceneCardRect;
     [SerializeField] private GameObject okSceneCard;
 
-    [Header("관점 선택 버튼 (3개)")]
+    [Header("관점 선택 버튼")]
     [SerializeField] private SelectionSlot[] selectionSlots;
-
-    [Header("관점별 이미지 (selectionSlots 순서와 동일)")]
-    [SerializeField] private Sprite[] perspectiveSprites;
 
     [Header("마이크 UI")]
     [SerializeField] private GameObject micButtonRoot;
@@ -57,50 +33,7 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     [Header("완료 게이트")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    private IDirectorProblem2PerspectiveOption[] _options;
-
-    private void Awake()
-    {
-        BuildOptions();
-    }
-
-    private void BuildOptions()
-    {
-        if (perspectiveTextIds == null || perspectiveTextIds.Length == 0)
-        {
-            _options = Array.Empty<IDirectorProblem2PerspectiveOption>();
-            return;
-        }
-
-        int n = perspectiveTextIds.Length;
-        _options = new IDirectorProblem2PerspectiveOption[n];
-
-        for (int i = 0; i < n; i++)
-        {
-            int textId = perspectiveTextIds[i];
-
-            string[] keywords = null;
-            if (perspectiveKeywords != null && i < perspectiveKeywords.Length)
-            {
-                var raw = perspectiveKeywords[i];
-                if (!string.IsNullOrWhiteSpace(raw))
-                    keywords = SplitKeywords(raw, '|');
-            }
-
-            _options[i] = new RuntimeOption(i + 1, textId, keywords);
-        }
-    }
-
-    private static string[] SplitKeywords(string raw, char sep)
-    {
-        var parts = raw.Split(new[] { sep }, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < parts.Length; i++)
-            parts[i] = (parts[i] ?? "").Trim();
-        return parts;
-    }
-
     protected override string NgSentence => ProblemRuntime.L(ngSentenceTextId);
-    protected override IDirectorProblem2PerspectiveOption[] Perspectives => _options;
 
     protected override Text GuideText => guideText;
     protected override int GuideTextId_Retry => guideTextIdRetry;
@@ -109,7 +42,6 @@ public class Director_Problem2_Step3 : Director_Problem2_Step3_Logic
     protected override GameObject OkSceneCard => okSceneCard;
 
     protected override SelectionSlot[] SelectionSlots => selectionSlots;
-    protected override Sprite[] PerspectiveSprites => perspectiveSprites;
 
     protected override GameObject MicButtonRoot => micButtonRoot;
     protected override MicRecordingIndicator MicIndicator => micIndicator;

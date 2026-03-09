@@ -119,6 +119,18 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     private void OnDialogueEnterComplete()
     {
         _interactionLocked = false;
+
+        // enter 시퀀스 완료 후 현재 카드의 하남이 대사 표시
+        if (dialogueSequencer != null)
+        {
+            int logicalIndex = GetCurrentLogicalIndex();
+            if (logicalIndex >= 0)
+            {
+                int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
+                if (hanamiTextId > 0)
+                    dialogueSequencer.SetText(hanamiTextId);
+            }
+        }
     }
 
     protected override void OnStepExit()
@@ -158,8 +170,8 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         SpawnOrUpdateCurrentFilmCard(text, sprite);
 
-        // 카드별 하남이 대사
-        if (!_isShowingHanamiWrongMessage && dialogueSequencer != null)
+        // 카드별 하남이 대사 (enter 시퀀스 완료 후에만)
+        if (!_interactionLocked && !_isShowingHanamiWrongMessage && dialogueSequencer != null)
         {
             int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
             if (hanamiTextId > 0)

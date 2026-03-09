@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,7 @@ public class DialogueSequencer : MonoBehaviour
     private int _currentIndex;
     private Action _onLastShown;
     private Action _onSequenceDone;
+    private Coroutine _enterRoutine;
 
     private void OnEnable()
     {
@@ -38,13 +40,29 @@ public class DialogueSequencer : MonoBehaviour
             nextStepBtn.gameObject.SetActive(false);
         }
 
+        // 1프레임 지연: 다른 컴포넌트의 OnEnable에서 이벤트 구독할 시간 확보
+        _enterRoutine = StartCoroutine(StartEnterSequenceDelayed());
+    }
+
+    private IEnumerator StartEnterSequenceDelayed()
+    {
+        yield return null;
+
         PlaySequence(enterTextIds,
             onLastShown: () => OnEnterComplete?.Invoke(),
             onDone: () => OnEnterSequenceDone?.Invoke());
+
+        _enterRoutine = null;
     }
 
     private void OnDisable()
     {
+        if (_enterRoutine != null)
+        {
+            StopCoroutine(_enterRoutine);
+            _enterRoutine = null;
+        }
+
         if (nextDialogueBtn != null)
         {
             nextDialogueBtn.onClick.RemoveListener(OnClickNext);

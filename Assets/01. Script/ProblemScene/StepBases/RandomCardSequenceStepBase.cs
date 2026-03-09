@@ -3,53 +3,53 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// "¿©·¯ ÀåÀÇ Ä«µå"¸¦ ·£´ı ¼ø¼­·Î ÇÏ³ª¾¿ Ã³¸®ÇÏ´Â °øÅë Step º£ÀÌ½º.
-/// - Ä«µå °³¼ö/³»¿ëÀº ÀÚ½Ä¿¡¼­ Á¤ÀÇ
-/// - ÇöÀç Ä«µå ÀÎµ¦½º, ·£´ı ¼ø¼­(_order) µîÀº ¿©±â¼­ °ü¸®
-/// - Ä«µå 1Àå Ã³¸® ¿Ï·á ½Ã completionGate¿¡ 1 Áõ°¡
-/// - progressLabelÀÌ ÀÖÀ¸¸é "ÇöÀç/ÀüÃ¼" Çü½ÄÀ¸·Î Ç¥½Ã
-/// 
-/// ÀÚ½Ä Å¬·¡½º´Â ´ÙÀ½¸¸ ±¸ÇöÇÏ¸é µÈ´Ù:
+/// ìˆœì„œëŒ€ë¡œ ì¹´ë“œë¥¼ í•˜ë‚˜ì”© ì²˜ë¦¬í•˜ëŠ” ê³µí†µ Step ë² ì´ìŠ¤.
+/// - ì¹´ë“œ í‘œì‹œ/ì²˜ë¦¬ëŠ” ìì‹ì—ì„œ êµ¬í˜„
+/// - í˜„ì¬ ì¹´ë“œ ì¸ë±ìŠ¤, ìˆœì„œ(_order) ê´€ë¦¬ëŠ” ì—¬ê¸°ì„œ ë‹´ë‹¹
+/// - ì¹´ë“œ 1ì¥ ì²˜ë¦¬ ì™„ë£Œ ì‹œ completionGateì— 1 ì¶”ê°€
+/// - progressLabelì´ ìˆìœ¼ë©´ "í˜„ì¬/ì „ì²´" í˜•ì‹ìœ¼ë¡œ í‘œì‹œ
+///
+/// ìì‹ í´ë˜ìŠ¤ì—ì„œ ì•„ë˜ë¥¼ êµ¬í˜„í•˜ë©´ ëœë‹¤:
 /// - CardCount, OnApplyCardToUI, OnClearCurrentCardUI,
 ///   OnCardProcessed, OnAllCardsProcessed
 /// </summary>
 public abstract class RandomCardSequenceStepBase : ProblemStepBase
 {
-    [Header("ÁøÇàµµ Ç¥½Ã (¿É¼Ç)")]
+    [Header("ì§„í–‰ë„ í‘œì‹œ (ì˜µì…˜)")]
     [SerializeField] private Text progressLabel;
 
-    [Header("¿Ï·á °ÔÀÌÆ® (¿É¼Ç)")]
+    [Header("ì™„ë£Œ ê²Œì´íŠ¸ (ì˜µì…˜)")]
     [SerializeField] private StepCompletionGate completionGate;
 
-    /// <summary>ÀüÃ¼ Ä«µå °³¼ö (ÀÚ½ÄÀÌ ±¸Çö)</summary>
+    /// <summary>ì „ì²´ ì¹´ë“œ ê°œìˆ˜ (ìì‹ì´ êµ¬í˜„)</summary>
     protected abstract int CardCount { get; }
 
-    /// <summary>logicalIndex ¹øÂ° Ä«µå¸¦ UI¿¡ º¸¿©ÁÙ ¶§ È£Ãâ</summary>
+    /// <summary>logicalIndex ë²ˆì§¸ ì¹´ë“œë¥¼ UIì— ë°˜ì˜í•  ë•Œ í˜¸ì¶œ</summary>
     protected abstract void OnApplyCardToUI(int logicalIndex);
 
-    /// <summary>ÇöÀç Ä«µå¸¦ UI¿¡¼­ Á¦°ÅÇÒ ¶§ È£Ãâ</summary>
+    /// <summary>í˜„ì¬ ì¹´ë“œë¥¼ UIì—ì„œ ì œê±°í•  ë•Œ í˜¸ì¶œ</summary>
     protected abstract void OnClearCurrentCardUI();
 
-    /// <summary>Ä«µå ÇÑ ÀåÀÌ ¿Ï·áµÇ¾úÀ» ¶§(Á¤´ä/ºĞ·ù µî Ã³¸® ÈÄ) È£Ãâ</summary>
+    /// <summary>ì¹´ë“œ í•œ ì¥ì˜ ì²˜ë¦¬ê°€ ì™„ë£Œë˜ì—ˆì„ ë•Œ(ì •ë‹µ/ë¶„ë¥˜ ë“± ì²˜ë¦¬ í›„) í˜¸ì¶œ</summary>
     protected abstract void OnCardProcessed(int logicalIndex);
 
-    /// <summary>¸ğµç Ä«µå¸¦ Ã³¸®ÇÏ°í ³­ µÚ È£Ãâ</summary>
+    /// <summary>ëª¨ë“  ì¹´ë“œë¥¼ ì²˜ë¦¬í•˜ê³  ë‚œ ë’¤ í˜¸ì¶œ</summary>
     protected abstract void OnAllCardsProcessed();
 
-    /// <summary>ÀÚ½ÄÀÌ ÃÊ±âÈ­ Ãß°¡ ÀÛ¾÷ ÇÊ¿äÇÏ¸é ¿À¹ö¶óÀÌµå</summary>
+    /// <summary>ìì‹ì´ ì´ˆê¸°í™” ì¶”ê°€ ì‘ì—… í•„ìš”í•˜ë©´ ì˜¤ë²„ë¼ì´ë“œ</summary>
     protected virtual void OnSequenceReset() { }
 
-    // ³»ºÎ »óÅÂ
+    // ë‚´ë¶€ ìƒíƒœ
     protected int _currentIndex;     // 0..CardCount
-    protected int[] _order;          // ·£´ı ¼ø¼­ (logical index ¹è¿­)
+    protected int[] _order;          // í‘œì‹œ ìˆœì„œ (logical index ë°°ì—´)
 
     protected override void OnStepEnter()
     {
         int total = CardCount;
-        BuildRandomOrder(total);
+        BuildOrder(total);
         _currentIndex = 0;
 
-        // °ÔÀÌÆ® ÃÊ±âÈ­
+        // ê²Œì´íŠ¸ ì´ˆê¸°í™”
         if (completionGate != null)
             completionGate.ResetGate(total);
 
@@ -63,7 +63,7 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
         base.OnStepExit();
     }
 
-    /// <summary>ÇöÀç logical index °¡Á®¿À±â (¾øÀ¸¸é -1)</summary>
+    /// <summary>í˜„ì¬ logical index ê°€ì ¸ì˜¤ê¸° (ëë‚˜ë©´ -1)</summary>
     protected int GetCurrentLogicalIndex()
     {
         if (_order == null) return -1;
@@ -71,7 +71,7 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
         return _order[_currentIndex];
     }
 
-    /// <summary>ÇöÀç Ä«µå UI °»½Å (ÀÖÀ¸¸é Apply, ¾øÀ¸¸é Clear)</summary>
+    /// <summary>í˜„ì¬ ì¹´ë“œ UI ê°±ì‹  (ìˆìœ¼ë©´ Apply, ì—†ìœ¼ë©´ Clear)</summary>
     protected void UpdateCurrentCardUI()
     {
         int idx = GetCurrentLogicalIndex();
@@ -87,7 +87,7 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
         }
     }
 
-    /// <summary>ÇöÀç/ÀüÃ¼ ÁøÇàµµ ÅØ½ºÆ® °»½Å</summary>
+    /// <summary>í˜„ì¬/ì „ì²´ ì§„í–‰ë„ í…ìŠ¤íŠ¸ ê°±ì‹ </summary>
     protected void UpdateProgressLabel()
     {
         if (progressLabel == null) return;
@@ -97,32 +97,32 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
         progressLabel.text = $"{current}/{total}";
     }
 
-    /// <summary>ÇöÀç Ä«µå¸¦ ¸ğµÎ Ã³¸®Çß´Ù°í ¾Ë¸®´Â ÇÔ¼ö.
-    /// - completionGate 1 Áõ°¡
-    /// - _currentIndex++ ÈÄ ´ÙÀ½ Ä«µå Àû¿ë or ÀüÃ¼ ¿Ï·á Ã³¸®
+    /// <summary>í˜„ì¬ ì¹´ë“œë¥¼ ì„±ê³µ ì²˜ë¦¬í–ˆë‹¤ê³  ì•Œë¦¬ëŠ” í•¨ìˆ˜.
+    /// - completionGate 1 ì¶”ê°€
+    /// - _currentIndex++ í›„ ë‹¤ìŒ ì¹´ë“œ í‘œì‹œ or ì „ì²´ ì™„ë£Œ ì²˜ë¦¬
     /// </summary>
     protected void CompleteCurrentCard()
     {
         int logicalIndex = GetCurrentLogicalIndex();
         if (logicalIndex < 0)
         {
-            Debug.LogWarning("[RandomCardSequenceStepBase] CompleteCurrentCard È£Ãâ ½ÃÁ¡¿¡ logicalIndex<0");
+            Debug.LogWarning("[RandomCardSequenceStepBase] CompleteCurrentCard í˜¸ì¶œ ì‹œì ì— logicalIndex<0");
             return;
         }
 
-        // ÀÚ½Ä¿¡¼­ Ä«µå Ã³¸®(·Î±× ±â·Ï µî)
+        // ìì‹ì—ê²Œ ì¹´ë“œ ì²˜ë¦¬(ë¡œê·¸ ê¸°ë¡ ë“±)
         OnCardProcessed(logicalIndex);
 
-        // °ÔÀÌÆ® 1 Áõ°¡
+        // ê²Œì´íŠ¸ 1 ì¶”ê°€
         if (completionGate != null)
             completionGate.MarkOneDone();
 
-        // ´ÙÀ½ Ä«µå·Î ÁøÇà
+        // ë‹¤ìŒ ì¹´ë“œë¡œ ì´ë™
         _currentIndex++;
 
         if (_currentIndex >= CardCount)
         {
-            // ÀüºÎ ¿Ï·áµÊ
+            // ì „ì²´ ì™„ë£Œë¨
             OnClearCurrentCardUI();
             UpdateProgressLabel();
             OnAllCardsProcessed();
@@ -134,17 +134,10 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
         }
     }
 
-    private void BuildRandomOrder(int total)
+    private void BuildOrder(int total)
     {
         _order = new int[total];
         for (int i = 0; i < total; i++)
             _order[i] = i;
-
-        // Fisher-Yates ¼ÅÇÃ
-        for (int i = total - 1; i > 0; i--)
-        {
-            int j = UnityEngine.Random.Range(0, i + 1);
-            (_order[i], _order[j]) = (_order[j], _order[i]);
-        }
     }
 }
