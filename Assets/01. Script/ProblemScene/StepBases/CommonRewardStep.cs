@@ -49,14 +49,18 @@ public class CommonRewardStep : ProblemStepBase
     [Header("연출 시퀀스 (위에서 아래 순서대로 재생)")]
     [SerializeField] private SequenceItem[] sequenceItems;
 
-    [Header("리워드 표시")]
-    [SerializeField] private Text rewardNameText;
-    [SerializeField] private int rewardNameTextId;
-    [SerializeField] private Text rewardDescText;
-    [SerializeField] private int rewardDescTextId;
+    [Header("아이템 이름 텍스트")]
+    [SerializeField] private Text itemNameText;
+    [SerializeField] private int itemNameTextId;
 
-    [Header("버튼 (선택 - 코드 자동 바인딩)")]
-    [SerializeField] private Button replayButton;
+    [Header("효과 설명 텍스트")]
+    [SerializeField] private Text effectDescText;
+    [SerializeField] private int effectDescTextId;
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
+
+    [Header("버튼 (enterTextIds 완료 후 표시)")]
     [SerializeField] private Button homeButton;
 
     [Header("보상 메타 (DB 저장용)")]
@@ -89,13 +93,24 @@ public class CommonRewardStep : ProblemStepBase
     {
         SaveRewardToDbOnce();
         ApplyRewardText();
-        BindButtons();
+
+        // 버튼 초기 숨김
+        if (homeButton != null)
+            homeButton.gameObject.SetActive(false);
+
+        // DialogueSequencer 마지막 enterText 표시 시 버튼 표시
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete += OnEnterComplete;
+        else if (homeButton != null)
+            homeButton.gameObject.SetActive(true);
+
         StartSequence();
     }
 
     protected override void OnStepExit()
     {
-        UnbindButtons();
+        if (dialogueSequencer != null)
+            dialogueSequencer.OnEnterComplete -= OnEnterComplete;
 
         if (_sequenceRoutine != null)
         {
@@ -104,17 +119,23 @@ public class CommonRewardStep : ProblemStepBase
         }
     }
 
+    private void OnEnterComplete()
+    {
+        if (homeButton != null)
+            homeButton.gameObject.SetActive(true);
+    }
+
     // =========================
     // 리워드 텍스트 표시
     // =========================
 
     private void ApplyRewardText()
     {
-        if (rewardNameText != null && rewardNameTextId > 0)
-            rewardNameText.text = ProblemRuntime.L(rewardNameTextId);
+        if (itemNameText != null && itemNameTextId > 0)
+            itemNameText.text = ProblemRuntime.L(itemNameTextId);
 
-        if (rewardDescText != null && rewardDescTextId > 0)
-            rewardDescText.text = ProblemRuntime.L(rewardDescTextId);
+        if (effectDescText != null && effectDescTextId > 0)
+            effectDescText.text = ProblemRuntime.L(effectDescTextId);
     }
 
     // =========================
@@ -256,32 +277,8 @@ public class CommonRewardStep : ProblemStepBase
     }
 
     // =========================
-    // 보상 DB 저장
-    // =========================
-
-    // =========================
-    // 버튼 바인딩
-    // =========================
-
-    private void BindButtons()
-    {
-        // homeButton/replayButton은 인스펙터 OnClick으로 연결됨
-        // 코드에서 중복 AddListener하면 GoToHome()이 2회 호출되어 씬이 2번 로드됨
-    }
-
-    private void UnbindButtons()
-    {
-    }
-
-    // =========================
     // 버튼 Public 메서드
     // =========================
-
-    /// <summary>현재 문제를 처음부터 다시 시작 (다시하기)</summary>
-    public void ReplayCurrentProblem()
-    {
-        SceneNavigator.Instance.GoTo(ScreenId.PROBLEM);
-    }
 
     /// <summary>홈 화면으로 나가기</summary>
     public void GoToHome()

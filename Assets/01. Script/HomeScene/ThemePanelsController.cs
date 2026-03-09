@@ -247,7 +247,7 @@ public class ThemePanelsController : MonoBehaviour
         if (sfc != null)
         {
             Debug.Log("[ThemePanels] JumpToStep(3) 호출");
-            sfc.JumpToStep(3);
+            sfc.JumpToStep(1);
         }
         else
         {

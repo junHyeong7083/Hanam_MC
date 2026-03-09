@@ -7,6 +7,7 @@ public enum StageHeaderMode
     DESCRIPTION,
     REVIEW,
     START,
+    REWARD
 }
 
 /// <summary>
@@ -15,6 +16,7 @@ public enum StageHeaderMode
 /// - Description → 101000020 + stageIndex
 /// - Review → textId 900000050
 /// - Start → textId 900000051
+/// - Reward → textId 101000053
 /// </summary>
 [RequireComponent(typeof(Text))]
 public class StageHeaderText : MonoBehaviour
@@ -23,7 +25,7 @@ public class StageHeaderText : MonoBehaviour
 
     private const int ReviewTextId = 900000050;
     private const int StartTextId = 900000051;
-
+    private const int RewardTextId = 101000053;
     private Text _text;
 
     private void Awake()
@@ -42,6 +44,9 @@ public class StageHeaderText : MonoBehaviour
                 return;
             case StageHeaderMode.START:
                 _text.text = ProblemRuntime.L(StartTextId);
+                return;
+            case StageHeaderMode.REWARD:
+                _text.text = ProblemRuntime.L(RewardTextId);
                 return;
         }
 

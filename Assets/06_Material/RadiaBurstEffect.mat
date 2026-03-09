@@ -101,7 +101,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
-    - _CenterGlow: 0.78
+    - _CenterGlow: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _ColorMask: 15
@@ -116,20 +116,20 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _InnerRadius: 0.115
+    - _InnerRadius: 0.156
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _OuterRadius: 0.51
+    - _OuterRadius: 0.486
     - _Parallax: 0.005
-    - _PulseMax: 1
-    - _PulseMin: 0.137
-    - _PulseSpeed: 1.36
+    - _PulseMax: 0.51
+    - _PulseMin: 0.566
+    - _PulseSpeed: 3.4
     - _QueueOffset: 0
-    - _RayCount: 8.9
-    - _RaySoftness: 0.05
-    - _RayWidth: 0.278
+    - _RayCount: 6
+    - _RaySoftness: 0.5
+    - _RayWidth: 0.426
     - _ReceiveShadows: 1
-    - _RotateSpeed: -0.24
+    - _RotateSpeed: 0.47
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1

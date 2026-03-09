@@ -145,9 +145,9 @@ UI 텍스트,101012010,1,01,01,2,010,사실,actually
 [오늘 촬영 준비] 필름 내용 4 : 무기력,101021007,1,01,02,1,007,"새로운 취업 프로그램을 안내받았으나, 어차피 합격하지 못할 것 같아 신청을 포기함.",
 [오늘 촬영 준비] 필름 감정 4,101021008,1,01,02,1,008,무기력,
 [마음 깊이 보기] 새로운 관점 1,101022001,1,01,02,2,001,저 사람들은 그냥 재미있는\n이야기를 하며 웃고 있는 것뿐이야.\n무슨 이야기인지 나도 다가가서\n가볍게 인사하고 물어볼까?,Those people are just laughing and telling funny stories. Should I go up to them and say hello and ask them what they're talking about?
-[마음 깊이 보기] 새로운 관점 2,101022002,1,01,02,2,002,상대도 긴장했을 수도 있어,The other person might have been nervous too
-[마음 깊이 보기] 새로운 관점 3,101022003,1,01,02,2,003,나를 도우려는 의도일지도 몰라,Maybe it's meant to help me
-[마음 깊이 보기] 새로운 관점 4,101022004,1,01,02,2,004,모두 나를 이상하게 생각할 거야,Everyone will think I'm weird
+[마음 깊이 보기] 새로운 관점 2,101022002,1,01,02,2,002,나에게 관심 없을 수도 있어,You may not be interested in me
+[마음 깊이 보기] 새로운 관점 3,101022003,1,01,02,2,003,나처럼 긴장했을 수도 있어,You might be as nervous as I am
+[마음 깊이 보기] 새로운 관점 4,101022004,1,01,02,2,004,도와주려는 사람도 있을 거야,There will be people who want to help you
 [요점 정리] 요점 텍스트 1,101023001,1,01,02,3,001,나를 힘들게 했던 NG 필름을 꺼내 마음 렌즈로 그 상황을 확대해 보았습니다.,I took out the NG film that had been giving me a hard time and magnified the situation through the lens of my mind.
 [요점 정리] 요점 텍스트 2,101023002,1,01,02,3,002,무심코 떠오른 부정적인 자동적 생각들이 내 감정을 어떻게 우울하게 만드는지 그 연결 고리를 확인했습니다.,"I've identified the link between how inadvertent, automatic, negative thoughts can make me feel depressed."
 [요점 정리] 요점 텍스트 3,101023003,1,01,02,3,003,"카메라 앵글을 돌리듯, 같은 상황이라도 다르게 해석할 수 있는 방법이 있음을 배웠습니다.","Just like changing the camera angle, I learned that there are ways to interpret the same situation differently."
@@ -278,9 +278,9 @@ Select the protagonist's strengths in the scenario above and press the speak but
 ,101062009,1,01,06,2,009,이완 훈련 완료,Relaxation training completed
 ,101062010,1,01,06,2,010,"감독 의자에 편안히 앉아주세요.\n등을 의자에 기대고, 어깨의 힘을 빼주세요.",Please sit comfortably in the director's chair.\nLean your back against the chair and relax your shoulders.
 ,101062011,1,01,06,2,011,"천천히 눈을 감아주세요.\n주변의 소리와 빛을 차단하고, 내면의 평화에 집중해봐요.","Close your eyes slowly.\nBlock out any surrounding sounds or lights, and focus on your inner peace."
-,101062012,1,01,06,2,012,코로 천천히 숨을 들이마시세요.\n1...2...3...4...\n배가 부풀어 오르는 것을 느껴보세요.,Inhale slowly through your nose.\n1...2...3...4...\nFeel your belly rise.
-,101062013,1,01,06,2,013,잠시 숨을 멈춰주세요.\n1...2...3...,Hold your breath for a moment.\n1...2...3...
-,101062014,1,01,06,2,014,입으로 천천히 숨을 내쉬세요.\n1...2...3...4...5...6...\n몸의 긴장이 함께 빠져나가요.,Exhale slowly through your mouth.\n1...2...3...4...5...6...\nThe tension in your body will disappear with it.
+,101062012,1,01,06,2,012,코로 천천히 숨을 들이마시세요.\n하나...둘...셋...넷...\n배가 부풀어 오르는 것을 느껴보세요.,Inhale slowly through your nose. \nOne...two...three...four...\nFeel your belly rise.
+,101062013,1,01,06,2,013,잠시 숨을 멈춰주세요.\n하나...둘...셋...,Hold your breath for a moment.\nOne...two...three...
+,101062014,1,01,06,2,014,입으로 천천히 숨을 내쉬세요.\n하나...둘...셋...넷...다섯...여섯...\n몸의 긴장이 함께 빠져나가요.,Exhale slowly through your mouth. \nOne...two...three...four...five...six...\nLet the tension leave your body.
 ,101062015,1,01,06,2,015,"이마, 눈 주변, 입 주변의 긴장을 풀어주세요.\n턱의 힘도 빼주세요.","Relax your forehead, around your eyes, and around your mouth.\nAlso relax your jaw."
 ,101062016,1,01,06,2,016,어깨를 살짝 으쓱했다가 천천히 내려주세요.\n긴장이 사라지는 것을 느껴보세요.,"Shrug your shoulders slightly, then slowly lower them. Feel the tension disappear."
 ,101062017,1,01,06,2,017,"이 순간, 당신은 충분히 잘 살고있어요.\n스스로에게 따뜻한 말을 건네주세요.\n""수고했어, 잘하고 있어.""","At this moment, you are living well enough.\nGive yourself some warm words.\n""Good job, you are doing well."""

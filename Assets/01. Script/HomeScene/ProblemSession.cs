@@ -25,5 +25,5 @@ public static class ProblemSession
     public static string CurrentProblemId { get; set; }
 
     /// <summary>HomeScene 복귀 시 어떤 패널을 열지 지정</summary>
-    public static HomeReturnTarget ReturnTarget { get; set; } = HomeReturnTarget.None;
+    public static HomeReturnTarget ReturnTarget { get; set; } = HomeReturnTarget.LevelSelect;
 }

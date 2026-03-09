@@ -15,13 +15,10 @@ public class StepFlowController : MonoBehaviour
 
     private int _currentIndex = -1;
 
-    private void Awake()
-    {
-        SetAllInactive();
-    }
-
     private void OnEnable()
     {
+        SetAllInactive();
+
         if (!string.IsNullOrEmpty(bgmClipName) && SoundManager.Instance != null)
             SoundManager.Instance.PlayBGM(bgmClipName);
 
