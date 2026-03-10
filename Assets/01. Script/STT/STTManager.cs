@@ -37,8 +37,9 @@ namespace STT
 
         [Header("실시간 처리 설정")]
         [SerializeField] private bool enableRealtimeProcessing = true;
-        [SerializeField] private float realtimeProcessInterval = 1.0f;  // 청크 처리 간격 (초)
+        [SerializeField] private float realtimeProcessInterval = 2.0f;  // 청크 처리 간격 (초)
         [SerializeField] private int minSamplesForProcessing = 8000;    // 최소 샘플 수 (0.5초)
+        [SerializeField] private float realtimeWindowSeconds = 3.0f;    // 실시간 처리 시 최근 N초만 사용
 
         // Whisper 핸들
         private IntPtr _ctx = IntPtr.Zero;
@@ -60,6 +61,9 @@ namespace STT
 
         // 스레드 동기화 (Whisper context 동시 접근 방지)
         private readonly object _whisperLock = new object();
+
+        // 인식 힌트 (initial_prompt)
+        private string _promptHint = "";
 
         // 이벤트
         public event Action<string> OnPartialResult;  // 실시간 처리 결과
@@ -328,8 +332,10 @@ namespace STT
                 // 새로운 샘플이 없으면 스킵
                 if (currentSampleCount <= _lastProcessedSampleCount) continue;
 
-                // 현재까지의 샘플 복사
-                float[] samplesToProcess = _recordedSamples.ToArray();
+                // 실시간 처리: 최근 N초 윈도우만 사용 (전체 누적 방지)
+                int windowSamples = Mathf.Min(currentSampleCount, (int)(realtimeWindowSeconds * sampleRate));
+                float[] samplesToProcess = new float[windowSamples];
+                _recordedSamples.CopyTo(currentSampleCount - windowSamples, samplesToProcess, 0, windowSamples);
                 _lastProcessedSampleCount = currentSampleCount;
 
                 // 별도 스레드에서 처리
@@ -341,7 +347,7 @@ namespace STT
                 {
                     try
                     {
-                        result = RunWhisper(samplesToProcess);
+                        result = RunWhisper(samplesToProcess, singleSegment: true);
                     }
                     catch (Exception e)
                     {
@@ -353,10 +359,18 @@ namespace STT
 
                 processThread.Start();
 
-                // 처리 완료 대기 (녹음 중인 동안만)
-                while (!processComplete && _isRecording)
+                // 처리 완료 대기 (녹음 중인 동안만, 최대 5초 타임아웃)
+                float waitTimer = 0f;
+                while (!processComplete && _isRecording && waitTimer < 5f)
                 {
                     yield return null;
+                    waitTimer += Time.deltaTime;
+                }
+
+                // 타임아웃 시 결과 무시하고 계속 진행
+                if (!processComplete)
+                {
+                    Log("실시간 처리 타임아웃 - 스킵");
                 }
 
                 _isRealtimeProcessing = false;
@@ -422,7 +436,7 @@ namespace STT
         /// <summary>
         /// Whisper API 호출 (스레드 안전)
         /// </summary>
-        private string RunWhisper(float[] samples)
+        private string RunWhisper(float[] samples, bool singleSegment = false)
         {
             // 동시 접근 방지 락
             lock (_whisperLock)
@@ -443,11 +457,19 @@ namespace STT
                 wparams.print_progress = false;
                 wparams.print_realtime = false;
                 wparams.print_timestamps = false;
-                wparams.single_segment = false;
+                wparams.single_segment = singleSegment;
 
                 // 언어 설정
                 IntPtr langPtr = Marshal.StringToHGlobalAnsi(language);
                 wparams.language = langPtr;
+
+                // 인식 힌트 설정 (키워드 방향으로 인식 유도)
+                IntPtr promptPtr = IntPtr.Zero;
+                if (!string.IsNullOrEmpty(_promptHint))
+                {
+                    promptPtr = Marshal.StringToHGlobalAnsi(_promptHint);
+                    wparams.initial_prompt = promptPtr;
+                }
 
                 try
                 {
@@ -491,6 +513,8 @@ namespace STT
                 finally
                 {
                     Marshal.FreeHGlobal(langPtr);
+                    if (promptPtr != IntPtr.Zero)
+                        Marshal.FreeHGlobal(promptPtr);
                 }
             }
         }
@@ -540,6 +564,30 @@ namespace STT
         }
 
         // ===== 호환성 메서드 (Vosk API 호환) =====
+
+        /// <summary>
+        /// 인식 힌트 설정 - 예상되는 키워드를 Whisper에 알려줘서 인식률 향상
+        /// 예: SetPromptHint(new[] { "생각", "사실" })
+        /// </summary>
+        public void SetPromptHint(string[] keywords)
+        {
+            if (keywords == null || keywords.Length == 0)
+            {
+                _promptHint = "";
+                return;
+            }
+            // 키워드를 자연스러운 문장으로 구성 (Whisper가 문맥으로 인식)
+            _promptHint = string.Join(", ", keywords);
+            Log($"인식 힌트 설정: {_promptHint}");
+        }
+
+        /// <summary>
+        /// 인식 힌트 해제
+        /// </summary>
+        public void ClearPromptHint()
+        {
+            _promptHint = "";
+        }
 
         /// <summary>
         /// 문법 설정 (Whisper는 지원 안함 - 무시)

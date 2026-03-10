@@ -14,6 +14,7 @@ public class StepInventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
     public string itemId;
     public GameObject lockedRoot;
     public GameObject unlockedRoot;
+    public GameObject lockedImg;
     public Image iconImage;          // BackgroundImageClcik — 드래그 시 커서 따라감
     public Image backgroundImage;    // BackgroundImageAlpha — 원위치에 남음
     public GlowEffect glowEffect;
@@ -44,7 +45,9 @@ public class StepInventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     public void SetLocked(bool locked)
     {
-        if (lockedRoot != null) lockedRoot.SetActive(locked);
+        //if (lockedRoot != null) lockedRoot.SetActive(locked);
+        if (lockedRoot != null) lockedRoot.SetActive(true);
+        if (lockedImg != null) lockedImg.SetActive(locked); /// 더미용 리소스 대응 스크립트
         if (unlockedRoot != null) unlockedRoot.SetActive(!locked);
     }
 

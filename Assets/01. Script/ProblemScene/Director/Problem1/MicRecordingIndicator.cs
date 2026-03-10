@@ -15,6 +15,7 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private Image targetImage;
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite recordingSprite;
+    [SerializeField] private Sprite recognizingSprite;
 
     [Header("펄스 효과")]
     [SerializeField] private GameObject pulseRoot;
@@ -26,6 +27,7 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private Text statusText;
     [SerializeField] private string idleText = "마이크를 눌러주세요";
     [SerializeField] private string recordingText = "녹음 중...";
+    [SerializeField] private string recognizingText = "인식 중...";
 
     [Header("자동 종료 설정")]
     [SerializeField] private bool enableAutoStop = true;
@@ -53,6 +55,7 @@ public class MicRecordingIndicator : MonoBehaviour
 
     private bool _recording;
     private bool _isSTTRecording;
+    private bool _recognizing;
 
     // 실시간 매칭 캐시
     private int _cachedMatchIndex = -1;
@@ -97,6 +100,7 @@ public class MicRecordingIndicator : MonoBehaviour
         _displayIdleText = idleText;
         _recording = false;
         _isSTTRecording = false;
+        _recognizing = false;
         ApplyVisual();
     }
 
@@ -127,6 +131,10 @@ public class MicRecordingIndicator : MonoBehaviour
             _cachedMatchScore = 0f;
             _silenceTimer = 0f;
             _hasDetectedVoice = false;
+
+            // 키워드를 Whisper 힌트로 설정 (인식률 향상)
+            if (keywords != null && keywords.Length > 0)
+                STTManager.Instance.SetPromptHint(keywords);
 
             STTManager.Instance.OnPartialResult -= HandlePartialResult;
             STTManager.Instance.OnPartialResult += HandlePartialResult;
@@ -160,6 +168,9 @@ public class MicRecordingIndicator : MonoBehaviour
                 return;
             }
 
+            // 인식 중 상태 표시
+            SetRecognizing(true);
+
             // 캐시된 실시간 결과가 있으면 즉시 사용
             if (_cachedMatchIndex >= 0)
             {
@@ -168,6 +179,7 @@ public class MicRecordingIndicator : MonoBehaviour
                 _cachedMatchIndex = -1;
                 _cachedMatchScore = 0f;
                 STTManager.Instance.StopRecording();
+                SetRecognizing(false);
                 OnKeywordMatched?.Invoke(matchIndex);
             }
             else
@@ -226,6 +238,7 @@ public class MicRecordingIndicator : MonoBehaviour
     private void HandleSTTResult(string result)
     {
         STTManager.Instance.OnFinalResult -= HandleSTTResult;
+        SetRecognizing(false);
 
         if (string.IsNullOrEmpty(result))
         {
@@ -331,36 +344,45 @@ public class MicRecordingIndicator : MonoBehaviour
         }
         _isSTTRecording = false;
         _recording = false;
+        _recognizing = false;
         _cachedMatchIndex = -1;
         _cachedMatchScore = 0f;
+    }
+
+    private void SetRecognizing(bool value)
+    {
+        _recognizing = value;
+        ApplyVisual();
     }
 
     private void ApplyVisual()
     {
         if (buttonHover != null)
         {
-            // ButtonHover 연동: 녹음 중이면 recordingSprite 오버라이드, 아니면 해제
-            if (_recording)
-            {
-                if (recordingSprite != null)
-                    buttonHover.SetSpriteOverride(recordingSprite);
-            }
+            if (_recording && recordingSprite != null)
+                buttonHover.SetSpriteOverride(recordingSprite);
+            else if (_recognizing && recognizingSprite != null)
+                buttonHover.SetSpriteOverride(recognizingSprite);
             else
-            {
                 buttonHover.ClearSpriteOverride();
-            }
         }
         else if (targetImage != null)
         {
-            // ButtonHover 없으면 기존 방식 (targetImage 직접 교체)
-            Sprite sprite = _recording ? recordingSprite : idleSprite;
+            Sprite sprite = _recording ? recordingSprite
+                          : _recognizing ? recognizingSprite
+                          : idleSprite;
             if (sprite != null)
                 targetImage.sprite = sprite;
         }
 
         if (statusText != null)
         {
-            statusText.text = _recording ? recordingText : _displayIdleText;
+            if (_recording)
+                statusText.text = recordingText;
+            else if (_recognizing)
+                statusText.text = recognizingText;
+            else
+                statusText.text = _displayIdleText;
         }
 
         if (pulseRoot != null)

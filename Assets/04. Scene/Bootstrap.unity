@@ -2410,6 +2410,7 @@ MonoBehaviour:
   enableRealtimeProcessing: 1
   realtimeProcessInterval: 1
   minSamplesForProcessing: 8000
+  realtimeWindowSeconds: 3
 --- !u!4 &1970373473
 Transform:
   m_ObjectHideFlags: 0

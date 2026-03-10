@@ -178,10 +178,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 33
+    m_FontSize: 27
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 3
+    m_MinSize: 2
     m_MaxSize: 300
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -1703,7 +1703,7 @@ GameObject:
   - component: {fileID: 70545687}
   - component: {fileID: 70545686}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1742,13 +1742,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1926,7 +1926,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 79777503}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -2035,12 +2035,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 90653633}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
-  recordingSprite: {fileID: 21300000, guid: 464597a3e68ec00459ee69fa193698e3, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
+  recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 0}
   statusText: {fileID: 659255209}
   idleText: 
-  recordingText: 
+  recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -2149,7 +2151,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5438,7 +5440,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170692446}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -8693,7 +8695,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &321987977
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8710,7 +8712,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -249.00003}
+  m_AnchoredPosition: {x: 0, y: -278.40002}
   m_SizeDelta: {x: 445, y: 164}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &321987978
@@ -8973,7 +8975,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &337969206
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9167,7 +9169,7 @@ GameObject:
   - component: {fileID: 345980329}
   - component: {fileID: 345980328}
   m_Layer: 5
-  m_Name: Image
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9207,7 +9209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -9925,7 +9927,7 @@ GameObject:
   - component: {fileID: 355782568}
   - component: {fileID: 355782567}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9964,13 +9966,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10344,7 +10346,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360015729}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -10650,7 +10652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -12566,8 +12568,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.0000038}
-  m_SizeDelta: {x: 249.2, y: 363.8}
+  m_AnchoredPosition: {x: 0, y: -3}
+  m_SizeDelta: {x: 284.05, y: 389.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &440681463
 MonoBehaviour:
@@ -12589,7 +12591,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 34b0b2cca1e6022499b3cecd7d89a323, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13582,12 +13584,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 470385218}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 443297035}
   statusText: {fileID: 1158794692}
   idleText: 
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -13657,19 +13661,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 470385218}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 470385215}
-        m_TargetAssemblyTypeName: MicRecordingIndicator, Assembly-CSharp
-        m_MethodName: ToggleRecording
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &470385218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13690,7 +13682,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16857,7 +16849,7 @@ GameObject:
   - component: {fileID: 561024588}
   - component: {fileID: 561024587}
   m_Layer: 5
-  m_Name: Button (Legacy)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16896,7 +16888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -16924,7 +16916,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -16964,12 +16956,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2e7c6666c0dd64b49ae3255e4986fd72, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 13df4a23a396db3468a149a934fc28d7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17530,8 +17522,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.0000038}
-  m_SizeDelta: {x: 249.2, y: 363.8}
+  m_AnchoredPosition: {x: 0, y: -2.9999692}
+  m_SizeDelta: {x: 284.05, y: 389.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &579376674
 MonoBehaviour:
@@ -17553,7 +17545,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 34b0b2cca1e6022499b3cecd7d89a323, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19371,7 +19363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &652796992
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19414,7 +19406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -19855,7 +19847,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 671225612}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -22441,7 +22433,7 @@ GameObject:
   - component: {fileID: 781502647}
   - component: {fileID: 781502646}
   m_Layer: 5
-  m_Name: Button (Legacy) (3)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22480,7 +22472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -22508,7 +22500,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -22548,12 +22540,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2e95c5c24d7cdce4f8e340920be56def, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 62231694cbbcd09438aa345b7f78fa38, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -22798,7 +22790,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &799553438
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22809,14 +22801,14 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2121369988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 437.736, y: 251.32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &799553439
 MonoBehaviour:
@@ -22838,7 +22830,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7965f46a94205bf4d8671dee28b6ae80, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -24052,7 +24044,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 824356449}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -24321,7 +24313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -24380,7 +24372,7 @@ GameObject:
   - component: {fileID: 832193826}
   - component: {fileID: 832193825}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24420,7 +24412,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -24613,7 +24605,7 @@ GameObject:
   - component: {fileID: 835978340}
   - component: {fileID: 835978339}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24653,7 +24645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -25040,7 +25032,7 @@ GameObject:
   - component: {fileID: 852294477}
   - component: {fileID: 852294476}
   m_Layer: 5
-  m_Name: Button (Legacy) (1)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25079,7 +25071,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -25107,7 +25099,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -25147,12 +25139,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2f253a571133e1b4cb71fde703f4ff8a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 184196077a2d6f44ab2e6c2876d436ae, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -25713,10 +25705,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 33
+    m_FontSize: 27
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 3
+    m_MinSize: 2
     m_MaxSize: 300
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -25821,7 +25813,7 @@ GameObject:
   - component: {fileID: 862510086}
   - component: {fileID: 862510085}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25861,7 +25853,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -26284,7 +26276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &871847243
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26295,14 +26287,14 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2073423427}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 437.736, y: 251.32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &871847244
 MonoBehaviour:
@@ -26324,7 +26316,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7965f46a94205bf4d8671dee28b6ae80, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -27473,8 +27465,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.0000038}
-  m_SizeDelta: {x: 249.2, y: 363.8}
+  m_AnchoredPosition: {x: 0, y: -2.9999692}
+  m_SizeDelta: {x: 284.05, y: 389.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &911333725
 MonoBehaviour:
@@ -27496,7 +27488,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 34b0b2cca1e6022499b3cecd7d89a323, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -27526,7 +27518,7 @@ GameObject:
   - component: {fileID: 914976811}
   - component: {fileID: 914976810}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27565,13 +27557,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -29052,7 +29044,7 @@ GameObject:
   - component: {fileID: 974476759}
   - component: {fileID: 974476758}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29091,13 +29083,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -29778,7 +29770,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1012398538
 RectTransform:
   m_ObjectHideFlags: 0
@@ -30157,6 +30149,10 @@ PrefabInstance:
     - target: {fileID: 7294561937330029242, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: slots.Array.data[1].draggableThisStep
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7294561937330029242, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: slots.Array.data[2].draggableThisStep
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7894911030260855419, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: enterTextIds.Array.size
@@ -30994,7 +30990,7 @@ GameObject:
   - component: {fileID: 1043800938}
   - component: {fileID: 1043800941}
   m_Layer: 5
-  m_Name: Button (Legacy) (2)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31040,7 +31036,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -31080,12 +31076,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7ab62608ebd99d345804bf54614bacce, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f77e36bad33c8f34e86d99379e0d3a01, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -31115,7 +31111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -31493,6 +31489,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Step1
       objectReference: {fileID: 0}
+    - target: {fileID: 5567393185007331940, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7294561937330029242, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: slots.Array.data[0].draggableThisStep
       value: 0
@@ -31575,7 +31575,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -33099,7 +33099,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1147054798
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33142,7 +33142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -33243,12 +33243,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 1147322691}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 2111596859}
   statusText: {fileID: 1301118391}
   idleText: 
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -33354,7 +33356,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -33384,7 +33386,7 @@ GameObject:
   - component: {fileID: 1147601239}
   - component: {fileID: 1147601238}
   m_Layer: 5
-  m_Name: Image
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33424,7 +33426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -33932,7 +33934,7 @@ GameObject:
   - component: {fileID: 1180771584}
   - component: {fileID: 1180771587}
   m_Layer: 5
-  m_Name: Button (Legacy)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33978,7 +33980,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -34018,12 +34020,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 844535f083abc5b45ba4742a7884eac1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 87db0d9e82dee0040919fbbe922d7101, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -34053,7 +34055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -34096,8 +34098,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1}
-  m_SizeDelta: {x: 249.2, y: 363.8}
+  m_AnchoredPosition: {x: 0, y: -2.999973}
+  m_SizeDelta: {x: 284.05, y: 389.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1182450250
 MonoBehaviour:
@@ -34119,7 +34121,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 34b0b2cca1e6022499b3cecd7d89a323, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -34489,12 +34491,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 1190964762}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 1378849569}
   statusText: {fileID: 172103408}
   idleText: 
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -34597,7 +34601,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -36806,7 +36810,7 @@ GameObject:
   - component: {fileID: 1288844098}
   - component: {fileID: 1288844101}
   m_Layer: 5
-  m_Name: Button (Legacy) (1)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36852,7 +36856,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -36892,12 +36896,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 76e7719e4cb3e8f48abee133e7b09743, type: 3}
+  m_Sprite: {fileID: 21300000, guid: faa41043ccdb8fe4b9982894821674a2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -36927,7 +36931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -37081,7 +37085,7 @@ GameObject:
   - component: {fileID: 1304809137}
   - component: {fileID: 1304809136}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37120,13 +37124,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -37356,7 +37360,7 @@ GameObject:
   - component: {fileID: 1317754818}
   - component: {fileID: 1317754817}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37395,13 +37399,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -37512,7 +37516,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1323669042
 RectTransform:
   m_ObjectHideFlags: 0
@@ -37555,7 +37559,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -38100,7 +38104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -38196,7 +38200,7 @@ PrefabInstance:
     - target: {fileID: 5493356493838353789, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+      objectReference: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
     - target: {fileID: 6756605646296733217, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: isDialogueButton
       value: 1
@@ -38364,7 +38368,7 @@ PrefabInstance:
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: idleSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+      objectReference: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: statusText
       value: 
@@ -38375,7 +38379,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: recordingText
-      value: 
+      value: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
       objectReference: {fileID: 0}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: matchThreshold
@@ -38384,7 +38388,11 @@ PrefabInstance:
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: recordingSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 464597a3e68ec00459ee69fa193698e3, type: 3}
+      objectReference: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+    - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
+      propertyPath: recognizingSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: 'keywords.Array.data[0]'
       value: "\uC131\uC2E4\uD568"
@@ -39614,7 +39622,7 @@ GameObject:
   - component: {fileID: 1375194230}
   - component: {fileID: 1375194229}
   m_Layer: 5
-  m_Name: Button (Legacy) (2)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39653,7 +39661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -39681,7 +39689,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -39721,12 +39729,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 127e01becc1015640a385751038ea1a5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d83333154270d2b4b8094b6e221590cf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -41370,7 +41378,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1413835130
 RectTransform:
   m_ObjectHideFlags: 0
@@ -41410,7 +41418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -41961,10 +41969,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 33
+    m_FontSize: 27
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 3
+    m_MinSize: 2
     m_MaxSize: 300
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -43781,7 +43789,7 @@ GameObject:
   - component: {fileID: 1506164991}
   - component: {fileID: 1506164990}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43821,7 +43829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -45183,7 +45191,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1548563494
 RectTransform:
   m_ObjectHideFlags: 0
@@ -45226,7 +45234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -46302,7 +46310,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1598168654
 RectTransform:
   m_ObjectHideFlags: 0
@@ -47259,6 +47267,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Step1
       objectReference: {fileID: 0}
+    - target: {fileID: 5567393185007331940, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7294561937330029242, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: slots.Array.data[0].draggableThisStep
       value: 0
@@ -47645,7 +47657,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1629263204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -47688,7 +47700,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -48769,12 +48781,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 1688348655}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
-  recordingSprite: {fileID: 21300000, guid: 464597a3e68ec00459ee69fa193698e3, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
+  recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 0}
   statusText: {fileID: 651520190}
   idleText: 
-  recordingText: 
+  recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -48880,7 +48894,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -50029,7 +50043,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1740917385
 RectTransform:
   m_ObjectHideFlags: 0
@@ -50040,14 +50054,14 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1275095882}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 437.736, y: 251.32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1740917386
 MonoBehaviour:
@@ -50069,7 +50083,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7965f46a94205bf4d8671dee28b6ae80, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -50459,7 +50473,7 @@ GameObject:
   - component: {fileID: 1771059019}
   - component: {fileID: 1771059018}
   m_Layer: 5
-  m_Name: Image
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50499,7 +50513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -53966,7 +53980,7 @@ GameObject:
   - component: {fileID: 1913794629}
   - component: {fileID: 1913794628}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54005,13 +54019,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -54998,10 +55012,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: c8c39a8f3a175a5478fb3672a87ebe42, type: 3}
-    m_FontSize: 33
+    m_FontSize: 27
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 3
+    m_MinSize: 2
     m_MaxSize: 300
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -55109,7 +55123,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1960556286
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55484,7 +55498,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1964114943}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -56680,7 +56694,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2007829887}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -57360,7 +57374,7 @@ GameObject:
   - component: {fileID: 2040816125}
   - component: {fileID: 2040816128}
   m_Layer: 5
-  m_Name: Button (Legacy) (3)
+  m_Name: stage7_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57406,7 +57420,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -57446,12 +57460,12 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 30, y: 30, z: 30, w: 30}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1cc6fbe3b4c4aef4f9d6eb52e65cd829, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c1dd187869bdc284d9acb934d5a2bf14, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -57481,7 +57495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverScale: 1.08
+  hoverScale: 1.05
   animationSpeed: 10
   enableMoveX: 0
   moveXDistance: 10
@@ -57509,7 +57523,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2046801908
 RectTransform:
   m_ObjectHideFlags: 0
@@ -57589,8 +57603,8 @@ MonoBehaviour:
   progressLabel: {fileID: 0}
   completionGate: {fileID: 2046801912}
   dialogueSequencer: {fileID: 2076272105}
-  correctThoughtTextId: 101010019
-  correctFactTextId: 101010018
+  correctThoughtTextId: 0
+  correctFactTextId: 0
   wrongFeedbackTextId: 0
   wrongFeedbackDuration: 2
   films:
@@ -57688,7 +57702,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2056048986
 RectTransform:
   m_ObjectHideFlags: 0
@@ -57699,14 +57713,14 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1130561327}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 437.736, y: 251.32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2056048987
 MonoBehaviour:
@@ -57728,7 +57742,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7965f46a94205bf4d8671dee28b6ae80, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -58278,7 +58292,7 @@ GameObject:
   - component: {fileID: 2074631143}
   - component: {fileID: 2074631142}
   m_Layer: 5
-  m_Name: ClickImage
+  m_Name: stage7_ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58317,13 +58331,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6ec03096ad04344fb532c967745cf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08b3e06ffc027264d8744ce070c268eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -58364,7 +58378,7 @@ GameObject:
   - component: {fileID: 2078135455}
   - component: {fileID: 2078135454}
   m_Layer: 5
-  m_Name: Image
+  m_Name: stage7_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58404,7 +58418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -60153,7 +60167,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2122629566}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07cf1ebde7c2b4444b9fe0fa857a3848, type: 3}
   m_Name: 
@@ -61324,7 +61338,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -61849,7 +61863,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -62160,12 +62174,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 2050449530253602386}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 8668494029097183523}
   statusText: {fileID: 3795300561764304229}
   idleText: 
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -62390,6 +62406,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1629263204}
     m_Modifications:
+    - target: {fileID: 1300477867229308260, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1300477867229308260, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1300477867229308260, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1031.948
+      objectReference: {fileID: 0}
+    - target: {fileID: 1300477867229308260, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     - target: {fileID: 1744565809335097419, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -62470,6 +62502,86 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1881211720184216921, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881211720184216921, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881211720184216921, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 566.474
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881211720184216921, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779368113478455931, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779368113478455931, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779368113478455931, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 256.15802
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779368113478455931, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245820659184108411, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245820659184108411, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245820659184108411, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1497.422
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245820659184108411, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591822557584887044, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591822557584887044, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591822557584887044, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 411.316
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591822557584887044, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4647023142310223183, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4647023142310223183, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4647023142310223183, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1342.264
+      objectReference: {fileID: 0}
+    - target: {fileID: 4647023142310223183, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     - target: {fileID: 4764792629388145747, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -586
@@ -62486,9 +62598,73 @@ PrefabInstance:
       propertyPath: mode
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5800704008721496492, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5800704008721496492, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5800704008721496492, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 876.79004
+      objectReference: {fileID: 0}
+    - target: {fileID: 5800704008721496492, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6527260428355659781, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6527260428355659781, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6527260428355659781, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 721.632
+      objectReference: {fileID: 0}
+    - target: {fileID: 6527260428355659781, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     - target: {fileID: 7325912936286904411, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: glowEffect
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163108917834739370, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163108917834739370, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163108917834739370, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1187.1061
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163108917834739370, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211780494134001530, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211780494134001530, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211780494134001530, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 101
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211780494134001530, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -63208,12 +63384,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetImage: {fileID: 5493356494211649439}
-  idleSprite: {fileID: 21300000, guid: 4ba82e7c8db42314d9441b73802348f6, type: 3}
+  idleSprite: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
   recordingSprite: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+  recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 321987976}
   statusText: {fileID: 2015063898}
   idleText: 
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
+  recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
