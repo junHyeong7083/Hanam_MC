@@ -285,12 +285,9 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         if (uiText != null)
             uiText.text = text ?? string.Empty;
 
-        Image uiImage = null;
-        foreach (var img in _currentFilmInstance.GetComponentsInChildren<Image>(true))
-        {
-            if (img.gameObject != _currentFilmInstance) { uiImage = img; break; }
-        }
-        if (uiImage != null)
+        // Image는 root에 있으므로 root에서 직접 가져옴
+        Image uiImage = _currentFilmInstance.GetComponent<Image>();
+        if (uiImage != null && sprite != null)
             uiImage.sprite = sprite;
     }
 

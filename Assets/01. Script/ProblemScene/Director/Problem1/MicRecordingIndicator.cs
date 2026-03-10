@@ -16,6 +16,9 @@ public class MicRecordingIndicator : MonoBehaviour
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite recordingSprite;
 
+    [Header("펄스 효과")]
+    [SerializeField] private GameObject pulseRoot;
+
     // 같은 GO의 ButtonHover 자동 참조
     private ButtonHover buttonHover;
 
@@ -107,7 +110,7 @@ public class MicRecordingIndicator : MonoBehaviour
         _recording = startRecording;
         _isSTTRecording = startRecording;
         OnRecordingChanged?.Invoke(startRecording);
-     //   Debug.Log($"[MicRecordingIndicator] 상태 변경 후: _recording={_recording}, startRecording={startRecording}");
+        Debug.Log($"[MicRecordingIndicator] 상태 변경: _recording={_recording}, startRecording={startRecording}");
         ApplyVisual();
 
         // STT 사용 불가능하면 비주얼만 토글하고 종료
@@ -152,7 +155,7 @@ public class MicRecordingIndicator : MonoBehaviour
             // 자동 종료 모드일 때만 음성 감지 체크
             if (enableAutoStop && !_hasDetectedVoice)
             {
-               // Debug.Log("[MicRecordingIndicator] 음성이 감지되지 않아 STT를 실행하지 않습니다");
+                Debug.Log("[MicRecordingIndicator] 음성 미감지 → STT 스킵");
                 STTManager.Instance.StopRecording();
                 return;
             }
@@ -191,7 +194,7 @@ public class MicRecordingIndicator : MonoBehaviour
     {
         if (string.IsNullOrEmpty(result)) return;
 
-    //    Debug.Log($"[MicRecordingIndicator] 실시간 결과 수신: {result}");
+        Debug.Log($"[MicRecordingIndicator] 실시간 결과: {result}");
 
         if (keywords == null || keywords.Length == 0) return;
 
@@ -231,7 +234,7 @@ public class MicRecordingIndicator : MonoBehaviour
             return;
         }
 
-       // Debug.Log($"[MicRecordingIndicator] STT 인식 결과: {result}");
+        Debug.Log($"[MicRecordingIndicator] STT 최종 결과: {result}");
 
         if (keywords == null || keywords.Length == 0)
         {
@@ -259,12 +262,12 @@ public class MicRecordingIndicator : MonoBehaviour
         // 임계값 이상이면 매칭 성공
         if (bestIndex >= 0 && bestScore >= matchThreshold)
         {
-         //   Debug.Log($"[MicRecordingIndicator] → 매칭 성공: [{bestIndex}] {keywords[bestIndex]} ({bestScore:F2})");
+            Debug.Log($"[MicRecordingIndicator] 매칭 성공: [{bestIndex}] {keywords[bestIndex]} (점수:{bestScore:F2})");
             OnKeywordMatched?.Invoke(bestIndex);
         }
         else
         {
-           // Debug.Log($"[MicRecordingIndicator] 매칭 실패 (최고 점수: {bestScore:F2})");
+            Debug.Log($"[MicRecordingIndicator] 매칭 실패 (STT결과: {result}, 최고점수: {bestScore:F2})");
             OnNoMatch?.Invoke(result);
         }
     }
@@ -359,5 +362,8 @@ public class MicRecordingIndicator : MonoBehaviour
         {
             statusText.text = _recording ? recordingText : _displayIdleText;
         }
+
+        if (pulseRoot != null)
+            pulseRoot.SetActive(_recording);
     }
 }
