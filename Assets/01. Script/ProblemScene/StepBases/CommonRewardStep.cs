@@ -280,6 +280,18 @@ public class CommonRewardStep : ProblemStepBase
     // 버튼 Public 메서드
     // =========================
 
+    /// <summary>DB 저장(문제 완료) 후 다음 스텝으로 이동</summary>
+    public void SaveAndNextStep()
+    {
+        MarkProblemSolved();
+
+        var sfc = GetComponentInParent<StepFlowController>();
+        if (sfc != null)
+            sfc.NextStep();
+        else
+            Debug.LogWarning("[CommonRewardStep] StepFlowController를 찾을 수 없음");
+    }
+
     /// <summary>홈 화면으로 나가기</summary>
     public void GoToHome()
     {
@@ -288,9 +300,7 @@ public class CommonRewardStep : ProblemStepBase
         // Director 테마: LevelSelectPanel 또는 EndingPanel로 복귀
         if (ProblemSession.CurrentTheme == ProblemTheme.Director)
         {
-            ProblemSession.ReturnTarget = ProblemSession.CurrentProblemIndex >= 10
-                ? HomeReturnTarget.Ending
-                : HomeReturnTarget.LevelSelect;
+            ProblemSession.ReturnTarget = HomeReturnTarget.LevelSelect;
         }
         else
         {

@@ -14,4 +14,20 @@ public class EndingPosterDisplay : MonoBehaviour
         if (dateText != null)
             dateText.text = DateTime.Now.ToString("yyyy.MM.dd");
     }
+   
+    public void GoToHome()
+    {
+        // Director 테마: LevelSelectPanel 또는 EndingPanel로 복귀
+        if (ProblemSession.CurrentTheme == ProblemTheme.Director)
+            ProblemSession.ReturnTarget = HomeReturnTarget.LevelSelect;
+
+        else
+        {
+            ProblemSession.ReturnTarget = HomeReturnTarget.None;
+        }
+
+        Debug.Log($"[CommonRewardStep] GoToHome - Theme={ProblemSession.CurrentTheme}, Index={ProblemSession.CurrentProblemIndex}, ReturnTarget={ProblemSession.ReturnTarget}");
+        GameManager.Instance.GoToHome();
+    }
+
 }

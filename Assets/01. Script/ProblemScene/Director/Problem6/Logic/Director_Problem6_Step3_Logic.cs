@@ -134,10 +134,9 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
             _playRoutine = null;
         }
 
-        // BGM, TTS 정지 (촬영 종료)
+        // TTS 정지 (BGM은 summary/Step4까지 유지)
         if (SoundManager.Instance != null)
         {
-            SoundManager.Instance.StopBGM();
             SoundManager.Instance.StopTTS();
         }
     }
