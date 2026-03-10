@@ -203,6 +203,10 @@ public abstract class Director_Problem10_Step3_Logic : ProblemStepBase
     private void OnMicClicked()
     {
         if (_speaking) return;
+
+        var mic = MicIndicator;
+        if (mic != null)
+            mic.ToggleRecording();
     }
 
     // =========================

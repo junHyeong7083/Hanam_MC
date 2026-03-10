@@ -1460,7 +1460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &55597110
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18911,7 +18911,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &652796992
 RectTransform:
   m_ObjectHideFlags: 0
@@ -56578,7 +56578,7 @@ MonoBehaviour:
   recordingSprite: {fileID: 21300000, guid: 464597a3e68ec00459ee69fa193698e3, type: 3}
   statusText: {fileID: 41938764}
   idleText: 
-  recordingText: 
+  recordingText: "\uC9C0\uAE08 \uB9D0\uC500\uD558\uC138\uC694"
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
@@ -56648,19 +56648,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2021848930}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2021848927}
-        m_TargetAssemblyTypeName: MicRecordingIndicator, Assembly-CSharp
-        m_MethodName: ToggleRecording
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2021848930
 MonoBehaviour:
   m_ObjectHideFlags: 0

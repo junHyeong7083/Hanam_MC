@@ -358,7 +358,6 @@ public class MicRecordingIndicator : MonoBehaviour
         if (statusText != null)
         {
             statusText.text = _recording ? recordingText : _displayIdleText;
-            statusText.gameObject.SetActive(!_recording);
         }
     }
 }
