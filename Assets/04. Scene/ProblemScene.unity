@@ -1153,7 +1153,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &43495269
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1460,7 +1460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &55597110
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6337,7 +6337,7 @@ GameObject:
   - component: {fileID: 209187143}
   - component: {fileID: 209187145}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6359,8 +6359,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &209187143
 MonoBehaviour:
@@ -7485,7 +7485,7 @@ GameObject:
   - component: {fileID: 280816266}
   - component: {fileID: 280816268}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7507,8 +7507,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &280816266
 MonoBehaviour:
@@ -10890,7 +10890,7 @@ GameObject:
   - component: {fileID: 368426604}
   - component: {fileID: 368426606}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10912,8 +10912,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &368426604
 MonoBehaviour:
@@ -13553,6 +13553,10 @@ PrefabInstance:
     - target: {fileID: 6969127894265614571, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7253102200478232738, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
+      propertyPath: showNextStepAfterEnter
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7253102200478232738, guid: f5aed4de11b7f1d468a293d90806efad, type: 3}
       propertyPath: enterTextIds.Array.size
@@ -18907,7 +18911,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &652796992
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31451,15 +31455,15 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1005819258}
   m_Father: {fileID: 1396415291}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: -333}
-  m_SizeDelta: {x: 350.7, y: 85.5}
+  m_AnchoredPosition: {x: 300, y: -191}
+  m_SizeDelta: {x: 364, y: 117.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1081498216
 MonoBehaviour:
@@ -31801,7 +31805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1092100496
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32900,7 +32904,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1147054798
 RectTransform:
   m_ObjectHideFlags: 0
@@ -34946,7 +34950,7 @@ GameObject:
   - component: {fileID: 1230878156}
   - component: {fileID: 1230878158}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34968,8 +34972,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1230878156
 MonoBehaviour:
@@ -38470,7 +38474,7 @@ GameObject:
   - component: {fileID: 1370336222}
   - component: {fileID: 1370336224}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38492,8 +38496,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1370336222
 MonoBehaviour:
@@ -39018,7 +39022,7 @@ GameObject:
   - component: {fileID: 1375201510}
   - component: {fileID: 1375201512}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39040,8 +39044,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1375201510
 MonoBehaviour:
@@ -39587,7 +39591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 137}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1396415292
@@ -40520,7 +40524,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1413835130
 RectTransform:
   m_ObjectHideFlags: 0
@@ -40963,7 +40967,7 @@ GameObject:
   - component: {fileID: 1422541566}
   - component: {fileID: 1422541568}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40985,7 +40989,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -123}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1422541566
@@ -52097,6 +52101,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1147054798}
     m_Modifications:
+    - target: {fileID: 1565550629816558798, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: stepFlowController
+      value: 
+      objectReference: {fileID: 1147054801}
     - target: {fileID: 1744565809335097419, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -52232,6 +52240,10 @@ PrefabInstance:
     - target: {fileID: 7894911030260855419, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: 'enterTextIds.Array.data[1]'
       value: 101060002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7894911030260855419, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
+      propertyPath: completedTextIds.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8152597898783351224, guid: cca38131c5fcc0542bc60c56ade386f3, type: 3}
       propertyPath: m_IsActive
@@ -53836,15 +53848,15 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 917979792}
   m_Father: {fileID: 1396415291}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: -333}
-  m_SizeDelta: {x: 350.7, y: 85.5}
+  m_AnchoredPosition: {x: -300, y: -191}
+  m_SizeDelta: {x: 364, y: 110.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1938545415
 MonoBehaviour:
@@ -57559,7 +57571,7 @@ GameObject:
   - component: {fileID: 2066423285}
   - component: {fileID: 2066423287}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Problem1_Step2_filmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57581,8 +57593,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -79.6}
-  m_SizeDelta: {x: 0, y: 86.799995}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2066423285
 MonoBehaviour:

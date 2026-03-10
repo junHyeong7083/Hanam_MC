@@ -25,7 +25,7 @@ public static class ProblemSession
     public static string CurrentProblemId { get; set; }
 
     /// <summary>HomeScene 복귀 시 어떤 패널을 열지 지정</summary>
-    public static HomeReturnTarget ReturnTarget { get; set; } = HomeReturnTarget.LevelSelect;
+    public static HomeReturnTarget ReturnTarget { get; set; } = HomeReturnTarget.None;
 
     /// <summary>시연 모드: true이면 모든 문제 해금 + 아이템 전체 보유 처리. 시연 후 false로 되돌릴 것.</summary>
     public static bool DemoMode { get; set; } = true;
