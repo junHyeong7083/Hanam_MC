@@ -35,6 +35,7 @@ public class ButtonHover : MonoBehaviour,
     [Tooltip("버튼 선택(손 뗌) 상태 스프라이트 (Resources/Buttons/...)")]
     [SerializeField] private string spritePathSelected = "Buttons/button_03";
 
+    private string btnsfx = "SFX_btn";
     // 내부
     private RectTransform _rectTransform;
     private Vector3 _originalScale;
@@ -122,7 +123,8 @@ public class ButtonHover : MonoBehaviour,
         if (!_isInteractable || _spriteOverride != null) return;
 
         _isPressing = true;
-        ApplySpritePressed();
+        ApplyPressed();
+
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -234,7 +236,11 @@ public class ButtonHover : MonoBehaviour,
 
         _image.sprite = _sprNormal;
     }
-
+    private void ApplyPressed()
+    {
+        ApplySpritePressed();
+        ApplySFXPressed();
+    }
     private void ApplySpritePressed()
     {
         if (!isDialogueButton) return;
@@ -244,7 +250,15 @@ public class ButtonHover : MonoBehaviour,
 
         _image.sprite = _sprPressed;
     }
-
+    
+    private void ApplySFXPressed()
+    {
+        if (!string.IsNullOrEmpty(btnsfx))
+        {
+            var sm = SoundManager.Instance;
+            if (sm != null) sm.PlaySFX(btnsfx);
+        }
+    }
     private void ApplySpriteSelected()
     {
         if (!isDialogueButton) return;
