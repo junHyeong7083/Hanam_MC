@@ -133,9 +133,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
                     slot.itemComponent.draggable = slot.draggableThisStep;
 
                     // DB에 있거나 이번 스텝 드래그 대상이면 잠금 해제
-                    bool owned = ownedItemIds != null
-                        && !string.IsNullOrEmpty(slot.itemId)
-                        && ownedItemIds.Contains(slot.itemId);
+                    bool owned = ProblemSession.DemoMode
+                        || (ownedItemIds != null
+                            && !string.IsNullOrEmpty(slot.itemId)
+                            && ownedItemIds.Contains(slot.itemId));
 
                     slot.itemComponent.SetLocked(!slot.draggableThisStep && !owned);
                 }

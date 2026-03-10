@@ -362,9 +362,9 @@ public class ThemePanelsController : MonoBehaviour
 
         for (int i = 1; i <= totalProblems; i++)
         {
-            if (allSolved)
+            if (ProblemSession.DemoMode || allSolved)
             {
-                // 10개 다 풀었으면 -> 전체 언락
+                // 시연 모드 또는 10개 다 풀었으면 -> 전체 언락
                 unlocked[i] = true;
             }
             else

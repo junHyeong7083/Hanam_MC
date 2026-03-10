@@ -23,5 +23,7 @@ public class Director_Problem1_Step2 : Director_Problem1_Step2_Logic
     protected override FilmFragment[] Films => films;
     protected override float DimAlpha => dimAlpha;
     protected override float NormalAlpha => normalAlpha;
+
+    [HideInInspector] // 수정하면서 사용안하는 필드 -> 부모를 수정하면 버그생길거같아서 이렇게빼둠
     protected override StepCompletionGate CompletionGate => completionGate;
 }

@@ -98,6 +98,9 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase
 
     private bool HasItemInDb()
     {
+        if (ProblemSession.DemoMode)
+            return true;
+
         string itemId = RequiredItemId;
         if (string.IsNullOrEmpty(itemId))
             return false;

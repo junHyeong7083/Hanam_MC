@@ -26,16 +26,13 @@ public class TTSTrigger : MonoBehaviour
         get => textId;
         set => textId = value;
     }
-
-    private void Awake()
+    private void OnEnable()
     {
         _button = GetComponent<Button>();
         if (_button != null)
             _button.onClick.AddListener(OnClick);
-    }
 
-    private void OnEnable()
-    {
+
         // watchedText가 설정되어 있으면 LateUpdate 자동 동기화에 맡김
         if (watchedText != null) return;
 
@@ -74,7 +71,11 @@ public class TTSTrigger : MonoBehaviour
     private void OnClick()
     {
         if (textId > 0)
+        {
+            Debug.Log("왜 예전 하남이 목소리가 들리는 것인가 : " + textId);
             Play();
+        }
+           
     }
 
     private void Play()

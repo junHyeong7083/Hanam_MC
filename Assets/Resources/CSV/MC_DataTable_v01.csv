@@ -30,15 +30,42 @@
 챕터 1 스테이지 8 설명,101000028,1,01,00,0,028,문제 해결 훈련,Problem-solving training
 챕터 1 스테이지 9 설명,101000029,1,01,00,0,029,건강한 감정 표현,Healthy emotional expression
 챕터 1 스테이지 10 설명,101000030,1,01,00,0,030,나의 인생 영화 완성,My life movie completed
-[튜토리얼] 1회기 첫 화면 영화감독 테마 소개 문구,101000031,1,01,00,0,031,"우리는 살아가면서 수많은 장면을 마주합니다. 때로는 슬픈 장면도 있고, 피하고 싶은 아찔한 장면도 있죠. 하지만 기억하세요. 이 인생이라는 영화의 카메라는 바로 당신이 쥐고 있습니다.
-안녕하세요, 감독님! 저는 앞으로 감독님의 든든한 파트너가 될 조감독 '하남이'입니다. 이곳은 감독님의 생각과 감정이 만들어지는 '마음 스튜디오'예요. 그런데 오랫동안 사용하지 않아서인지, 부정적인 생각들이 뽀얀 먼지처럼 쌓여 있네요.
-훌륭한 영화를 찍으려면 깨끗한 세트장이 필수겠죠? '마음 영화감독' 프로그램은 저 하남이와 함께 스튜디오에 쌓인 먼지들을 털어내고, 내 마음속 부정적인 생각들을 객관적인 렌즈로 바라보며 나만의 긍정적인 스토리로 다시 편집해 나가는 과정입니다.
-자, 본격적인 촬영 준비를 시작하고 당신 인생의 명작을 완성할 큐 사인을 외쳐볼까요? 액션!""","We encounter countless scenes throughout our lives. Sometimes there are sad scenes, and sometimes there are thrilling moments we'd rather avoid. But remember: you hold the camera of this movie called life.
+[튜토리얼] 1회기 첫 화면 영화감독 테마 소개 문구,101000031,1,01,00,0,031,"우리는 살아가면서 수많은 장면을 마주합니다. 때로는 슬픈 장면도 있고, 
+피하고 싶은 아찔한 장면도 있죠. 
+하지만 기억하세요. 이 인생이라는 영화의 카메라는 바로 당신이 쥐고 있습니다.
 
-Hello, Director! I'm Assistant Director Hanam, your future partner. This is your ""Mind Studio,"" where your thoughts and emotions are created. However, perhaps because it hasn't been used for a long time, negative thoughts have accumulated like a fine dust.
+안녕하세요, 감독님! 저는 앞으로 감독님의 든든한 파트너가 될 조감독 '하남이'입니다. 
+이곳은 감독님의 생각과 감정이 만들어지는 '마음 스튜디오'예요. 
+그런데 오랫동안 사용하지 않아서인지, 부정적인 생각들이 뽀얀 먼지처럼 쌓여 있네요.
+훌륭한 영화를 찍으려면 깨끗한 세트장이 필수겠죠? 
+'마음 영화감독' 프로그램은 저 하남이와 함께 스튜디오에 쌓인 먼지들을 털어내고, 
+내 마음속 부정적인 생각들을 객관적인 렌즈로 바라보며 
+나만의 긍정적인 스토리로 다시 편집해 나가는 과정입니다.
+자, 본격적인 촬영 준비를 시작하고 당신 인생의 명작을 
+완성할 큐 사인을 외쳐볼까요? 
 
-A clean set is essential for making a great film, right? The ""Mind Movie Director"" program is a process where I, Hanam, and I will dust off the accumulated dust in the studio, examine the negative thoughts in our hearts through an objective lens, and re-edit them into our own positive stories.
-Now, shall we begin the actual filming and shout the cue to complete the masterpiece of your life? ""Action!"""
+액션!""","We encounter countless scenes throughout our lives. Sometimes there are sad scenes,
+
+and thrilling scenes we want to avoid.
+
+But remember: You hold the camera of this movie called life.
+
+Hello, Director! I'm Assistant Director Hanam, who will be your reliable partner from now on.
+
+This is your ""Mind Studio,"" where your thoughts and emotions are created.
+
+However, perhaps because it hasn't been used for a long time, negative thoughts have accumulated like a fine dust.
+
+A clean set is essential for making a great film, right?
+
+The ""Mind Movie Director"" program is a process where I, Hanam, and I dust off the accumulated dust in the studio,
+
+look at the negative thoughts in our hearts through an objective lens,
+
+and re-edit them into our own positive stories.
+Now, let's begin the actual filming and shout the cue to complete the masterpiece of your life.
+
+""Action!"""
 챕터 1 스테이지 1 우측 텍스트 1,101000032,1,01,00,0,032,먼지 속 생각 필름 확인하기,
 챕터 1 스테이지 1 우측 텍스트 2,101000033,1,01,00,0,033,생각'과 '사실' 필름 분류하기,
 챕터 1 스테이지 2 우측 텍스트 1,101000034,1,01,00,0,034,NG 장면과 감정 조명 연결하기,
@@ -103,12 +130,12 @@ Now, shall we begin the actual filming and shout the cue to complete the masterp
 [훈련 진행] '생각'과 '사실' 필름 분류하기_생각,101010019,1,01,01,0,019,맞아요. 그건 '생각'이 담긴 필름이라 아직 정리할 수 없네요. 그냥 그대로 두어요.,
 [오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011001,1,01,01,1,001,저 사람이 나를 보고 비웃는 것 같아.,I think that person is laughing at me.
 [오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011002,1,01,01,1,002,나는 평생 제대로 된 직장을 구하지 못할 거야.,I'll never get a decent job in my life.
-[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011003,1,01,01,1,003,저 사람들이 내 흉을 보고 있어.,Those people are looking at my chest.
-[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011004,1,01,01,1,004,이번 일도 어차피 실패로 끝날 게 뻔해.,It's obvious that this will end in failure anyway.
-[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011005,1,01,01,1,005,아무도 나를 도와주지 않아. 이 세상에서 난 혼자야.,No one helps me. I'm alone in this world.
-[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011006,1,01,01,1,006,내가 조금이라도 실수하면 모두가 나를 무시할 거야.,"If I make even the slightest mistake, everyone will ignore me."
-[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011007,1,01,01,1,007,"오늘 아침 기분이 우울한 걸 보니, 오늘 하루도 망친 하루야.","I see you're feeling down this morning, so today is another ruined day."
-[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011008,1,01,01,1,008,나는 다른 사람들에 비해 너무 못하는 것 같아. 가망이 없어.,I feel like I'm so bad compared to other people. I have no hope.
+[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011003,1,01,01,1,003,저 사람들이\n내 흉을 보고 있어.,Those people are looking at my chest.
+[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011004,1,01,01,1,004,이번 일도\n어차피 실패로\n끝날 게 뻔해.,This thing\nwill obviously end in failure anyway.
+[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011005,1,01,01,1,005,아무도 나를\n도와주지 않아.\n이 세상에서 난 혼자야.,No one helps me. I am alone in this world.
+[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011006,1,01,01,1,006,내가 조금이라도\n실수하면\n모두가 나를\n무시할 거야.,"If I make even the slightest mistake, everyone will ignore me."
+[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011007,1,01,01,1,007,"오늘 아침 기분이\n우울한 걸 보니,\n오늘 하루도\n망친 하루야.","I see you're feeling down this morning, so today is another ruined day."
+[오늘 촬영 준비] 부정적 생각 종류 (먼지 필름용),101011008,1,01,01,1,008,나는 다른\n사람들에 비해\n너무 못하는 것 같아.\n가망이 없어.,I feel like I'm so bad compared to other people. I'm hopeless.
 [마음 깊이 보기] 생각 vs 사실 구분하기 필름 내용_사실,101012001,1,01,01,2,001,나는 오늘 정신건강복지센터 프로그램에 참여했다.,I participated in the mental health welfare center program today.
 [마음 깊이 보기] 생각 vs 사실 구분하기 필름 내용_생각,101012002,1,01,01,2,002,지나가는 저 사람은 나를 미쳤다고 생각할 것이다.,Anyone passing by would think I'm crazy.
 [마음 깊이 보기] 생각 vs 사실 구분하기 필름 내용_사실,101012003,1,01,01,2,003,어제 친구가 내 인사에 답하지 않고 지나갔다.,"Yesterday, my friend passed by without responding to my greeting."

@@ -1083,6 +1083,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+      propertyPath: nextStepBtn
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2915968743188102491, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
       propertyPath: enterTextIds.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -1262,11 +1266,9 @@ PrefabInstance:
     - {fileID: 0}
     m_RemovedGameObjects:
     - {fileID: 2047390613286552769, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
+    - {fileID: 4204970337983992360, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4204970337983992360, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1337632137289949250}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
 --- !u!114 &4558881534583943494 stripped
 MonoBehaviour:
@@ -1279,28 +1281,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &5208902670743052049 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4204970337983992360, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}
-  m_PrefabInstance: {fileID: 8219829494159904057}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1337632137289949250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5208902670743052049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27095a26f4a75d74b99531b6fc618197, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  problemPrefix: Problem_
-  controllerTypeName: StepFlowController
-  methodName: NextStep
-  searchInChildren: 0
-  logOnBind: 0
 --- !u!224 &6410099384480101601 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3091593816852724184, guid: 2b50beff2d105384bab4672e7ef96d5b, type: 3}

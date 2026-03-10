@@ -39,6 +39,7 @@ public class SweepHighlightTrigger : MonoBehaviour
     private static readonly int PropSweepAngle = Shader.PropertyToID("_SweepAngle");
 
     private Image    _image;
+    private Material _originalMat;   // OnDisable 시 복원할 원본 머티리얼
     private Material _matInstance;   // 공유 머티리얼 오염 방지용 복사본
     private Coroutine _routine;
 
@@ -60,7 +61,8 @@ public class SweepHighlightTrigger : MonoBehaviour
         }
 
         // 공유 머티리얼을 건드리지 않도록 복사본 생성
-        _matInstance = Instantiate(_image.material);
+        _originalMat = _image.material;
+        _matInstance = Instantiate(_originalMat);
         _image.material = _matInstance;
         _image.SetMaterialDirty();
 
@@ -74,8 +76,14 @@ public class SweepHighlightTrigger : MonoBehaviour
 
     private void OnDisable()
     {
+        // 원본 머티리얼 복원 후 인스턴스 파괴
+        if (_image != null && _originalMat != null)
+            _image.material = _originalMat;
+
         if (_matInstance != null)
             Destroy(_matInstance);
+
+        _matInstance = null;
     }
 
     // ── 공개 API ──────────────────────────────────────────────────────

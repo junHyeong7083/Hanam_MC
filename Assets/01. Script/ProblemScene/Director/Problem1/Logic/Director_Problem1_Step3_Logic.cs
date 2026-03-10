@@ -55,6 +55,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     protected abstract GameObject SummaryPanelRoot { get; }
 
     private bool _interactionLocked = true;
+    private bool _deferFirstCard;
     private GameObject _currentFilmInstance;
     private Director_Problem1_Step3_FilmCardAnimator _currentFilmAnimator;
 
@@ -111,9 +112,26 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
         _interactionLocked = true;
         if (dialogueSequencer != null)
+        {
+            // enter 시퀀스의 쪽수에 film 수 반영
+            dialogueSequencer.SetExtraPageCount(FilmCount);
+
+            // 첫 대사가 표시될 때까지 카드 생성을 지연
+            _deferFirstCard = true;
+            dialogueSequencer.OnFirstTextShown += OnDialogueFirstTextShown;
             dialogueSequencer.OnEnterComplete += OnDialogueEnterComplete;
+        }
         else
+        {
+            _deferFirstCard = false;
             _interactionLocked = false;
+        }
+    }
+
+    private void OnDialogueFirstTextShown()
+    {
+        _deferFirstCard = false;
+        UpdateCurrentCardUI();
     }
 
     private void OnDialogueEnterComplete()
@@ -128,9 +146,20 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             {
                 int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
                 if (hanamiTextId > 0)
-                    dialogueSequencer.SetText(hanamiTextId);
+                    SetTextWithFilmPage(hanamiTextId, logicalIndex);
             }
         }
+    }
+
+    private int TotalPages => dialogueSequencer != null
+        ? dialogueSequencer.EnterTextCount + FilmCount
+        : FilmCount;
+
+    private void SetTextWithFilmPage(int textId, int filmIndex)
+    {
+        int enterCount = (dialogueSequencer != null) ? dialogueSequencer.EnterTextCount : 0;
+        int currentPage = enterCount + filmIndex + 1;
+        dialogueSequencer.SetText(textId, currentPage, TotalPages);
     }
 
     protected override void OnStepExit()
@@ -138,7 +167,10 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         base.OnStepExit();
 
         if (dialogueSequencer != null)
+        {
+            dialogueSequencer.OnFirstTextShown -= OnDialogueFirstTextShown;
             dialogueSequencer.OnEnterComplete -= OnDialogueEnterComplete;
+        }
 
         _interactionLocked = true;
 
@@ -165,6 +197,10 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
             return;
         }
 
+        // 첫 대사 표시 전이면 카드 생성 스킵 (OnFirstTextShown에서 호출됨)
+        if (_deferFirstCard)
+            return;
+
         string text = GetFilmText(logicalIndex);
         Sprite sprite = GetFilmSprite(logicalIndex);
 
@@ -175,7 +211,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         {
             int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
             if (hanamiTextId > 0)
-                dialogueSequencer.SetText(hanamiTextId);
+                SetTextWithFilmPage(hanamiTextId, logicalIndex);
         }
 
         if (_currentFilmAnimator != null)
@@ -297,7 +333,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     {
         _isShowingHanamiWrongMessage = true;
 
-        dialogueSequencer.SetText(wrongFeedbackTextId);
+        SetTextWithFilmPage(wrongFeedbackTextId, logicalIndex);
 
         float wait = Mathf.Max(0f, wrongFeedbackDuration);
         if (wait > 0f)
@@ -308,7 +344,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         // 오답 후 다시 현재 카드의 하남이 대사로 복귀
         int hanamiTextId = GetFilmHanamiTextId(logicalIndex);
         if (hanamiTextId > 0)
-            dialogueSequencer.SetText(hanamiTextId);
+            SetTextWithFilmPage(hanamiTextId, logicalIndex);
 
         _hanamiTempMessageCoroutine = null;
     }
@@ -392,7 +428,7 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
         {
             int feedbackId = correctIsThought ? correctThoughtTextId : correctFactTextId;
             if (feedbackId > 0)
-                dialogueSequencer.SetText(feedbackId);
+                SetTextWithFilmPage(feedbackId, logicalIndex);
         }
 
         _isAdvancing = true;

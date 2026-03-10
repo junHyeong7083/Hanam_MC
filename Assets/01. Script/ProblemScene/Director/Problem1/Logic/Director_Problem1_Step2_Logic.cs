@@ -26,6 +26,9 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;
 
+    [Header("필름 터치 효과음")]
+    [SerializeField] private string filmClickSfx = "SFX_C01_S01_filmClick";
+
     private readonly Dictionary<int, FilmFragment> _filmMap = new Dictionary<int, FilmFragment>();
     private readonly HashSet<int> _checkedIds = new HashSet<int>();
     private readonly List<(IntroElement intro, System.Action handler)> _shakeBindings
@@ -123,6 +126,13 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
         if (!_filmMap.TryGetValue(id, out var fragment))
             return;
+
+        // 효과음 재생
+        if (!string.IsNullOrEmpty(filmClickSfx))
+        {
+            var sm = SoundManager.Instance;
+            if (sm != null) sm.PlaySFX(filmClickSfx);
+        }
 
         if (fragment.flashOverlay != null)
             StartCoroutine(FlashRoutine(fragment.flashOverlay, 0.1f));
