@@ -31,8 +31,9 @@ public class MicRecordingIndicator : MonoBehaviour
 
     [Header("자동 종료 설정")]
     [SerializeField] private bool enableAutoStop = true;
-    [SerializeField] private float silenceDuration = 3f;  // 무음 지속 시간 (초)
-    [SerializeField] private float volumeThreshold = 0.02f;  // 음성 감지 임계값 (높을수록 큰 소리만 인식)
+    [SerializeField] private float silenceDuration = 1.0f;  // 무음 지속 시간 (초) - 말 끝나면 빠르게 인식 시작
+    [SerializeField] private float volumeThreshold = 0.005f;  // 음성 감지 임계값 (낮춰서 작은 마이크도 감지)
+    [SerializeField] private float recognizingMinDuration = 0.5f;  // "인식 중" 최소 표시 시간
 
     [Header("STT 키워드")]
     [SerializeField] private string[] keywords;
@@ -65,6 +66,9 @@ public class MicRecordingIndicator : MonoBehaviour
     private Coroutine _silenceCheckCoroutine;
     private float _silenceTimer = 0f;
     private bool _hasDetectedVoice = false;  // 의미있는 음성이 감지되었는지 여부
+
+    // 인식 중 결과 대기
+    private Coroutine _recognizingDelayCoroutine;
 
     // idleText(SerializeField)는 런타임에 절대 수정하지 않음
     // 런타임 표시용은 _displayIdleText 사용
@@ -160,31 +164,31 @@ public class MicRecordingIndicator : MonoBehaviour
                 _silenceCheckCoroutine = null;
             }
 
-            // 자동 종료 모드일 때만 음성 감지 체크
-            if (enableAutoStop && !_hasDetectedVoice)
-            {
-                Debug.Log("[MicRecordingIndicator] 음성 미감지 → STT 스킵");
-                STTManager.Instance.StopRecording();
-                return;
-            }
-
-            // 인식 중 상태 표시
+            // 녹음 종료 → 인식 중 표시
             SetRecognizing(true);
 
-            // 캐시된 실시간 결과가 있으면 즉시 사용
+            // 캐시된 실시간 결과가 있으면 사용 (음성 감지 여부와 무관)
             if (_cachedMatchIndex >= 0)
             {
-              //  Debug.Log($"[MicRecordingIndicator] 캐시된 실시간 결과 사용: [{_cachedMatchIndex}] {keywords[_cachedMatchIndex]} ({_cachedMatchScore:F2})");
+                Debug.Log($"[MicRecordingIndicator] 캐시된 실시간 결과 사용: [{_cachedMatchIndex}] {keywords[_cachedMatchIndex]} ({_cachedMatchScore:F2})");
                 int matchIndex = _cachedMatchIndex;
                 _cachedMatchIndex = -1;
                 _cachedMatchScore = 0f;
-                STTManager.Instance.StopRecording();
-                SetRecognizing(false);
-                OnKeywordMatched?.Invoke(matchIndex);
+                STTManager.Instance.StopRecording(skipProcessing: true);
+                // "인식 중" 최소 표시 후 결과 전달
+                _recognizingDelayCoroutine = StartCoroutine(DelayedResult(() => OnKeywordMatched?.Invoke(matchIndex)));
+            }
+            // 음성 미감지 + 캐시도 없으면 스킵
+            else if (enableAutoStop && !_hasDetectedVoice)
+            {
+                Debug.Log("[MicRecordingIndicator] 음성 미감지 → STT 스킵");
+                STTManager.Instance.StopRecording(skipProcessing: true);
+                // "인식 중" 최소 표시 후 결과 전달
+                _recognizingDelayCoroutine = StartCoroutine(DelayedResult(() => OnNoMatch?.Invoke("")));
             }
             else
             {
-                // 캐시된 결과가 없으면 최종 결과 대기
+                // 최종 결과 대기
                 STTManager.Instance.OnFinalResult -= HandleSTTResult;
                 STTManager.Instance.OnFinalResult += HandleSTTResult;
                 STTManager.Instance.StopRecording();
@@ -331,6 +335,11 @@ public class MicRecordingIndicator : MonoBehaviour
             StopCoroutine(_silenceCheckCoroutine);
             _silenceCheckCoroutine = null;
         }
+        if (_recognizingDelayCoroutine != null)
+        {
+            StopCoroutine(_recognizingDelayCoroutine);
+            _recognizingDelayCoroutine = null;
+        }
 
         // 정리
         if (STTManager.Instance != null)
@@ -349,9 +358,21 @@ public class MicRecordingIndicator : MonoBehaviour
         _cachedMatchScore = 0f;
     }
 
+    /// <summary>
+    /// "인식 중" 최소 표시 시간 후 결과 전달
+    /// </summary>
+    private System.Collections.IEnumerator DelayedResult(Action callback)
+    {
+        yield return new WaitForSeconds(recognizingMinDuration);
+        _recognizingDelayCoroutine = null;
+        SetRecognizing(false);
+        callback?.Invoke();
+    }
+
     private void SetRecognizing(bool value)
     {
         _recognizing = value;
+        if (!value) _recording = false;  // 인식 종료 시 녹음 상태도 확실히 해제
         ApplyVisual();
     }
 
@@ -363,6 +384,8 @@ public class MicRecordingIndicator : MonoBehaviour
                 buttonHover.SetSpriteOverride(recordingSprite);
             else if (_recognizing && recognizingSprite != null)
                 buttonHover.SetSpriteOverride(recognizingSprite);
+            else if (idleSprite != null)
+                buttonHover.SetSpriteOverride(idleSprite);
             else
                 buttonHover.ClearSpriteOverride();
         }

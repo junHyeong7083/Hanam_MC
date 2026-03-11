@@ -229,8 +229,7 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
     private void OnSttNoMatch(string rawText)
     {
-        if (MicIndicator != null)
-            MicIndicator.SetIdleText("다시 말해주세요");
+        // idle 텍스트는 인스펙터 값 유지
     }
 
     // ===== Mic =====

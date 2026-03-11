@@ -2040,12 +2040,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 0}
   statusText: {fileID: 659255209}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords:
   - "\uB2F9\uC2E0\uC774 \uD241\uBA85\uC2A4\uB7FD\uAC8C \uB9D0\uD588\uC744 \uB54C"
   - "\uB098\uB294 \uC870\uAE08 \uB2F9\uD669\uC2A4\uB7EC\uC6E0\uC5B4\uC694"
@@ -2071,7 +2072,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -13589,12 +13590,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 443297035}
   statusText: {fileID: 1158794692}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords: []
   matchThreshold: 0.3
 --- !u!114 &470385216
@@ -13614,7 +13616,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -33248,12 +33250,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 2111596859}
   statusText: {fileID: 1301118391}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords:
   - "\uC9C0\uAE08\uAE4C\uC9C0 \uC815\uB9D0 \uC798 \uBC84\uD168\uC654\uC5B4"
   - "\uB108\uC758 \uC798\uBABB\uC774 \uC544\uB2C8\uC57C"
@@ -33276,7 +33279,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -34496,12 +34499,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 1378849569}
   statusText: {fileID: 172103408}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords: []
   matchThreshold: 0.3
 --- !u!114 &1190964760
@@ -34521,7 +34525,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -38203,7 +38207,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 0a97299ebaee83a4690d6727d685b660, type: 3}
     - target: {fileID: 6756605646296733217, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: isDialogueButton
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6756605646296733217, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: spritePathNormal
@@ -38363,7 +38367,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: idleText
-      value: 
+      value: "\uB9D0\uD558\uAE30"
       objectReference: {fileID: 0}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: idleSprite
@@ -38389,6 +38393,10 @@ PrefabInstance:
       propertyPath: recordingSprite
       value: 
       objectReference: {fileID: 21300000, guid: 7a4467ea5c5ecea49a43b3b05f066491, type: 3}
+    - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
+      propertyPath: volumeThreshold
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 9217935813284017026, guid: 0867a01dd6e065c4d9f2b57bb05474bc, type: 3}
       propertyPath: recognizingSprite
       value: 
@@ -48786,12 +48794,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 0}
   statusText: {fileID: 651520190}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords:
   - "\uC6CC\uD06C\uB137 \uC0AC\uC774\uD2B8\uB97C \uB458\uB7EC\uBCF4\uB294 \uC7A5\uBA74"
   - "\uC774\uB825\uC11C \uD30C\uC77C \uC5F4\uC5B4\uBCF4\uB294 \uC7A5\uBA74"
@@ -48814,7 +48823,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -55820,7 +55829,7 @@ MonoBehaviour:
   stepKeyConfig:
     stepId: 2
   responseDisplayText: {fileID: 976931009}
-  micButton: {fileID: 0}
+  micButton: {fileID: 570763779}
   dialogueSequencer: {fileID: 1619418634}
   scenarios:
   - id: 0
@@ -61483,7 +61492,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -62179,12 +62188,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 8668494029097183523}
   statusText: {fileID: 3795300561764304229}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords: []
   matchThreshold: 0.3
 --- !u!114 &6756605646435146947
@@ -62204,7 +62214,7 @@ MonoBehaviour:
   enableMoveX: 0
   moveXDistance: 10
   outline: {fileID: 0}
-  isDialogueButton: 1
+  isDialogueButton: 0
   spritePathNormal: Buttons/micbtn_01
   spritePathPressed: Buttons/button_02
   spritePathSelected: Buttons/button_03
@@ -63389,12 +63399,13 @@ MonoBehaviour:
   recognizingSprite: {fileID: 21300000, guid: c9f3f01132b86e3498962a9955c5a32c, type: 3}
   pulseRoot: {fileID: 321987976}
   statusText: {fileID: 2015063898}
-  idleText: 
+  idleText: "\uB9D0\uD558\uAE30"
   recordingText: "\uC9C0\uAE08 \uB9D0\uD574\uC8FC\uC138\uC694"
   recognizingText: "\uC778\uC2DD \uC911..."
   enableAutoStop: 1
   silenceDuration: 3
   volumeThreshold: 0.02
+  recognizingMinDuration: 0.5
   keywords:
   - "\uC0DD\uAC01"
   - "\uC0AC\uC2E4"

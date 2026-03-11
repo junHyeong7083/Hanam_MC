@@ -243,7 +243,8 @@ namespace STT
         /// <summary>
         /// 녹음 중지 및 음성 인식 시작
         /// </summary>
-        public void StopRecording()
+        /// <param name="skipProcessing">true면 녹음만 중지하고 음성 인식은 수행하지 않음</param>
+        public void StopRecording(bool skipProcessing = false)
         {
             if (!_isRecording)
                 return;
@@ -271,16 +272,13 @@ namespace STT
 
             Log($"녹음 종료. 샘플 수: {_recordedSamples.Count}");
 
-            // 실시간 처리에서 이미 결과가 있으면 즉시 반환
-            if (enableRealtimeProcessing && !string.IsNullOrEmpty(_lastPartialResult))
+            if (skipProcessing)
             {
-                Log($"실시간 처리 결과 사용: {_lastPartialResult}");
-                _isProcessing = false;
-                OnFinalResult?.Invoke(_lastPartialResult);
+                Log("처리 스킵 (캐시 사용 또는 음성 미감지)");
                 return;
             }
 
-            // 음성 인식 시작
+            // 최종 인식 수행
             StartCoroutine(ProcessAudio());
         }
 
@@ -459,13 +457,22 @@ namespace STT
                 wparams.print_timestamps = false;
                 wparams.single_segment = singleSegment;
 
+                // 인식률 강화 설정
+                wparams.suppress_blank = true;              // 빈 결과 억제
+                wparams.suppress_non_speech_tokens = true;   // 비음성 토큰(음악, 잡음 등) 억제
+                wparams.no_context = false;                  // initial_prompt 컨텍스트 사용
+                wparams.temperature = 0f;                    // 0 = 가장 확신있는 결과만 (deterministic)
+                wparams.temperature_inc = 0f;                // 온도 증가 비활성화 (재시도 방지 → 속도 향상)
+                wparams.no_speech_thold = 0.6f;              // 무음 판정 임계값 (기본 0.6)
+                wparams.max_tokens = singleSegment ? 4 : 16;  // 실시간은 4토큰, 최종은 16토큰 (환각 방지)
+
                 // 언어 설정
                 IntPtr langPtr = Marshal.StringToHGlobalAnsi(language);
                 wparams.language = langPtr;
 
-                // 인식 힌트 설정 (키워드 방향으로 인식 유도)
+                // 인식 힌트 설정 (최종 인식에서만 사용, 실시간은 환각 유발)
                 IntPtr promptPtr = IntPtr.Zero;
-                if (!string.IsNullOrEmpty(_promptHint))
+                if (!singleSegment && !string.IsNullOrEmpty(_promptHint))
                 {
                     promptPtr = Marshal.StringToHGlobalAnsi(_promptHint);
                     wparams.initial_prompt = promptPtr;
