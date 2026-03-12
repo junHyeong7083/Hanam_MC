@@ -1,9 +1,16 @@
 ﻿using System;
 using UnityEngine;
 using System.Linq;
+
 /// <summary>
-/// 사용자 문제 풀이 / 진행도용 로컬 데이터 서비스.
-/// 실제 DB 접근은 Repository들(Progress/Problem/Result/Inventory)을 통해서만 한다.
+/// IUserDataService - 사용자 문제 풀이/진행도용 통합 데이터 서비스 인터페이스
+///
+/// 【역할】 진행도 조회, 문제 조회, 시도(Attempt) 저장, 결과 조회, 인벤토리 관리 등
+///          사용자 관련 모든 데이터 기능을 하나의 인터페이스로 통합한다.
+///          (참고: 현재는 DataService에서 개별 서비스(Progress, Reward, Problems, Results)로
+///          분리되어 사용되므로, 이 통합 인터페이스는 레거시 코드에 가깝다.)
+/// 【참조하는 곳】 일부 구버전 컨트롤러에서 사용 가능
+/// 【참조되는 곳】 Repository들 (Inventory, User, Progress, Problem, Result)
 /// </summary>
 public interface IUserDataService
 {
@@ -48,13 +55,31 @@ public interface IUserDataService
 
 }
 
+/// <summary>
+/// LocalUserDataService - IUserDataService의 로컬(LiteDB) 구현체
+///
+/// 【역할】 사용자 문제 풀이에 필요한 모든 데이터 기능을 통합 제공한다.
+///          진행도 조회, 문제 조회, Attempt 저장, 결과 조회, 보상/인벤토리 관리가 포함된다.
+///          (참고: DataService에서는 이 클래스 대신 개별 서비스(LocalProgressService, LocalRewardService 등)를
+///          사용하도록 리팩토링되었다. 이 클래스는 동일 기능의 레거시 통합 버전이다.)
+/// 【참조하는 곳】 직접 생성하여 사용하는 곳은 현재 없음 (DataService가 개별 서비스를 조립)
+/// 【참조되는 곳】 IInventoryRepository, IUserRepository, IProgressRepository,
+///                IProblemRepository, IResultRepository
+/// </summary>
 public class LocalUserDataService : IUserDataService
 {
+    /// <summary>인벤토리 아이템 저장/조회용 Repository</summary>
     private readonly IInventoryRepository _inventoryRepository;
+    /// <summary>사용자 조회용 Repository</summary>
     private readonly IUserRepository _userRepository;
+    /// <summary>진행도/시도 기록 접근용 Repository</summary>
     private readonly IProgressRepository _progressRepository;
+    /// <summary>문제 데이터 조회용 Repository</summary>
     private readonly IProblemRepository _problemRepository;
+    /// <summary>결과 데이터 저장/조회용 Repository</summary>
     private readonly IResultRepository _resultRepository;
+
+    /// <summary>생성자. 5개의 Repository를 모두 주입받아야 한다.</summary>
     public LocalUserDataService(
      IInventoryRepository inventoryRepository,
      IUserRepository userRepository,
@@ -70,6 +95,7 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+    /// <summary>사용자 진행도 요약을 조회한다 (총 세션 수, 풀이 수, 마지막 세션 시각)</summary>
     public Result<UserProgress> FetchProgress(string userEmail)
     {
         try
@@ -85,6 +111,7 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+    /// <summary>문제 ID로 Problem을 조회한다. 존재하지 않으면 NotFoundOrInactive</summary>
     public Result<Problem> FetchProblem(string problemId)
     {
         try
@@ -103,6 +130,7 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+    /// <summary>Attempt(시도) 기록을 DB에 저장한다. UserId/Email 미설정 시 현재 사용자로 자동 채움</summary>
     public Result SaveAttempt(Attempt attempt)
     {
         if (attempt == null)
@@ -138,6 +166,7 @@ public class LocalUserDataService : IUserDataService
 
 
 
+    /// <summary>결과 ID로 ResultDoc을 조회한다. 존재하지 않으면 NotFoundOrInactive</summary>
     public Result<ResultDoc> FetchResult(string resultIdOrSessionId)
     {
         if (string.IsNullOrWhiteSpace(resultIdOrSessionId))
@@ -159,6 +188,7 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+    /// <summary>사용자가 특정 테마에서 풀이 완료한 문제 번호 목록을 조회한다</summary>
     public Result<int[]> FetchSolvedProblemIndexes(string userEmail, ProblemTheme theme)
     {
         try
@@ -180,6 +210,11 @@ public class LocalUserDataService : IUserDataService
     // =========================
     // 편의 메서드: 현재 로그인 사용자 기준 Attempt / Reward 저장
     // =========================
+
+    /// <summary>
+    /// 현재 로그인 사용자의 스텝 시도를 기록한다.
+    /// payload를 JSON으로 직렬화하여 Attempt.Content에 저장한다.
+    /// </summary>
     public Result SaveStepAttemptForCurrentUser(
       ProblemTheme theme,
       int problemIndex,
@@ -225,6 +260,10 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+    /// <summary>
+    /// 현재 로그인 사용자에게 보상을 지급한다.
+    /// Attempt 저장 + 인벤토리 아이템 추가를 한 번에 수행한다.
+    /// </summary>
     public Result SaveRewardForCurrentUser(
      ProblemTheme theme,
      int problemIndex,
@@ -283,6 +322,8 @@ public class LocalUserDataService : IUserDataService
     // =========================
     // 인벤토리 관련 메서드
     // =========================
+
+    /// <summary>특정 사용자에게 인벤토리 아이템을 지급한다. 사용자 존재/활성 여부를 검증</summary>
     public Result GrantInventoryItem(string userEmail, InventoryItem item)
     {
         if (item == null)
@@ -312,6 +353,7 @@ public class LocalUserDataService : IUserDataService
     }
 
 
+    /// <summary>특정 사용자의 인벤토리 전체를 조회한다</summary>
     public Result<InventoryItem[]> GetInventory(string userEmail)
     {
         try
@@ -328,6 +370,10 @@ public class LocalUserDataService : IUserDataService
         }
     }
 
+    /// <summary>
+    /// 현재 로그인 사용자의 문제 풀이 완료를 기록한다.
+    /// 이미 같은 테마+문제번호의 ResultDoc이 있으면 중복 생성하지 않는다.
+    /// </summary>
     public Result MarkProblemSolvedForCurrentUser(ProblemTheme theme, int problemIndex)
     {
         var sess = SessionManager.Instance;

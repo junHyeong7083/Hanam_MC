@@ -1,35 +1,54 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// StepCompletionGate - 스텝 내 완료 조건을 관리하는 게이트 컴포넌트
+///
+/// 【역할】 스텝 안에서 "N개 중 몇 개를 완료했는가"를 추적한다.
+///          ResetGate(total)로 초기화 → MarkOneDone()으로 하나씩 완료 카운트 증가
+///          → 전부 완료되면 completeRoot(다음 스텝 버튼)를 표시하거나,
+///            자동으로 StepFlowController.NextStep()을 호출한다.
+/// 【참조하는 곳】 MultipleChoiceStepBase (정답 맞출 때마다 MarkOneDone),
+///                RandomCardSequenceStepBase (카드 처리마다 MarkOneDone),
+///                InventoryDropTargetStepBase (아이템 활성화 시 MarkOneDone),
+///                Problem1~10의 Step1~3 Binder/Logic 클래스 (ResetGate/MarkOneDone 호출),
+///                Director_Problem1_Step3_SummaryPanel (요약 패널에서 MarkOneDone)
+/// 【참조되는 곳】 StepFlowController (자동 넘김 시), Image (progressFillImage)
+/// 【흐름】 ResetGate(total) → MarkOneDone() × total회 → Apply() → 완료 시 completeRoot 표시 or NextStep()
+/// </summary>
 public class StepCompletionGate : MonoBehaviour
 {
     [Header("진행도 바 사용 여부")]
-    [SerializeField] private bool useProgressFill = false;
+    [SerializeField] private bool useProgressFill = false; // true이면 progressFillImage로 진행률을 시각적으로 표시
 
     [Header("진행도 Fill 이미지 (옵션)")]
-    [SerializeField] private Image progressFillImage;
+    [SerializeField] private Image progressFillImage; // fillAmount를 0~1로 조절하는 UI Image (Filled 타입)
 
     [Header("Complete Root 사용 여부")]
-    [SerializeField] private bool useCompleteRoot = true;
+    [SerializeField] private bool useCompleteRoot = true; // true이면 완료 시 completeRoot를 표시 (수동 버튼 방식)
 
     [Header("다음 스텝으로 넘어가는 버튼 루트 (Complete Root)")]
-    [SerializeField] private GameObject completeRoot;
+    [SerializeField] private GameObject completeRoot; // 모든 조건 완료 시 표시되는 "다음" 버튼의 부모 오브젝트
 
     [Header("자동 넘김용 StepFlowController (useCompleteRoot=false 일 때 사용)")]
-    [SerializeField] private StepFlowController stepFlowController;
+    [SerializeField] private StepFlowController stepFlowController; // 자동 모드: 완료 시 직접 NextStep() 호출할 대상
 
     [Header("Hide Root 사용 여부")]
-    [SerializeField] private bool useHideRoot = true;
+    [SerializeField] private bool useHideRoot = true; // true이면 완료 시 hideRoot를 숨김
 
     [Header("CompleteRoot가 보일 때 숨길 루트 (옵션)")]
-    [SerializeField] private GameObject hideRoot;
+    [SerializeField] private GameObject hideRoot; // 완료 시 숨길 UI (예: 문제 선택지 영역)
 
-    private int _totalCount;
-    private int _currentCount;
+    private int _totalCount;      // 완료에 필요한 총 조건 수
+    private int _currentCount;    // 현재까지 완료된 조건 수
 
-    private bool _initialized;
-    private bool _autoNextFired;   // 자동 넘김 한 번만 호출하기 위한 플래그
+    private bool _initialized;       // Apply()가 최초 실행되었는지 여부
+    private bool _autoNextFired;     // 자동 넘김이 이미 발동했는지 (중복 호출 방지 플래그)
 
+    /// <summary>
+    /// 활성화 시 자동 넘김 플래그를 리셋하고 현재 상태를 UI에 반영한다.
+    /// 스텝이 다시 활성화될 때마다 호출되어 UI를 최신 상태로 갱신한다.
+    /// </summary>
     private void OnEnable()
     {
         // 활성화 시 자동 넘김 플래그 리셋
@@ -84,9 +103,15 @@ public class StepCompletionGate : MonoBehaviour
         Apply();
     }
 
+    /// <summary>
+    /// 현재 진행 상태를 UI에 반영하는 내부 메서드.
+    /// - 진행도 바(progressFillImage) 업데이트
+    /// - 완료 여부에 따라 completeRoot 표시/숨김 또는 자동 NextStep() 호출
+    /// - hideRoot 표시/숨김
+    /// </summary>
     private void Apply()
     {
-        // 1) 진행도 계산
+        // 1) 진행도 계산 (0.0 ~ 1.0)
         float progress = (_totalCount > 0)
             ? (float)_currentCount / _totalCount
             : 0f;

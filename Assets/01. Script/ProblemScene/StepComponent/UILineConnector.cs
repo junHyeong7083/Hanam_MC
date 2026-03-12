@@ -3,44 +3,55 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 두 Anchor(시작/끝 Transform)를 잇는 UI Image 선을
-/// - 0 → 길이까지 자라게
-/// - 잠깐 유지
-/// - 알파 페이드 아웃
-/// 시켜주는 공통 컴포넌트.
+/// UILineConnector - 두 앵커 포인트 사이에 선을 그리는 UI 컴포넌트
 ///
-/// RectTransform + Image 가 붙은 오브젝트에 붙여서 사용.
+/// 【역할】 두 Transform(시작/끝 앵커)을 잇는 UI 선을 애니메이션으로 그린다:
+///          1단계: 선이 0에서 전체 길이까지 자라남 (growDuration)
+///          2단계: 잠깐 유지 (holdDuration)
+///          3단계: 알파 페이드 아웃 (fadeDuration)
+///          두께는 thicknessCurve로 조절하고, 자라는 속도는 growCurve로 조절한다.
+/// 【참조하는 곳】 Problem Director Logic에서 정답 간 연결선 연출에 사용
+/// 【참조되는 곳】 없음 (독립 컴포넌트, 코루틴으로 외부에서 호출)
+/// 【흐름】 ResetLine() → 외부에서 StartCoroutine(PlayLineRoutine(start, end)) 호출
+///          → 선 자라기 → 유지 → 페이드 아웃 → disableAtEnd 시 비활성화
+///
+/// ※ RectTransform + Image가 부착된 오브젝트에 붙여서 사용한다.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Image))]
 public class UILineConnector : MonoBehaviour
 {
     [Header("Canvas (비워두면 부모에서 자동 검색)")]
-    [SerializeField] private Canvas canvas;
+    [SerializeField] private Canvas canvas; // 좌표 변환에 사용할 Canvas (null이면 부모에서 검색)
 
     [Header("선 두께 / 타이밍")]
-    [SerializeField] private float maxThickness = 12f;
-    [SerializeField] private float growDuration = 0.25f;
-    [SerializeField] private float holdDuration = 0.15f;
-    [SerializeField] private float fadeDuration = 0.25f;
+    [SerializeField] private float maxThickness = 12f;     // 선의 최대 두께 (픽셀)
+    [SerializeField] private float growDuration = 0.25f;   // 선이 자라는 애니메이션 시간 (초)
+    [SerializeField] private float holdDuration = 0.15f;   // 선이 완전히 자란 후 유지 시간 (초)
+    [SerializeField] private float fadeDuration = 0.25f;   // 알파 페이드 아웃 시간 (초)
 
     [Header("애니메이션 곡선")]
-    [SerializeField] private AnimationCurve growCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    [SerializeField] private AnimationCurve thicknessCurve = AnimationCurve.Linear(0, 0.7f, 1, 1);
+    [SerializeField] private AnimationCurve growCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);       // 선 길이 보간 곡선
+    [SerializeField] private AnimationCurve thicknessCurve = AnimationCurve.Linear(0, 0.7f, 1, 1);  // 두께 변화 곡선
 
     [Header("끝나면 오브젝트 비활성화")]
-    [SerializeField] private bool disableAtEnd = true;
+    [SerializeField] private bool disableAtEnd = true; // true이면 애니메이션 종료 후 gameObject 비활성화
 
-    RectTransform _rect;
-    Image _image;
-    RectTransform _canvasRect;
+    RectTransform _rect;         // 이 오브젝트의 RectTransform (선의 위치/크기 제어)
+    Image _image;                // 이 오브젝트의 Image (선의 색상/알파 제어)
+    RectTransform _canvasRect;   // Canvas의 RectTransform (월드→로컬 좌표 변환용)
 
-    Color _baseColor;
-    bool _baseColorInitialized;
+    Color _baseColor;              // 인스펙터에서 설정한 원래 색상 (캐싱)
+    bool _baseColorInitialized;    // baseColor 캐싱 완료 여부
 
     // ------------------------------------------------------
-    // 공통 초기화 (Awake/OnEnable에 의존 X)
+    // 공통 초기화 (Awake/OnEnable에 의존하지 않음 - 어느 시점에서든 호출 가능)
     // ------------------------------------------------------
+
+    /// <summary>
+    /// RectTransform, Image, Canvas, baseColor를 지연 초기화한다.
+    /// 여러 번 호출해도 안전 (이미 초기화된 것은 건너뜀).
+    /// </summary>
     void EnsureInitialized()
     {
         if (_rect == null)

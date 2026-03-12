@@ -2,9 +2,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 덜덜 떨림 효과 컴포넌트
-/// - StartShake()로 시작, StopShake()로 정지
-/// - 터치 전까지 계속 반복 떨림
+/// ShakeTrigger - DOTween 기반 반복 떨림(진동) 효과 컴포넌트
+///
+/// 【역할】 StartShake() 호출 시 DOShakeAnchorPos로 오브젝트를 반복 흔들리게 하고,
+///          StopShake() 호출 시 정지 후 원래 위치로 복귀한다.
+///          한 번의 셰이크가 끝나면 OnComplete에서 다시 호출하여 무한 반복.
+/// 【사용 위치】 터치 유도 힌트, 주목이 필요한 UI 요소, IntroElement 도착 후 효과 등
+/// 【트리거】 외부에서 StartShake()/StopShake() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform
 /// </summary>
 public class ShakeTrigger : MonoBehaviour
 {

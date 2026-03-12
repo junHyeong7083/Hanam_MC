@@ -2,10 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Problem3 Step2: Scale effect when option is selected
-/// - Monitors Image color change to detect selection
-/// - When color matches selectedColor, scales up
-/// - Works alongside existing logic without modification
+/// OptionSelectScale - Image 색상 변화를 감지하여 선택 시 스케일 확대 효과를 적용하는 컴포넌트
+///
+/// 【역할】 매 프레임 Image.color를 모니터링하여 selectedColor와 일치하면 스케일 확대(EaseOutBack),
+///          색상이 변경되면 스케일 1.0으로 복귀. 기존 로직 수정 없이 선택 피드백 추가 가능.
+/// 【사용 위치】 Problem3 Step2 (선택지 옵션에 부착하여 선택 시 확대 효과)
+/// 【트리거】 Update에서 Image.color 변화 자동 감지 (외부 호출 불필요)
+/// 【의존성】 Image(RequireComponent - 색상 감지 대상), RectTransform(스케일)
 /// </summary>
 [RequireComponent(typeof(Image))]
 public class OptionSelectScale : MonoBehaviour

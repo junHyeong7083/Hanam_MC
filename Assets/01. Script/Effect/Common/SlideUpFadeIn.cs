@@ -2,12 +2,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 아래에서 위로 슬라이드하며 페이드인하는 애니메이션
-/// - CTA 버튼, 완료 패널 등장에 사용
+/// SlideUpFadeIn - 아래에서 위로 슬라이드하며 페이드인하는 등장 애니메이션 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step1: completeRoot 내부 CTA 버튼
-/// - 모든 Step의 완료 버튼 등장
+/// 【역할】 오브젝트를 원래 위치에서 startOffsetY만큼 아래로 내린 상태(알파 0)에서 시작하여,
+///          원래 위치까지 슬라이드 업하면서 페이드인한다. CTA 버튼이나 완료 패널의 등장에 최적화.
+/// 【사용 위치】 Problem2 Step1(completeRoot 내부 CTA 버튼), 모든 Step의 완료 버튼 등장
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform, CanvasGroup(자동 추가)
 /// </summary>
 public class SlideUpFadeIn : MonoBehaviour
 {

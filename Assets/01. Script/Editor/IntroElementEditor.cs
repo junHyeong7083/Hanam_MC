@@ -2,16 +2,24 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// IntroElement 커스텀 에디터
-/// - enableFlyIn 활성 시 Scene 뷰에 Catmull-Rom 경로를 그리고
-///   시작점 / 경유점 핸들을 드래그해 값을 조정할 수 있다.
+/// IntroElementEditor - IntroElement 컴포넌트의 커스텀 에디터
+///
+/// 【역할】 IntroElement의 FlyIn 애니메이션 경로를 Scene 뷰에서 시각적으로 편집할 수 있게 한다.
+///         - enableFlyIn이 활성화되면 Scene 뷰에 Catmull-Rom 스플라인 경로를 노란색 곡선으로 그린다
+///         - 빨간 핸들(시작점), 파란 핸들(경유점)을 드래그하여 경로를 조정할 수 있다
+///         - 초록 점(도착지)은 현재 오브젝트 위치로 읽기 전용
+///         - 인스펙터에 사용 안내 HelpBox를 표시한다
+/// 【씬】 에디터 전용 (런타임 미포함)
+/// 【참조하는 곳】 IntroElement 컴포넌트를 선택했을 때 자동 활성화
+/// 【참조되는 곳】 IntroElement (대상 컴포넌트)
+/// 【흐름】 IntroElement 선택 → OnInspectorGUI (HelpBox) + OnSceneGUI (경로 시각화 + 핸들 드래그)
 /// </summary>
 [CustomEditor(typeof(IntroElement))]
 public class IntroElementEditor : Editor
 {
-    private SerializedProperty _enableFlyIn;
-    private SerializedProperty _flyStartOffset;
-    private SerializedProperty _flyWaypoints;
+    private SerializedProperty _enableFlyIn;       // enableFlyIn 직렬화 프로퍼티
+    private SerializedProperty _flyStartOffset;    // flyStartOffset 직렬화 프로퍼티 (시작점 오프셋)
+    private SerializedProperty _flyWaypoints;      // flyWaypoints 직렬화 프로퍼티 (경유점 배열)
 
     private void OnEnable()
     {

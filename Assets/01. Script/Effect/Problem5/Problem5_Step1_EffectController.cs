@@ -3,9 +3,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Problem5 Step1: Effect Controller
-/// - closeUpRoot 팝업 애니메이션
-/// - dropTarget 숨김 처리
+/// Problem5_Step1_EffectController - 문제5 스텝1(클로즈업 팝업)의 이펙트 관리자
+///
+/// 【역할】 드래그&드롭 성공 후 클로즈업 이미지를 팝업으로 표시한다.
+///          startScale→maxScale→finalScale 3단계 스케일 애니메이션으로 등장.
+///          팝업 시 드롭 타겟을 자동으로 숨긴다.
+/// 【사용 위치】 ProblemScene - Problem5 Step1 (인벤토리 아이템 드롭 후 클로즈업 스텝)
+/// 【트리거】 Logic 클래스에서 PlayCloseUpPopup() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, closeUpRoot, dropTargetRoot
 /// </summary>
 public class Problem5_Step1_EffectController : EffectControllerBase
 {

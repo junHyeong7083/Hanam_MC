@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 스파클 파티클 (단일 입자)
-/// - 프리팹으로 사용
-/// - 생성 후 자동으로 애니메이션 + 삭제
+/// SparkleParticle - 생성 후 자동으로 애니메이션하고 삭제되는 단일 스파클 파티클 컴포넌트
 ///
-/// [사용처]
-/// - Problem3 Step1: 책 활성화 시 스파클
-/// - 성공/완료 이펙트
+/// 【역할】 중앙에서 바깥으로 이동하면서 스케일 0→max→0, 알파 1→0으로 변화하는 파티클.
+///          프리팹으로 만들어 Instantiate하면 자동 재생 후 duration 완료 시 자동 Destroy.
+///          랜덤 방향 또는 고정 방향 설정 가능.
+/// 【사용 위치】 Problem3 Step1(책 활성화 시 스파클), 성공/완료 이펙트
+/// 【트리거】 autoStart=true 시 Start()에서 자동 재생, 또는 외부에서 Play() 호출
+/// 【의존성】 Image(RequireComponent), RectTransform, CanvasGroup(자동 추가)
 /// </summary>
 [RequireComponent(typeof(Image))]
 public class SparkleParticle : MonoBehaviour

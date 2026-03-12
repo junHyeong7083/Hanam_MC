@@ -2,14 +2,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 드래그 시 스케일/투명도 피드백
-/// - 드래그 시작: scale 축소 + 투명도 감소
-/// - 호버: scale 살짝 확대
-/// - IDragHandler 인터페이스 자체 구현 또는 외부에서 호출
+/// DragScaleFeedback - 드래그 및 호버 시 스케일/투명도 시각 피드백 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step1: 마음 렌즈 드래그 아이템
-/// - 모든 드래그 가능 아이템
+/// 【역할】 드래그 시작 시 스케일 축소 + 투명도 감소로 "들어올린 느낌" 제공.
+///          호버 시 스케일 살짝 확대로 인터랙션 가능함을 시각적으로 표시.
+///          부드러운 전환을 위해 MoveTowards 보간 사용.
+/// 【사용 위치】 Problem2 Step1(마음 렌즈 드래그), 모든 드래그 가능 아이템
+/// 【트리거】 IPointerEnter/Exit(호버), 외부에서 OnDragBegin()/OnDragEnd() 호출(드래그)
+/// 【의존성】 RectTransform(스케일), CanvasGroup(투명도), targetTransform/targetCanvasGroup 지정 가능
 /// </summary>
 public class DragScaleFeedback : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {

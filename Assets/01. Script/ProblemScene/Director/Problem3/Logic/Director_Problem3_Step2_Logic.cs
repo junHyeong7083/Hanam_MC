@@ -3,17 +3,42 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 재작성 라운드 데이터 인터페이스.
+/// 각 라운드의 원본 텍스트, 재작성 텍스트, 옵션 목록, 키워드, 스프라이트 등을 정의한다.
+/// </summary>
 public interface IRewriteStepData
 {
-    int Id { get; }
-    string OriginalText { get; }
-    string RewrittenText { get; }
-    string[] Options { get; }
-    string[][] OptionKeywords { get; }
-    Sprite[] OptionSprites { get; }
-    int AfterCompleteTextId { get; }  // 라운드 완료 시 표시할 가이드 텍스트 ID (0이면 공통 GuideTextId_After 사용)
+    int Id { get; }                    // 라운드 ID (로그용)
+    string OriginalText { get; }       // 원본 텍스트 (재작성 전)
+    string RewrittenText { get; }      // 재작성된 텍스트 (애니메이션 후)
+    string[] Options { get; }          // 캐러셀 옵션 텍스트 배열
+    string[][] OptionKeywords { get; } // 각 옵션별 STT 매칭 키워드 2차원 배열 (null 허용)
+    Sprite[] OptionSprites { get; }    // 각 옵션별 표시 스프라이트 배열 (null 허용)
+    int AfterCompleteTextId { get; }   // 라운드 완료 시 가이드 텍스트 ID (0이면 공통 GuideTextId_After 사용)
 }
 
+/// <summary>
+/// Director_Problem3_Step2_Logic - 문제3 스텝2의 비즈니스 로직 베이스 클래스.
+///
+/// 【역할】 "재작성(Rewrite)" 활동을 담당한다. 여러 라운드로 구성되며, 각 라운드에서:
+///         1) 원본 텍스트를 EffectController로 표시
+///         2) 캐러셀 UI로 대안 옵션을 좌우 탐색
+///         3) 마이크로 현재 옵션을 읽으면(STT) 재작성 애니메이션 재생
+///         4) "다음 대사" 버튼으로 다음 라운드 또는 완료로 진행
+///         모든 라운드 완료 시 DB에 결과를 저장한다.
+/// 【패턴】 Binder/Logic 패턴의 Logic 측.
+/// 【문제/스텝】 Director 테마 / 문제3 / 스텝2 (메인 활동 - 캐러셀 + STT 재작성)
+/// 【부모 클래스】 ProblemStepBase → OnStepEnter()/OnStepExit()
+/// 【참조하는 곳】 Director_Problem3_Step2 (Binder 자식 클래스)
+/// 【참조되는 곳】 IRewriteStepData (라운드 데이터 인터페이스),
+///               Problem3_Step2_EffectController (원본→재작성 텍스트 애니메이션),
+///               MicRecordingIndicator (STT), DialogueSequencer (대사),
+///               StepCompletionGate (완료 판정)
+/// 【흐름】 스텝 진입 → enter 대사 → 첫 라운드 시작 → 캐러셀 탐색 → STT 녹음 →
+///         매칭 성공 → 재작성 애니메이션 → 다음 라운드 버튼 → ... → 마지막 라운드 완료 →
+///         DB 저장 → completed 대사 → 다음 스텝
+/// </summary>
 public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 {
     [Header("재작성 단계 데이터 (자식 구현)")]

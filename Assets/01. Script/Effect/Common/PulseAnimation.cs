@@ -2,14 +2,15 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 범용 펄스(맥박) 애니메이션
-/// - Scale 또는 Alpha를 반복적으로 변화시킴
-/// - NG 뱃지, 감정 조명 글로우 등에 사용
+/// PulseAnimation - Scale/Alpha/Both 타입의 범용 펄스(맥박) 애니메이션 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step1: NG 뱃지, 감정 조명 글로우
-/// - Problem2 Step2: lightGlowImage
-/// - 기타 강조가 필요한 UI 요소
+/// 【역할】 DOTween Yoyo 루프를 사용하여 스케일 또는 알파(또는 둘 다)를
+///          min↔max 사이에서 반복적으로 변화시킨다. 무한 반복 또는 지정 횟수만큼 재생 가능.
+///          완료 시 원래 상태로 자동 복원.
+/// 【사용 위치】 Problem2 Step1(NG 뱃지, 감정 조명 글로우), Problem2 Step2(lightGlowImage),
+///              기타 강조가 필요한 모든 UI 요소
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play()/PlayTimes() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform(스케일), CanvasGroup(알파)
 /// </summary>
 public class PulseAnimation : MonoBehaviour
 {

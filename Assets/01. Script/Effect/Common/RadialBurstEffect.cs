@@ -2,10 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// UI Image에 방사형 광선(스타버스트) 이펙트를 적용.
-/// - 07_Shader/UIRadialBurst 셰이더 사용
-/// - 인스펙터에서 광선 수, 회전 속도, 색상 등 조절
-/// - Play/Stop으로 제어
+/// RadialBurstEffect - UI Image에 방사형 광선(스타버스트) 이펙트를 적용하는 컴포넌트
+///
+/// 【역할】 UI/RadialBurst 커스텀 셰이더를 사용하여 중심에서 바깥으로 뻗어나가는 광선 효과 생성.
+///          광선 수, 너비, 부드러움, 회전 속도, 펄스 등을 인스펙터에서 조절 가능.
+///          머티리얼 인스턴스를 생성하여 다른 오브젝트와 셰이더 파라미터 공유 방지.
+/// 【사용 위치】 보상 화면, 완료 연출 등 임팩트가 필요한 장면
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play()/Stop() 호출
+/// 【의존성】 Image(RequireComponent), UI/RadialBurst 셰이더 (Assets/07. Shader/)
 /// </summary>
 [RequireComponent(typeof(Image))]
 public class RadialBurstEffect : MonoBehaviour

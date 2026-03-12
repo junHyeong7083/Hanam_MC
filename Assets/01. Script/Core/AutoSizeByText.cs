@@ -1,29 +1,52 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// AutoSizeByText - Text 컴포넌트의 내용에 따라 부모 RectTransform 크기를 자동 조절하는 유틸리티
+///
+/// 【역할】 자식 Text 컴포넌트의 preferredWidth/preferredHeight를 기반으로,
+///          이 컴포넌트가 부착된 RectTransform의 sizeDelta를 자동으로 맞춘다.
+///          대화 말풍선(HanamBox)이나 동적 텍스트 UI에서 사용된다.
+/// 【참조하는 곳】 HanamBox 프리팹의 말풍선 배경, 각종 동적 텍스트 UI
+/// 【참조되는 곳】 UnityEngine.UI.Text (텍스트 크기 측정)
+/// 【흐름】 LateUpdate()에서 텍스트 변경 감지 → Refresh()로 sizeDelta 재계산
+/// </summary>
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
 public class AutoSizeByText : MonoBehaviour
 {
+    /// <summary>크기 기준이 되는 Text 컴포넌트. 미지정 시 자식에서 자동 탐색</summary>
     [SerializeField] private Text targetText;
 
+    /// <summary>가로 크기를 텍스트에 맞출지 여부</summary>
     [Header("Fit 방향")]
     [SerializeField] private bool fitWidth = true;
+    /// <summary>세로 크기를 텍스트에 맞출지 여부</summary>
     [SerializeField] private bool fitHeight = false;
 
+    /// <summary>왼쪽 여백 (px)</summary>
     [Header("Padding")]
     [SerializeField] private float paddingLeft = 10f;
+    /// <summary>오른쪽 여백 (px)</summary>
     [SerializeField] private float paddingRight = 10f;
+    /// <summary>위쪽 여백 (px)</summary>
     [SerializeField] private float paddingTop = 5f;
+    /// <summary>아래쪽 여백 (px)</summary>
     [SerializeField] private float paddingBottom = 5f;
 
+    /// <summary>최소 가로 크기. 0이면 제한 없음</summary>
     [Header("크기 제한 (0 = 제한 없음)")]
     [SerializeField] private float minWidth = 0f;
+    /// <summary>최대 가로 크기. 0이면 제한 없음</summary>
     [SerializeField] private float maxWidth = 0f;
+    /// <summary>최소 세로 크기. 0이면 제한 없음</summary>
     [SerializeField] private float minHeight = 0f;
+    /// <summary>최대 세로 크기. 0이면 제한 없음</summary>
     [SerializeField] private float maxHeight = 0f;
 
+    /// <summary>자신의 RectTransform 캐시</summary>
     private RectTransform _rt;
+    /// <summary>이전 프레임의 텍스트 내용. 변경 감지에 사용</summary>
     private string _cachedText;
 
     private void Awake()
@@ -41,6 +64,10 @@ public class AutoSizeByText : MonoBehaviour
         Refresh();
     }
 
+    /// <summary>
+    /// Text의 preferredWidth/Height를 읽어 부모 RectTransform 크기를 재계산한다.
+    /// 텍스트의 offsetMin/offsetMax에서 마진을 자동으로 읽어와 패딩에 반영한다.
+    /// </summary>
     public void Refresh()
     {
         if (targetText == null) return;

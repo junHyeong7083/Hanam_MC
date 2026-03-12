@@ -2,14 +2,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 캐릭터/아이콘 플로팅(둥둥) 애니메이션
-/// - 위아래로 부드럽게 움직임
-/// - 프리팹화하여 재사용
+/// FloatingAnimation - 위아래로 부드럽게 떠다니는 플로팅 애니메이션 컴포넌트
 ///
-/// [사용처]
-/// - 하남이 캐릭터 아이콘
-/// - 도우미 캐릭터
-/// - 떠다니는 UI 요소
+/// 【역할】 DOTween을 사용하여 오브젝트를 위↔아래로 부드럽게 반복 이동시킨다.
+///          선택적으로 좌우 기울기 회전도 추가 가능. 여러 오브젝트가 동시에 움직이지 않도록
+///          randomOffset으로 시간차를 줄 수 있다.
+/// 【사용 위치】 하남이 캐릭터 아이콘, 도우미 캐릭터, 떠다니는 UI 요소 등
+/// 【트리거】 OnEnable 시 자동 재생, OnDisable 시 원위치 복원
+/// 【의존성】 DOTween(DG.Tweening), RectTransform
 /// </summary>
 public class FloatingAnimation : MonoBehaviour
 {

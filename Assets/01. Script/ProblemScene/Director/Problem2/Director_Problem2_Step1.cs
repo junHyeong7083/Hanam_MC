@@ -1,9 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// Director / Problem2 / Step1
-/// - 인스펙터에서 UI 오브젝트만 바인딩.
-/// - 실제 동작은 Director_Problem2_Step1_Logic(부모)에서 처리.
+/// Director_Problem2_Step1 - 문제2 스텝1의 Binder (인스펙터 바인딩) 클래스.
+///
+/// 【역할】 인스펙터에서 드롭 박스, 인트로 애니메이션 루트, 완료 게이트 등을 바인딩한다.
+///         실제 드래그앤드롭/인벤토리/대사 로직은 부모(Director_Problem2_Step1_Logic)에 있다.
+/// 【패턴】 Binder/Logic 패턴의 Binder 측.
+/// 【문제/스텝】 Director 테마 / 문제2 / 스텝1 (도입부 - 아이템 드래그앤드롭)
+/// 【부모 클래스】 Director_Problem2_Step1_Logic → ProblemStepBase
 /// </summary>
 public class Director_Problem2_Step1 : Director_Problem2_Step1_Logic
 {

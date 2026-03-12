@@ -3,28 +3,40 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// SweepHighlightTrigger 커스텀 에디터
-/// - 에디터 모드에서 "▶ 스윕 테스트" 버튼으로 Play 없이 효과 미리보기
+/// SweepHighlightTriggerEditor - SweepHighlightTrigger 컴포넌트의 커스텀 에디터
+///
+/// 【역할】 UI/SweepHighlight 쉐이더 기반의 스윕 하이라이트 효과를
+///         Play 모드 없이 에디터에서 미리볼 수 있게 한다.
+///         - 인스펙터에 "스윕 테스트" 버튼을 표시하고, 클릭 시 머티리얼의 _SweepT 값을
+///           시간에 따라 애니메이션하여 Game View/Scene View에서 효과를 확인할 수 있다.
+///         - 프리뷰 중 진행 바를 표시하고, 완료 또는 중지 시 머티리얼을 원래 상태로 복원한다.
+/// 【씬】 에디터 전용 (런타임 미포함)
+/// 【참조하는 곳】 SweepHighlightTrigger 컴포넌트를 선택했을 때 자동 활성화
+/// 【참조되는 곳】 SweepHighlightTrigger (대상 컴포넌트), UI/SweepHighlight 쉐이더
+/// 【흐름】 인스펙터 "스윕 테스트" 클릭 → StartPreview() → EditorApplication.update에서
+///         _SweepT 애니메이션 → 완료 시 StopPreview()로 머티리얼 복원
 /// </summary>
 [CustomEditor(typeof(SweepHighlightTrigger))]
 public class SweepHighlightTriggerEditor : Editor
 {
-    private static readonly int PropSweepT     = Shader.PropertyToID("_SweepT");
-    private static readonly int PropSweepColor = Shader.PropertyToID("_SweepColor");
-    private static readonly int PropSweepAngle = Shader.PropertyToID("_SweepAngle");
+    // ── 쉐이더 프로퍼티 ID (캐시) ──
+    private static readonly int PropSweepT     = Shader.PropertyToID("_SweepT");      // 스윕 진행도 (0~1)
+    private static readonly int PropSweepColor = Shader.PropertyToID("_SweepColor");   // 스윕 색상
+    private static readonly int PropSweepAngle = Shader.PropertyToID("_SweepAngle");   // 스윕 각도
 
-    private static bool     _isPreviewing;
-    private static double   _startTime;
-    private static float    _previewDuration;
-    private static Material _previewMat;   // 직접 수정할 머티리얼 (원본)
+    // ── 프리뷰 상태 (static: 에디터 전역) ──
+    private static bool     _isPreviewing;       // 프리뷰 진행 중 여부
+    private static double   _startTime;          // 프리뷰 시작 시간
+    private static float    _previewDuration;    // 프리뷰 지속 시간
+    private static Material _previewMat;         // 직접 수정 중인 머티리얼 참조
 
-    // 프리뷰 종료 시 복원용
-    private static Color _origSweepColor;
-    private static float _origSweepAngle;
+    // ── 프리뷰 종료 시 복원용 원본 값 ──
+    private static Color _origSweepColor;        // 원래 스윕 색상 (프리뷰 전 백업)
+    private static float _origSweepAngle;        // 원래 스윕 각도 (프리뷰 전 백업)
 
-    private SerializedProperty _enableSweep;
-    private SerializedProperty _sweepDuration;
-    private SerializedProperty _sweepDelay;
+    private SerializedProperty _enableSweep;     // enableSweep 직렬화 프로퍼티
+    private SerializedProperty _sweepDuration;   // sweepDuration 직렬화 프로퍼티
+    private SerializedProperty _sweepDelay;      // sweepDelay 직렬화 프로퍼티
 
     private void OnEnable()
     {

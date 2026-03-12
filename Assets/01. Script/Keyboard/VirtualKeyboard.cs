@@ -4,55 +4,63 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// 가상 키보드 입력 처리
-/// - 한글/영문 전환 지원
-/// - Shift (대소문자/특수문자) 지원
-/// - VirtualKeyboardController와 함께 사용
+/// VirtualKeyboard - 가상 키보드의 핵심 입력 처리 엔진
+///
+/// 【역할】 키오스크 환경(물리 키보드 없음)에서 화면상의 가상 키보드 입력을 처리한다.
+///         - 한글 두벌식 자모 조합 (초성/중성/종성 + 복합 모음/자음)
+///         - 영문 QWERTY 입력 (대소문자)
+///         - Shift 3단계: 0=소문자, 1=대문자(임시, 1글자 후 해제), 2=대문자(고정)
+///         - 한/영 전환, 백스페이스(조합 중 자모 단위 삭제), 스페이스, Enter
+/// 【씬】 RegisterScene, HomeScene 등 텍스트 입력이 필요한 모든 씬
+/// 【참조하는 곳】 VirtualKeyboardController (대상 InputField 설정, Enter 이벤트 수신)
+/// 【참조되는 곳】 VirtualKeyboardKey (개별 키 클릭 이벤트), VirtualKeyboardGenerator (키 생성)
+/// 【흐름】 키 클릭 → OnKeyPressed → 한글이면 ProcessKoreanInput() / 영문이면 InsertCharacter()
+///         → targetInputField에 텍스트 반영 → OnTextChanged 이벤트 발행
 /// </summary>
 public class VirtualKeyboard : MonoBehaviour
 {
     [Header("===== 연결된 InputField =====")]
-    [SerializeField] private TMP_InputField targetInputField;
+    [SerializeField] private TMP_InputField targetInputField;   // 현재 입력 대상 InputField (Controller에서 설정)
 
     [Header("===== 키 배열 (자동 연결) =====")]
-    [SerializeField] private VirtualKeyboardKey[] keys;
+    [SerializeField] private VirtualKeyboardKey[] keys;          // 자식에서 자동 탐색되는 키 배열
 
     [Header("===== 특수 키 =====")]
-    [SerializeField] private Button shiftButton;
-    [SerializeField] private Button backspaceButton;
-    [SerializeField] private Button spaceButton;
-    [SerializeField] private Button enterButton;
-    [SerializeField] private Button languageButton;
+    [SerializeField] private Button shiftButton;                 // Shift 버튼 (대소문자/특수문자 전환)
+    [SerializeField] private Button backspaceButton;             // 백스페이스 버튼 (삭제)
+    [SerializeField] private Button spaceButton;                 // 스페이스 버튼 (공백 입력)
+    [SerializeField] private Button enterButton;                 // Enter 버튼 (입력 확정)
+    [SerializeField] private Button languageButton;              // 한/영 전환 버튼
 
     [Header("===== Shift 버튼 색상 =====")]
-    [SerializeField] private Color shiftNormalColor = Color.white;
-    [SerializeField] private Color shiftActiveColor = new Color(1f, 0.54f, 0.24f);  // 주황
-    [SerializeField] private Color shiftLockedColor = new Color(1f, 0.3f, 0.3f);    // 빨강 (고정)
+    [SerializeField] private Color shiftNormalColor = Color.white;                     // 소문자 상태 색상 (흰색)
+    [SerializeField] private Color shiftActiveColor = new Color(1f, 0.54f, 0.24f);     // 임시 대문자 상태 색상 (주황)
+    [SerializeField] private Color shiftLockedColor = new Color(1f, 0.3f, 0.3f);       // 고정 대문자 상태 색상 (빨강)
 
     [Header("===== 언어 버튼 라벨 =====")]
-    [SerializeField] private Text languageButtonLabel;
+    [SerializeField] private Text languageButtonLabel;           // 한/영 버튼 라벨 텍스트 ("EN" / "KO")
 
-    // 상태
-    // Shift 상태: 0=소문자, 1=대문자(임시), 2=대문자(고정)
-    private int _shiftState = 0;
-    private bool _isKorean;
+    // ── 상태 ──
+    private int _shiftState = 0;    // Shift 상태: 0=소문자, 1=대문자(임시 - 1글자 입력 후 해제), 2=대문자(고정)
+    private bool _isKorean;          // 현재 한글 모드 여부
 
-    // 한글 조합용
-    private int _choIndex = -1;   // 초성 인덱스
-    private int _jungIndex = -1;  // 중성 인덱스
-    private int _jongIndex = -1;  // 종성 인덱스
-    private bool _isComposing;
+    // ── 한글 조합용 상태 ──
+    private int _choIndex = -1;      // 현재 조합 중인 초성 인덱스 (-1이면 없음)
+    private int _jungIndex = -1;     // 현재 조합 중인 중성 인덱스 (-1이면 없음)
+    private int _jongIndex = -1;     // 현재 조합 중인 종성 인덱스 (-1이면 없음)
+    private bool _isComposing;       // 한글 조합 진행 중 여부
 
-    // 한글 자모 테이블
-    private static readonly char[] CHO = { 'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ' };
-    private static readonly char[] JUNG = { 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ' };
-    private static readonly char[] JONG = { '\0', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ' };
+    // ── 한글 자모 테이블 (유니코드 표준 순서) ──
+    private static readonly char[] CHO = { 'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ' };     // 초성 19자
+    private static readonly char[] JUNG = { 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ' };  // 중성 21자
+    private static readonly char[] JONG = { '\0', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ' };  // 종성 28자 (인덱스 0은 종성 없음)
 
+    /// <summary>텍스트 변경 시 발행되는 이벤트. 매개변수: 현재 전체 텍스트</summary>
     public event Action<string> OnTextChanged;
+    /// <summary>Enter 키 누를 때 발행되는 이벤트</summary>
     public event Action OnEnterPressed;
 
-    // 코루틴 참조 (정리용)
-    private Coroutine _refocusCoroutine;
+    private Coroutine _refocusCoroutine;  // InputField 포커스 복원 코루틴 참조 (정리용)
 
     private void Start()
     {
@@ -178,6 +186,7 @@ public class VirtualKeyboard : MonoBehaviour
 
     #region Key Press Handlers
 
+    /// <summary>일반 키 클릭 시 호출. 한글/영문에 따라 입력을 처리하고, 임시 Shift면 해제한다.</summary>
     private void OnKeyPressed(VirtualKeyboardKey key)
     {
         if (targetInputField == null) return;
@@ -202,6 +211,7 @@ public class VirtualKeyboard : MonoBehaviour
         RefocusInputField();
     }
 
+    /// <summary>Shift 버튼 클릭 시 호출. 0(소문자)→1(임시 대문자)→2(고정 대문자)→0 순환</summary>
     private void OnShiftPressed()
     {
         // 0 → 1 → 2 → 0 순환
@@ -211,6 +221,11 @@ public class VirtualKeyboard : MonoBehaviour
         RefocusInputField();
     }
 
+    /// <summary>
+    /// 백스페이스 버튼 클릭 시 호출.
+    /// 한글 조합 중이면 종성→중성→초성 순서로 자모 단위 삭제.
+    /// 조합 중이 아니면 마지막 글자 통째로 삭제.
+    /// </summary>
     private void OnBackspacePressed()
     {
         if (targetInputField == null) return;
@@ -243,6 +258,7 @@ public class VirtualKeyboard : MonoBehaviour
         RefocusInputField();
     }
 
+    /// <summary>스페이스 버튼 클릭 시 호출. 현재 조합 확정 후 공백 삽입.</summary>
     private void OnSpacePressed()
     {
         CommitComposition();
@@ -250,12 +266,14 @@ public class VirtualKeyboard : MonoBehaviour
         RefocusInputField();
     }
 
+    /// <summary>Enter 버튼 클릭 시 호출. 조합 확정 후 OnEnterPressed 이벤트 발행.</summary>
     private void OnEnterKeyPressed()
     {
         CommitComposition();
         OnEnterPressed?.Invoke();
     }
 
+    /// <summary>한/영 전환 버튼 클릭 시 호출. 조합 확정 후 한글↔영문 모드 전환.</summary>
     private void OnLanguagePressed()
     {
         CommitComposition();
@@ -269,6 +287,11 @@ public class VirtualKeyboard : MonoBehaviour
 
     #region Korean Input Processing
 
+    /// <summary>
+    /// 한글 입력을 처리한다. 입력된 자모를 초성/중성/종성 상태에 따라 조합한다.
+    /// - 자음 입력: 새 초성 시작 / 기존 초성+중성에 종성 추가 / 확정 후 새 글자
+    /// - 모음 입력: 초성에 중성 추가 / 종성 분리 후 다음 글자 / 복합 모음 조합
+    /// </summary>
     private void ProcessKoreanInput(string input)
     {
         if (string.IsNullOrEmpty(input)) return;
@@ -374,6 +397,7 @@ public class VirtualKeyboard : MonoBehaviour
         }
     }
 
+    /// <summary>현재 조합 상태에 따라 마지막 글자를 갱신한다 (기존 글자 삭제 후 새 조합 글자 삽입)</summary>
     private void UpdateComposition()
     {
         if (!_isComposing || _choIndex < 0) return;
@@ -390,6 +414,7 @@ public class VirtualKeyboard : MonoBehaviour
         }
     }
 
+    /// <summary>현재 조합을 확정하고 조합 상태를 초기화한다 (다음 입력은 새 글자로 시작)</summary>
     private void CommitComposition()
     {
         _choIndex = -1;
@@ -398,6 +423,7 @@ public class VirtualKeyboard : MonoBehaviour
         _isComposing = false;
     }
 
+    /// <summary>조합 상태를 초기화한다 (InputField 전환 시 사용)</summary>
     private void ResetComposition()
     {
         _choIndex = -1;
@@ -406,6 +432,10 @@ public class VirtualKeyboard : MonoBehaviour
         _isComposing = false;
     }
 
+    /// <summary>
+    /// 현재 초성/중성/종성 인덱스로 완성형 한글 유니코드 문자를 조합한다.
+    /// 공식: 0xAC00 + (초성 * 21 * 28) + (중성 * 28) + 종성
+    /// </summary>
     private char ComposeHangul()
     {
         if (_choIndex < 0 || _jungIndex < 0)
@@ -420,6 +450,7 @@ public class VirtualKeyboard : MonoBehaviour
 
     #region Helper Methods
 
+    /// <summary>InputField에 포커스를 다시 설정한다 (버튼 클릭 후 포커스 유실 방지)</summary>
     private void RefocusInputField()
     {
         if (targetInputField == null) return;
@@ -445,6 +476,7 @@ public class VirtualKeyboard : MonoBehaviour
         _refocusCoroutine = null;  // 완료 시 참조 정리
     }
 
+    /// <summary>문자를 InputField 텍스트 끝에 추가하고 OnTextChanged 이벤트를 발행한다</summary>
     private void InsertCharacter(string c)
     {
         if (targetInputField == null) return;
@@ -453,6 +485,7 @@ public class VirtualKeyboard : MonoBehaviour
         OnTextChanged?.Invoke(targetInputField.text);
     }
 
+    /// <summary>InputField 텍스트의 마지막 문자를 삭제하고 OnTextChanged 이벤트를 발행한다</summary>
     private void DeleteLastCharacter()
     {
         if (targetInputField == null) return;
@@ -465,6 +498,7 @@ public class VirtualKeyboard : MonoBehaviour
         }
     }
 
+    /// <summary>Shift 버튼의 색상을 현재 상태에 맞게 업데이트한다 (ColorBlock + Image 즉시 적용)</summary>
     private void UpdateShiftVisual()
     {
         if (shiftButton == null) return;
@@ -497,6 +531,7 @@ public class VirtualKeyboard : MonoBehaviour
             image.color = targetColor;
     }
 
+    /// <summary>모든 키의 라벨을 현재 언어/Shift 상태에 맞게 업데이트한다</summary>
     private void UpdateKeyLabels()
     {
         bool isShift = _shiftState > 0;
@@ -507,12 +542,14 @@ public class VirtualKeyboard : MonoBehaviour
         }
     }
 
+    /// <summary>한/영 버튼 라벨을 현재 상태에 맞게 업데이트한다 (한글이면 "EN", 영문이면 "KO")</summary>
     private void UpdateLanguageButtonLabel()
     {
         if (languageButtonLabel != null)
             languageButtonLabel.text = _isKorean ? "EN" : "KO";
     }
 
+    /// <summary>문자가 초성 테이블에 있으면 해당 인덱스 반환, 없으면 -1</summary>
     private int GetChoIndex(char c)
     {
         for (int i = 0; i < CHO.Length; i++)
@@ -520,6 +557,7 @@ public class VirtualKeyboard : MonoBehaviour
         return -1;
     }
 
+    /// <summary>문자가 중성 테이블에 있으면 해당 인덱스 반환, 없으면 -1</summary>
     private int GetJungIndex(char c)
     {
         for (int i = 0; i < JUNG.Length; i++)
@@ -527,6 +565,7 @@ public class VirtualKeyboard : MonoBehaviour
         return -1;
     }
 
+    /// <summary>문자가 종성 테이블에 있으면 해당 인덱스 반환 (인덱스 0 제외), 없으면 -1</summary>
     private int GetJongIndex(char c)
     {
         for (int i = 1; i < JONG.Length; i++)
@@ -534,6 +573,11 @@ public class VirtualKeyboard : MonoBehaviour
         return -1;
     }
 
+    /// <summary>
+    /// 두 중성을 합쳐서 복합 모음을 만든다.
+    /// 예: ㅗ+ㅏ=ㅘ, ㅜ+ㅓ=ㅝ, ㅡ+ㅣ=ㅢ 등
+    /// 조합 불가능하면 -1을 반환한다.
+    /// </summary>
     private int CombineJung(int first, int second)
     {
         // ㅗ + ㅏ = ㅘ, ㅗ + ㅐ = ㅙ, ㅗ + ㅣ = ㅚ

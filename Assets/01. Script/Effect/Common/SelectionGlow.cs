@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 선택 시 글로우 효과
-/// - 선택되면 글로우 오브젝트 활성화 + 펄스
-/// - Outline 또는 별도 글로우 이미지 사용
+/// SelectionGlow - 선택 상태에 따라 글로우 오브젝트를 활성화하고 알파 펄스/스케일 확대하는 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step3: 관점 카드 선택 글로우
-/// - 선택 가능한 카드/버튼
+/// 【역할】 SetSelected(true) 호출 시 글로우 오브젝트를 활성화하고,
+///          알파 펄스(min↔max)와 스케일 확대(selectedScale)로 선택 상태를 시각적으로 강조한다.
+///          해제 시 원래 상태로 부드럽게 복원.
+/// 【사용 위치】 Problem2 Step3(관점 카드 선택 글로우), 선택 가능한 카드/버튼 등
+/// 【트리거】 외부에서 SetSelected(true/false) 또는 ToggleSelection() 호출
+/// 【의존성】 glowObject(글로우 이미지 오브젝트), glowImage(알파 펄스용 Image)
 /// </summary>
 public class SelectionGlow : MonoBehaviour
 {

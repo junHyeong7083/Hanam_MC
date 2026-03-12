@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Problem5 Step2 장면 데이터 인터페이스
+/// Problem5 Step2 장면 데이터 인터페이스.
+/// 각 장면의 아이콘 버튼, 리빌 전/후 비주얼, 텍스트 정보를 정의한다.
 /// </summary>
 public interface IZoomOutSceneData
 {
@@ -19,25 +20,43 @@ public interface IZoomOutSceneData
 }
 
 /// <summary>
-/// Director / Problem5 / Step2 로직 베이스
-/// - 여러 장면 아이콘 클릭 → Reveal 전환
-/// - 모든 장면을 다 보면 StepCompletionGate 완료
+/// Director_Problem5_Step2_Logic - 문제5 스텝2의 비즈니스 로직 베이스 클래스.
+///
+/// 【역할】 여러 장면 아이콘을 배치하고, 사용자가 각 아이콘을 클릭하면
+///         "확인 전(Unrevealed)" → "확인 완료(Revealed)" 상태로 전환한다.
+///         모든 장면을 다 확인하면 StepCompletionGate로 완료 처리한다.
+///         "줌아웃(ZoomOut)" 컨셉의 장면 탐색 활동이다.
+/// 【패턴】 Binder/Logic 패턴의 Logic 측.
+/// 【문제/스텝】 Director 테마 / 문제5 / 스텝2 (메인 활동 - 장면 아이콘 탐색)
+/// 【부모 클래스】 ProblemStepBase → OnStepEnter()/OnStepExit()
+/// 【참조하는 곳】 Director_Problem5_Step2 (Binder 자식 클래스)
+/// 【참조되는 곳】 IZoomOutSceneData (장면 데이터 인터페이스),
+///               DialogueSequencer (대사), StepCompletionGate (완료 판정)
+/// 【흐름】 스텝 진입 → 장면 초기화 → enter 대사 → 아이콘 클릭 →
+///         Unrevealed→Revealed 전환 → 모든 장면 확인 → completed 대사 → 다음 스텝
 /// </summary>
-
 public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 {
     // ==== 자식에서 제공할 추상 프로퍼티 ====
 
+    /// <summary>장면 데이터 배열 (자식에서 SerializeField로 바인딩)</summary>
     protected abstract IZoomOutSceneData[] Scenes { get; }
+
+    /// <summary>완료 게이트 - 모든 장면 확인 시 다음 스텝 진행</summary>
     protected abstract StepCompletionGate CompletionGate { get; }
 
     [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
+    [SerializeField] private DialogueSequencer dialogueSequencer;  // 대사 시퀀서
 
     // ==== 내부 상태 ====
 
+    /// <summary>대사 재생 중 상호작용 잠금 플래그</summary>
     private bool _interactionLocked = true;
+
+    /// <summary>각 장면의 확인 완료 여부 배열</summary>
     private bool[] _revealedFlags;
+
+    /// <summary>확인 완료된 장면 수</summary>
     private int _revealedCount;
 
     // ======================================================
@@ -115,6 +134,11 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
     // 장면 클릭 처리
     // ======================================================
 
+    /// <summary>
+    /// 장면 아이콘 클릭 핸들러. 해당 장면을 Revealed 상태로 전환하고,
+    /// 모든 장면 확인 시 완료 게이트 + completed 대사를 처리한다.
+    /// </summary>
+    /// <param name="index">클릭된 장면 인덱스</param>
     public void OnClickScene(int index)
     {
         Debug.Log($"[Problem5_Step2] OnClickScene({index}) called, _interactionLocked={_interactionLocked}");

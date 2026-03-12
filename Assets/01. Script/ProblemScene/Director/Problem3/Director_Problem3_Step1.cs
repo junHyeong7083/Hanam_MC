@@ -2,7 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Director / Problem3 / Step1
+/// Director_Problem3_Step1 - 문제3 스텝1의 Binder (인스펙터 바인딩) 클래스.
+///
+/// 【역할】 인스펙터에서 드롭 박스, 인트로 애니메이션, 드래그 상태 텍스트 등을 바인딩한다.
+///         Problem2~9 공통 Step1 로직(Director_Problem2_Step1_Logic)을 상속한다.
+///         Problem3에서는 추가로 드래그 전/후 상태 텍스트와 색상을 설정할 수 있다.
+/// 【패턴】 Binder/Logic 패턴의 Binder 측.
+/// 【문제/스텝】 Director 테마 / 문제3 / 스텝1 (도입부 - 아이템 드래그앤드롭)
+/// 【부모 클래스】 Director_Problem2_Step1_Logic → ProblemStepBase
 /// </summary>
 public class Director_Problem3_Step1 : Director_Problem2_Step1_Logic
 {

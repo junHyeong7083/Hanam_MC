@@ -1,30 +1,41 @@
 using UnityEngine;
 
+/// <summary>
+/// ProblemContext - ë¬¸ì œë³„ ëŸ°íƒ€ì„ ì»¨í…ìŠ¤íŠ¸ ë°ì´í„° (ScriptableObject)
+///
+/// ã€ì—­í• ã€‘ ê° ë¬¸ì œ(Problem)ì˜ ë©”íƒ€ ì •ë³´ë¥¼ ë‹´ëŠ” ScriptableObject.
+///          í…Œë§ˆ, ë¬¸ì œ ë²ˆí˜¸, ê³ ìœ  ID, í˜„ì¬ ìŠ¤í… í‚¤ë¥¼ ë³´ìœ í•˜ë©°,
+///          DBì— í•™ìŠµ ì‹œë„(Attempt) ë° ë³´ìƒ(Reward) ë°ì´í„°ë¥¼ ì €ì¥í•˜ëŠ” ë©”ì„œë“œë¥¼ ì œê³µí•œë‹¤.
+/// ã€ì°¸ì¡°í•˜ëŠ” ê³³ã€‘ ProblemStepBase (context í•„ë“œë¡œ ì°¸ì¡°), ê° Problem Directorì˜ Logic í´ë˜ìŠ¤
+/// ã€ì°¸ì¡°ë˜ëŠ” ê³³ã€‘ DataService (Progress, Reward Repository)
+/// ã€íë¦„ã€‘ ì¸ìŠ¤í™í„°ì—ì„œ ê° Problem_N ì˜¤ë¸Œì íŠ¸ì— í• ë‹¹ â†’ ProblemStepBaseê°€ ì°¸ì¡°í•˜ì—¬
+///          BuildStepKey(), SaveAttempt(), SaveReward() ë“±ì— í™œìš©
+/// </summary>
 [CreateAssetMenu(menuName = "MindMovie/Problem Context", fileName = "ProblemContext")]
 public class ProblemContext : ScriptableObject
 {
-    [Header("¹®Á¦ ¸ŞÅ¸")]
-    public ProblemTheme Theme = ProblemTheme.Director;
+    [Header("ë¬¸ì œ ë©”íƒ€")]
+    public ProblemTheme Theme = ProblemTheme.Director; // í…Œë§ˆ: Director ë˜ëŠ” Gardener
 
-    [Tooltip("Å×¸¶ ¾È¿¡¼­ÀÇ ¹®Á¦ ¹øÈ£ (1ºÎÅÍ ½ÃÀÛ, ¿¹: 1..10)")]
-    public int ProblemIndex = 1;
+    [Tooltip("ê·¸ë£¹ ì•ˆì—ì„œì˜ ë¬¸ì œ ë²ˆí˜¸ (1ë¶€í„° ì‹œì‘, ì˜ˆ: 1..10)")]
+    public int ProblemIndex = 1; // ë¬¸ì œ ë²ˆí˜¸ (1-based)
 
-    // ³ªÁß¿¡ ¼­¹ö/DB Problem Å×ÀÌºí°ú ¿¬°áÇÒ ¶§ »ç¿ëÇÒ Id (Áö±İÀº ºñ¿öµÖµµ µÊ)
+    // ì¶”í›„ ì„œë²„/DB Problem í…Œì´ë¸”ê³¼ ì—°ë™í•  ë•Œ ì‚¬ìš©í•  ê³ ìœ  ID (í˜„ì¬ëŠ” ë¹„ì–´ìˆì–´ë„ ë¨)
     public string ProblemId;
 
-    [Header("ÇöÀç Step Key (·Î±×¿ë, ¹®ÀÚ¿­)")]
-    public string CurrentStepKey;
+    [Header("í˜„ì¬ Step Key (ë¡œê·¸ìš©, ë¬¸ìì—´)")]
+    public string CurrentStepKey; // í˜„ì¬ ì§„í–‰ ì¤‘ì¸ ìŠ¤í…ì˜ í‚¤ ë¬¸ìì—´ (ì˜ˆ: "Director_P1_Step2")
 
     /// <summary>
-    /// ÀÌ ÄÁÅØ½ºÆ® ±âÁØÀ¸·Î Attempt ÀúÀå.
-    /// body¿¡´Â "ÀÌ ½ºÅÜ Àü¿ë µ¥ÀÌÅÍ ±¸Á¶"¸¸ ³Ö¾îÁØ´Ù.
+    /// ï¿½ï¿½ ï¿½ï¿½ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Attempt ï¿½ï¿½ï¿½ï¿½.
+    /// bodyï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ø´ï¿½.
     /// </summary>
     public void SaveStepAttempt(object body)
     {
         var ds = DataService.Instance;
         if (ds == null || ds.Progress == null)
         {
-            Debug.LogWarning("[ProblemContext] DataService.Progress ¾øÀ½ - SaveStepAttempt ½ºÅµ");
+            Debug.LogWarning("[ProblemContext] DataService.Progress ï¿½ï¿½ï¿½ï¿½ - SaveStepAttempt ï¿½ï¿½Åµ");
             return;
         }
 
@@ -44,21 +55,21 @@ public class ProblemContext : ScriptableObject
         );
 
         if (!result.Ok)
-            Debug.LogWarning("[ProblemContext] SaveStepAttempt ½ÇÆĞ: " + result.Error);
+            Debug.LogWarning("[ProblemContext] SaveStepAttempt ï¿½ï¿½ï¿½ï¿½: " + result.Error);
         else
-            Debug.Log("[ProblemContext] SaveStepAttempt DB ÀúÀå ¿Ï·á");
+            Debug.Log("[ProblemContext] SaveStepAttempt DB ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
     }
 
     /// <summary>
-    /// Attempt + ÀÎº¥Åä¸® º¸»óÀ» ÇÔ²² ÀúÀå.
-    /// body¿¡´Â ÀÌ ½ºÅÜ Àü¿ë µ¥ÀÌÅÍ ±¸Á¶¸¸ ³Ö¾îÁØ´Ù.
+    /// Attempt + ï¿½Îºï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô²ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    /// bodyï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ø´ï¿½.
     /// </summary>
     public void SaveReward(object body, string itemId, string itemName)
     {
         var ds = DataService.Instance;
         if (ds == null || ds.Reward == null)
         {
-            Debug.LogWarning("[ProblemContext] DataService.Reward ¾øÀ½ - SaveReward ½ºÅµ");
+            Debug.LogWarning("[ProblemContext] DataService.Reward ï¿½ï¿½ï¿½ï¿½ - SaveReward ï¿½ï¿½Åµ");
             return;
         }
 
@@ -80,6 +91,6 @@ public class ProblemContext : ScriptableObject
         );
 
         if (!result.Ok)
-            Debug.LogWarning("[ProblemContext] SaveReward ½ÇÆĞ: " + result.Error);
+            Debug.LogWarning("[ProblemContext] SaveReward ï¿½ï¿½ï¿½ï¿½: " + result.Error);
     }
 }

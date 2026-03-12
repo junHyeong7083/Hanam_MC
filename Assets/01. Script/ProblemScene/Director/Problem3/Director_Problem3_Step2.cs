@@ -2,17 +2,34 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Director_Problem3_Step2 - 문제3 스텝2의 Binder (인스펙터 바인딩) 클래스.
+///
+/// 【역할】 인스펙터에서 StepData 배열(IRewriteStepData 구현), 가이드 텍스트,
+///         이펙트 컨트롤러, 캐러셀 UI, 마이크 UI, 진행도 점, 완료 게이트 등을 바인딩한다.
+///         실제 캐러셀 탐색/STT 재작성 로직은 부모(Director_Problem3_Step2_Logic)에 있다.
+///         StepData 내부 클래스가 IRewriteStepData를 구현하여 textId 기반으로
+///         런타임에 CSV에서 텍스트를 가져온다.
+/// 【패턴】 Binder/Logic 패턴의 Binder 측.
+/// 【문제/스텝】 Director 테마 / 문제3 / 스텝2 (메인 활동 - 캐러셀 + STT 재작성)
+/// 【부모 클래스】 Director_Problem3_Step2_Logic → ProblemStepBase
+/// </summary>
 public class Director_Problem3_Step2 : Director_Problem3_Step2_Logic
 {
+    /// <summary>
+    /// 개별 재작성 라운드 데이터. IRewriteStepData 인터페이스를 구현하여
+    /// textId 기반으로 CSV에서 원본/재작성/옵션 텍스트를 가져온다.
+    /// optionKeywords는 "키1|키2" 형식의 파이프 구분 문자열로, STT 매칭에 사용된다.
+    /// </summary>
     [Serializable]
     private class StepData : IRewriteStepData
     {
-        public int id;
-        public int originalTextId;
-        public int rewrittenTextId;
+        public int id;                       // 라운드 ID (로그용)
+        public int originalTextId;           // 원본 텍스트 CSV textId
+        public int rewrittenTextId;          // 재작성된 텍스트 CSV textId
 
-        public int[] optionTextIds;          // 캐러셀 옵션들
-        public string[] optionKeywords;      // 선택: 각 옵션에 대응하는 "키1|키2" 문자열
+        public int[] optionTextIds;          // 캐러셀 옵션들의 CSV textId 배열
+        public string[] optionKeywords;      // 각 옵션의 STT 키워드 ("키1|키2" 파이프 구분)
         public Sprite[] optionSprites;       // 각 옵션에 대응하는 스프라이트
         public int afterCompleteTextId;      // 라운드 완료 후 가이드 텍스트 ID (0이면 공통값 사용)
 

@@ -3,8 +3,15 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 팝업 이미지 표시 컴포넌트 (재사용 가능)
-/// - 이미지 표시 + 스케일 애니메이션(min→max→final) + 일정 시간 후 자동 숨김
+/// PopupImageDisplay - 팝업 이미지를 스케일 애니메이션과 함께 표시/숨기는 재사용 가능 컴포넌트
+///
+/// 【역할】 이미지를 minScale→maxScale→finalScale 3단계 스케일 애니메이션으로 등장시키고,
+///          displayDuration 후 자동으로 숨기거나(stayVisible=false), 계속 표시(stayVisible=true) 한다.
+///          skipGrowAnimation=true이면 maxScale→finalScale만 재생하여 빠른 등장 지원.
+///          useFade 옵션으로 알파 페이드인/아웃 추가 가능.
+/// 【사용 위치】 Problem5 Step2(팝업 표시) 등 이미지 팝업이 필요한 모든 곳
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Show()/Hide() 호출
+/// 【의존성】 DOTween(DG.Tweening), targetRect(RectTransform), canvasGroup(페이드 옵션)
 /// </summary>
 public class PopupImageDisplay : MonoBehaviour
 {

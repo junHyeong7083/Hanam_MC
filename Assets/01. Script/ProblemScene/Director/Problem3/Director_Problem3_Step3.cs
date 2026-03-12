@@ -5,10 +5,22 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Director / Problem3 / Step3
-/// - 3개 보기 중 STT로 정답 선택
-/// - 인식 시 outline 표시, 정답이면 나머지 페이드아웃
-/// - 텍스트는 CSV textId로 관리
+/// Director_Problem3_Step3 - 문제3 스텝3의 STT 기반 객관식 스텝.
+///
+/// 【역할】 3개 보기 중 정답을 STT(음성인식)로 선택하는 활동을 담당한다.
+///         버튼 클릭으로 보기를 선택하면 아웃라인이 표시되고 마이크가 활성화된다.
+///         STT로 정답 키워드를 말하면 정답 처리(나머지 페이드아웃),
+///         오답이면 힌트 텍스트를 표시하고 재시도할 수 있다.
+///         모든 텍스트는 CSV textId 기반으로 관리된다.
+/// 【패턴】 Problem3_MultipleChoiceStepBase → MultipleChoiceStepBase를 상속하여
+///         객관식 공통 로직을 활용하면서, STT 특화 처리를 추가한다.
+/// 【문제/스텝】 Director 테마 / 문제3 / 스텝3 (마무리 - STT 객관식)
+/// 【부모 클래스】 Problem3_MultipleChoiceStepBase → MultipleChoiceStepBase → ProblemStepBase
+/// 【참조되는 곳】 DialogueSequencer (대사), MicRecordingIndicator (STT),
+///               StepCompletionGate (완료 판정), DOTween (페이드아웃 애니메이션)
+/// 【흐름】 스텝 진입 → enter 대사 → 보기 표시 → 버튼 클릭(아웃라인) → 마이크 활성화 →
+///         STT 매칭 → 정답: 나머지 페이드아웃 + 완료 / 오답: 힌트 표시 → 재시도 →
+///         completed 대사 → 다음 스텝
 /// </summary>
 public class Director_Problem3_Step3
     : Problem3_MultipleChoiceStepBase<Director_Problem3_Step3.Question>

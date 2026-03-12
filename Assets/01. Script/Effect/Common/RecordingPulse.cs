@@ -2,18 +2,18 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 녹음 중 펄스 애니메이션
-/// - 마이크 버튼 주변 파동 효과
-/// - 활성화되면 펄스 시작
+/// RecordingPulse - 마이크 녹음 중 버튼 주변에 파동 효과를 표시하는 컴포넌트
 ///
-/// [구조]
-/// - micRoot (이 스크립트)
-///   - micEffectImage (pulseRing) <- 확장되는 펄스 링, 버튼 뒤에 배치
-///   - button (buttonImage) <- 실제 버튼 이미지
+/// 【역할】 녹음 상태일 때 마이크 버튼 뒤에 배치된 링 이미지를 반복적으로 확대+페이드아웃하여
+///          "녹음 중" 시각 피드백 제공. 버튼 이미지 색상도 일반(갈색)↔녹음(주황)으로 전환.
+/// 【사용 위치】 Problem2 Step3(마이크 녹음 버튼), 음성 입력 UI
+/// 【트리거】 외부에서 SetRecording(true/false) 또는 ToggleRecording() 호출
+/// 【의존성】 pulseRing(펄스 링 Image), buttonImage(버튼 색상 변경용 Image)
 ///
-/// [사용처]
-/// - Problem2 Step3: 마이크 녹음 버튼
-/// - 음성 입력 UI
+/// 【계층 구조】
+/// micRoot (이 스크립트)
+/// ├── micEffectImage (pulseRing) - 확장되는 펄스 링, 버튼 뒤에 배치
+/// └── button (buttonImage) - 실제 버튼 이미지
 /// </summary>
 public class RecordingPulse : MonoBehaviour
 {

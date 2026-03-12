@@ -4,19 +4,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 네/아니오 질문 데이터 인터페이스.
+/// 질문 ID, 메인 텍스트, 정답이 "네"인지 여부를 정의한다.
+/// </summary>
 public interface IYesNoQuestionData
 {
-    string QuestionId { get; }
-    string MainText { get; }
-    bool IsYesCorrect { get; }
+    string QuestionId { get; }   // 질문 고유 ID (로그용, 예: Q1)
+    string MainText { get; }     // 질문 메인 텍스트 (카드에 표시)
+    bool IsYesCorrect { get; }   // true="네"가 정답, false="아니오"가 정답
 }
 
 /// <summary>
-/// Problem4 / Step3 로직 베이스.
-/// - Q1~Q3 순서대로 '네 / 아니오' 로 답하는 반박 질문
-/// - 필름 애니메이션: Right→Center 등장, Center→Left 퇴장
-/// - 에러 메시지는 HanamText 에 일시 표시 후 복원
-/// - 모든 질문 완료 시 DialogueSequencer 완료 텍스트 표시
+/// Director_Problem4_Step3_Logic - 문제4 스텝3의 비즈니스 로직 베이스 클래스.
+///
+/// 【역할】 "반박 질문" 활동을 담당한다. 여러 질문(Q1~Q3 등)을 순서대로 표시하고,
+///         각 질문에 대해 "네" 또는 "아니오"로 답하도록 한다.
+///         정답이면 퇴장 애니메이션 → 다음 질문 등장, 오답이면 에러 메시지 표시.
+///         모든 질문 완료 시 결과를 DB에 저장하고 DialogueSequencer 완료 텍스트를 표시한다.
+///         필름 카드 등장/퇴장 애니메이션은 Problem4_Step3_EffectController에 위임한다.
+/// 【패턴】 Binder/Logic 패턴의 Logic 측.
+/// 【문제/스텝】 Director 테마 / 문제4 / 스텝3 (마무리 - 네/아니오 반박 질문)
+/// 【부모 클래스】 ProblemStepBase → OnStepEnter()/OnStepExit()
+/// 【참조하는 곳】 Director_Problem4_Step3 (Binder 자식 클래스)
+/// 【참조되는 곳】 IYesNoQuestionData (질문 데이터 인터페이스),
+///               Problem4_Step3_EffectController (등장/퇴장 애니메이션),
+///               DialogueSequencer (대사/에러), StepCompletionGate (완료 판정)
+/// 【흐름】 스텝 진입 → 첫 질문 표시 + 등장 애니메이션 → enter 대사 →
+///         네/아니오 선택 → 정답: 퇴장→다음 질문 등장 / 오답: 에러 메시지 →
+///         마지막 질문 정답 → DB 저장 → completed 대사 → 다음 스텝
 /// </summary>
 public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 {

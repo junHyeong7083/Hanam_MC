@@ -3,42 +3,59 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Director_Problem1_Step3_SummaryPanel - 문제1 스텝3 요약 패널 컨트롤러.
+///
+/// 【역할】 필름 분류 완료 후 활성화되는 요약 패널을 관리한다.
+///         타이틀 텍스트를 설정하고, summaryTextIds 배열의 각 텍스트를 순차적으로
+///         라인 프리팹으로 생성하여 애니메이션과 함께 표시한다.
+///         사용자가 화면을 클릭하면 다음 라인이 등장하고, 마지막 라인까지 보면
+///         StepCompletionGate로 스텝을 완료시킨다.
+/// 【문제/스텝】 Director 테마 / 문제1 / 스텝3의 요약 화면
+/// 【부모 클래스】 MonoBehaviour (독립 컴포넌트, OnEnable에서 시퀀스 시작)
+/// 【참조하는 곳】 Director_Problem1_Step3_Logic (SummaryPanelRoot로 활성화)
+/// 【참조되는 곳】 ProblemRuntime.L() (CSV 텍스트), StepCompletionGate (완료 처리)
+/// 【흐름】 패널 활성화(OnEnable) → 타이틀 설정 → 첫 라인 표시 → 클릭마다 다음 라인 →
+///         마지막 라인 → 완료 게이트 처리 → 다음 스텝
+/// </summary>
 public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
 {
+    /// <summary>각 라인의 시작 위치(spawnPoint)와 목표 위치(targetPoint) 설정</summary>
     [Serializable]
     public struct SummaryLineConfig
     {
-        public RectTransform spawnPoint;
-        public RectTransform targetPoint;
+        public RectTransform spawnPoint;    // 라인이 생성되는 시작 위치
+        public RectTransform targetPoint;   // 라인이 이동할 최종 위치
     }
 
     [Header("타이틀")]
-    [SerializeField] private Text titleText;
-    [SerializeField] private int titleTextId;
+    [SerializeField] private Text titleText;       // 요약 패널 상단 타이틀 텍스트
+    [SerializeField] private int titleTextId;      // 타이틀 CSV textId
 
     [Header("요약 텍스트 ID 목록")]
-    [SerializeField] private int[] summaryTextIds;
+    [SerializeField] private int[] summaryTextIds; // 각 라인에 표시할 CSV textId 배열
 
     [Header("라인 생성 설정")]
-    [SerializeField] private GameObject linePrefab;
-    [SerializeField] private Transform linesRoot;
+    [SerializeField] private GameObject linePrefab; // 요약 라인 프리팹 (Icon + DescriptionText 구조)
+    [SerializeField] private Transform linesRoot;   // 라인이 생성될 부모 Transform
 
     [Header("위치 설정")]
-    [SerializeField] private SummaryLineConfig[] lineConfigs;
+    [SerializeField] private SummaryLineConfig[] lineConfigs;  // 각 라인별 시작/목표 위치 설정
 
     [Header("타이밍")]
-    [SerializeField] private float moveDuration = 0.5f;
+    [SerializeField] private float moveDuration = 0.5f;  // 라인 이동 애니메이션 시간 (초)
 
     [Header("다음 클릭 버튼 (투명 1920x1080)")]
-    [SerializeField] private Button nextLineButton;
+    [SerializeField] private Button nextLineButton;      // 화면 전체를 덮는 투명 버튼 (다음 라인 트리거)
 
     [Header("다음 스텝 처리")]
-    [SerializeField] private StepCompletionGate completionGate;
+    [SerializeField] private StepCompletionGate completionGate;  // 모든 라인 표시 후 스텝 완료
 
-    private int _currentLineIndex;
-    private int _totalLineCount;
-    private bool _isAnimating;
+    private int _currentLineIndex;   // 현재 표시 중인 라인 인덱스
+    private int _totalLineCount;     // 총 표시할 라인 수 (textIds와 configs의 최소값)
+    private bool _isAnimating;       // 라인 이동 애니메이션 진행 중 여부
 
+    /// <summary>패널 활성화 시 호출. 완료 게이트 리셋, 버튼 리스너 설정, 시퀀스 시작.</summary>
     private void OnEnable()
     {
         if (completionGate != null)
@@ -59,17 +76,20 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             nextLineButton.onClick.RemoveAllListeners();
     }
 
+    /// <summary>외부에서 요약 텍스트 ID 배열을 동적으로 설정할 때 사용한다.</summary>
     public void SetSummaryContent(int[] textIds)
     {
         summaryTextIds = textIds ?? Array.Empty<int>();
     }
 
+    /// <summary>요약 시퀀스를 시작한다. 기존 라인을 정리하고 첫 라인을 표시한다.</summary>
     public void StartSequence()
     {
         ClearLines();
         PrepareSequence();
     }
 
+    /// <summary>linesRoot 아래 기존 라인 오브젝트를 모두 파괴한다.</summary>
     private void ClearLines()
     {
         if (linesRoot == null) return;
@@ -78,6 +98,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
             Destroy(linesRoot.GetChild(i).gameObject);
     }
 
+    /// <summary>시퀀스 초기화: 타이틀 설정, 총 라인 수 계산, 첫 라인 즉시 표시.</summary>
     private void PrepareSequence()
     {
         // 타이틀 세팅
@@ -100,6 +121,10 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         SpawnLine(_currentLineIndex);
     }
 
+    /// <summary>
+    /// 화면 클릭 시 다음 라인을 표시한다.
+    /// 마지막 라인이면 버튼을 숨기고 완료 게이트를 처리한다.
+    /// </summary>
     private void OnNextLineClicked()
     {
         if (_isAnimating) return;
@@ -121,6 +146,10 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// i번째 라인을 생성하고, spawnPoint에서 targetPoint로 이동 애니메이션을 재생한다.
+    /// 프리팹 구조: linePrefab > Icon(자식0) > NumberText + DescriptionText(직계 자식)
+    /// </summary>
     private void SpawnLine(int i)
     {
         if (linePrefab == null || linesRoot == null)
@@ -194,6 +223,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         StartCoroutine(MoveLineWithLock(rt, target.position, moveDuration));
     }
 
+    /// <summary>라인 이동 애니메이션 + 잠금 제어 래퍼 코루틴.</summary>
     private IEnumerator MoveLineWithLock(RectTransform rt, Vector3 targetPos, float duration)
     {
         _isAnimating = true;
@@ -201,6 +231,7 @@ public class Director_Problem1_Step3_SummaryPanel : MonoBehaviour
         _isAnimating = false;
     }
 
+    /// <summary>SmoothStep 보간으로 RectTransform을 목표 위치로 이동시키는 코루틴.</summary>
     private IEnumerator MoveLine(RectTransform rt, Vector3 targetPos, float duration)
     {
         if (rt == null) yield break;

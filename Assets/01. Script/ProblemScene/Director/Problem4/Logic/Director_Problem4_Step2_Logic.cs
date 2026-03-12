@@ -4,50 +4,72 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 필름 컷 데이터 인터페이스.
+/// 각 컷의 ID, 표시 텍스트, 생각/사실 유형을 정의한다.
+/// </summary>
 public interface IFilmCutData
 {
-    string CutId { get; }
-    string Text { get; }
-    bool IsThinking { get; }
+    string CutId { get; }      // 컷 고유 ID (로그용)
+    string Text { get; }       // 컷에 표시할 텍스트 (CSV 기반)
+    bool IsThinking { get; }   // true=생각(편집 대상), false=사실(통과)
 }
 
 /// <summary>
-/// Director / Problem4 / Step2 / Logic
-/// - 필름 컷 분류 로직 (생각 vs 사실)
-/// - 애니메이션은 EffectController에 위임
+/// Director_Problem4_Step2_Logic - 문제4 스텝2의 비즈니스 로직 베이스 클래스.
+///
+/// 【역할】 필름 컷을 "생각(편집 대상)" vs "사실(통과)"로 분류하는 활동을 담당한다.
+///         사용자가 Cut(편집) 또는 Pass(통과) 버튼을 눌러 각 컷을 판정한다.
+///         정답이면 컷/통과 애니메이션 재생 후 다음 카드로 진행,
+///         오답이면 에러 메시지 + 흔들림 효과를 표시한다.
+///         모든 생각 컷이 삭제되고 사실 컷이 통과되면 색상 복원 애니메이션 재생 후 완료.
+///         애니메이션 처리는 Problem4_Step2_EffectController에 위임한다.
+/// 【패턴】 Binder/Logic 패턴의 Logic 측.
+/// 【문제/스텝】 Director 테마 / 문제4 / 스텝2 (메인 활동 - 필름 컷 편집)
+/// 【부모 클래스】 ProblemStepBase → OnStepEnter()/OnStepExit()
+/// 【참조하는 곳】 Director_Problem4_Step2 (Binder 자식 클래스)
+/// 【참조되는 곳】 IFilmCutData (컷 데이터 인터페이스), Problem4_Step2_EffectController (애니메이션),
+///               DialogueSequencer (대사/에러 메시지), StepCompletionGate (완료 판정)
+/// 【흐름】 스텝 진입 → 그레이스케일 + 등장 애니메이션 → enter 대사 →
+///         카드별 Cut/Pass 선택 → 정답: 애니메이션 → 다음 카드 / 오답: 에러 흔들림 →
+///         모든 분류 완료 → 색상 복원 → 완료 팝업 → DB 저장 → 다음 스텝
 /// </summary>
 public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
 {
+    /// <summary>각 컷의 최종 분류 결과 (DB 저장용)</summary>
     [Serializable]
     protected class CutAttemptLog
     {
-        public string cutID;
-        public string text;
-        public bool isThinking;
-        public string finalStatus;
+        public string cutID;         // 컷 고유 ID
+        public string text;          // 컷 텍스트 내용
+        public bool isThinking;      // "생각" 컷 여부
+        public string finalStatus;   // 최종 상태 ("deleted", "passed", "active", "cutting")
     }
 
+    /// <summary>사용자의 개별 행동 로그 (DB 저장용)</summary>
     [Serializable]
     protected class CutActionLog
     {
-        public string cutID;
-        public string action;
-        public bool wasCorrect;
+        public string cutID;         // 대상 컷 ID
+        public string action;        // "cut" 또는 "pass"
+        public bool wasCorrect;      // 정답 여부
     }
 
+    /// <summary>Attempt 전체 페이로드 (DB 저장용)</summary>
     [Serializable]
     protected class AttemptBody
     {
-        public CutAttemptLog[] cuts;
-        public CutActionLog[] actions;
+        public CutAttemptLog[] cuts;     // 모든 컷의 최종 상태
+        public CutActionLog[] actions;   // 모든 행동 로그
     }
 
+    /// <summary>각 컷의 현재 상태를 나타내는 열거형</summary>
     protected enum CutStatus
     {
-        ACTIVE,
-        CUTTING,
-        PASSED,
-        DELETED
+        ACTIVE,    // 아직 처리되지 않음 (현재 또는 대기 중)
+        CUTTING,   // 편집(삭제) 애니메이션 진행 중
+        PASSED,    // 통과 완료
+        DELETED    // 편집(삭제) 완료
     }
 
     // ======================

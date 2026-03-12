@@ -3,14 +3,14 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// 리워드 화면용 스파클 이펙트 (DOTween)
-/// - React RewardScreen의 Sparkles 효과 재현
-/// - 영역 내 랜덤 위치에 스파클 생성
-/// - opacity: [0, 1, 0], scale: [0, 1.5, 0], rotate: [0, 180, 360]
-/// - 무한 반복
+/// RewardParticleBurst - 리워드 화면에서 아이템 주변에 반짝이는 스파클 효과 생성기
 ///
-/// [사용처]
-/// - 리워드 화면: 아이템 주변 반짝임
+/// 【역할】 지정된 영역(spawnArea) 내 랜덤 위치에 sparkleCount개의 스파클을 생성하여
+///          opacity [0→1→0], scale [0→1.5→0], rotation [0→180→360] 패턴으로
+///          무한 반복 애니메이션한다. React RewardScreen의 Sparkles 효과를 Unity로 재현.
+/// 【사용 위치】 리워드(보상) 화면에서 획득 아이템 주변 반짝임 연출
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play()/Stop() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform(spawnArea), sparklePrefab(선택, 없으면 자동 생성)
 /// </summary>
 public class RewardParticleBurst : MonoBehaviour
 {

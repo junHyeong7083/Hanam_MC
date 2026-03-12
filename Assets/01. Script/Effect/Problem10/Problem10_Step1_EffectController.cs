@@ -4,11 +4,20 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Part 10 - Step 1 인트로 이펙트 컨트롤러
-/// - 빈 포스터 프레임 등장
-/// - 포스터 주변 반짝임 효과
-/// - 안내 텍스트 펄스
-/// - 완료 화면 (Award 아이콘 스프링 등장)
+/// Problem10_Step1_EffectController - 문제10 스텝1(포스터 완성)의 이펙트 관리자
+///
+/// 【역할】 인트로(포스터 프레임 스케일 등장+어시스턴트 말풍선), 대기(포스터 주변 반짝임+안내 텍스트 펄스),
+///          드롭 효과(하이라이트/성공), 완료 화면(Award 아이콘 스프링 회전 등장+어시스턴트 응답) 관리.
+/// 【사용 위치】 ProblemScene - Problem10 Step1 (포스터를 완성하는 드래그&드롭 스텝)
+/// 【트리거】 Logic 클래스에서 PlayIntroAnimation(), PlayDropSuccessEffect(), PlayCompleteAnimation() 등 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, 다수의 RectTransform/CanvasGroup 참조
+///
+/// 【흐름】
+/// 1. PlayIntroAnimation(): 포스터 프레임 스케일 등장 → 어시스턴트 슬라이드 업 → 대기 시작
+/// 2. 대기: 포스터 주변 순차 반짝임(Catmull-Rom 시간 오프셋) + 안내 텍스트 펄스
+/// 3. 드래그: PlayDropTargetHighlight()/Unhighlight() - 포스터 프레임 스케일 변화
+/// 4. 드롭 성공: PlayDropSuccessEffect() - 포스터 펀치 스케일
+/// 5. PlayCompleteAnimation(): 완료 카드 스케일 등장 → Award 아이콘 스프링+회전 → 어시스턴트 응답
 /// </summary>
 public class Problem10_Step1_EffectController : EffectControllerBase
 {

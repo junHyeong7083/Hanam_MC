@@ -3,11 +3,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 순서대로 카드를 하나씩 처리하는 공통 Step 베이스.
-/// - 카드 표시/처리는 자식에서 구현
-/// - 현재 카드 인덱스, 순서(_order) 관리는 여기서 담당
-/// - 카드 1장 처리 완료 시 completionGate에 1 추가
-/// - progressLabel이 있으면 "현재/전체" 형식으로 표시
+/// RandomCardSequenceStepBase - 카드를 순서대로 하나씩 처리하는 공통 Step 베이스
+///
+/// 【역할】 N장의 카드를 순서대로 하나씩 표시하고, 사용자가 각 카드를 처리(정답/분류 등)하면
+///          다음 카드로 넘어간다. 모든 카드를 처리하면 OnAllCardsProcessed()를 호출한다.
+///          진행도 라벨("현재/전체")과 completionGate를 자동 업데이트한다.
+/// 【참조하는 곳】 각 Problem Director의 카드형 스텝에서 상속
+/// 【참조되는 곳】 StepCompletionGate (완료 관리)
+/// 【흐름】 OnStepEnter() → BuildOrder() → UpdateCurrentCardUI() → 사용자 처리
+///          → CompleteCurrentCard() → 다음 카드 or OnAllCardsProcessed()
 ///
 /// 자식 클래스에서 아래를 구현하면 된다:
 /// - CardCount, OnApplyCardToUI, OnClearCurrentCardUI,
@@ -40,9 +44,12 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
     protected virtual void OnSequenceReset() { }
 
     // 내부 상태
-    protected int _currentIndex;     // 0..CardCount
-    protected int[] _order;          // 표시 순서 (logical index 배열)
+    protected int _currentIndex;     // 현재 처리 중인 카드의 순서 인덱스 (0..CardCount-1)
+    protected int[] _order;          // 카드 표시 순서 배열. _order[i]가 논리적 카드 인덱스를 가리킴
 
+    /// <summary>
+    /// 스텝 진입 시: 카드 순서 생성 → 인덱스 초기화 → 게이트 리셋 → 첫 카드 표시
+    /// </summary>
     protected override void OnStepEnter()
     {
         int total = CardCount;
@@ -134,6 +141,11 @@ public abstract class RandomCardSequenceStepBase : ProblemStepBase
         }
     }
 
+    /// <summary>
+    /// 카드 순서 배열을 생성한다. 기본 구현은 순차 (0, 1, 2, ...).
+    /// 랜덤 순서가 필요하면 이 메서드 호출 후 _order를 셔플하면 된다.
+    /// </summary>
+    /// <param name="total">전체 카드 수</param>
     private void BuildOrder(int total)
     {
         _order = new int[total];

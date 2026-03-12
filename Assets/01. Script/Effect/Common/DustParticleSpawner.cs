@@ -3,13 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 먼지 파티클 스포너
-/// - 화면 아래에서 위로 올라가는 먼지 효과
-/// - 분위기 연출용
+/// DustParticleSpawner - 화면 아래에서 위로 올라가는 먼지 파티클 효과 생성기
 ///
-/// [사용처]
-/// - Problem3 Step1: 배경 먼지 효과
-/// - 스튜디오/빈티지 분위기 연출
+/// 【역할】 지정된 영역 내에서 먼지 입자를 생성하여 아래→위로 부드럽게 이동시킨다.
+///          각 입자는 랜덤 크기/속도/좌우 드리프트를 가지며, 페이드인→유지→페이드아웃 후 자동 삭제.
+///          dustPrefab이 없으면 기본 흰색 사각 이미지를 자동 생성한다.
+/// 【사용 위치】 Problem3 Step1(배경 먼지 효과), 스튜디오/빈티지 분위기 연출
+/// 【트리거】 Start()에서 초기 파티클 생성 후 SpawnRoutine 코루틴으로 주기적 생성
+/// 【의존성】 RectTransform(spawnArea, 없으면 자기 자신 사용), dustPrefab(선택)
 /// </summary>
 public class DustParticleSpawner : MonoBehaviour
 {

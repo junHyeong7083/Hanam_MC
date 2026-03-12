@@ -3,19 +3,32 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// AdminUserBrowserUI - 관리자용 사용자 목록 브라우저의 UI 레이어 (View)
+///
+/// 【역할】 검색 입력 필드의 텍스트 변화를 감지하여 OnQueryChanged 이벤트를 발행하고,
+///         사용자 아이템 목록의 생성/삭제를 관리한다.
+///         한글 조합 중(compositionString) 실시간 검색을 지원하기 위해
+///         CompositionAdapter를 사용하여 조합 문자열을 포함한 전체 텍스트를 추출한다.
+/// 【씬】 ResultScene (관리자 결과 조회 화면)
+/// 【참조하는 곳】 AdminUserBrowserController (이벤트 구독 및 아이템 추가)
+/// 【참조되는 곳】 AdminUserItemUI (아이템 프리팹의 컴포넌트)
+/// 【흐름】 검색 입력 → Update()에서 조합 텍스트 감지 → OnQueryChanged 발행 → Controller에서 처리
+/// </summary>
 public class AdminUserBrowserUI : MonoBehaviour
 {
     [Header("Search UI")]
-    public TMP_InputField searchInput;
+    public TMP_InputField searchInput;    // 검색 입력 필드
 
     [Header("List")]
-    public Transform listRoot;
-    public GameObject itemPrefab;
+    public Transform listRoot;            // 사용자 아이템이 생성될 부모 Transform
+    public GameObject itemPrefab;         // 사용자 아이템 프리팹 (AdminUserItemUI 포함)
 
+    /// <summary>검색 텍스트 변화 시 발행되는 이벤트. 매개변수: 조합 문자열 포함 전체 텍스트</summary>
     public event Action<string> OnQueryChanged;
 
-    string _lastPushed = "";
-    CompositionAdapter _adapter = new CompositionAdapter();
+    private string _lastPushed = "";                              // 마지막으로 발행한 검색 텍스트 (중복 발행 방지)
+    private CompositionAdapter _adapter = new CompositionAdapter(); // 한글 조합 문자열 처리 어댑터
 
     void Update()
     {
@@ -30,6 +43,7 @@ public class AdminUserBrowserUI : MonoBehaviour
         }
     }
 
+    /// <summary>사용자 목록의 모든 아이템을 삭제한다</summary>
     public void ClearList()
     {
         if (!listRoot) return;
@@ -37,6 +51,11 @@ public class AdminUserBrowserUI : MonoBehaviour
             Destroy(listRoot.GetChild(i).gameObject);
     }
 
+    /// <summary>
+    /// 사용자 아이템을 목록에 추가한다.
+    /// itemPrefab에 AdminUserItemUI가 있으면 Bind()로 데이터를 설정하고,
+    /// 없으면 TMP_Text에 직접 텍스트를 설정한다.
+    /// </summary>
     public void AddItem(UserSummary u)
     {
         if (!listRoot || !itemPrefab) return;
@@ -56,6 +75,11 @@ public class AdminUserBrowserUI : MonoBehaviour
     }
 
     // ===== 내부 어댑터: TMP 버전별 프로퍼티 캡슐화 =====
+    /// <summary>
+    /// TMP_InputField의 캐럿/선택 위치 프로퍼티가 TMP 버전마다 다르므로
+    /// Reflection으로 안전하게 접근하는 어댑터.
+    /// 한글 IME 조합 중인 문자열을 InputField.text에 삽입하여 실시간 검색을 지원한다.
+    /// </summary>
     class CompositionAdapter
     {
         readonly PropertyInfo _pStringPos;

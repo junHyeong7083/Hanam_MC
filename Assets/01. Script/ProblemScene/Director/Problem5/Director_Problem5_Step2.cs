@@ -3,9 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Director / Problem5 / Step2
-/// - 인스펙터에서 장면 데이터 + UI 참조
-/// - 실제 로직은 Director_Problem5_Step2_Logic(부모)에 있음
+/// Director_Problem5_Step2 - 문제5 스텝2의 Binder (인스펙터 바인딩) 클래스.
+///
+/// 【역할】 인스펙터에서 장면 데이터(SceneData) 배열과 완료 게이트를 바인딩한다.
+///         실제 장면 아이콘 탐색/리빌 로직은 부모(Director_Problem5_Step2_Logic)에 있다.
+///         SceneData 내부 클래스가 IZoomOutSceneData를 구현하여 textId 기반으로 텍스트를 가져온다.
+/// 【패턴】 Binder/Logic 패턴의 Binder 측.
+/// 【문제/스텝】 Director 테마 / 문제5 / 스텝2 (메인 활동 - 장면 아이콘 탐색)
+/// 【부모 클래스】 Director_Problem5_Step2_Logic → ProblemStepBase
 /// </summary>
 public class Director_Problem5_Step2 : Director_Problem5_Step2_Logic
 {

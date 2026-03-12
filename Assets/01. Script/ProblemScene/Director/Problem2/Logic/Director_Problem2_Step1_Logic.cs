@@ -5,59 +5,80 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// Director / Problem2~9 / Step1 공통 로직.
-/// - DialogueSequencer 대사 → 인벤토리 드래그 → 드롭 → 완료 대사.
+/// Director_Problem2_Step1_Logic - 문제2~9 공통 스텝1 비즈니스 로직 베이스 클래스.
+///
+/// 【역할】 인트로 대사 재생 → 인벤토리에서 아이템 드래그 → 드롭 박스에 놓기 → 완료 대사.
+///         이 공통 로직을 Problem2~9의 Step1이 모두 상속하여 사용한다.
+///         인트로 애니메이션(좌/우 슬라이드인), DB 기반 인벤토리 잠금/해제,
+///         드래그 콜백 처리, 드롭 완료 시 UI 전환 등을 수행한다.
+/// 【패턴】 Binder/Logic 패턴의 Logic 측. DropBoxArea, IntroDuration 등 추상 프로퍼티.
+/// 【문제/스텝】 Director 테마 / 문제2~9 / 스텝1 (도입부 - 아이템 드래그앤드롭)
+/// 【부모 클래스】 ProblemStepBase → OnStepEnter()/OnStepExit()
+/// 【참조하는 곳】 Director_Problem2_Step1, Director_Problem3_Step1, Director_Problem4_Step1,
+///               Director_Problem5_Step1 등 (Binder 자식 클래스들)
+/// 【참조되는 곳】 DialogueSequencer (대사), StepInventory/StepInventoryItem (인벤토리 시스템),
+///               UIDropBoxArea (드롭 영역), StepCompletionGate (완료 판정),
+///               DataService (DB 인벤토리 조회)
+/// 【흐름】 스텝 진입 → 인트로 애니메이션 → enter 대사 → 대사 완료 → 인벤토리 표시 →
+///         사용자 드래그 → 드롭 박스에 놓기 → 인벤토리 숨김 → completed 대사 → 다음 스텝
 /// </summary>
 public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 {
     [Header("Drop Box 영역")]
-    protected abstract UIDropBoxArea DropBoxArea { get; }
+    protected abstract UIDropBoxArea DropBoxArea { get; }            // 아이템을 드롭할 수 있는 영역
 
     [Header("Intro Animation Roots")]
-    protected abstract RectTransform LeftEnterRoot { get; }
-    protected abstract RectTransform RightEnterRoot { get; }
+    protected abstract RectTransform LeftEnterRoot { get; }          // 왼쪽에서 슬라이드인 할 루트
+    protected abstract RectTransform RightEnterRoot { get; }         // 오른쪽에서 슬라이드인 할 루트
 
     [Header("Intro Animation Settings")]
-    protected abstract float IntroDuration { get; }
-    protected abstract float LeftStartOffsetX { get; }
-    protected abstract float RightStartOffsetX { get; }
-    protected abstract float IntroDelay { get; }
+    protected abstract float IntroDuration { get; }                  // 인트로 애니메이션 시간
+    protected abstract float LeftStartOffsetX { get; }               // 왼쪽 시작 오프셋 (음수=왼쪽)
+    protected abstract float RightStartOffsetX { get; }              // 오른쪽 시작 오프셋 (양수=오른쪽)
+    protected abstract float IntroDelay { get; }                     // 인트로 시작 전 지연 시간
 
     [Header("완료 게이트 (Next 버튼용)")]
-    protected abstract StepCompletionGate CompletionGate { get; }
+    protected abstract StepCompletionGate CompletionGate { get; }    // 드롭 완료 시 다음 스텝 진행
 
-    // ===== 드래그 상태 텍스트 (옵션) =====
-    protected virtual Text DragStateText => null;
-    protected virtual int BeforeDragTextId => 0;
-    protected virtual int AfterDragTextId => 0;
-    protected virtual Color AfterDragTextColor => Color.white;
+    // ===== 드래그 상태 텍스트 (옵션, 자식에서 override 가능) =====
+    protected virtual Text DragStateText => null;                    // 드래그 전/후 상태 표시 텍스트
+    protected virtual int BeforeDragTextId => 0;                     // 드래그 전 텍스트 ID
+    protected virtual int AfterDragTextId => 0;                      // 드래그 후 텍스트 ID
+    protected virtual Color AfterDragTextColor => Color.white;       // 드래그 후 텍스트 색상
 
     [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
+    [SerializeField] private DialogueSequencer dialogueSequencer;    // 대사 시퀀서 (enter/completed)
 
     [Header("Inventory (Step1 전용)")]
-    [SerializeField] private StepInventory stepInventory;
-    [SerializeField] private GameObject hanamBox;
+    [SerializeField] private StepInventory stepInventory;            // 스텝 전용 인벤토리 UI
+    [SerializeField] private GameObject hanamBox;                    // 하남이 대사 박스 (대사 중 표시, 인벤토리와 교대)
 
     [Header("드롭 후 전환 (옵션 - 할당 시에만 동작)")]
-    [SerializeField] private GameObject hideAfterDrop;
-    [SerializeField] private GameObject showAfterDrop;
+    [SerializeField] private GameObject hideAfterDrop;               // 드롭 완료 후 숨길 오브젝트
+    [SerializeField] private GameObject showAfterDrop;               // 드롭 완료 후 표시할 오브젝트
 
+    /// <summary>대사 재생 중 상호작용 잠금 플래그</summary>
     private bool _interactionLocked = true;
 
-    // ===== 인트로 캐시 =====
-    private bool _leftInit;
-    private bool _rightInit;
-    private Vector2 _leftBasePos;
-    private Vector2 _rightBasePos;
-    private CanvasGroup _leftCg;
-    private CanvasGroup _rightCg;
+    // ===== 인트로 애니메이션 캐시 =====
+    private bool _leftInit;           // 왼쪽 루트 초기화 여부
+    private bool _rightInit;          // 오른쪽 루트 초기화 여부
+    private Vector2 _leftBasePos;     // 왼쪽 루트 기본 위치
+    private Vector2 _rightBasePos;    // 오른쪽 루트 기본 위치
+    private CanvasGroup _leftCg;      // 왼쪽 루트 CanvasGroup (페이드용)
+    private CanvasGroup _rightCg;     // 오른쪽 루트 CanvasGroup (페이드용)
 
+    /// <summary>드롭 완료 여부 (중복 처리 방지)</summary>
     private bool _isCompleted;
 
     // =========================================
     // ProblemStepBase 구현
     // =========================================
+
+    /// <summary>
+    /// 스텝 진입 시 호출. 상태 초기화, 인트로 애니메이션 시작,
+    /// 대사 시퀀서 이벤트 바인딩을 수행한다.
+    /// </summary>
     protected override void OnStepEnter()
     {
         Debug.Log("[Step1] OnStepEnter 호출됨");
@@ -73,6 +94,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         StartCoroutine(PlayIntroAnimationRoutine());
     }
 
+    /// <summary>
+    /// enter 대사 시퀀스 완료 콜백. 하남박스를 숨기고 인벤토리를 표시하며,
+    /// 드래그 콜백을 설정하고 드래그 전 텍스트를 표시한다.
+    /// </summary>
     private void OnEnterSequenceDone()
     {
         _interactionLocked = false;
@@ -104,6 +129,11 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     // =========================================
     // 초기화
     // =========================================
+
+    /// <summary>
+    /// 전체 상태 초기화. 드롭 박스 리셋, 인벤토리 아이템 잠금/해제 설정,
+    /// 하남박스 표시, 인트로 루트 위치/투명 설정, 완료 게이트 리셋을 수행한다.
+    /// </summary>
     private void InitState()
     {
         _isCompleted = false;
@@ -159,6 +189,12 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     // =========================================
     // DB 인벤토리 조회
     // =========================================
+
+    /// <summary>
+    /// DB에서 현재 사용자가 소유한 아이템 ID 목록을 조회한다.
+    /// DataService → RewardRepository → GetInventory 경로로 조회.
+    /// </summary>
+    /// <returns>소유한 아이템 ID 집합. 실패 시 null.</returns>
     private HashSet<string> LoadOwnedItemIds()
     {
         var ds = DataService.Instance;
@@ -245,6 +281,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
         }
     }
 
+    /// <summary>
+    /// 아이템이 드롭 박스에 놓였을 때 호출. 인벤토리 숨김, 하남박스 복귀,
+    /// UI 전환, 텍스트 변경, 완료 게이트 처리, completed 대사 표시를 수행한다.
+    /// </summary>
     private void OnInventoryItemDropped(StepInventoryItem item)
     {
         item.ResetIconPosition();
@@ -284,6 +324,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     // =========================================
     // 인트로 애니메이션
     // =========================================
+    /// <summary>
+    /// 인트로 애니메이션용 루트의 초기 위치와 CanvasGroup을 설정한다.
+    /// 기본 위치를 저장하고, 오프셋 적용 + 투명으로 시작 상태를 만든다.
+    /// </summary>
     private void InitIntroRoot(
         RectTransform root,
         ref bool inited,
@@ -308,6 +352,10 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
             cg.alpha = 0f;
     }
 
+    /// <summary>
+    /// 좌/우 루트를 오프셋에서 기본 위치로 슬라이드인하면서 페이드인하는 인트로 애니메이션 코루틴.
+    /// SmoothStep 보간으로 부드러운 등장 효과를 제공한다.
+    /// </summary>
     private IEnumerator PlayIntroAnimationRoutine()
     {
         var leftRoot = LeftEnterRoot;

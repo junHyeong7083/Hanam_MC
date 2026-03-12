@@ -2,24 +2,42 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Director_Problem2_Step3_Logic - 문제2 스텝3의 비즈니스 로직 베이스 클래스.
+///
+/// 【역할】 NG 문장을 OK 문장으로 "재촬영(Refilm)"하는 활동을 담당한다.
+///         사용자가 관점 선택 버튼 중 하나를 고른 후 마이크로 해당 텍스트를 읽으면(STT),
+///         NG 씬 카드가 OK 씬 카드로 전환되고 완료 처리된다.
+///         STT 실패 시 재시도 안내 텍스트를 표시한다.
+/// 【패턴】 Binder/Logic 패턴의 Logic 측.
+/// 【문제/스텝】 Director 테마 / 문제2 / 스텝3 (마무리 - 재촬영 활동)
+/// 【부모 클래스】 ProblemStepBase → OnStepEnter()/OnStepExit()
+/// 【참조하는 곳】 Director_Problem2_Step3 (Binder 자식 클래스)
+/// 【참조되는 곳】 DialogueSequencer (대사), MicRecordingIndicator (STT),
+///               StepCompletionGate (완료 판정)
+/// 【흐름】 스텝 진입 → enter 대사 → 관점 선택 → 마이크 버튼 표시 → STT 녹음 →
+///         키워드 매칭 성공 → NG→OK 전환 → completed 대사 → DB 저장 → 다음 스텝
+/// </summary>
 public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 {
+    /// <summary>관점 선택 슬롯 데이터. 버튼, 아웃라인, 텍스트, textId를 포함한다.</summary>
     [Serializable]
     public class SelectionSlot
     {
-        public Button button;
-        public GameObject outline;
-        public Text text;
-        public int textId;
+        public Button button;          // 선택 버튼
+        public GameObject outline;     // 선택 시 표시되는 아웃라인 오브젝트
+        public Text text;             // 관점 텍스트 UI
+        public int textId;            // CSV textId (텍스트 내용 + STT 키워드)
     }
 
+    /// <summary>재촬영 결과 DB 저장용 페이로드</summary>
     [Serializable]
     private class RefilmLogPayload
     {
-        public string ngText;
-        public int selectedId;
-        public string selectedText;
-        public bool recorded;
+        public string ngText;          // NG 문장 원문
+        public int selectedId;         // 선택된 슬롯 인덱스
+        public string selectedText;    // 선택된 관점 텍스트
+        public bool recorded;          // STT 녹음 완료 여부
     }
 
     // ===== Data =====

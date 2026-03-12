@@ -2,13 +2,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 범용 Glow 이펙트 (DOTween)
-/// - 스케일 펄스 (X, Y, XY 선택)
-/// - 알파 페이드 (min~max)
-/// - 무한 반복
+/// GlowEffect - DOTween 기반 범용 글로우(발광) 이펙트 컴포넌트
 ///
-/// [사용처]
-/// - 아이콘 강조, 버튼 하이라이트, 걱정등불 등
+/// 【역할】 스케일 펄스(X/Y/XY 축 선택)와 알파 페이드(min↔max)를 조합하여
+///          오브젝트에 반복적인 발광/강조 효과를 적용한다. 무한 반복 루프.
+/// 【사용 위치】 아이콘 강조, 버튼 하이라이트, 걱정등불, 아이템 글로우 등 범용
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play()/Stop() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform(스케일), CanvasGroup(알파)
 /// </summary>
 public class GlowEffect : MonoBehaviour
 {

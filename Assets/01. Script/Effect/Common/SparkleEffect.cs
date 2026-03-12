@@ -2,14 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 스파클(반짝임) 효과 - 개별 스파클 오브젝트에 부착
-/// - opacity, scale, rotation 동시 애니메이션
-/// - 여러 개를 배치하고 delay를 다르게 설정하면 TS처럼 순차적 반짝임
+/// SparkleEffect - 개별 스파클 오브젝트에 부착하여 반짝임 애니메이션을 적용하는 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step1: 마음 렌즈 아이템의 스파클 아이콘들
-/// - 인벤토리 아이템 강조
-/// - 보상 획득 시 이펙트
+/// 【역할】 Update에서 수동으로 opacity/scale/rotation을 동시에 애니메이션한다.
+///          패턴: 0→1→0 (페이드인→페이드아웃), 회전은 0→360 선형.
+///          여러 개를 배치하고 delay를 다르게 설정하면 순차적 반짝임 효과 구현 가능.
+/// 【사용 위치】 Problem2 Step1(마음 렌즈 스파클 아이콘), 인벤토리 아이템 강조, 보상 획득 이펙트
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play()/Stop() 호출
+/// 【의존성】 RectTransform(스케일/회전), Graphic(Image/Text 등 - 알파 제어)
 /// </summary>
 public class SparkleEffect : MonoBehaviour
 {

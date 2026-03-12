@@ -3,10 +3,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 인트로 요소 애니메이션
-/// - EffectController 인트로 연출처럼 슬라이드 + 페이드
-/// - 개별 오브젝트에 붙여서 사용
-/// - 외부에서 Play() 호출하거나 playOnEnable로 자동 재생
+/// IntroElement - 개별 오브젝트에 부착하여 사용하는 인트로 등장 애니메이션 컴포넌트
+///
+/// 【역할】 슬라이드/페이드/스케일/날라오기(FlyIn-Catmull-Rom 곡선) 등 다양한 등장 연출 제공.
+///          EffectControllerBase의 IntroElement 시스템과 유사하지만, 개별 오브젝트에 독립적으로 부착 가능.
+///          Catmull-Rom 스플라인으로 경유점을 지나는 곡선 경로 이동도 지원.
+/// 【사용 위치】 UI 요소의 개별 등장 연출이 필요한 곳 (스텝 진입 시 순차 등장 등)
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform, CanvasGroup(페이드 사용 시 자동 추가)
 /// </summary>
 public class IntroElement : MonoBehaviour
 {

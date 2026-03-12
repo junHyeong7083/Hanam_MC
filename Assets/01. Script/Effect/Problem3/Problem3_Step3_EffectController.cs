@@ -4,10 +4,13 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Problem3 Step3: Effect Controller
-/// - 객관식 문제의 이펙트 시퀀스 관리
-/// - 힌트 페이드, 정답 효과, 문제 등장 애니메이션 등
-/// - 로직과 애니메이션 분리를 위한 중앙 관리자
+/// Problem3_Step3_EffectController - 문제3 스텝3(객관식 퀴즈)의 이펙트 시퀀스 관리자
+///
+/// 【역할】 힌트 텍스트 표시→자동 페이드아웃, 정답 시 이미지 드롭 애니메이션(위→아래 바운스),
+///          문제 등장 페이드인 등을 관리. 힌트 시퀀스는 문제 등장과 독립 동작.
+/// 【사용 위치】 ProblemScene - Problem3 Step3 (객관식 퀴즈 스텝)
+/// 【트리거】 Logic 클래스에서 PlayHintSequence(), PlayDropAnimation(), PlayQuestionAppear() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, hintRoot/dropImage 등 인스펙터 참조
 /// </summary>
 public class Problem3_Step3_EffectController : EffectControllerBase
 {

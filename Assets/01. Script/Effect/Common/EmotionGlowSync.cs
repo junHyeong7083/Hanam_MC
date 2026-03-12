@@ -2,17 +2,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 스프라이트 색상을 글로우 셰이더에 동기화
-/// - spriteImage의 색상을 glowImage 머티리얼에 적용
-/// - 머티리얼 인스턴스로 각 오브젝트별 독립 색상
+/// EmotionGlowSync - 스프라이트 색상을 글로우 셰이더 머티리얼에 자동 동기화하는 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step2: 감정 조명 글로우
+/// 【역할】 spriteImage(원형 감정 조명)의 색상을 glowImage의 셰이더 머티리얼 프로퍼티에 실시간 반영.
+///          머티리얼 인스턴스를 생성하여 여러 감정 조명이 독립적인 색상을 가질 수 있도록 처리.
+///          GlowImage의 종횡비(Aspect)도 자동 계산하여 셰이더에 전달.
+/// 【사용 위치】 Problem2 Step2(감정 조명 글로우) - EmotionLight 오브젝트에 부착
+/// 【트리거】 OnEnable/Start에서 자동 동기화, 또는 외부에서 SyncColor()/SetColor() 호출
+/// 【의존성】 spriteImage(색상 소스 Image), glowImage(셰이더 적용 대상 Image),
+///          OuterGlow 또는 EmotionPulse 커스텀 셰이더
 ///
-/// [구조]
-/// EmotionLight (빈 오브젝트 + 이 스크립트)
-/// ├── SpriteImage (원형 스프라이트)
-/// └── GlowImage (OuterGlow 머티리얼)
+/// 【계층 구조】
+/// EmotionLight (이 스크립트)
+/// ├── SpriteImage (원형 스프라이트 - 색상 소스)
+/// └── GlowImage (OuterGlow 머티리얼 - 글로우 효과)
 /// </summary>
 public class EmotionGlowSync : MonoBehaviour
 {

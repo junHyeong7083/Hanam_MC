@@ -2,44 +2,44 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 오브젝트 등장 애니메이션
-/// - 슬라이드 + 페이드인 + 스케일
-/// - 4방향 슬라이드 지원 (Left, Right, Top, Bottom)
-/// - 순차 등장을 위한 딜레이 지원
+/// AppearAnimation - UI 오브젝트 등장 시 슬라이드 + 페이드인 + 스케일 애니메이션을 재생하는 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step2: 필름 카드 순차 등장
-/// - Problem3 Step1: 캐릭터(Left), 말풍선(Top), 책(Bottom)
-/// - 버튼, 카드, UI 요소 등장
+/// 【역할】 오브젝트가 활성화될 때 지정된 방향에서 슬라이드하며 나타나는 등장 연출 제공
+///          슬라이드/페이드/스케일 각각을 개별 토글로 조합 가능
+/// 【사용 위치】 Problem2 Step2(필름 카드 순차 등장), Problem3 Step1(캐릭터/말풍선/책),
+///              버튼, 카드, UI 요소 등 다양한 등장 연출에 범용 사용
+/// 【트리거】 OnEnable 시 자동 재생, 또는 외부에서 Replay() 호출
+/// 【의존성】 DOTween(DG.Tweening), RectTransform, CanvasGroup(페이드 사용 시 자동 추가)
 /// </summary>
 public class AppearAnimation : MonoBehaviour
 {
+    /// <summary>슬라이드 진입 방향 (아래/위/왼쪽/오른쪽)</summary>
     public enum SlideDirection { Bottom, Top, Left, Right }
 
     [Header("===== 애니메이션 설정 =====")]
-    [SerializeField] private float delay = 0f;
-    [SerializeField] private float duration = 0.4f;
+    [SerializeField] private float delay = 0f;           // 재생 전 대기 시간 (순차 등장 시 사용)
+    [SerializeField] private float duration = 0.4f;       // 전체 애니메이션 재생 시간
 
     [Header("위치")]
-    [SerializeField] private bool enableSlide = true;
-    [SerializeField] private SlideDirection slideFrom = SlideDirection.Bottom;
-    [SerializeField] private float slideDistance = 50f;
+    [SerializeField] private bool enableSlide = true;     // 슬라이드 이동 활성화 여부
+    [SerializeField] private SlideDirection slideFrom = SlideDirection.Bottom;  // 어느 방향에서 슬라이드할지
+    [SerializeField] private float slideDistance = 50f;    // 슬라이드 이동 거리 (px)
 
     [Header("페이드")]
-    [SerializeField] private bool enableFade = true;
+    [SerializeField] private bool enableFade = true;      // 알파 페이드인 활성화 여부
 
     [Header("스케일")]
-    [SerializeField] private bool enableScale = false;
-    [SerializeField] private float startScale = 0.8f;
+    [SerializeField] private bool enableScale = false;    // 스케일 애니메이션 활성화 여부
+    [SerializeField] private float startScale = 0.8f;     // 시작 스케일 (1.0이 원래 크기)
 
     [Header("Easing")]
-    [SerializeField] private Ease easeType = Ease.OutQuad;
+    [SerializeField] private Ease easeType = Ease.OutQuad; // 애니메이션 이징 타입
 
-    // 내부
-    private RectTransform _rectTransform;
-    private CanvasGroup _canvasGroup;
-    private Vector2 _targetPosition;
-    private Sequence _sequence;
+    // 내부 상태
+    private RectTransform _rectTransform;     // 이 오브젝트의 RectTransform
+    private CanvasGroup _canvasGroup;         // 페이드용 CanvasGroup (자동 추가)
+    private Vector2 _targetPosition;          // 애니메이션 목표 위치 (원래 위치)
+    private Sequence _sequence;               // 현재 실행 중인 DOTween Sequence
 
     private void Awake()
     {
@@ -102,6 +102,10 @@ public class AppearAnimation : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// DOTween Sequence를 구성하여 등장 애니메이션을 재생한다.
+    /// 딜레이 → 슬라이드 → 페이드 → 스케일 순서로 Append/Join 한다.
+    /// </summary>
     private void PlayAnimation()
     {
         KillSequence();

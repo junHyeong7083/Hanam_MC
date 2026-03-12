@@ -3,9 +3,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Problem4 Step3: Effect Controller
-/// - 질문 카드 필름 애니메이션 (Right→Center 등장, Center→Left 퇴장)
-/// - 스텝 등장 애니메이션
+/// Problem4_Step3_EffectController - 문제4 스텝3(질문 응답)의 이펙트 관리자
+///
+/// 【역할】 질문 카드의 필름 스타일 좌우 이동 애니메이션(Right→Center 등장, Center→Left 퇴장)과,
+///          스텝 전체의 순차 등장 애니메이션(필름 카드→입력 패널)을 관리한다.
+///          질문 카드는 별도 시퀀스로 메인 시퀀스와 독립 동작.
+/// 【사용 위치】 ProblemScene - Problem4 Step3 (질문에 대한 응답을 입력하는 스텝)
+/// 【트리거】 Logic 클래스에서 PlayQuestionEnter/Exit(), PlayStepAppearAnimation() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, questionCardRect, filmCardRect, inputPanelRect 등
 /// </summary>
 public class Problem4_Step3_EffectController : EffectControllerBase
 {

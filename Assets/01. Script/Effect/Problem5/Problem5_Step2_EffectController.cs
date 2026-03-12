@@ -1,9 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// Problem5 Step2: Effect Controller
-/// - 팝업 애니메이션은 PopupImageDisplay가 담당
-/// - 추가 이펙트 필요 시 여기에 구현
+/// Problem5_Step2_EffectController - 문제5 스텝2의 이펙트 관리자 (확장용 껍데기)
+///
+/// 【역할】 현재 팝업 애니메이션은 PopupImageDisplay 컴포넌트가 전담 처리.
+///          추가 시각 효과가 필요할 때 이 클래스에 구현하면 된다.
+/// 【사용 위치】 ProblemScene - Problem5 Step2
+/// 【트리거】 Logic 클래스에서 ResetAll() 등 호출
+/// 【의존성】 EffectControllerBase(상속)
 /// </summary>
 public class Problem5_Step2_EffectController : EffectControllerBase
 {

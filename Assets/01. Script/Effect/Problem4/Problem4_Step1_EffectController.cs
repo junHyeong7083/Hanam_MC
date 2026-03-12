@@ -3,16 +3,18 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Problem4 Step1: Effect Controller
-/// - 인벤토리에서 '가위' 드래그하여 필름에 드롭하는 이펙트 시퀀스 관리
-/// - 드롭 인디케이터, 활성화 애니메이션, 완료 스파클 등 타이밍 조율
-/// - 로직과 애니메이션 분리를 위한 중앙 관리자
+/// Problem4_Step1_EffectController - 문제4 스텝1(인벤토리 드래그&드롭)의 이펙트 시퀀스 관리자
 ///
-/// 흐름:
-/// 1. 드래그 시작 → 드롭 인디케이터 표시 (DropZoneIndicator가 펄스 처리)
-/// 2. 드롭 성공 → 필름 활성화 애니메이션 (스케일 업/다운)
-/// 3. 활성화 완료 → 완료 스파클 표시
-/// 4. 딜레이 후 → 완료 콜백
+/// 【역할】 인벤토리에서 '가위'를 드래그하여 필름에 드롭하는 과정의 시각 효과 관리.
+///          드롭 인디케이터 표시/숨김, 드롭 성공 시 필름 활성화 애니메이션, 완료 스파클 등장.
+/// 【사용 위치】 ProblemScene - Problem4 Step1 (인벤토리 아이템 드래그&드롭 스텝)
+/// 【트리거】 Logic 클래스에서 ShowDropIndicator(), PlayActivateSequence() 등 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, dropIndicatorRoot, filmVisualRoot, completionSparkle
+///
+/// 【흐름】
+/// 1. 드래그 시작 → ShowDropIndicator() (DropZoneIndicator가 펄스 처리)
+/// 2. 드롭 성공 → PlayActivateSequence(): 안내 텍스트 페이드아웃 → 필름 스케일 업/다운 → 스파클
+/// 3. 다음 단계 → ResetForNextStep()으로 초기화
 /// </summary>
 public class Problem4_Step1_EffectController : EffectControllerBase
 {

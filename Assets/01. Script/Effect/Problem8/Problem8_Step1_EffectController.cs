@@ -4,12 +4,18 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Part 8 - Step 1 스토리보드 인트로 이펙트 컨트롤러
-/// - 어시스턴트 말풍선 슬라이드 업 + 페이드
-/// - 스토리보드 테이블 등장
-/// - 프롬프트 텍스트 펄스
-/// - 스토리보드 플로팅 + NEW 뱃지
-/// - 스토리보드 클릭 시 플립 애니메이션
+/// Problem8_Step1_EffectController - 문제8 스텝1(스토리보드 발견)의 이펙트 관리자
+///
+/// 【역할】 인트로 등장(말풍선 슬라이드+테이블 등장), 대기 애니메이션(프롬프트 펄스/스토리보드 플로팅/
+///          NEW 뱃지 스케일), 스토리보드 클릭 시 3D 플립+확인 메시지 등 복합 이펙트 관리.
+/// 【사용 위치】 ProblemScene - Problem8 Step1 (스토리보드 발견 스텝)
+/// 【트리거】 Logic 클래스에서 PlayIntroAnimation(), PlayStoryboardFlip() 등 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, 다수의 RectTransform/CanvasGroup 참조
+///
+/// 【흐름】
+/// 1. PlayIntroAnimation(): 말풍선 슬라이드 업 → 스토리보드 테이블 등장 → 대기 애니메이션 시작
+/// 2. 대기: 프롬프트 텍스트 알파 펄스 + 스토리보드 플로팅 + NEW 뱃지 스케일 펄스
+/// 3. PlayStoryboardFlip(): 대기 정지 → 스케일 펀치 + Y축 360도 회전 → 확인 메시지 팝업
 /// </summary>
 public class Problem8_Step1_EffectController : EffectControllerBase
 {

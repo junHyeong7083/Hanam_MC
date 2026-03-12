@@ -4,39 +4,58 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// ë¬¸ì œ3ìš© ê°ê´€ì‹ ë¬¸ì œ ë°ì´í„° ì¸í„°í˜ì´ìŠ¤.
+/// ë¬¸ì œ ID, ì§ˆë¬¸ í…ìŠ¤íŠ¸, ë³´ê¸° ëª©ë¡, ì •ë‹µ ì¸ë±ìŠ¤, ì˜¤ë‹µ íŒíŠ¸ë¥¼ ì •ì˜í•œë‹¤.
+/// </summary>
 public interface Problem3_Question
 {
-    string Id { get; }
-    string QuestionText { get; }
-    string[] Options { get; }
-    int CorrectIndex { get; }
-    string[] WrongHints { get; }
+    string Id { get; }             // ë¬¸ì œ ID (ë¡œê·¸ìš©)
+    string QuestionText { get; }   // ì§ˆë¬¸ í…ìŠ¤íŠ¸
+    string[] Options { get; }      // ë³´ê¸° í…ìŠ¤íŠ¸ ë°°ì—´
+    int CorrectIndex { get; }      // ì •ë‹µ ì¸ë±ìŠ¤ (0-based)
+    string[] WrongHints { get; }   // ê° ë³´ê¸°ë³„ ì˜¤ë‹µ íŒíŠ¸ (ì •ë‹µ ì¸ë±ìŠ¤ í¬í•¨, í•´ë‹¹ í•­ëª©ì€ ì‚¬ìš© ì•ˆ ë¨)
 }
 
 /// <summary>
-/// Director / Problem3 / Step3 Àü¿ë °øÅë º£ÀÌ½º
-/// - MultipleChoiceStepBase<TQuestion> À§¿¡ ¾ñ¾î¼­
-///   ÈùÆ® UI / ¹öÆ° »ö / Attempt ÀúÀå±îÁö ÇÑ ¹ø¿¡ Ã³¸®.
-/// - ½ÇÁ¦ Step3 ÂÊ¿¡¼­´Â Áú¹® ¹è¿­ + ÇÊµå¸¸ °¡Áö°í ÀÖ°í,
-///   ÀÌ º£ÀÌ½º°¡ ÀüºÎ Ã³¸®ÇØ ÁÜ.
+/// Director / Problem3 / Step3 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½
+/// - MultipleChoiceStepBase<TQuestion> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î¼­
+///   ï¿½ï¿½Æ® UI / ï¿½ï¿½Æ° ï¿½ï¿½ / Attempt ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
+/// - ï¿½ï¿½ï¿½ï¿½ Step3 ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ + ï¿½Êµå¸¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½,
+///   ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
+/// </summary>
+/// <summary>
+/// Problem3_MultipleChoiceStepBase - ë¬¸ì œ3ìš© ê°ê´€ì‹ ìŠ¤í… ë² ì´ìŠ¤ í´ë˜ìŠ¤.
+///
+/// ã€ì—­í• ã€‘ MultipleChoiceStepBaseë¥¼ ìƒì†í•˜ì—¬ íŒíŠ¸ UI, ë²„íŠ¼ ìƒ‰ìƒ, Attempt ë¡œê·¸ ì €ì¥ ë“±
+///         ë¬¸ì œ3ì— íŠ¹í™”ëœ ê³µí†µ ì²˜ë¦¬ë¥¼ ì œê³µí•œë‹¤.
+///         - ë¬¸ì œ í‘œì‹œ: questionLabel + optionButtons/optionLabels ìë™ ì„¤ì •
+///         - ì •ë‹µ ì²˜ë¦¬: ì •ë‹µ ë²„íŠ¼ ìƒ‰ìƒ ë³€ê²½ + ë‚˜ë¨¸ì§€ ë¹„í™œì„±í™” + íŒíŠ¸ ìˆ¨ê¹€
+///         - ì˜¤ë‹µ ì²˜ë¦¬: íŒíŠ¸ í…ìŠ¤íŠ¸ í‘œì‹œ + CanvasGroup í˜ì´ë“œì•„ì›ƒ
+///         - Attempt ë¡œê·¸: SaveAttempt()ë¡œ DB ì €ì¥
+/// ã€íŒ¨í„´ã€‘ ì œë„¤ë¦­ abstract í´ë˜ìŠ¤. TQuestionì€ Problem3_Question ì¸í„°í˜ì´ìŠ¤ êµ¬í˜„ í•„ìš”.
+/// ã€ë¬¸ì œ/ìŠ¤í…ã€‘ Director í…Œë§ˆ / ë¬¸ì œ3ì—ì„œ ì‚¬ìš©
+/// ã€ë¶€ëª¨ í´ë˜ìŠ¤ã€‘ MultipleChoiceStepBase â†’ ProblemStepBase
+/// ã€ì°¸ì¡°í•˜ëŠ” ê³³ã€‘ Director_Problem3_Step3 (êµ¬ì²´ ìì‹ í´ë˜ìŠ¤)
 /// </summary>
 public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
     : MultipleChoiceStepBase<TQuestion>
     where TQuestion : class, Problem3_Question
 {
+    /// <summary>ê°œë³„ ë¬¸ì œ ì‹œë„ ê²°ê³¼ë¥¼ DBì— ì €ì¥í•˜ê¸° ìœ„í•œ ë°ì´í„° êµ¬ì¡°</summary>
     [Serializable]
     protected class QuestionAttemptBody
     {
-        public string stepKey;
-        public string questionId;
-        public int questionIndex;
-        public int selectedOptionIndex;
-        public string selectedOptionText;
-        public bool isCorrect;
-        public DateTime answeredAt;
+        public string stepKey;               // í˜„ì¬ ìŠ¤í… í‚¤
+        public string questionId;            // ë¬¸ì œ ID
+        public int questionIndex;            // ë¬¸ì œ ì¸ë±ìŠ¤
+        public int selectedOptionIndex;      // ì„ íƒí•œ ì˜µì…˜ ì¸ë±ìŠ¤
+        public string selectedOptionText;    // ì„ íƒí•œ ì˜µì…˜ í…ìŠ¤íŠ¸
+        public bool isCorrect;              // ì •ë‹µ ì—¬ë¶€
+        public DateTime answeredAt;          // ì‘ë‹µ ì‹œê° (UTC)
     }
 
-    // ====== ÀÚ½ÄÀÌ ½ÇÁ¦ ÇÊµå¸¦ °¡Áö°í ÀÖ°í, ¿©±â¼± ÇÁ·ÎÆÛÆ¼·Î¸¸ Á¢±Ù ======
+    // ====== ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Êµå¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½, ï¿½ï¿½ï¿½â¼± ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ======
     protected abstract GameObject HintRoot { get; }
     protected abstract Text HintLabel { get; }
     protected abstract CanvasGroup HintCanvasGroup { get; }
@@ -48,13 +67,13 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
     private Coroutine _hintRoutine;
 
     // =======================
-    // MultipleChoiceStepBase ±¸Çö
+    // MultipleChoiceStepBase ï¿½ï¿½ï¿½ï¿½
     // =======================
 
     /// <summary>
-    /// ÇöÀç ¹®Ç×À» UI¿¡ Àû¿ë.
-    /// - questionLabel / optionButtons / optionLabels ´Â »ó¼Ó ÇÊµå »ç¿ë.
-    /// - ÈùÆ® UI ÃÊ±âÈ­.
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    /// - questionLabel / optionButtons / optionLabels ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Êµï¿½ ï¿½ï¿½ï¿½.
+    /// - ï¿½ï¿½Æ® UI ï¿½Ê±ï¿½È­.
     /// </summary>
     protected override void ApplyQuestionUI(int index, TQuestion q)
     {
@@ -64,14 +83,14 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
             return;
         }
 
-        // Áú¹® ÅØ½ºÆ®
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
         if (questionLabel != null)
             questionLabel.text = q.QuestionText;
 
-        // ÈùÆ® ÃÊ±âÈ­
+        // ï¿½ï¿½Æ® ï¿½Ê±ï¿½È­
         ResetHintImmediate();
 
-        // º¸±â ¹öÆ° ¼¼ÆÃ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½
         if (optionButtons == null) return;
 
         var options = q.Options ?? Array.Empty<string>();
@@ -93,14 +112,14 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
 
                 string optionText = options[i];
 
-                // 1¼øÀ§: ÀÎ½ºÆåÅÍ¿¡¼­ ¿¬°áÇÑ label
+                // 1ï¿½ï¿½ï¿½ï¿½: ï¿½Î½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ label
                 if (label != null)
                 {
                     label.text = optionText;
                 }
                 else
                 {
-                    // 2¼øÀ§: Button ÀÚ½ÄÀÇ Text
+                    // 2ï¿½ï¿½ï¿½ï¿½: Button ï¿½Ú½ï¿½ï¿½ï¿½ Text
                     var childText = btn.GetComponentInChildren<Text>();
                     if (childText != null)
                     {
@@ -108,7 +127,7 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
                     }
                     else
                     {
-                        // 3¼øÀ§: TMP_Text »ç¿ë ½Ã
+                        // 3ï¿½ï¿½ï¿½ï¿½: TMP_Text ï¿½ï¿½ï¿½ ï¿½ï¿½
                         var tmp = btn.GetComponentInChildren<TMP_Text>();
                         if (tmp != null)
                             tmp.text = optionText;
@@ -117,13 +136,13 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
             }
             else
             {
-                // »ç¿ëÇÏÁö ¾Ê´Â ¹öÆ°Àº ¼û±è
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 btn.gameObject.SetActive(false);
             }
         }
     }
 
-    /// <summary>ÇöÀç ¹®Ç×ÀÇ Á¤´ä ÀÎµ¦½º ¹İÈ¯</summary>
+    /// <summary>ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½È¯</summary>
     protected override int GetCorrectOptionIndex(TQuestion q)
     {
         if (q == null) return -1;
@@ -131,8 +150,8 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
     }
 
     /// <summary>
-    /// »ç¿ëÀÚ°¡ º¸±â ÇÏ³ª¸¦ Å¬¸¯ÇßÀ» ¶§ È£ÃâµÊ.
-    /// - Attempt ·Î±ë¸¸ ´ã´ç (Á¤´ä/¿À´ä Ã³¸®, ´ÙÀ½ ¹®Á¦ ÀÌµ¿Àº HandleCorrect/HandleWrong¿¡¼­).
+    /// ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ï¿½.
+    /// - Attempt ï¿½Î±ë¸¸ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ HandleCorrect/HandleWrongï¿½ï¿½ï¿½ï¿½).
     /// </summary>
     protected override void OnQuestionAttempted(TQuestion q, int optionIndex, bool isCorrect)
     {
@@ -163,15 +182,15 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
     }
 
     /// <summary>
-    /// Á¤´ä Å¬¸¯ ½Ã Ã³¸®.
-    /// - ¹öÆ° »ö/ÀÎÅÍ·¢¼Ç Ã³¸®
-    /// - ÈùÆ® ¼û±è
-    /// - hideRootOnCorrect ¿É¼Ç Ã³¸®
-    /// - Gate Ä«¿îÆ® + ´ÙÀ½ ¹®Ç× or Á¾·á
+    /// ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½.
+    /// - ï¿½ï¿½Æ° ï¿½ï¿½/ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+    /// - ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+    /// - hideRootOnCorrect ï¿½É¼ï¿½ Ã³ï¿½ï¿½
+    /// - Gate Ä«ï¿½ï¿½Æ® + ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ or ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     protected override void HandleCorrect(int optionIndex)
     {
-        // ÇöÀç ¹®Ç×ÀÇ ¹öÆ° »óÅÂ Á¤¸®
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < optionButtons.Length; i++)
         {
             var btn = optionButtons[i];
@@ -183,12 +202,12 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
             {
                 if (i == optionIndex)
                 {
-                    // Á¤´ä ¹öÆ°Àº optionCorrectColor »ç¿ë (º£ÀÌ½º ÇÊµå)
+                    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ optionCorrectColor ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½Êµï¿½)
                     img.color = optionCorrectColor;
                 }
                 else
                 {
-                    // ³ª¸ÓÁö´Â ºñÈ°¼º ´À³¦
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                     img.color = DisabledColor;
                 }
             }
@@ -196,25 +215,25 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
             btn.interactable = false;
         }
 
-        // ÈùÆ® ¼û±â±â
+        // ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½
         ResetHintImmediate();
 
-        // Á¤´ä ½Ã ·çÆ® ÀüÃ¼¸¦ ¼û±â°í ½ÍÀ» ¶§
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         if (HideRootOnCorrect != null)
             HideRootOnCorrect.SetActive(false);
 
-        // Gate 1 Áõ°¡
+        // Gate 1 ï¿½ï¿½ï¿½ï¿½
         if (completionGate != null)
             completionGate.MarkOneDone();
 
-        // ´ÙÀ½ ¹®Ç×À¸·Î ³Ñ¾î°¡°Å³ª, ¸¶Áö¸·ÀÌ¸é Á¾·á
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¡ï¿½Å³ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         GoNextQuestionOrFinish();
     }
 
     /// <summary>
-    /// ¿À´ä Å¬¸¯ ½Ã Ã³¸®.
-    /// - ¹öÆ° »öÀº ¹Ù²ÙÁö ¾Ê°í
-    /// - ÈùÆ® ÅØ½ºÆ®¸¦ Àá±ñ º¸¿©ÁÖ°í Fade Out.
+    /// ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½.
+    /// - ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½
+    /// - ï¿½ï¿½Æ® ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½ Fade Out.
     /// </summary>
     protected override void HandleWrong(int optionIndex)
     {
@@ -234,7 +253,7 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
         }
 
         if (string.IsNullOrEmpty(hint))
-            hint = "Á¶±İ¸¸ ´õ »ı°¢ÇØº¼±î¿ä? È­¸é¿¡ ³ª¿Â ´Ü¼­¸¦ ´Ù½Ã ¶°¿Ã·Áº¸¼¼¿ä.";
+            hint = "ï¿½ï¿½ï¿½İ¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½? È­ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¼ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.";
 
         if (HintLabel != null)
             HintLabel.text = hint;
@@ -245,7 +264,7 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
         var cg = HintCanvasGroup;
         if (cg != null)
         {
-            // ¹Ù·Î 1·Î ¼¼ÆÃ ÈÄ ÄÚ·çÆ¾¿¡¼­ ÆäÀÌµå
+            // ï¿½Ù·ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½
             cg.alpha = 1f;
 
             if (_hintRoutine != null)
@@ -256,12 +275,12 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
     }
 
     /// <summary>
-    /// ¸ğµç ¹®Ç×À» ´Ù Ç®¾úÀ» ¶§ È£Ãâ.
-    /// - Áö±İÀº º°µµ Ã³¸® ¾øÀ½. ÇÊ¿äÇÏ¸é override ÇØ¼­ »ç¿ë.
+    /// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½.
+    /// - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½Ê¿ï¿½ï¿½Ï¸ï¿½ override ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½.
     /// </summary>
     protected override void OnAllQuestionsCompleted()
     {
-        // ÇÊ¿äÇÏ¸é ÀÚ½Ä Å¬·¡½º¿¡¼­ override
+        // ï¿½Ê¿ï¿½ï¿½Ï¸ï¿½ ï¿½Ú½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ override
     }
 
     protected override void OnStepExit()
@@ -278,7 +297,7 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
     }
 
     // =======================
-    // ÈùÆ® ÄÚ·çÆ¾/À¯Æ¿
+    // ï¿½ï¿½Æ® ï¿½Ú·ï¿½Æ¾/ï¿½ï¿½Æ¿
     // =======================
 
     private IEnumerator HintFadeRoutine()
@@ -290,7 +309,7 @@ public abstract class Problem3_MultipleChoiceStepBase<TQuestion>
         float showDuration = Mathf.Max(0f, HintShowDuration);
         float fadeDuration = Mathf.Max(0f, HintFadeDuration);
 
-        // Àá±ñ º¸¿©ÁÖ±â
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
         if (showDuration > 0f)
             yield return new WaitForSeconds(showDuration);
 

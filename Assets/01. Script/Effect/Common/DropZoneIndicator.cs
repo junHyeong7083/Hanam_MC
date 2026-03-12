@@ -2,15 +2,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 드롭 영역 시각적 표시
-/// - 이 스크립트가 붙은 오브젝트 자체를 애니메이션
-/// - 알파 + 스케일 펄스 지원
-/// - 드롭 체크는 InventoryDropTargetStepBase에서 처리
+/// DropZoneIndicator - 드래그-드롭 타겟 영역의 시각적 펄스 표시 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step1: UIDropBoxArea.outline 오브젝트에 부착
-/// - Problem3 Step1: 시나리오 책 드롭 존
-/// - 모든 드래그-드롭 스텝의 타겟 영역
+/// 【역할】 드롭 가능 영역을 알파 및/또는 스케일 펄스로 시각적으로 강조한다.
+///          사인파 기반으로 min↔max 사이를 부드럽게 반복하여 "여기에 드롭하세요" 느낌 전달.
+///          드롭 판정 자체는 InventoryDropTargetStepBase에서 별도 처리.
+/// 【사용 위치】 Problem2 Step1(UIDropBoxArea.outline), Problem3 Step1(시나리오 책 드롭 존),
+///              모든 드래그-드롭 스텝의 타겟 영역 (outline 오브젝트에 부착)
+/// 【트리거】 OnEnable 시 자동 시작, OnDisable 시 원래 상태 복원
+/// 【의존성】 Image(RequireComponent), RectTransform
 /// </summary>
 [RequireComponent(typeof(Image))]
 public class DropZoneIndicator : MonoBehaviour

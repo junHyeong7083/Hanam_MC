@@ -4,46 +4,47 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 
 /// <summary>
-/// 카드 플립 애니메이션
-/// - X축 스케일 0으로 줄였다가 다시 펴는 방식
-/// - 중간에 앞/뒤 면 전환
-/// - 플립 후 페이드 아웃/인 옵션
+/// CardFlip - X축 스케일 기반 카드 뒤집기 애니메이션 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step3: NG→OK 씬 카드 전환
+/// 【역할】 X축 스케일을 1→0→1로 변화시켜 카드 뒤집기 효과 구현.
+///          중간 지점(스케일 0)에서 앞면/뒷면 GameObject를 전환한다.
+///          플립 후 선택적으로 페이드아웃→색상 변경→페이드인 시퀀스 실행 가능.
+/// 【사용 위치】 Problem2 Step3(NG→OK 씬 카드 전환) 등 카드 뒤집기가 필요한 UI
+/// 【트리거】 외부에서 Flip() 또는 PlayFlipRoutine() 코루틴 호출
+/// 【의존성】 frontSide/backSide(앞뒤면 GameObject), CanvasGroup(페이드용, 자동 추가)
 /// </summary>
 public class CardFlip : MonoBehaviour
 {
     [Header("===== 플립 설정 =====")]
-    [SerializeField] private float flipDuration = 0.5f;
-    [SerializeField] private GameObject frontSide;  // NG 카드
-    [SerializeField] private GameObject backSide;   // OK 카드
+    [SerializeField] private float flipDuration = 0.5f;       // 플립 전체 소요 시간 (전반부+후반부)
+    [SerializeField] private GameObject frontSide;             // 앞면 (예: NG 카드)
+    [SerializeField] private GameObject backSide;              // 뒷면 (예: OK 카드)
 
     [Header("===== 플립 후 페이드 효과 =====")]
-    [SerializeField] private bool enableFadeAfterFlip = false;
-    [SerializeField] private float fadeOutDuration = 0.1f;   // 알파 0 되는 시간
-    [SerializeField] private float fadeInDuration = 0.3f;    // 알파 1 되는 시간
-    [SerializeField] private CanvasGroup canvasGroup;        // 페이드용 (없으면 자동 생성)
-    [SerializeField] private GameObject warmOverlay;         // 알파 0일 때 활성화
+    [SerializeField] private bool enableFadeAfterFlip = false; // 플립 완료 후 페이드 시퀀스 활성화
+    [SerializeField] private float fadeOutDuration = 0.1f;     // 페이드아웃 소요 시간 (알파 1→0)
+    [SerializeField] private float fadeInDuration = 0.3f;      // 페이드인 소요 시간 (알파 0→1)
+    [SerializeField] private CanvasGroup canvasGroup;          // 페이드용 CanvasGroup (없으면 자동 생성)
+    [SerializeField] private GameObject warmOverlay;           // 페이드인 완료 시 활성화할 따뜻한 오버레이
 
     [Header("===== 색상 변경 =====")]
-    [SerializeField] private Image cardImage;                // 색상 변경할 카드 이미지
-    [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color warmColor = new Color(1f, 0.95f, 0.9f, 1f);  // 따뜻한 색
+    [SerializeField] private Image cardImage;                  // 색상 변경할 카드 배경 이미지
+    [SerializeField] private Color normalColor = Color.white;  // 기본 색상 (플립 전)
+    [SerializeField] private Color warmColor = new Color(1f, 0.95f, 0.9f, 1f);  // 따뜻한 색 (플립 후)
 
     [Header("이벤트")]
-    [SerializeField] private UnityEvent onFlipComplete;
-    [SerializeField] private UnityEvent onFadeComplete;  // 페이드까지 완료 후
+    [SerializeField] private UnityEvent onFlipComplete;        // 플립 애니메이션 완료 시 호출
+    [SerializeField] private UnityEvent onFadeComplete;        // 페이드까지 모두 완료 후 호출
 
-    // 내부
-    private bool _isFlipping;
-    private bool _showingFront = true;
-    private float _flipTime;
+    // 내부 상태
+    private bool _isFlipping;               // 플립 애니메이션 진행 중 여부
+    private bool _showingFront = true;       // 현재 앞면 표시 중인지
+    private float _flipTime;                // 플립 경과 시간
 
-    // 페이드 상태
+    // 페이드 상태 머신
     private enum FadeState { None, FadingOut, FadingIn }
-    private FadeState _fadeState = FadeState.None;
-    private float _fadeTime;
+    private FadeState _fadeState = FadeState.None;  // 현재 페이드 상태
+    private float _fadeTime;                        // 페이드 경과 시간
 
     private void Awake()
     {

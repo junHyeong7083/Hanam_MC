@@ -1,16 +1,32 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// LoginController - 로그인 폼의 비즈니스 로직을 담당하는 컨트롤러
+///
+/// 【역할】 LoginFormUI(View)에서 발행하는 이벤트를 수신하여:
+///         1) IAuthService.Login()으로 인증 처리
+///         2) 성공 시 SessionManager에 세션 저장 후 역할에 따라 씬 이동
+///            - USER → HomeScene, ADMIN/SUPERADMIN → ResultScene
+///         3) 실패 시 에러 메시지 표시
+/// 【씬】 RegisterScene (로그인/회원가입 화면)
+/// 【참조하는 곳】 RegisterScene의 로그인 패널에 부착 (LoginFormUI와 같은 GameObject)
+/// 【참조되는 곳】 DataService.Auth (인증 서비스), SessionManager (세션 저장),
+///               SceneNavigator (씬 이동), RegisterTabsController (탭 전환)
+/// 【흐름】 사용자 입력 → LoginFormUI.OnLoginRequested → HandleLogin() → AuthService.Login()
+///         → 성공: SessionManager.SignIn() → SceneNavigator.GoTo()
+///         → 실패: 에러 메시지 표시
+/// </summary>
 [RequireComponent(typeof(LoginFormUI))]
 public class LoginController : MonoBehaviour
-{         
+{
     [Header("Tabs")]
-    [SerializeField] RegisterTabsController tabs;       // 로그인/회원가입 탭
+    [SerializeField] RegisterTabsController tabs;       // 로그인/회원가입 탭 전환 컨트롤러
     [Header("Texts (Optional)")]
-    [SerializeField] AuthUIText texts;
+    [SerializeField] AuthUIText texts;                  // UI 텍스트 리소스 (ScriptableObject, 선택 사항)
 
-    private LoginFormUI view;
-    private IAuthService auth;
+    private LoginFormUI view;   // 로그인 폼 UI (같은 GameObject에서 자동 참조)
+    private IAuthService auth;  // 인증 서비스 인터페이스 (DataService에서 가져옴)
 
     void Awake()
     {

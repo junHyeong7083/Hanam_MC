@@ -4,8 +4,16 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Part 7 - Step 1 이펙트 컨트롤러
-/// - 메가폰 활성화 화면 애니메이션
+/// Problem7_Step1_EffectController - 문제7 스텝1(메가폰 활성화)의 이펙트 관리자
+///
+/// 【역할】 메가폰 활성화 화면의 순차 등장 애니메이션 관리:
+///          1) 메가폰 아이콘 스프링 등장(scale 0→1)
+///          2) 타이틀 슬라이드 업 + 페이드인 (0.3초 딜레이)
+///          3) 설명 텍스트 슬라이드 업 + 페이드인 (0.5초 딜레이)
+///          4) 버튼 슬라이드 업 + 페이드인 (0.7초 딜레이)
+/// 【사용 위치】 ProblemScene - Problem7 Step1 (메가폰 아이템 활성화 스텝)
+/// 【트리거】 Logic 클래스에서 PlayActivatedScreenAnimation() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, activatedRoot 하위 RectTransform/CanvasGroup들
 /// </summary>
 public class Problem7_Step1_EffectController : EffectControllerBase
 {

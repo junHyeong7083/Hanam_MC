@@ -3,29 +3,33 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Problem2 Step1: Effect Controller
-/// - 인트로 슬라이드 애니메이션 (좌/우에서 진입)
-/// - 드래그&드롭 완료 시 이펙트
+/// Problem2_Step1_EffectController - 문제2 스텝1(마음 렌즈 드래그)의 시각 효과 관리자
+///
+/// 【역할】 좌측/우측에서 슬라이드+페이드인으로 진입하는 인트로 애니메이션과,
+///          드래그&드롭 성공 시 드롭 타겟의 스케일 펀치 이펙트를 관리한다.
+/// 【사용 위치】 ProblemScene - Problem2 Step1 (마음 렌즈를 필름 위로 드래그하는 스텝)
+/// 【트리거】 Logic 클래스에서 PlayIntroAnimation(), PlayDropSuccessEffect() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, leftEnterRoot/rightEnterRoot(RectTransform)
 /// </summary>
 public class Problem2_Step1_EffectController : EffectControllerBase
 {
     [Header("===== 좌측 진입 루트 =====")]
-    [SerializeField] private RectTransform leftEnterRoot;
-    [SerializeField] private float leftStartOffsetX = -300f;
+    [SerializeField] private RectTransform leftEnterRoot;      // 좌측에서 슬라이드인할 UI 루트
+    [SerializeField] private float leftStartOffsetX = -300f;   // 좌측 시작 오프셋 (음수=왼쪽)
 
     [Header("===== 우측 진입 루트 =====")]
-    [SerializeField] private RectTransform rightEnterRoot;
-    [SerializeField] private float rightStartOffsetX = 300f;
+    [SerializeField] private RectTransform rightEnterRoot;     // 우측에서 슬라이드인할 UI 루트
+    [SerializeField] private float rightStartOffsetX = 300f;   // 우측 시작 오프셋 (양수=오른쪽)
 
     [Header("===== 인트로 타이밍 =====")]
-    [SerializeField] private float introDelay = 0f;
-    [SerializeField] private float introDuration = 0.6f;
-    [SerializeField] private Ease introEase = Ease.OutQuad;
+    [SerializeField] private float introDelay = 0f;            // 인트로 시작 전 대기 시간
+    [SerializeField] private float introDuration = 0.6f;       // 슬라이드 애니메이션 소요 시간
+    [SerializeField] private Ease introEase = Ease.OutQuad;    // 이징 타입
 
     [Header("===== 드롭 완료 이펙트 =====")]
-    [SerializeField] private RectTransform dropTargetRect;
-    [SerializeField] private float dropScalePunch = 0.1f;
-    [SerializeField] private float dropScaleDuration = 0.3f;
+    [SerializeField] private RectTransform dropTargetRect;     // 드롭 성공 시 펀치 효과를 줄 대상
+    [SerializeField] private float dropScalePunch = 0.1f;      // 스케일 펀치 강도
+    [SerializeField] private float dropScaleDuration = 0.3f;   // 스케일 펀치 소요 시간
 
     // 초기 위치 저장
     private Vector2 _leftBasePos;

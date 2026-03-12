@@ -2,13 +2,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 터치 유도 펄스 애니메이션
-/// - "터치하여 확인" 같은 프롬프트에 사용
-/// - 스케일 펄스로 주목 유도
+/// TouchPromptPulse - 스케일 펄스로 터치/클릭을 유도하는 프롬프트 애니메이션 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step2: 필름 카드 터치 유도
-/// - 버튼, 아이콘 등 인터랙션 유도
+/// 【역할】 DOTween Yoyo 루프로 오브젝트 스케일을 min↔max 사이에서 반복 변화시켜
+///          "여기를 터치/클릭하세요" 시각 힌트 제공. OnDisable 시 원래 스케일 복원.
+/// 【사용 위치】 Problem2 Step2(필름 카드 터치 유도), 버튼/아이콘 인터랙션 유도
+/// 【트리거】 OnEnable 시 자동 재생
+/// 【의존성】 DOTween(DG.Tweening), Transform
 /// </summary>
 public class TouchPromptPulse : MonoBehaviour
 {

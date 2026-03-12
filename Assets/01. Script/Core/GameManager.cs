@@ -2,12 +2,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// 게임 전역 관리자
-/// - QuitApplication: 앱 종료
-/// - GoToHome: 홈화면(온보딩)으로 이동
+/// GameManager - 게임 전역 관리자 (싱글톤)
+///
+/// 【역할】 앱 종료, 홈 화면 이동, 로그아웃 등 앱 전체에서 공통으로 사용하는 고수준 기능을 제공.
+///          UI 버튼의 OnClick 이벤트에 직접 연결하여 사용 가능하다.
+/// 【참조하는 곳】 CommonRewardStep (문제 완료 후 홈 이동), ProblemSceneController (문제 종료),
+///                HomeSceneManager (홈 화면 버튼), EndingPosterDisplay (엔딩 후 홈 이동),
+///                SceneNavigator (씬 전환 연동), UI 버튼 OnClick 이벤트
+/// 【참조되는 곳】 SceneNavigator (씬 전환), SessionManager (로그아웃 처리)
+/// 【흐름】 GoToHome() → SceneNavigator.GoTo(HOME)
+///         Logout() → SessionManager.SignOut() → SceneNavigator.GoTo(REGISTER)
+///         QuitApplication() → Application.Quit()
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    /// <summary>싱글톤 인스턴스. Lazy 초기화로 씬에서 자동 검색됨</summary>
     private static GameManager instance;
     public static GameManager Instance
     {
@@ -21,10 +30,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>온보딩(홈) 씬 이름. SceneNavigator 없이 직접 로드할 때 사용</summary>
     [Header("씬 설정")]
     [Tooltip("온보딩(홈) 씬 이름")]
     [SerializeField] private string onboardingSceneName = "HomeScene";
 
+    /// <summary>로그인/회원가입 씬 이름. SceneNavigator 없이 직접 로드할 때 사용</summary>
     [Tooltip("로그인 씬 이름")]
     [SerializeField] private string loginSceneName = "RegisterScene";
 

@@ -4,17 +4,20 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Problem4 Step2: Effect Controller
-/// - 필름 편집 화면의 이펙트 시퀀스 관리
-/// - 카드 등장/컷/통과 애니메이션
-/// - 색상 복원 애니메이션 (흑백 → 컬러)
-/// - 프레임 스냅 + jitter로 오래된 필름 느낌
+/// Problem4_Step2_EffectController - 문제4 스텝2(필름 편집)의 이펙트 시퀀스 관리자
 ///
-/// 흐름:
-/// 1. 카드 등장: 좌→우 슬라이드 + 스냅 + jitter
-/// 2. 컷: 가위 이동 → 카드 분리 → 떨어짐
-/// 3. 통과: 우측 이동 + 페이드
-/// 4. 완료: 전체 필름 흑백→컬러 전환
+/// 【역할】 필름 편집 화면에서 카드 등장(슬라이드+스냅+지터), 가위 컷(분리+떨어짐),
+///          통과(우측 이동+페이드), 색상 복원(흑백→컬러), 에러 흔들림 등 다양한 이펙트 관리.
+///          프레임 스냅과 jitter로 오래된 필름 느낌 연출.
+/// 【사용 위치】 ProblemScene - Problem4 Step2 (필름 편집 - NG 장면 컷/통과 판정 스텝)
+/// 【트리거】 Logic 클래스에서 PlayAppearAnimation(), PlayCutAnimation(), PlayPassAnimation() 등 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, filmCardRect, scissorsRect, cardLeft/RightRect 등
+///
+/// 【흐름】
+/// 1. PlayAppearAnimation(): 좌→우 슬라이드 + 스냅 지터로 카드 등장
+/// 2. PlayCutAnimation(): 가위 등장 → 메인 카드 숨김 → 좌/우 분리 카드 떨어짐
+/// 3. PlayPassAnimation(): 우측 이동 + 페이드아웃
+/// 4. PlayColorRestoreAnimation(): 전체 필름 흑백→컬러 전환
 /// </summary>
 public class Problem4_Step2_EffectController : EffectControllerBase
 {

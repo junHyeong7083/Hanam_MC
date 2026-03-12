@@ -2,21 +2,27 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// HomeScene 버튼 이벤트 연결용 스크립트
-/// - 버튼 OnClick에 연결해서 사용
+/// HomeSceneManager - 홈 화면의 버튼 이벤트 및 옵션 패널 관리
+///
+/// 【역할】 홈 화면에서 로그아웃, 앱 종료, 옵션 패널 열기/닫기 등의 UI 이벤트를 처리한다.
+///         옵션 패널은 Y축 스케일 + 알파 애니메이션으로 열고 닫는다.
+/// 【씬】 HomeScene (LevelSelectScene)
+/// 【참조하는 곳】 Canvas 내 버튼 OnClick 이벤트에 직접 연결
+/// 【참조되는 곳】 GameManager (로그아웃, 앱 종료)
+/// 【흐름】 버튼 클릭 → Logout() / QuitApplication() / ToggleOptionPanel()
 /// </summary>
 public class HomeSceneManager : MonoBehaviour
 {
     [Header("Option Panel")]
-    [SerializeField] private GameObject optionPanel;
-    [SerializeField] private CanvasGroup optionCanvasGroup;
-    [SerializeField] private float animationDuration = 0.1f;
+    [SerializeField] private GameObject optionPanel;          // 옵션 패널 루트 오브젝트
+    [SerializeField] private CanvasGroup optionCanvasGroup;   // 옵션 패널 알파/상호작용 제어용 CanvasGroup
+    [SerializeField] private float animationDuration = 0.1f;  // 옵션 패널 열기/닫기 애니메이션 시간(초)
 
     [Header("Linked Panel (옵션과 함께 켜졌다 꺼질 패널 1개)")]
-    [SerializeField] private GameObject linkedPanel;
+    [SerializeField] private GameObject linkedPanel;          // 옵션 패널과 함께 활성/비활성되는 연동 패널
 
-    private bool _isOptionOpen = false;
-    private Coroutine _optionAnimCoroutine;
+    private bool _isOptionOpen = false;                       // 옵션 패널 현재 열림 상태
+    private Coroutine _optionAnimCoroutine;                   // 현재 실행 중인 애니메이션 코루틴 참조
 
     private void Start()
     {

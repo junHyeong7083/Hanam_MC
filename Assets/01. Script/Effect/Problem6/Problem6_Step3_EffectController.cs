@@ -3,8 +3,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Part 6 - Step 3 이완 훈련 이펙트 컨트롤러
-/// - 단계 카드 팝인 애니메이션만 담당
+/// Problem6_Step3_EffectController - 문제6 스텝3(이완 훈련)의 이펙트 관리자
+///
+/// 【역할】 이완 훈련 단계 카드의 팝인 애니메이션(스케일 0→1.2→1 + 알파 페이드인) 관리.
+///          별도 _cardSequence로 메인 시퀀스와 독립 동작.
+/// 【사용 위치】 ProblemScene - Problem6 Step3 (이완 훈련 스텝)
+/// 【트리거】 Logic 클래스에서 PlayCardPopIn() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, stepCardRect/stepCardCanvasGroup
 /// </summary>
 public class Problem6_Step3_EffectController : EffectControllerBase
 {

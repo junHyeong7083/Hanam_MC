@@ -3,13 +3,14 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// 텍스트 투명도 펄스 애니메이션
-/// - 안내 텍스트가 깜빡이며 주목을 끄는 효과
-/// - CanvasGroup 없이 Text 컴포넌트 직접 제어
+/// TextOpacityPulse - 텍스트/이미지의 투명도를 반복 펄스하는 안내 텍스트용 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step1: "마음 렌즈를 필름 위로 드래그하세요" 안내 텍스트
-/// - 모든 Step의 안내/힌트 텍스트
+/// 【역할】 DOTween Yoyo 루프로 Graphic(Text, Image 등)의 알파를 min↔max 사이에서 반복 변화시켜
+///          "깜빡이며 주목을 끄는" 효과 제공. CanvasGroup 없이 Graphic 컴포넌트를 직접 제어.
+/// 【사용 위치】 Problem2 Step1("마음 렌즈를 필름 위로 드래그하세요" 안내),
+///              모든 Step의 안내/힌트 텍스트
+/// 【트리거】 playOnEnable=true 시 OnEnable에서 자동 재생, 또는 외부에서 Play()/Stop() 호출
+/// 【의존성】 DOTween(DG.Tweening), Graphic(Image/Text 등 - DOFade 사용)
 /// </summary>
 public class TextOpacityPulse : MonoBehaviour
 {

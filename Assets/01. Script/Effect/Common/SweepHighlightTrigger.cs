@@ -3,16 +3,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// UI Image 의 "대각선 반짝임(sweep)" 효과 트리거
+/// SweepHighlightTrigger - UI Image에 대각선 반짝임(sweep) 효과를 1회 재생하는 트리거 컴포넌트
 ///
-/// 사용법:
-///   1) UI/SweepHighlight 쉐이더로 만든 Material 을 Image 에 할당
-///   2) 이 컴포넌트를 같은 GameObject 에 추가
+/// 【역할】 UI/SweepHighlight 커스텀 셰이더의 _SweepT 파라미터를 코루틴으로 0.25→1.0으로
+///          변화시켜 대각선 빛이 지나가는 효과를 1회 재생한다.
+///          머티리얼 인스턴스를 생성하여 다른 오브젝트와 공유 방지.
+///          enableSweep=false로 설정하면 PlaySweep() 호출을 무시 (같은 프리팹 재사용 시 편의).
+/// 【사용 위치】 보상 화면, 완료 카드 등 하이라이트가 필요한 UI Image
+/// 【트리거】 외부에서 PlaySweep() 호출 (보상 지급 시 등)
+/// 【의존성】 Image(같은 GameObject), UI/SweepHighlight 셰이더 Material 할당 필요
+///
+/// 【사용법】
+///   1) UI/SweepHighlight 셰이더로 만든 Material을 Image에 할당
+///   2) 이 컴포넌트를 같은 GameObject에 추가
 ///   3) 보상 지급 시 PlaySweep() 호출
-///
-/// 인스펙터 토글:
-///   enableSweep = false → PlaySweep() 이 아무것도 안 함 (재사용 시 편의)
-///   예) Step4(보상화면) 프리팹만 true, 나머지는 false
 /// </summary>
 public class SweepHighlightTrigger : MonoBehaviour
 {

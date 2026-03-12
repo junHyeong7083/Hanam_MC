@@ -4,16 +4,19 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Problem3 Step2: Effect Controller
-/// - 로직에서 이벤트를 받아 이펙트 시퀀스를 관리
-/// - 펜 애니메이션, 텍스트 페이드, 스파클 등 타이밍 조율
+/// Problem3_Step2_EffectController - 문제3 스텝2(생각 재작성)의 이펙트 시퀀스 관리자
 ///
-/// 흐름:
-/// 1. 대기: 펜 originPos에서 알파 펄스
+/// 【역할】 텍스트 재작성 시 페이드아웃→텍스트 교체(색상 변경)→페이드인 시퀀스를 DOTween으로 관리.
+///          펜 애니메이션, 스파클 등은 별도 컴포넌트(PenWriteAnimation, CompletionSparkle)가 처리.
+/// 【사용 위치】 ProblemScene - Problem3 Step2 (부정적 생각을 긍정적으로 재작성하는 스텝)
+/// 【트리거】 Logic 클래스에서 PlayRewriteSequence() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, sentenceCanvasGroup/sentenceText
+///
+/// 【흐름】
+/// 1. 대기: 펜 originPos에서 알파 펄스 (PenWriteAnimation 담당)
 /// 2. 버튼 선택 → PlayRewriteSequence() 호출
-/// 3. 딜레이 후 펜 이동 시작 (startPoint → endPoint)
-/// 4. 펜 이동 완료 → 펜 숨김, 스파클 표시, 텍스트 페이드인
-/// 5. 다음 문항 → 스파클 숨김, 펜 표시 + originPos
+/// 3. 딜레이 → 텍스트 페이드아웃 → 텍스트 교체 + 색상 변경 → 텍스트 페이드인
+/// 4. 다음 문항 → ResetForNextStep()으로 초기화
 /// </summary>
 public class Problem3_Step2_EffectController : EffectControllerBase
 {

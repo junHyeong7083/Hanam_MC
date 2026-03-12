@@ -2,9 +2,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Part 6 - Step 1 이펙트 컨트롤러
-/// - 인트로 연출 (EffectControllerBase에서 상속)
-/// - 드롭 인디케이터 펄스 (드래그 중 표시)
+/// Problem6_Step1_EffectController - 문제6 스텝1(드래그&드롭)의 이펙트 관리자
+///
+/// 【역할】 인트로 연출(EffectControllerBase 상속) + 드래그 중 드롭 인디케이터 펄스 효과 관리.
+///          드롭 인디케이터는 등장 애니메이션 후 스케일+알파 무한 펄스 루프로 전환된다.
+/// 【사용 위치】 ProblemScene - Problem6 Step1 (드래그&드롭 스텝)
+/// 【트리거】 Logic 클래스에서 ShowDropIndicator()/HideDropIndicator() 호출, OnEnable에서 인트로 자동 재생
+/// 【의존성】 EffectControllerBase(상속), DOTween, dropIndicatorRect/CanvasGroup
 /// </summary>
 public class Problem6_Step1_EffectController : EffectControllerBase
 {

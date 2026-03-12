@@ -3,9 +3,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// Problem2 Step2: Effect Controller
-/// - 라이트 팝업 스케일 애니메이션
-/// - 라벨 등장 애니메이션
+/// Problem2_Step2_EffectController - 문제2 스텝2(감정 조명 선택)의 시각 효과 관리자
+///
+/// 【역할】 감정 조명(라이트) 등장 시 스케일 0→peak→1 애니메이션과,
+///          라벨(감정명) 등장 시 팝업 스프링 애니메이션을 관리한다.
+///          PlaySlotReveal()로 라이트+라벨을 순차적으로 한번에 연출 가능.
+/// 【사용 위치】 ProblemScene - Problem2 Step2 (감정 조명을 선택하는 스텝)
+/// 【트리거】 Logic 클래스에서 PlayLightAppear(), PlayLabelAppear(), PlaySlotReveal() 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween
 /// </summary>
 public class Problem2_Step2_EffectController : EffectControllerBase
 {

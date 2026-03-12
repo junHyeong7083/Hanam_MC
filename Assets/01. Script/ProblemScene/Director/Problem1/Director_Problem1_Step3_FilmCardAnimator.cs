@@ -2,35 +2,42 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Step3ÀÇ ÇöÀç ÇÊ¸§ Ä«µå ¾Ö´Ï¸ŞÀÌ¼Ç Àü´ã ½ºÅ©¸³Æ®
-/// React Screen3SortActivity ÀÇ motion.div ±âÁØ:
-/// - Enter : opacity 0 ¡æ 1, scale 0.8 ¡æ 1,   y 50(¾Æ·¡) ¡æ 0
-/// - Exit  : opacity 1 ¡æ 0, scale 1   ¡æ 0.8, y 0        ¡æ -50(À§)
+/// Director_Problem1_Step3_FilmCardAnimator - í•„ë¦„ ì¹´ë“œ ë“±ì¥/í‡´ì¥ ì• ë‹ˆë©”ì´ì…˜ ì»¨íŠ¸ë¡¤ëŸ¬.
+///
+/// ã€ì—­í• ã€‘ ìŠ¤í…3ì—ì„œ í•„ë¦„ ì¹´ë“œê°€ í™”ë©´ì— ë‚˜íƒ€ë‚˜ê³  ì‚¬ë¼ì§€ëŠ” ì• ë‹ˆë©”ì´ì…˜ì„ ë‹´ë‹¹í•œë‹¤.
+///         Reactì˜ motion.div íŒ¨í„´ì„ Unity UIë¡œ êµ¬í˜„í•œ ê²ƒì´ë‹¤.
+///         - Enter: ì•„ë˜ì—ì„œ ìœ„ë¡œ ì˜¬ë¼ì˜¤ë©´ì„œ íˆ¬ëª…â†’ë¶ˆíˆ¬ëª…, ì‘ì€ ìŠ¤ì¼€ì¼â†’ì •ìƒ ìŠ¤ì¼€ì¼
+///         - Exit: ìœ„ë¡œ ì˜¬ë¼ê°€ë©´ì„œ ë¶ˆíˆ¬ëª…â†’íˆ¬ëª…, ì •ìƒ ìŠ¤ì¼€ì¼â†’ì‘ì€ ìŠ¤ì¼€ì¼
+/// ã€ë¬¸ì œ/ìŠ¤í…ã€‘ Director í…Œë§ˆ / ë¬¸ì œ1 / ìŠ¤í…3ì—ì„œ ì‚¬ìš©
+/// ã€ë¶€ëª¨ í´ë˜ìŠ¤ã€‘ MonoBehaviour (ë…ë¦½ ì»´í¬ë„ŒíŠ¸)
+/// ã€ì°¸ì¡°í•˜ëŠ” ê³³ã€‘ Director_Problem1_Step3_Logic (PlayEnter/PlayExit í˜¸ì¶œ)
+/// ã€ì°¸ì¡°ë˜ëŠ” ê³³ã€‘ ì—†ìŒ (ë…ë¦½ì ìœ¼ë¡œ ë™ì‘)
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 public class Director_Problem1_Step3_FilmCardAnimator : MonoBehaviour
 {
-    [Header("µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç")]
-    [SerializeField] private float enterDuration = 0.25f;
-    [SerializeField] private float enterOffsetY = 50f;   // ¾Æ·¡ÂÊ 50px¿¡¼­ ½ÃÀÛ (DOM: y:50)
+    [Header("ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜")]
+    [SerializeField] private float enterDuration = 0.25f;     // ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜ ì‹œê°„ (ì´ˆ)
+    [SerializeField] private float enterOffsetY = 50f;        // ì•„ë˜ì—ì„œ 50px ìœ„ì¹˜ì—ì„œ ì‹œì‘ (DOM: y:50)
 
-    [Header("ÅğÀå ¾Ö´Ï¸ŞÀÌ¼Ç")]
-    [SerializeField] private float exitDuration = 0.25f;
-    [SerializeField] private float exitOffsetY = 50f;     // À§·Î 50px ÀÌµ¿ (DOM: y:-50)
-    [SerializeField] private float exitEndScale = 0.8f;   // ÅğÀå ½Ã ÃÖÁ¾ ½ºÄÉÀÏ
+    [Header("í‡´ì¥ ì• ë‹ˆë©”ì´ì…˜")]
+    [SerializeField] private float exitDuration = 0.25f;      // í‡´ì¥ ì• ë‹ˆë©”ì´ì…˜ ì‹œê°„ (ì´ˆ)
+    [SerializeField] private float exitOffsetY = 50f;         // ìœ„ë¡œ 50px ì´ë™ (DOM: y:-50)
+    [SerializeField] private float exitEndScale = 0.8f;       // í‡´ì¥ ì‹œ ìµœì¢… ìŠ¤ì¼€ì¼
 
-    [Header("½ºÄÉÀÏ ¼³Á¤")]
-    [SerializeField] private float enterStartScale = 0.8f;  // µîÀå ½ÃÀÛ ½ºÄÉÀÏ (DOM: scale:0.8)
+    [Header("ìŠ¤ì¼€ì¼ ì„¤ì •")]
+    [SerializeField] private float enterStartScale = 0.8f;    // ë“±ì¥ ì‹œì‘ ìŠ¤ì¼€ì¼ (DOM: scale:0.8)
 
-    [Header("¾ËÆÄ ÆäÀÌµå (¼±ÅÃ)")]
-    [SerializeField] private CanvasGroup canvasGroup;       // ÀÖÀ¸¸é alpha 0¡ê1 ¾Ö´Ï¸ŞÀÌ¼Ç
+    [Header("íˆ¬ëª… í˜ì´ë“œ (ì˜µì…˜)")]
+    [SerializeField] private CanvasGroup canvasGroup;          // ì•ŒíŒŒê°’ 0â†”1 ì• ë‹ˆë©”ì´ì…˜ìš©
 
-    private RectTransform _rt;
-    private Vector2 _baseAnchoredPos;
-    private Vector3 _baseScale;
-    private bool _initialized;
-    private Coroutine _running;
+    private RectTransform _rt;            // ìì‹ ì˜ RectTransform ìºì‹œ
+    private Vector2 _baseAnchoredPos;     // ê¸°ë³¸(ì›ë˜) anchored ìœ„ì¹˜
+    private Vector3 _baseScale;           // ê¸°ë³¸(ì›ë˜) ìŠ¤ì¼€ì¼
+    private bool _initialized;            // ì´ˆê¸°í™” ì™„ë£Œ ì—¬ë¶€
+    private Coroutine _running;           // í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ ì• ë‹ˆë©”ì´ì…˜ ì½”ë£¨í‹´
 
+    /// <summary>RectTransform, ê¸°ë³¸ ìœ„ì¹˜/ìŠ¤ì¼€ì¼, CanvasGroupì„ ìµœì´ˆ 1íšŒ ìºì‹±í•œë‹¤.</summary>
     private void EnsureInit()
     {
         if (_initialized) return;
@@ -46,7 +53,8 @@ public class Director_Problem1_Step3_FilmCardAnimator : MonoBehaviour
     }
 
     /// <summary>
-    /// µîÀå ¾Ö´Ï¸ŞÀÌ¼Ç (ÀÚÃ¼ ÄÚ·çÆ¾À¸·Î ½ÇÇà, È£ÃâÃøÀÌ ±â´Ù¸± ÇÊ¿ä ¾øÀ½)
+    /// ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ. ë‚´ë¶€ ì½”ë£¨í‹´ìœ¼ë¡œ ë™ì‘í•˜ë©°, í˜¸ì¶œí•˜ë©´ ë°”ë¡œ ë°˜í™˜ëœë‹¤.
+    /// ì•„ë˜â†’ìœ„ ì´ë™, íˆ¬ëª…â†’ë¶ˆíˆ¬ëª…, ì‘ì€â†’ì •ìƒ ìŠ¤ì¼€ì¼ë¡œ ì „í™˜ëœë‹¤.
     /// </summary>
     public void PlayEnter()
     {
@@ -61,8 +69,9 @@ public class Director_Problem1_Step3_FilmCardAnimator : MonoBehaviour
     }
 
     /// <summary>
-    /// ÅğÀå ¾Ö´Ï¸ŞÀÌ¼Ç. È£ÃâÃø¿¡¼­ StartCoroutineÀ¸·Î »ç¿ë:
+    /// í‡´ì¥ ì• ë‹ˆë©”ì´ì…˜. í˜¸ì¶œí•˜ëŠ” ìª½ì—ì„œ StartCoroutineìœ¼ë¡œ ëŒ€ê¸° ê°€ëŠ¥:
     /// yield return StartCoroutine(animator.PlayExit());
+    /// ì •ìƒâ†’ì‘ì€ ìŠ¤ì¼€ì¼, ë¶ˆíˆ¬ëª…â†’íˆ¬ëª…, ìœ„ìª½ìœ¼ë¡œ ì´ë™.
     /// </summary>
     public IEnumerator PlayExit()
     {
@@ -78,15 +87,16 @@ public class Director_Problem1_Step3_FilmCardAnimator : MonoBehaviour
         yield return _running;
     }
 
+    /// <summary>ë“±ì¥ ì• ë‹ˆë©”ì´ì…˜ ì½”ë£¨í‹´. SmoothStep ë³´ê°„ìœ¼ë¡œ ë¶€ë“œëŸ¬ìš´ ì „í™˜.</summary>
     private IEnumerator EnterRoutine()
     {
-        // React: initial { opacity:0, scale:0.8, y:50 } ¡æ animate { opacity:1, scale:1, y:0 }
-        // Unity UI: y ¾Æ·¡¹æÇâÀº -ÀÌ¹Ç·Î, base - enterOffsetY ¿¡¼­ ½ÃÀÛ
+        // React: initial { opacity:0, scale:0.8, y:50 } ï¿½ï¿½ animate { opacity:1, scale:1, y:0 }
+        // Unity UI: y ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -ï¿½Ì¹Ç·ï¿½, base - enterOffsetY ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector2 startPos = _baseAnchoredPos + new Vector2(0f, -enterOffsetY);
         Vector2 endPos = _baseAnchoredPos;
 
         Vector3 startScale = new Vector3(enterStartScale, enterStartScale, 1f);
-        Vector3 endScale = _baseScale; // º¸Åë (1,1,1)
+        Vector3 endScale = _baseScale; // ï¿½ï¿½ï¿½ï¿½ (1,1,1)
 
         _rt.anchoredPosition = startPos;
         _rt.localScale = startScale;
@@ -118,12 +128,13 @@ public class Director_Problem1_Step3_FilmCardAnimator : MonoBehaviour
         _running = null;
     }
 
+    /// <summary>í‡´ì¥ ì• ë‹ˆë©”ì´ì…˜ ì½”ë£¨í‹´. í˜„ì¬ ìœ„ì¹˜ì—ì„œ ìœ„ìª½ìœ¼ë¡œ ì´ë™í•˜ë©° ì¶•ì†Œ+í˜ì´ë“œì•„ì›ƒ.</summary>
     private IEnumerator ExitRoutine()
     {
-        // React: exit { opacity:0, scale:0.8, y:-50 } ±âÁØ
-        // ¡æ ÇöÀç(1,1,1, y0)¿¡¼­ ½ºÄÉÀÏ 0.8, y +exitOffsetY(À§)·Î
+        // React: exit { opacity:0, scale:0.8, y:-50 } ï¿½ï¿½ï¿½ï¿½
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(1,1,1, y0)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0.8, y +exitOffsetY(ï¿½ï¿½)ï¿½ï¿½
         Vector2 startPos = _rt.anchoredPosition;
-        Vector2 endPos = _baseAnchoredPos + new Vector2(0f, exitOffsetY); // À§·Î ÀÌµ¿
+        Vector2 endPos = _baseAnchoredPos + new Vector2(0f, exitOffsetY); // ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
 
         Vector3 startScale = _rt.localScale;
         Vector3 endScale = new Vector3(exitEndScale, exitEndScale, 1f);

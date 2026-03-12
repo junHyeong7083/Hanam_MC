@@ -2,15 +2,24 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// 인벤토리 아이템 사용 스텝 베이스
-/// - 화면에 보이는 인벤토리 패널 없이, DB에서 아이템 보유 여부를 확인
-/// - 보유 시 자동으로 활성화 연출 + Gate 완료
-/// - 파생 클래스에서 필요한 UI 프로퍼티를 제공
+/// InventoryDropTargetStepBase - 인벤토리 아이템 사용/활성화 스텝의 추상 베이스
+///
+/// 【역할】 DB에서 특정 아이템(requiredItemId)의 보유 여부를 확인하고,
+///          보유 시 스케일 애니메이션으로 활성화 연출을 재생한 뒤 completionGate를 완료 처리한다.
+///          DemoMode에서는 아이템 보유를 무조건 true로 처리한다.
+/// 【참조하는 곳】 각 Problem Director의 인벤토리 스텝에서 상속
+/// 【참조되는 곳】 DataService.Reward (인벤토리 조회), SessionManager (유저 정보),
+///                StepCompletionGate (완료 관리), ProblemSession (DemoMode 체크)
+/// 【흐름】 OnStepEnter() → ResetBaseState() → HasItemInDb() 확인
+///          → 보유 시 AutoActivateRoutine() → PlayActivateAnimation() → OnActivateComplete() → Gate 완료
+///
+/// 파생 클래스에서 아래 프로퍼티를 구현해야 한다:
+/// - TargetVisualRoot, InstructionRoot, CompletionGate
 /// </summary>
 public abstract class InventoryDropTargetStepBase : ProblemStepBase
 {
     [Header("필요 아이템 (DB InventoryItem.ItemId)")]
-    [SerializeField] private string requiredItemId;
+    [SerializeField] private string requiredItemId; // DB에서 확인할 아이템 ID (예: "mind_lens")
 
     #region 파생 클래스에서 제공할 프로퍼티
 
@@ -40,13 +49,16 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase
 
     #endregion
 
-    private bool _activated;
-    private bool _animPlaying;
+    private bool _activated;    // 아이템이 이미 활성화되었는지 여부 (중복 방지)
+    private bool _animPlaying;  // 활성화 애니메이션이 재생 중인지 여부
 
     // ================================
-    // ProblemStepBase
+    // ProblemStepBase 구현
     // ================================
 
+    /// <summary>
+    /// 스텝 진입 시: 상태 리셋 → Gate 초기화(1건) → DB 아이템 보유 확인 → 보유 시 자동 활성화 시작
+    /// </summary>
     protected override void OnStepEnter()
     {
         ResetBaseState();
@@ -78,6 +90,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase
     /// </summary>
     protected virtual void OnStepEnterExtra() { }
 
+    /// <summary>내부 상태를 초기화하고 UI를 기본 상태로 리셋한다.</summary>
     private void ResetBaseState()
     {
         _activated = false;
@@ -96,6 +109,11 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase
     // DB 아이템 확인
     // ================================
 
+    /// <summary>
+    /// DB에서 현재 로그인 유저의 인벤토리를 조회하여 requiredItemId 아이템 보유 여부를 확인한다.
+    /// DemoMode에서는 무조건 true를 반환한다.
+    /// </summary>
+    /// <returns>아이템 보유 여부</returns>
     private bool HasItemInDb()
     {
         if (ProblemSession.DemoMode)
@@ -131,6 +149,7 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase
     // 자동 활성화
     // ================================
 
+    /// <summary>AutoActivateDelay 대기 후 활성화 연출을 시작하는 코루틴</summary>
     private IEnumerator AutoActivateRoutine()
     {
         if (AutoActivateDelay > 0f)
@@ -139,6 +158,10 @@ public abstract class InventoryDropTargetStepBase : ProblemStepBase
         yield return HandleActivatedRoutine();
     }
 
+    /// <summary>
+    /// 활성화 처리 메인 코루틴.
+    /// 안내 UI 숨김 → 스케일 애니메이션 재생 → 딜레이 대기 → OnActivateComplete() → Gate 완료
+    /// </summary>
     private IEnumerator HandleActivatedRoutine()
     {
         if (_activated || _animPlaying)

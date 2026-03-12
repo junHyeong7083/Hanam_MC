@@ -2,16 +2,31 @@
 using System.Collections;
 using System;
 
+/// <summary>
+/// SignupController - 회원가입 폼의 비즈니스 로직을 담당하는 컨트롤러
+///
+/// 【역할】 SignupFormUI(View)에서 발행하는 이벤트를 수신하여:
+///         1) 이메일 중복 체크 (HandleCheckEmail)
+///         2) 입력 유효성 검증 (이름, 이메일 형식, 비밀번호 강도)
+///         3) IAuthService.SignUp()으로 회원가입 처리
+///         4) 비밀번호 강도/일치 여부 실시간 힌트 제공
+///         5) 가입 완료 후 로그인 탭으로 자동 전환
+/// 【씬】 RegisterScene (로그인/회원가입 화면)
+/// 【참조하는 곳】 RegisterScene의 회원가입 패널에 부착 (SignupFormUI와 같은 GameObject)
+/// 【참조되는 곳】 DataService.Auth (인증 서비스), AuthValidator (유효성 검증),
+///               RegisterTabsController (탭 전환)
+/// 【흐름】 입력 → 이메일 중복 체크 → 유효성 검증 → AuthService.SignUp() → 성공: 로그인 탭 전환
+/// </summary>
 [RequireComponent(typeof(SignupFormUI))]
 public class SignupController : MonoBehaviour
 {
     [Header("Tabs")]
-    [SerializeField] RegisterTabsController tabs;           // RegisterScene 탭 관리자
+    [SerializeField] RegisterTabsController tabs;           // RegisterScene 탭 관리자 (가입 후 로그인 탭 전환)
     [Header("Texts (Optional)")]
-    [SerializeField] AuthUIText texts;
+    [SerializeField] AuthUIText texts;                      // UI 텍스트 리소스 (ScriptableObject, 선택 사항)
 
-    private SignupFormUI view;
-    private IAuthService auth;
+    private SignupFormUI view;   // 회원가입 폼 UI (같은 GameObject에서 자동 참조)
+    private IAuthService auth;   // 인증 서비스 인터페이스 (DataService에서 가져옴)
 
     void Awake()
     {

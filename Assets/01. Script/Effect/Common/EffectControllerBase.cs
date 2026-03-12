@@ -3,10 +3,16 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 모든 EffectController의 베이스 클래스
-/// - DOTween Sequence 관리
-/// - 인트로 연출 (슬라이드 애니메이션)
-/// - 공통 상태 및 유틸리티 메서드 제공
+/// EffectControllerBase - 모든 Problem별 이펙트 컨트롤러의 추상 부모 클래스
+///
+/// 【역할】 DOTween Sequence 생명주기 관리, 인트로 연출(Slide/Scale) 시스템,
+///          공통 유틸리티(페이드, 스케일, 앵커포스 이동 등) 제공.
+///          각 Problem{N}_Step{M}_EffectController가 이 클래스를 상속받아
+///          스텝별 고유 이펙트를 구현한다.
+/// 【사용 위치】 ProblemScene의 모든 스텝에서 시각 효과 관리자로 사용
+/// 【트리거】 OnEnable에서 playOnEnable=true이면 인트로 자동 재생,
+///          또는 외부(Logic 클래스)에서 개별 메서드 호출
+/// 【의존성】 DOTween(DG.Tweening), IntroElement 배열(인스펙터에서 설정)
 /// </summary>
 public abstract class EffectControllerBase : MonoBehaviour
 {

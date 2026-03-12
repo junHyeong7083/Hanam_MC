@@ -4,8 +4,27 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// ThemePanelsController - 테마 선택 및 문제 패널 전환을 총괄하는 컨트롤러
+///
+/// 【역할】 홈 화면에서:
+///         1) 테마 선택 패널 표시 (Director / Garden 선택)
+///         2) 선택된 테마의 문제 목록 패널(ThemePanelUI) 활성화 및 진행 상태 갱신
+///         3) ProblemScene에서 복귀 시 적절한 패널로 라우팅 (LevelSelect / Ending)
+///         4) 문제 클릭 → ProblemSession 설정 → ProblemScene으로 씬 전환
+/// 【씬】 HomeScene (LevelSelectScene)
+/// 【참조하는 곳】 Canvas에 부착, 테마 선택 버튼 및 문제 패널의 이벤트를 수신
+/// 【참조되는 곳】 ThemePanelUI (문제 클릭 이벤트), DataService (진행도 조회),
+///               ProblemSession (씬 전환 컨텍스트), SceneNavigator (씬 이동),
+///               SessionManager (현재 사용자), StepFlowController (Director 패널 내 스텝 이동)
+/// 【흐름】 Start → 복귀 대상에 따라 라우팅 → 테마 선택 → 문제 패널 표시 → 문제 클릭 → ProblemScene 이동
+/// </summary>
 public class ThemePanelsController : MonoBehaviour
 {
+    /// <summary>
+    /// 테마와 해당 테마의 패널 UI를 바인딩하는 직렬화 가능 클래스.
+    /// 인스펙터에서 테마, 패널, 문제 수, 뒤로가기 버튼을 설정한다.
+    /// </summary>
     [Serializable]
     public class ThemePanelBinding
     {
@@ -22,34 +41,35 @@ public class ThemePanelsController : MonoBehaviour
         public Button backButton;
     }
 
+    /// <summary>테마 선택 버튼과 테마를 매핑하는 직렬화 가능 클래스</summary>
     [Serializable]
     public class ThemeSelectButton
     {
-        public ProblemTheme theme;
-        public Button button;
+        public ProblemTheme theme;  // 이 버튼이 담당하는 테마
+        public Button button;       // 테마 선택 버튼 참조
     }
 
     [Header("테마 선택 패널")]
-    [SerializeField] GameObject themeSelectPanel;
-    [SerializeField] ThemeSelectButton[] themeSelectButtons;
+    [SerializeField] GameObject themeSelectPanel;              // 테마 선택 화면 루트 오브젝트
+    [SerializeField] ThemeSelectButton[] themeSelectButtons;   // 테마별 선택 버튼 배열
 
     [Header("각 테마별 패널 바인딩")]
-    [SerializeField] ThemePanelBinding[] themePanels;
+    [SerializeField] ThemePanelBinding[] themePanels;          // 테마별 문제 패널 바인딩 배열
 
     [Header("Director 복귀용 패널")]
-    [SerializeField] private GameObject directorEndingPanel;
-    [SerializeField] private Button levelSelectBackButton;
+    [SerializeField] private GameObject directorEndingPanel;   // Director 테마 엔딩 패널 (전체 완주 후 표시)
+    [SerializeField] private Button levelSelectBackButton;     // 레벨 선택 패널의 뒤로가기 버튼
 
     [Header("옵션 버튼 (레벨 선택 중 비활성화)")]
-    [SerializeField] private GameObject optionButtonRoot;
+    [SerializeField] private GameObject optionButtonRoot;      // 옵션 버튼 루트 (레벨 선택 중 숨김)
 
-    ProblemTheme? _selectedTheme = null;
+    private ProblemTheme? _selectedTheme = null;               // 현재 선택된 테마 (null이면 테마 선택 화면)
 
-    // 🔹 패널별로 구독한 핸들러를 저장해두는 딕셔너리
+    // 패널별로 구독한 클릭 핸들러를 저장 (OnDestroy에서 정확히 해제하기 위함)
     private readonly Dictionary<ThemePanelUI, Action<int>> _clickHandlers
         = new Dictionary<ThemePanelUI, Action<int>>();
 
-    User currentUser;
+    private User currentUser;  // 현재 로그인한 사용자
 
     void Awake()
     {

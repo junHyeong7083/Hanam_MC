@@ -1,10 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Problem3 Step2: Pen write animation
-/// - 대기 상태: originPos에서 알파 0.5~1 펄스
-/// - Play() 호출 시: startPoint -> endPoint로 이동
-/// - 완료 후 originPos로 복귀
+/// PenWriteAnimation - 펜 아이콘이 대기 상태에서 펄스하고, 재작성 시 이동하는 애니메이션 컴포넌트
+///
+/// 【역할】 두 가지 상태를 관리:
+///          1) Idle(대기): originPos에서 알파 0.5↔1.0 사인파 펄스 (대기 중 시각 힌트)
+///          2) Playing(재생): startPoint→endPoint로 이동 + 회전 + 페이드인/아웃, 완료 후 originPos 복귀
+/// 【사용 위치】 Problem3 Step2 (텍스트 재작성 시 펜 쓰기 연출)
+/// 【트리거】 외부에서 Play() 호출 시 이동 시작, 이동 완료 시 자동으로 Idle 복귀
+/// 【의존성】 startPoint/endPoint(이동 경로 RectTransform), CanvasGroup(알파, 자동 추가)
 /// </summary>
 public class PenWriteAnimation : MonoBehaviour
 {

@@ -1,10 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Problem3 Step2: Slide up when CanvasGroup alpha increases
-/// - Monitors CanvasGroup.alpha changes
-/// - When alpha starts increasing from 0, triggers slide up animation
-/// - Works alongside existing fade logic without modification
+/// TextSlideUpOnFadeIn - CanvasGroup 알파 증가를 감지하여 슬라이드 업 애니메이션을 트리거하는 컴포넌트
+///
+/// 【역할】 매 프레임 CanvasGroup.alpha를 모니터링하여, 0에서 증가하기 시작하면
+///          아래에서 위로 슬라이드 업 애니메이션을 자동 트리거한다.
+///          기존 페이드 로직을 수정하지 않고 슬라이드 효과를 추가할 수 있다.
+/// 【사용 위치】 Problem3 Step2 (재작성된 텍스트가 페이드인될 때 동시에 슬라이드 업)
+/// 【트리거】 Update에서 CanvasGroup.alpha 변화를 자동 감지 (외부 호출 불필요)
+/// 【의존성】 CanvasGroup(RequireComponent - 알파 감시 대상), RectTransform(슬라이드)
 /// </summary>
 [RequireComponent(typeof(CanvasGroup))]
 public class TextSlideUpOnFadeIn : MonoBehaviour

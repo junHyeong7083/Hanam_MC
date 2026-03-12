@@ -1,10 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Problem3 Step2: Completion sparkle effect
-/// - Scale from 0 to 1 with spring-like bounce
-/// - Shows after text rewrite completes
-/// - Call Show() to trigger, Hide() to reset
+/// CompletionSparkle - 텍스트 재작성 완료 시 스프링 바운스로 등장하는 스파클 효과 컴포넌트
+///
+/// 【역할】 스케일 0에서 시작하여 스프링 오버슈트(지정 비율까지 초과 후 1.0으로 안착)하며 등장.
+///          watchCanvasGroup의 알파 변화를 감시하여 페이드인 완료 시 자동 트리거 가능.
+///          autoHide=true이면 일정 시간 후 자동 숨김.
+/// 【사용 위치】 Problem3 Step2 (텍스트 재작성 완료 후 스파클 표시)
+/// 【트리거】 외부에서 Show() 호출, 또는 watchCanvasGroup 알파 감시로 자동 트리거
+/// 【의존성】 RectTransform(스케일), watchCanvasGroup(자동 트리거용, 선택)
 /// </summary>
 public class CompletionSparkle : MonoBehaviour
 {

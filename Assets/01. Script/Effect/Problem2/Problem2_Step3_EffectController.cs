@@ -4,10 +4,13 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Problem2 Step3: Effect Controller
-/// - 버튼 페이드/비활성화 효과
-/// - 마이크 버튼 등장 효과
-/// - 완료 시 이펙트
+/// Problem2_Step3_EffectController - 문제2 스텝3(관점 전환 + 음성 녹음)의 시각 효과 관리자
+///
+/// 【역할】 관점 카드 선택 시 미선택 버튼 페이드아웃/비활성화,
+///          마이크 녹음 버튼 스케일 등장(0→1), 카드 완료 시 스케일 펀치 이펙트를 관리한다.
+/// 【사용 위치】 ProblemScene - Problem2 Step3 (NG→OK 관점 전환 + 음성 녹음 스텝)
+/// 【트리거】 Logic 클래스에서 PlayMicAppear(), PlayButtonsFadeOut(), PlayCompletePunch() 등 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, Button[](버튼 배열)
 /// </summary>
 public class Problem2_Step3_EffectController : EffectControllerBase
 {

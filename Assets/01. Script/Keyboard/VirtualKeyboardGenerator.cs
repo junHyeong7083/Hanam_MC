@@ -2,31 +2,40 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 가상 키보드 자동 생성기
-/// - Play 모드 또는 에디터에서 키보드 UI 자동 생성
-/// - QWERTY 레이아웃 + 한글 두벌식
+/// VirtualKeyboardGenerator - QWERTY + 한글 두벌식 키보드 UI 자동 생성기
+///
+/// 【역할】 에디터의 ContextMenu "Generate Keyboard" 또는 런타임에서
+///         키보드 UI를 프로그래매틱하게 생성한다.
+///         - 4행 일반 키 (숫자 12키, 문자 12/11/10키)
+///         - 하단 특수 키 (Shift, 한/영, Space, Backspace, Enter)
+///         - 각 키에 영문/영문Shift/한글/한글Shift 문자를 VirtualKeyboardKey에 설정
+///         - 키 프리팹이 없으면 기본 프리팹을 런타임 생성
+/// 【씬】 에디터 도구 / 런타임에서 사용 가능
+/// 【참조하는 곳】 에디터 ContextMenu 또는 초기화 스크립트
+/// 【참조되는 곳】 VirtualKeyboard (생성된 키의 이벤트 수신), VirtualKeyboardKey (개별 키 설정)
+/// 【흐름】 GenerateKeyboard() → 기존 키 삭제 → 4행 일반 키 생성 → 하단 특수 키 생성
 /// </summary>
 public class VirtualKeyboardGenerator : MonoBehaviour
 {
     [Header("===== 생성 설정 =====")]
-    [SerializeField] private RectTransform keyboardContainer;
-    [SerializeField] private VirtualKeyboard virtualKeyboard;
+    [SerializeField] private RectTransform keyboardContainer;   // 키가 생성될 부모 RectTransform
+    [SerializeField] private VirtualKeyboard virtualKeyboard;   // VirtualKeyboard 참조 (특수 키 연결용)
 
     [Header("===== 키 프리팹 =====")]
-    [SerializeField] private GameObject keyPrefab;
-    [SerializeField] private GameObject wideKeyPrefab;  // Shift, Space, Enter 등
+    [SerializeField] private GameObject keyPrefab;              // 일반 키 프리팹
+    [SerializeField] private GameObject wideKeyPrefab;          // 넓은 키 프리팹 (Shift, Space, Enter 등)
 
     [Header("===== 레이아웃 설정 =====")]
-    [SerializeField] private float keyWidth = 80f;
-    [SerializeField] private float keyHeight = 80f;
-    [SerializeField] private float keySpacing = 8f;
-    [SerializeField] private float rowSpacing = 8f;
+    [SerializeField] private float keyWidth = 80f;              // 키 너비 (px)
+    [SerializeField] private float keyHeight = 80f;             // 키 높이 (px)
+    [SerializeField] private float keySpacing = 8f;             // 키 간 수평 간격 (px)
+    [SerializeField] private float rowSpacing = 8f;             // 행 간 수직 간격 (px)
 
     [Header("===== 색상 =====")]
-    [SerializeField] private Color keyNormalColor = Color.white;
-    [SerializeField] private Color keySpecialColor = new Color(0.8f, 0.8f, 0.8f);
+    [SerializeField] private Color keyNormalColor = Color.white;                      // 일반 키 배경 색상
+    [SerializeField] private Color keySpecialColor = new Color(0.8f, 0.8f, 0.8f);     // 특수 키 배경 색상
 
-    // 텐키리스 QWERTY 레이아웃 (12키씩)
+    // ── 텐키리스 QWERTY 레이아웃 정의 (12키, 12키, 11키, 10키) ──
     private static readonly string[][] ROWS_EN = {
         new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=" },
         new[] { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]" },
@@ -66,6 +75,11 @@ public class VirtualKeyboardGenerator : MonoBehaviour
     // 각 행의 키 개수
     private static readonly int[] ROW_KEY_COUNTS = { 12, 12, 11, 10 };
 
+    /// <summary>
+    /// 키보드 UI를 자동 생성한다.
+    /// 기존 키를 모두 삭제하고, 4행 일반 키 + 하단 특수 키를 새로 생성한다.
+    /// 에디터에서 ContextMenu "Generate Keyboard"로 호출 가능.
+    /// </summary>
     [ContextMenu("Generate Keyboard")]
     public void GenerateKeyboard()
     {
@@ -114,6 +128,10 @@ public class VirtualKeyboardGenerator : MonoBehaviour
         Debug.Log("키보드 생성 완료!");
     }
 
+    /// <summary>
+    /// 일반 키 하나를 생성하고 VirtualKeyboardKey에 영문/한글/Shift 문자를 설정한다.
+    /// 에디터에서는 SerializedObject를 통해 private 필드를 직접 설정한다.
+    /// </summary>
     private void CreateKey(string enChar, string enShift, string koChar, string koShift,
         VirtualKeyboardKey.KeyType keyType, Vector2 position, Vector2 size)
     {
@@ -153,6 +171,10 @@ public class VirtualKeyboardGenerator : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// 하단 행의 특수 키들(Shift, 한/영, Space, Backspace, Enter)을 생성한다.
+    /// 12키 기준 전체 너비에 맞추어 각 키를 배치한다.
+    /// </summary>
     private void CreateSpecialKeys(float y)
     {
         // 12키 기준 전체 너비에 맞춤
@@ -191,6 +213,10 @@ public class VirtualKeyboardGenerator : MonoBehaviour
         CreateSpecialKey("←", cursor - backWidth / 2f, y, backWidth, "backspaceButton");
     }
 
+    /// <summary>
+    /// 특수 키 하나를 생성한다.
+    /// VirtualKeyboardKey 컴포넌트는 제거하고, VirtualKeyboard의 해당 필드에 Button을 연결한다.
+    /// </summary>
     private void CreateSpecialKey(string label, float x, float y, float width, string fieldName)
     {
         GameObject prefab = wideKeyPrefab ?? keyPrefab;
@@ -238,6 +264,10 @@ public class VirtualKeyboardGenerator : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// 키 프리팹이 설정되지 않았을 때 기본 키 프리팹을 런타임으로 생성한다.
+    /// Image + Button + VirtualKeyboardKey + 중앙 정렬 Text(Label)로 구성된다.
+    /// </summary>
     private GameObject CreateDefaultKeyPrefab()
     {
         GameObject keyObj = new GameObject("Key");

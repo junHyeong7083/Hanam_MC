@@ -2,17 +2,23 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 드래그 아이템의 UI 드롭 "여기에 놓으세요" 영역 박스 컴포넌트.
-/// - RectTransform 영역으로 포인터가 안/밖에 있는지 판정
-/// - 외곽선(하이라이트) On/Off 제어
+/// UIDropBoxArea - 드래그 앤 드롭의 "여기에 놓으세요" 드롭 영역 컴포넌트
+///
+/// 【역할】 사용자가 아이템을 드래그할 때 드롭 가능한 영역을 판정하고,
+///          드래그 중 영역 안에 들어오면 외곽선(outline)을 하이라이트로 표시한다.
+///          RectTransformUtility.RectangleContainsScreenPoint()로 영역 판정.
+/// 【참조하는 곳】 StepInventory 시스템에서 아이템 드래그 시 드롭 대상으로 사용,
+///                각 Problem Director Logic에서 드래그 이벤트 처리 시 참조
+/// 【참조되는 곳】 없음 (독립 컴포넌트)
+/// 【흐름】 드래그 시작 → UpdateHighlight(eventData) 반복 호출 → 드롭 시 IsPointerOver() 판정
 /// </summary>
 public class UIDropBoxArea : MonoBehaviour
 {
     [Header("DropDown box")]
-    [SerializeField] private RectTransform area;
+    [SerializeField] private RectTransform area;   // 드롭 영역으로 사용할 RectTransform (포인터 판정 범위)
 
     [Header("drag Outline box")]
-    [SerializeField] private GameObject outline;
+    [SerializeField] private GameObject outline;   // 드래그 중 영역 안에 있을 때 표시되는 외곽선 UI 오브젝트
 
     private void Awake()
     {

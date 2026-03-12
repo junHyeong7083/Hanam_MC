@@ -4,18 +4,30 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 공용 보상 연출 Step
-/// - ProblemStepBase 를 상속
-/// - 여러 UI 요소를 배열(sequenceItems)로 받아 순차적으로 등장
-/// - 보상 DB 저장 + 리워드 이름/설명 텍스트 표시
+/// CommonRewardStep - 공용 보상 연출 스텝 (모든 문제의 마지막 스텝)
+///
+/// 【역할】 문제 풀이 완료 후 보상 아이템 획득 연출을 담당한다.
+///          SequenceItem 배열로 정의된 UI 요소들을 순차적으로 등장시키고(위치/스케일/알파 애니메이션),
+///          보상 아이템 정보를 DB에 저장하며, DialogueSequencer로 보상 대사를 재생한다.
+///          모든 연출 완료 후 "홈으로" 버튼을 표시한다.
+/// 【참조하는 곳】 StepFlowController의 마지막 stepPanels에 배치
+/// 【참조되는 곳】 ProblemStepBase (SaveReward), DataService (Progress, Reward),
+///                DialogueSequencer (대사 재생), ProblemSession, GameManager
+/// 【흐름】 OnStepEnter() → SaveRewardToDbOnce() → ApplyRewardText() → StartSequence()
+///          → SequenceItem 순차 등장 → DialogueSequencer 대사 재생 → OnEnterComplete() → 홈 버튼 표시
+///          → GoToHome() 또는 SaveAndNextStep() → MarkProblemSolved() → 홈 화면 전환
 /// </summary>
 public class CommonRewardStep : ProblemStepBase
 {
+    /// <summary>
+    /// 보상 연출 시퀀스의 개별 아이템 정의.
+    /// 각 항목은 순서대로 등장하며, delay/duration/offset/scale 등으로 연출을 제어한다.
+    /// </summary>
     [Serializable]
     public class SequenceItem
     {
         [Header("디버그/설명용 이름 (선택)")]
-        public string name;
+        public string name; // 인스펙터에서 구분하기 쉽도록 설명용 이름
 
         [Header("UI Root")]
         public RectTransform root;
@@ -47,30 +59,31 @@ public class CommonRewardStep : ProblemStepBase
     }
 
     [Header("연출 시퀀스 (위에서 아래 순서대로 재생)")]
-    [SerializeField] private SequenceItem[] sequenceItems;
+    [SerializeField] private SequenceItem[] sequenceItems; // 순차 등장할 UI 요소들의 배열
 
     [Header("아이템 이름 텍스트")]
-    [SerializeField] private Text itemNameText;
-    [SerializeField] private int itemNameTextId;
+    [SerializeField] private Text itemNameText;   // 보상 아이템 이름을 표시할 Text UI
+    [SerializeField] private int itemNameTextId;   // 아이템 이름의 CSV textId
 
     [Header("효과 설명 텍스트")]
-    [SerializeField] private Text effectDescText;
-    [SerializeField] private int effectDescTextId;
+    [SerializeField] private Text effectDescText;  // 보상 아이템 효과 설명을 표시할 Text UI
+    [SerializeField] private int effectDescTextId;  // 효과 설명의 CSV textId
 
     [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
+    [SerializeField] private DialogueSequencer dialogueSequencer; // 보상 대사를 재생하는 시퀀서
 
     [Header("버튼 (enterTextIds 완료 후 표시)")]
-    [SerializeField] private Button homeButton;
+    [SerializeField] private Button homeButton; // 대사 완료 후 표시되는 "홈으로" 버튼
 
     [Header("보상 메타 (DB 저장용)")]
-    [SerializeField] private string rewardItemId = "mind_lens";
-    [SerializeField] private string rewardItemName = "마음 렌즈";
+    [SerializeField] private string rewardItemId = "mind_lens";    // DB에 저장할 보상 아이템 ID
+    [SerializeField] private string rewardItemName = "마음 렌즈";   // DB에 저장할 보상 아이템 이름
 
     // 내부 상태
-    private Coroutine _sequenceRoutine;
-    private bool _rewardSaved;
+    private Coroutine _sequenceRoutine; // 연출 코루틴 참조 (중복 방지)
+    private bool _rewardSaved;          // 보상이 이미 DB에 저장되었는지 (중복 저장 방지)
 
+    /// <summary>DB에 저장할 보상 아이템 단건 데이터</summary>
     [Serializable]
     public class StepRewardItemDto
     {
@@ -79,6 +92,7 @@ public class CommonRewardStep : ProblemStepBase
         public bool unlocked;
     }
 
+    /// <summary>DB에 저장할 보상 시도 데이터 (아이템 배열 포함)</summary>
     [Serializable]
     public class StepRewardAttemptDto
     {
@@ -89,10 +103,13 @@ public class CommonRewardStep : ProblemStepBase
     // ProblemStepBase 구현
     // =========================
 
+    /// <summary>
+    /// 스텝 진입 시: DB에 보상 저장 → 텍스트 표시 → 홈 버튼 숨김 → 대사 이벤트 등록 → 연출 시작
+    /// </summary>
     protected override void OnStepEnter()
     {
-        SaveRewardToDbOnce();
-        ApplyRewardText();
+        SaveRewardToDbOnce();   // DB에 보상 아이템 저장 (한 번만)
+        ApplyRewardText();       // 아이템 이름/효과 텍스트 표시
 
         // 버튼 초기 숨김
         if (homeButton != null)
@@ -119,6 +136,7 @@ public class CommonRewardStep : ProblemStepBase
         }
     }
 
+    /// <summary>DialogueSequencer의 enterTextIds 재생이 모두 완료되면 호출. 홈 버튼을 표시한다.</summary>
     private void OnEnterComplete()
     {
         if (homeButton != null)
@@ -129,6 +147,7 @@ public class CommonRewardStep : ProblemStepBase
     // 리워드 텍스트 표시
     // =========================
 
+    /// <summary>CSV DataTable에서 아이템 이름과 효과 설명 텍스트를 가져와 UI에 표시한다.</summary>
     private void ApplyRewardText()
     {
         if (itemNameText != null && itemNameTextId > 0)
@@ -142,6 +161,7 @@ public class CommonRewardStep : ProblemStepBase
     // 시퀀스 제어
     // =========================
 
+    /// <summary>보상 연출 시퀀스를 시작한다. 이미 실행 중이면 중지 후 재시작.</summary>
     public void StartSequence()
     {
         if (_sequenceRoutine != null)
@@ -151,6 +171,10 @@ public class CommonRewardStep : ProblemStepBase
         _sequenceRoutine = StartCoroutine(SequenceRoutine());
     }
 
+    /// <summary>
+    /// 모든 SequenceItem의 초기 상태를 설정한다.
+    /// basePos를 캐싱하고, startOffset/startScale/alpha를 적용하여 등장 전 상태로 만든다.
+    /// </summary>
     private void InitState()
     {
         if (sequenceItems == null) return;
@@ -179,6 +203,10 @@ public class CommonRewardStep : ProblemStepBase
         }
     }
 
+    /// <summary>
+    /// SequenceItem 배열을 순서대로 재생하는 메인 코루틴.
+    /// 각 아이템의 delay 대기 → 등장 애니메이션 → SweepHighlightTrigger 실행 순서로 진행.
+    /// </summary>
     private IEnumerator SequenceRoutine()
     {
         if (sequenceItems == null || sequenceItems.Length == 0)
@@ -205,6 +233,11 @@ public class CommonRewardStep : ProblemStepBase
         }
     }
 
+    /// <summary>
+    /// 개별 SequenceItem의 등장 애니메이션을 재생하는 코루틴.
+    /// 위치(startOffset→basePos), 스케일(startScale→baseScale), 알파(0→1) 보간.
+    /// useOvershoot 활성 시 전반부에서 overshootScale까지 확대 후 후반부에서 원래 크기로 복귀.
+    /// </summary>
     private IEnumerator PlayItemRoutine(SequenceItem item)
     {
         if (item == null || item.root == null)
@@ -336,6 +369,10 @@ public class CommonRewardStep : ProblemStepBase
     // 보상 DB 저장
     // =========================
 
+    /// <summary>
+    /// 보상 아이템을 DB에 저장한다 (한 번만 실행됨).
+    /// ProblemStepBase.SaveReward()를 호출하여 인벤토리에 아이템을 추가한다.
+    /// </summary>
     private void SaveRewardToDbOnce()
     {
         if (_rewardSaved) return;

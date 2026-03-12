@@ -3,25 +3,29 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 버튼 호버 + (선택) 3상태 스프라이트 시스템
-/// - hover: scale 확대, (옵션) x 이동, (옵션) outline
-/// - isDialogueButton=true면 Resources/Buttons 에서
-///   기본/누르는중/선택 스프라이트를 불러와 상태에 따라 Image.sprite를 변경
+/// ButtonHover - 버튼 호버/프레스/선택 상태에 따른 시각적 피드백 컴포넌트
+///
+/// 【역할】 포인터 호버 시 스케일 확대 + 옵션으로 X축 이동/Outline 표시.
+///          isDialogueButton=true이면 Resources/Buttons에서 기본/누르는중/선택 3상태 스프라이트를 로드하여
+///          상태 전환 시 Image.sprite를 자동 교체. 버튼 클릭 시 SFX 재생.
+/// 【사용 위치】 대사 선택 버튼, 일반 UI 버튼 등 프로젝트 전반의 인터랙티브 버튼
+/// 【트리거】 IPointerEnter/Exit/Down/Up 이벤트 (EventSystem)
+/// 【의존성】 Image(스프라이트 교체용), SoundManager(버튼 SFX), Outline(옵션)
 /// </summary>
 public class ButtonHover : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler,
     IPointerDownHandler, IPointerUpHandler
 {
     [Header("===== 호버 설정 =====")]
-    [SerializeField] private float hoverScale = 1.08f;
-    [SerializeField] private float animationSpeed = 10f;
+    [SerializeField] private float hoverScale = 1.08f;   // 호버 시 확대 비율
+    [SerializeField] private float animationSpeed = 10f;  // 스케일 전환 보간 속도
 
     [Header("===== X 이동 (옵션) =====")]
-    [SerializeField] private bool enableMoveX = false;
-    [SerializeField] private float moveXDistance = 10f;
+    [SerializeField] private bool enableMoveX = false;    // 호버 시 X축 이동 활성화
+    [SerializeField] private float moveXDistance = 10f;   // X축 이동 거리 (px)
 
     [Header("===== Outline (옵션) =====")]
-    [SerializeField] private Outline outline;
+    [SerializeField] private Outline outline;             // 호버 시 활성화할 Outline 컴포넌트
 
     [Header("===== Dialogue Button Sprite (옵션) =====")]
     [SerializeField] private bool isDialogueButton = false;
@@ -35,22 +39,24 @@ public class ButtonHover : MonoBehaviour,
     [Tooltip("버튼 선택(손 뗌) 상태 스프라이트 (Resources/Buttons/...)")]
     [SerializeField] private string spritePathSelected = "Buttons/button_03";
 
-    private string btnsfx = "SFX_btn";
-    // 내부
-    private RectTransform _rectTransform;
-    private Vector3 _originalScale;
-    private Vector2 _originalPosition;
+    private string btnsfx = "SFX_btn";   // 버튼 클릭 시 재생할 SFX 키
 
-    private bool _isHovering;
-    private bool _isInteractable = true;
-    private bool _isPressing;
+    // 내부 상태
+    private RectTransform _rectTransform;   // X축 이동에 사용
+    private Vector3 _originalScale;         // 원래 스케일 (호버 해제 시 복원용)
+    private Vector2 _originalPosition;      // 원래 앵커 위치 (X이동 복원용)
 
-    private Image _image;
-    private Sprite _sprNormal;
-    private Sprite _sprPressed;
-    private Sprite _sprSelected;
+    private bool _isHovering;               // 현재 호버 상태인지
+    private bool _isInteractable = true;    // 인터랙션 가능 여부
+    private bool _isPressing;               // 현재 눌리고 있는지
+
+    private Image _image;                   // 스프라이트 교체 대상 Image
+    private Sprite _sprNormal;              // 기본 상태 스프라이트 (Resources에서 로드)
+    private Sprite _sprPressed;             // 눌림 상태 스프라이트
+    private Sprite _sprSelected;            // 선택(손 뗌) 상태 스프라이트
 
     // 녹음 등 외부에서 강제로 적용할 스프라이트 오버라이드
+    // 오버라이드 중에는 Normal/Pressed/Selected 전환 무시
     private Sprite _spriteOverride;
 
     private void OnEnable()
@@ -135,6 +141,9 @@ public class ButtonHover : MonoBehaviour,
         ApplySpriteSelected();
     }
 
+    /// <summary>
+    /// 인터랙션 가능 여부 설정. false 시 호버/프레스 상태 초기화하고 원래 스케일/위치로 복원
+    /// </summary>
     public void SetInteractable(bool interactable)
     {
         _isInteractable = interactable;
@@ -153,6 +162,9 @@ public class ButtonHover : MonoBehaviour,
         }
     }
 
+    /// <summary>
+    /// 스케일/위치/스프라이트를 모두 원래 상태로 리셋
+    /// </summary>
     public void ResetScale()
     {
         transform.localScale = _originalScale;

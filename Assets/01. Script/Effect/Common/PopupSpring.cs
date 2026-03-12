@@ -2,13 +2,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// 팝업 스프링 애니메이션
-/// - scale 0에서 튀어나오는 효과
-/// - 오버슈트 + 바운스
+/// PopupSpring - 스케일 0에서 스프링 바운스로 튀어나오는 팝업 애니메이션 컴포넌트
 ///
-/// [사용처]
-/// - Problem2 Step2: 감정 라벨 팝업
-/// - 정답 표시, 보상 등장
+/// 【역할】 오브젝트를 scale 0에서 시작하여 DOTween OutBack 이징으로 목표 스케일까지
+///          오버슈트(지정된 비율만큼 초과 확대 후 복귀)하며 등장시킨다.
+/// 【사용 위치】 Problem2 Step2(감정 라벨 팝업), 정답 표시, 보상 등장, 완료 스파클 등
+/// 【트리거】 OnEnable 시 자동 재생, 또는 외부에서 Play() 호출
+/// 【의존성】 DOTween(DG.Tweening)
 /// </summary>
 public class PopupSpring : MonoBehaviour
 {

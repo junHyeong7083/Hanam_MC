@@ -4,11 +4,20 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
-/// Part 9 - Step 1 NG 갈등 장면 이펙트 컨트롤러
-/// - 인트로 카드 등장 (NG 장면 + 어시스턴트)
-/// - 충돌 아이콘 흔들림
-/// - 안내 텍스트 펄스
-/// - 대본 카드 플립 등장
+/// Problem9_Step1_EffectController - 문제9 스텝1(NG 갈등 장면 해결)의 이펙트 관리자
+///
+/// 【역할】 인트로(NG 장면 카드+어시스턴트 말풍선 순차 등장), 대기(충돌 아이콘 흔들림+안내 텍스트 펄스),
+///          드롭 효과(하이라이트/성공 시 충돌 아이콘 회전+축소), 대본 카드 플립 등장 등 복합 이펙트 관리.
+/// 【사용 위치】 ProblemScene - Problem9 Step1 (NG 갈등 장면을 해결하는 스텝)
+/// 【트리거】 Logic 클래스에서 PlayIntroAnimation(), PlayDropSuccessEffect(), PlayScriptCardReveal() 등 호출
+/// 【의존성】 EffectControllerBase(상속), DOTween, 다수의 RectTransform/CanvasGroup 참조
+///
+/// 【흐름】
+/// 1. PlayIntroAnimation(): NG 장면 슬라이드 업 → 어시스턴트 등장 → 대기 애니메이션 시작
+/// 2. 대기: 충돌 아이콘 좌우 흔들림 + 안내 텍스트 알파 펄스
+/// 3. 드래그: PlayDropTargetHighlight()/Unhighlight() - 충돌 아이콘 스케일 변화
+/// 4. 드롭 성공: PlayDropSuccessEffect() - 충돌 아이콘 스케일업+회전+축소
+/// 5. PlayScriptCardReveal(): 대본 카드 스케일+페이드 등장 + 내용 Y축 플립
 /// </summary>
 public class Problem9_Step1_EffectController : EffectControllerBase
 {
