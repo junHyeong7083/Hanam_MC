@@ -28,10 +28,6 @@ public class Problem4_Step1_EffectController : EffectControllerBase
     [SerializeField] private float activateScale = 1.05f;
     [SerializeField] private float activateDuration = 0.6f;
 
-    [Header("===== 완료 스파클 (옵션) =====")]
-    [SerializeField] private GameObject completionSparkle;
-    [SerializeField] private float sparkleDelay = 0.1f;
-
     [Header("===== 안내 텍스트 =====")]
     [SerializeField] private GameObject instructionRoot;
     [SerializeField] private float instructionFadeOutDuration = 0.2f;
@@ -99,12 +95,6 @@ public class Problem4_Step1_EffectController : EffectControllerBase
             seq.Append(filmVisualRoot.DOScale(_filmBaseScale, halfDuration).SetEase(Ease.InQuad));
         }
 
-        // 3. 스파클 딜레이 후 표시
-        if (sparkleDelay > 0f)
-            seq.AppendInterval(sparkleDelay);
-
-        seq.AppendCallback(ShowSparkleImmediate);
-
         // 완료 콜백
         seq.OnComplete(() => onComplete?.Invoke());
     }
@@ -129,9 +119,6 @@ public class Problem4_Step1_EffectController : EffectControllerBase
         // 필름 스케일 원래대로
         if (filmVisualRoot != null && _filmScaleSaved)
             filmVisualRoot.localScale = _filmBaseScale;
-
-        // 스파클 숨김
-        HideSparkle();
     }
 
     /// <summary>
@@ -144,31 +131,6 @@ public class Problem4_Step1_EffectController : EffectControllerBase
 
         if (instructionCanvasGroup != null)
             instructionCanvasGroup.alpha = 0f;
-    }
-
-    /// <summary>
-    /// 스파클 즉시 표시
-    /// </summary>
-    public void ShowSparkleImmediate()
-    {
-        if (completionSparkle != null)
-        {
-            completionSparkle.SetActive(true);
-
-            // PopupSpring이 붙어있으면 자동 애니메이션
-            var popupSpring = completionSparkle.GetComponent<PopupSpring>();
-            if (popupSpring != null)
-                popupSpring.Play();
-        }
-    }
-
-    /// <summary>
-    /// 스파클 숨김
-    /// </summary>
-    public void HideSparkle()
-    {
-        if (completionSparkle != null)
-            completionSparkle.SetActive(false);
     }
 
     #endregion

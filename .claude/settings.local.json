@@ -26,7 +26,11 @@
       "Bash(git mv:*)",
       "mcp__UnityMCP__create_script",
       "mcp__UnityMCP__script_apply_edits",
-      "mcp__UnityMCP__validate_script"
+      "mcp__UnityMCP__validate_script",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//c/Users/user/Git/Hanam_MC/**)"
     ],
     "deny": [],
     "ask": []

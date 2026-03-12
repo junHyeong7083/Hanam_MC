@@ -2442,7 +2442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slots:
   - itemId: mind_lens
-    draggableThisStep: 1
+    draggableThisStep: 0
     slotRoot: {fileID: 3940890031192343436}
     itemComponent: {fileID: 1818689104161772418}
   - itemId: scenario_pen

@@ -17576,7 +17576,6 @@ GameObject:
   - component: {fileID: 594341446}
   - component: {fileID: 594341448}
   - component: {fileID: 594341447}
-  - component: {fileID: 594341451}
   - component: {fileID: 594341450}
   m_Layer: 5
   m_Name: ProblemImage
@@ -17656,35 +17655,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &594341451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 594341445}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc3ae712dfccd0c4fa5acb7f08ad5f1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flipDuration: 0.5
-  frontSide: {fileID: 0}
-  backSide: {fileID: 0}
-  enableFadeAfterFlip: 0
-  fadeOutDuration: 0.3
-  fadeInDuration: 0.3
-  canvasGroup: {fileID: 594341450}
-  warmOverlay: {fileID: 0}
-  cardImage: {fileID: 0}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  warmColor: {r: 1, g: 0.8973636, b: 0, a: 1}
-  onFlipComplete:
-    m_PersistentCalls:
-      m_Calls: []
-  onFadeComplete:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &596826324
 GameObject:
   m_ObjectHideFlags: 0
@@ -43565,7 +43535,6 @@ GameObject:
   - component: {fileID: 1494938594}
   - component: {fileID: 1494938598}
   - component: {fileID: 1494938597}
-  - component: {fileID: 1494938596}
   - component: {fileID: 1494938595}
   m_Layer: 5
   m_Name: CompleteCard
@@ -43606,35 +43575,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1494938596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1494938593}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc3ae712dfccd0c4fa5acb7f08ad5f1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flipDuration: 0.5
-  frontSide: {fileID: 0}
-  backSide: {fileID: 0}
-  enableFadeAfterFlip: 0
-  fadeOutDuration: 0.3
-  fadeInDuration: 0.3
-  canvasGroup: {fileID: 1494938595}
-  warmOverlay: {fileID: 0}
-  cardImage: {fileID: 0}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  warmColor: {r: 1, g: 0.8973636, b: 0, a: 1}
-  onFlipComplete:
-    m_PersistentCalls:
-      m_Calls: []
-  onFadeComplete:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1494938597
 MonoBehaviour:
   m_ObjectHideFlags: 0
