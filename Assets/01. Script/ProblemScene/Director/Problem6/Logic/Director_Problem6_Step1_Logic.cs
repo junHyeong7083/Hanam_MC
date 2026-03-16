@@ -17,6 +17,8 @@ public abstract class Director_Problem6_Step1_Logic : InventoryDropTargetStepBas
 {
     // ===== 파생 클래스(Binder)에서 넘겨줄 UI 프로퍼티 =====
 
+    #region Abstract Properties
+
     /// <summary>의자가 배치될 드롭 영역의 RectTransform (스케일 애니메이션 대상)</summary>
     protected abstract RectTransform ChairTargetVisualRoot { get; }
 
@@ -34,6 +36,8 @@ public abstract class Director_Problem6_Step1_Logic : InventoryDropTargetStepBas
 
     /// <summary>의자 배치 완료 시 표시할 스파클(반짝임) 이펙트 이미지</summary>
     protected abstract GameObject SparkleImage { get; }
+
+    #endregion
 
     // ===== InventoryDropTargetStepBase 추상 속성 연결 =====
 

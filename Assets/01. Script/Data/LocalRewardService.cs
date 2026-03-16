@@ -82,13 +82,13 @@ public class LocalRewardService : IRewardService
 
         if (sess == null || currentUser == null)
         {
-            Debug.LogWarning("[RewardService] ����/���� ���� - ���� ���� ��ŵ");
-            return Result.Fail(AuthError.Internal, "���� ������ �����ϴ�.");
+            Debug.LogWarning("[RewardService] 세션/유저 없음 - 보상 저장 스킵");
+            return Result.Fail(AuthError.Internal, "로그인 상태가 아닙니다.");
         }
 
         string userEmail = currentUser.Email;
 
-        // 1) Attempt �α� ���� (ProgressService�� ����)
+        // 1) Attempt 로그 저장 (ProgressService에 위임)
         var attemptResult = _progressService.SaveStepAttemptForCurrentUser(
             theme,
             problemIndex,
@@ -99,7 +99,7 @@ public class LocalRewardService : IRewardService
         if (!attemptResult.Ok)
             return attemptResult;
 
-        // 2) �κ��丮 ������ ����
+        // 2) 인벤토리 아이템 지급
         try
         {
             var invItem = new InventoryItem

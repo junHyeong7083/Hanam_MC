@@ -44,6 +44,8 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
 
     // ===== 자식에서 구현할 추상 프로퍼티/메서드 =====
 
+    #region Abstract Properties
+
     /// <summary>총 필름 카드 수</summary>
     protected abstract int FilmCount { get; }
 
@@ -86,6 +88,8 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     /// <summary>STT 마이크 인디케이터 (음성으로 "생각"/"사실" 선택 가능)</summary>
     protected abstract MicRecordingIndicator MicIndicator { get; }
 
+    #endregion
+
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;  // 대사 시퀀서 (enter/completed + 카드별 대사)
 
@@ -95,11 +99,15 @@ public abstract class Director_Problem1_Step3_Logic : RandomCardSequenceStepBase
     [SerializeField] private int wrongFeedbackTextId;               // 오답 피드백 텍스트 ID
     [SerializeField] private float wrongFeedbackDuration = 2f;      // 오답 피드백 표시 시간 (초)
 
+    #region Abstract Properties (UI Panels)
+
     /// <summary>분류 UI 전체를 감싸는 루트 오브젝트 (요약 패널 전환 시 숨김)</summary>
     protected abstract GameObject StepRoot { get; }
 
     /// <summary>요약 패널 루트 (분류 완료 후 활성화)</summary>
     protected abstract GameObject SummaryPanelRoot { get; }
+
+    #endregion
 
     // ===== 내부 상태 필드 =====
 

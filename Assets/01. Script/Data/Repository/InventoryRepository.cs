@@ -7,7 +7,7 @@ using UnityEngine;
 /// IInventoryRepository - 인벤토리(보상 아이템) 데이터 접근 인터페이스
 ///
 /// 【역할】 InventoryItem 엔티티의 추가, 존재 확인, 조회 기능을 정의한다.
-/// 【참조하는 곳】 LocalRewardService (아이템 지급/조회), LocalUserDataService (아이템 지급/조회)
+/// 【참조하는 곳】 LocalRewardService (아이템 지급/조회)
 /// </summary>
 public interface IInventoryRepository
 {

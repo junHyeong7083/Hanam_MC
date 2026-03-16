@@ -56,6 +56,8 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
 {
     // ===== 자식(Binder)에서 넘겨줄 추상 프로퍼티들 =====
 
+    #region Abstract Properties
+
     /// <summary>스트레스 반응 카드 슬롯 배열 (인스펙터에서 8개 설정)</summary>
     protected abstract StressCardSlot[] Cards { get; }
 
@@ -65,7 +67,11 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     /// <summary>스텝 완료 판정용 게이트 (completeRoot 안에 "다음" 버튼이 있음)</summary>
     protected abstract StepCompletionGate StepCompletionGateRef { get; }
 
+    #endregion
+
     // ===== 설정값 (가상 프로퍼티로 파생 클래스에서 재정의 가능) =====
+
+    #region Virtual Config
 
     /// <summary>게이트가 열리기 위한 최소 선택 카드 수 (기본 3)</summary>
     protected virtual int MinSelectCount => 3;
@@ -80,6 +86,8 @@ public abstract class Director_Problem6_Step2_Logic : ProblemStepBase
     /// <summary>카드 선택 시 배경 색상 (주황색 #FF8A3D 계열)</summary>
     protected virtual Color CardSelectedColor =>
         new Color(1f, 0.54f, 0.24f, 1f); // #FF8A3D 느낌
+
+    #endregion
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer; // 대사 시퀀서 (진입/완료 대사 재생)

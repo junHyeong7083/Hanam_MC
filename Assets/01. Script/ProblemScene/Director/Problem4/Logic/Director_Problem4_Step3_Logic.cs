@@ -54,6 +54,8 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
     // 자식에서 제공할 추상 프로퍼티
     // ==========================
 
+    #region Abstract Properties
+
     protected abstract IYesNoQuestionData[] Questions { get; }
 
     protected abstract Text MainTextLabel { get; }
@@ -67,10 +69,16 @@ public abstract class Director_Problem4_Step3_Logic : ProblemStepBase
 
     protected abstract StepCompletionGate StepCompletionGate { get; }
 
-    [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
+    #endregion
+
+    #region Virtual Config
 
     protected virtual Problem4_Step3_EffectController EffectController => null;
+
+    #endregion
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
 
     // ==========================

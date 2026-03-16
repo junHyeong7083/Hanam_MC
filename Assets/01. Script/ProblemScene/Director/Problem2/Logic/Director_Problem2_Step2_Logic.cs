@@ -32,11 +32,15 @@ public abstract class Director_Problem2_Step2_Logic : ProblemStepBase
         [NonSerialized] public bool revealed;  // 리빌 완료 여부 (런타임 상태)
     }
 
+    #region Abstract Properties
+
     /// <summary>감정 슬롯 배열 (자식에서 SerializeField로 바인딩)</summary>
     protected abstract EmotionSlot[] Slots { get; }
 
     /// <summary>완료 게이트 - 모든 슬롯 리빌 시 다음 스텝 진행</summary>
     protected abstract StepCompletionGate CompletionGate { get; }
+
+    #endregion
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;  // 대사 시퀀서

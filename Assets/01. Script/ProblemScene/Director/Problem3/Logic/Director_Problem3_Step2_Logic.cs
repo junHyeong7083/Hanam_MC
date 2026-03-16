@@ -41,6 +41,8 @@ public interface IRewriteStepData
 /// </summary>
 public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
 {
+    #region Abstract Properties
+
     [Header("재작성 단계 데이터 (자식 구현)")]
     protected abstract IRewriteStepData[] Steps { get; }
 
@@ -72,14 +74,16 @@ public abstract class Director_Problem3_Step2_Logic : ProblemStepBase
     [Header("상단/하단 다음 버튼")]
     protected abstract GameObject NextDialogButtonRoot { get; }
 
-    [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
-
     [Header("완료 게이트 (옵션)")]
     protected abstract StepCompletionGate CompletionGate { get; }
 
     [Header("옵션")]
     protected abstract float RewriteDelay { get; }
+
+    #endregion
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     private int _stepIndex;
     private int _currentOptionIndex;

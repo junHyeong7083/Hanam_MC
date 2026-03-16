@@ -38,6 +38,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
         public ShakeTrigger shakeTrigger;    // 인트로 완료 후 시작되는 흔들림 트리거
     }
 
+    #region Abstract Properties
+
     /// <summary>필름 조각 배열 (자식에서 SerializeField로 바인딩)</summary>
     protected abstract FilmFragment[] Films { get; }
 
@@ -49,6 +51,8 @@ public abstract class Director_Problem1_Step2_Logic : ProblemStepBase
 
     /// <summary>완료 게이트 - 모든 필름 터치 시 다음 스텝 진행</summary>
     protected abstract StepCompletionGate CompletionGate { get; }
+
+    #endregion
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;  // 대사 시퀀서 (enter/completed 대사 재생)

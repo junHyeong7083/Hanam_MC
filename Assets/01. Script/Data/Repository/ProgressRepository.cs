@@ -5,7 +5,7 @@ using System.Linq;
 /// IProgressRepository - 사용자 진행도/시도 기록 데이터 접근 인터페이스
 ///
 /// 【역할】 사용자 진행도 요약 조회, Attempt 저장, 풀이 완료 문제 번호 조회 기능을 정의한다.
-/// 【참조하는 곳】 LocalProgressService, LocalUserDataService
+/// 【참조하는 곳】 LocalProgressService
 /// </summary>
 public interface IProgressRepository
 {

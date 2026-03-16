@@ -40,6 +40,8 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
         public bool recorded;          // STT 녹음 완료 여부
     }
 
+    #region Abstract Properties
+
     // ===== Data =====
     protected abstract string NgSentence { get; }
 
@@ -60,14 +62,16 @@ public abstract class Director_Problem2_Step3_Logic : ProblemStepBase
 
     protected abstract GameObject RecordingOverlay { get; }
 
-    [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
-
     // 패널
     protected abstract GameObject StepRoot { get; }
 
     protected abstract Text CompletionText { get; }
     protected abstract StepCompletionGate CompletionGate { get; }
+
+    #endregion
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     private int _selectedIndex = -1;
     private bool _isRecording;

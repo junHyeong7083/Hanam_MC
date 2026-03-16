@@ -20,6 +20,8 @@ public abstract class Director_Problem1_Step1_Logic : ProblemStepBase
 {
     // === 자식에서 UI를 제공할 때 사용할 추상 프로퍼티들 ===
 
+    #region Abstract Properties
+
     /// <summary>먼지 파티클 사용 여부 (false면 파티클 생성 안 함)</summary>
     protected abstract bool UseDust { get; }
 
@@ -37,6 +39,8 @@ public abstract class Director_Problem1_Step1_Logic : ProblemStepBase
 
     /// <summary>각 파티클의 시작 지연 시간 범위 (x=최소, y=최대)</summary>
     protected abstract Vector2 DustDelayRange { get; }
+
+    #endregion
 
     /// <summary>먼지 파티클이 이미 생성되었는지 여부 (중복 생성 방지)</summary>
     private bool _dustSpawned;

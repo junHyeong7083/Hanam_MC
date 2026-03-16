@@ -4,7 +4,7 @@ using System;
 /// IProblemRepository - 문제(Problem) 데이터 접근 인터페이스
 ///
 /// 【역할】 Problem 엔티티의 조회 기능을 정의한다.
-/// 【참조하는 곳】 LocalProblemQueryService, LocalUserDataService
+/// 【참조하는 곳】 LocalProblemQueryService
 /// </summary>
 public interface IProblemRepository
 {

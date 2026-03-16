@@ -39,11 +39,15 @@ public abstract class Director_Problem5_Step2_Logic : ProblemStepBase
 {
     // ==== 자식에서 제공할 추상 프로퍼티 ====
 
+    #region Abstract Properties
+
     /// <summary>장면 데이터 배열 (자식에서 SerializeField로 바인딩)</summary>
     protected abstract IZoomOutSceneData[] Scenes { get; }
 
     /// <summary>완료 게이트 - 모든 장면 확인 시 다음 스텝 진행</summary>
     protected abstract StepCompletionGate CompletionGate { get; }
+
+    #endregion
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;  // 대사 시퀀서

@@ -39,6 +39,8 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
 {
     // ===== 자식(Binder)에서 주입할 추상 프로퍼티 =====
 
+    #region Abstract Properties
+
     /// <summary>이완 단계 데이터 배열 (Binder에서 인스펙터로 설정)</summary>
     [Header("이완 단계 데이터 (자식 주입)")]
     protected abstract IRelaxationStepData[] Steps { get; }
@@ -73,12 +75,18 @@ public abstract class Director_Problem6_Step3_Logic : ProblemStepBase
     /// <summary>단계 진행률을 시각적으로 표시하는 Fill 이미지</summary>
     protected abstract Image ProgressFillImage { get; }
 
+    #endregion
+
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer; // 대사 시퀀서 (진입/완료 대사 재생)
+
+    #region Virtual Config
 
     [Header("완료 후 약간의 딜레이 (초)")]
     /// <summary>모든 단계 완료 후 게이트 열기 전 대기 시간 (기본 2초)</summary>
     protected virtual float CompleteDelaySeconds => 2.0f;
+
+    #endregion
 
 
     // ===== 내부 상태 =====

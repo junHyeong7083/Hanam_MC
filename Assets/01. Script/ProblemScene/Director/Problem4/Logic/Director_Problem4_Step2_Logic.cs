@@ -76,6 +76,8 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     // 자식에서 제공할 추상 프로퍼티
     // ======================
 
+    #region Abstract Properties
+
     [Header("컷 데이터 (자식 제공)")]
     protected abstract IFilmCutData[] FilmCuts { get; }
 
@@ -96,13 +98,20 @@ public abstract class Director_Problem4_Step2_Logic : ProblemStepBase
     [Header("오답 피드백")]
     protected abstract int ErrorTextId { get; }
 
-    [Header("Dialogue")]
-    [SerializeField] private DialogueSequencer dialogueSequencer;
-
     [Header("완료 시 UI")]
     protected abstract GameObject HideObjectOnComplete { get; }
     protected abstract RectTransform ShowImageOnComplete { get; }
+
+    #endregion
+
+    #region Virtual Config
+
     protected virtual float CompletionDelayDuration => 4f;
+
+    #endregion
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSequencer dialogueSequencer;
 
     // ======================
     // 내부 상태

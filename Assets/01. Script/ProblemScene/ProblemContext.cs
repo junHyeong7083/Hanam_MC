@@ -4,12 +4,10 @@ using UnityEngine;
 /// ProblemContext - 문제별 런타임 컨텍스트 데이터 (ScriptableObject)
 ///
 /// 【역할】 각 문제(Problem)의 메타 정보를 담는 ScriptableObject.
-///          테마, 문제 번호, 고유 ID, 현재 스텝 키를 보유하며,
-///          DB에 학습 시도(Attempt) 및 보상(Reward) 데이터를 저장하는 메서드를 제공한다.
+///          테마, 문제 번호, 고유 ID, 현재 스텝 키를 보유한다.
 /// 【참조하는 곳】 ProblemStepBase (context 필드로 참조), 각 Problem Director의 Logic 클래스
-/// 【참조되는 곳】 DataService (Progress, Reward Repository)
-/// 【흐름】 인스펙터에서 각 Problem_N 오브젝트에 할당 → ProblemStepBase가 참조하여
-///          BuildStepKey(), SaveAttempt(), SaveReward() 등에 활용
+/// 【참조되는 곳】 ProblemStepBase.BuildStepKey(), SaveAttempt(), SaveReward()에서 활용
+/// 【흐름】 인스펙터에서 각 Problem_N 오브젝트에 할당 → ProblemStepBase가 참조
 /// </summary>
 [CreateAssetMenu(menuName = "MindMovie/Problem Context", fileName = "ProblemContext")]
 public class ProblemContext : ScriptableObject
@@ -25,72 +23,5 @@ public class ProblemContext : ScriptableObject
 
     [Header("현재 Step Key (로그용, 문자열)")]
     public string CurrentStepKey; // 현재 진행 중인 스텝의 키 문자열 (예: "Director_P1_Step2")
-
-    /// <summary>
-    /// �� ���ؽ�Ʈ �������� Attempt ����.
-    /// body���� "�� ���� ���� ������ ����"�� �־��ش�.
-    /// </summary>
-    public void SaveStepAttempt(object body)
-    {
-        var ds = DataService.Instance;
-        if (ds == null || ds.Progress == null)
-        {
-            Debug.LogWarning("[ProblemContext] DataService.Progress ���� - SaveStepAttempt ��ŵ");
-            return;
-        }
-
-        var payload = new
-        {
-            stepKey = CurrentStepKey,
-            theme = Theme.ToString(),
-            problemIndex = ProblemIndex,
-            body
-        };
-
-        var result = ds.Progress.SaveStepAttemptForCurrentUser(
-            Theme,
-            ProblemIndex,
-            ProblemId,
-            payload
-        );
-
-        if (!result.Ok)
-            Debug.LogWarning("[ProblemContext] SaveStepAttempt ����: " + result.Error);
-        else
-            Debug.Log("[ProblemContext] SaveStepAttempt DB ���� �Ϸ�");
-    }
-
-    /// <summary>
-    /// Attempt + �κ��丮 ������ �Բ� ����.
-    /// body���� �� ���� ���� ������ ������ �־��ش�.
-    /// </summary>
-    public void SaveReward(object body, string itemId, string itemName)
-    {
-        var ds = DataService.Instance;
-        if (ds == null || ds.Reward == null)
-        {
-            Debug.LogWarning("[ProblemContext] DataService.Reward ���� - SaveReward ��ŵ");
-            return;
-        }
-
-        var payload = new
-        {
-            stepKey = CurrentStepKey,
-            theme = Theme.ToString(),
-            problemIndex = ProblemIndex,
-            body
-        };
-
-        var result = ds.Reward.SaveRewardForCurrentUser(
-            Theme,
-            ProblemIndex,
-            ProblemId,
-            payload,
-            itemId,
-            itemName
-        );
-
-        if (!result.Ok)
-            Debug.LogWarning("[ProblemContext] SaveReward ����: " + result.Error);
-    }
+    // ※ SaveAttempt / SaveReward는 ProblemStepBase에서 StepKeyConfig 기반으로 처리함
 }

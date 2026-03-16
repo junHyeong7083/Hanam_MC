@@ -57,6 +57,8 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
     // ===== 자식에서 주입할 추상 프로퍼티 =====
 
+    #region Abstract Properties
+
     /// <summary>시나리오 카드 데이터 배열</summary>
     protected abstract IScenarioCardData[] Scenarios { get; }
 
@@ -73,6 +75,8 @@ public abstract class Director_Problem5_Step3_Logic : ProblemStepBase
 
     /// <summary>필름 내 텍스트 (라운드마다 교체)</summary>
     protected abstract Text FilmText { get; }
+
+    #endregion
 
     // ===== 초록색 네모 (responseText 표시) =====
 

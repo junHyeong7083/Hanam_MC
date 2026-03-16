@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// AdminPanel - 관리자 전용 패널 (홈 화면에서 사용)
@@ -9,7 +8,7 @@ using UnityEngine.SceneManagement;
 ///         ESC 키로 패널을 닫을 수 있다.
 /// 【씬】 HomeScene (LevelSelectScene)
 /// 【참조하는 곳】 HomeScene 내 Canvas에 부착되어 독립적으로 동작
-/// 【참조되는 곳】 SessionManager (로그아웃 처리), SceneManager (씬 전환)
+/// 【참조되는 곳】 GameManager (로그아웃/앱 종료 처리)
 /// 【흐름】 F1 키 → 패널 토글 → "종료" 클릭 시 앱 종료 / "로그인" 클릭 시 세션 클리어 후 로그인 씬 이동
 /// </summary>
 public class AdminPanel : MonoBehaviour
@@ -20,10 +19,6 @@ public class AdminPanel : MonoBehaviour
     [Header("===== 버튼 =====")]
     [SerializeField] private Button exitButton;              // 앱 종료 버튼
     [SerializeField] private Button goToLoginButton;         // 로그인 화면 이동 버튼
-
-    [Header("===== 설정 =====")]
-    [Tooltip("로그인 씬 이름")]
-    [SerializeField] private string loginSceneName = "LoginScene";  // 이동할 로그인 씬 이름
 
     private void Start()
     {
@@ -65,24 +60,12 @@ public class AdminPanel : MonoBehaviour
 
     private void OnExitClicked()
     {
-        Debug.Log("[AdminPanel] 앱 종료");
-
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        GameManager.Instance.QuitApplication();
     }
 
     private void OnGoToLoginClicked()
     {
-        Debug.Log($"[AdminPanel] 로그인 화면으로 이동: {loginSceneName}");
-
-        // 세션 클리어 (필요 시)
-        if (SessionManager.Instance != null)
-            SessionManager.Instance.SignOut();
-
-        SceneManager.LoadScene(loginSceneName);
+        GameManager.Instance.Logout();
     }
 
     #endregion

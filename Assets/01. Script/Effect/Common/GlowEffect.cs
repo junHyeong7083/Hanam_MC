@@ -77,62 +77,34 @@ public class GlowEffect : MonoBehaviour
 
         float halfDuration = duration / 2f;
 
-        // 스케일 애니메이션
-        if (scaleAxis != ScaleAxis.None && _rectTransform != null)
+        bool hasScale = scaleAxis != ScaleAxis.None && _rectTransform != null;
+        bool hasAlpha = useAlpha && _canvasGroup != null;
+
+        if (hasScale)
         {
             Vector3 minScale = GetTargetScale(scaleMin);
             Vector3 maxScale = GetTargetScale(scaleMax);
-
-            // 시작 스케일 설정
             _rectTransform.localScale = minScale;
-
-            // min → max
-            _sequence.Append(_rectTransform.DOScale(maxScale, halfDuration).SetEase(easeType));
-            // max → min
-            _sequence.Append(_rectTransform.DOScale(minScale, halfDuration).SetEase(easeType));
-        }
-
-        // 알파 애니메이션
-        if (useAlpha && _canvasGroup != null)
-        {
-            // 시작 알파 설정
-            _canvasGroup.alpha = alphaMin;
-
-            if (scaleAxis != ScaleAxis.None && _rectTransform != null)
-            {
-                // 스케일과 동시에 (Join)
-                _sequence.Join(_canvasGroup.DOFade(alphaMax, halfDuration).SetEase(easeType));
-                // 두 번째 구간에도 Join (인덱스 조정 필요)
-            }
-            else
-            {
-                // 알파만 단독으로
-                _sequence.Append(_canvasGroup.DOFade(alphaMax, halfDuration).SetEase(easeType));
-                _sequence.Append(_canvasGroup.DOFade(alphaMin, halfDuration).SetEase(easeType));
-            }
-        }
-
-
-        // 스케일 + 알파 동시 처리 (더 정확한 방식)
-        if (scaleAxis != ScaleAxis.None && useAlpha && _canvasGroup != null && _rectTransform != null)
-        {
-            // 기존 시퀀스 취소하고 다시 구성
-            _sequence.Kill();
-            _sequence = DOTween.Sequence();
-
-            Vector3 minScale = GetTargetScale(scaleMin);
-            Vector3 maxScale = GetTargetScale(scaleMax);
-
-            _rectTransform.localScale = minScale;
-            _canvasGroup.alpha = alphaMin;
 
             // 전반부: min → max
             _sequence.Append(_rectTransform.DOScale(maxScale, halfDuration).SetEase(easeType));
-            _sequence.Join(_canvasGroup.DOFade(alphaMax, halfDuration).SetEase(easeType));
+            if (hasAlpha)
+            {
+                _canvasGroup.alpha = alphaMin;
+                _sequence.Join(_canvasGroup.DOFade(alphaMax, halfDuration).SetEase(easeType));
+            }
 
             // 후반부: max → min
             _sequence.Append(_rectTransform.DOScale(minScale, halfDuration).SetEase(easeType));
-            _sequence.Join(_canvasGroup.DOFade(alphaMin, halfDuration).SetEase(easeType));
+            if (hasAlpha)
+                _sequence.Join(_canvasGroup.DOFade(alphaMin, halfDuration).SetEase(easeType));
+        }
+        else if (hasAlpha)
+        {
+            // 알파만 단독
+            _canvasGroup.alpha = alphaMin;
+            _sequence.Append(_canvasGroup.DOFade(alphaMax, halfDuration).SetEase(easeType));
+            _sequence.Append(_canvasGroup.DOFade(alphaMin, halfDuration).SetEase(easeType));
         }
 
         // 무한 반복 + 오브젝트 파괴 시 자동 Kill

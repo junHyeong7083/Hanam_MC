@@ -7,14 +7,14 @@ using UnityEngine;
 ///
 /// 【역할】 stepPanels 리스트에 등록된 GameObject(각 스텝 패널)를 순서대로 활성화/비활성화한다.
 ///          NextStep(), PrevStep(), JumpToStep(), RestartCurrentStep() 등으로 스텝 간 이동을 제어하며,
-///          BGM 재생/정지, 건너뛰기(Skip), 문제 완료 처리(ProblemEnd)도 담당한다.
+///          BGM 재생/정지, 건너뛰기(Skip) 기능도 담당한다.
 /// 【참조하는 곳】 StepCompletionGate (완료 시 NextStep 호출), AutoNextStepButton (리플렉션으로 NextStep 호출),
 ///                CommonRewardStep (SaveAndNextStep → NextStep), DialogueSequencer (NextStepBtn → NextStep),
 ///                StartStep (시작 버튼 → NextStep), ProblemSceneController (문제 패널 관리),
 ///                DebugStepController (디버그 스텝 이동), 각 Problem Director Logic
 /// 【참조되는 곳】 SoundManager (BGM), DataService (문제 완료 저장), SessionManager (사용자 조회),
 ///                ProblemSession, SceneNavigator, ProblemStepBase (상위 참조)
-/// 【흐름】 OnEnable() → SetAllInactive() → GoToStep(0) → 사용자 상호작용 → NextStep() → ... → ProblemEnd()
+/// 【흐름】 OnEnable() → SetAllInactive() → GoToStep(0) → 사용자 상호작용 → NextStep() → ... → OnFlowFinished()
 ///
 /// ※ 각 스텝 패널에는 ProblemStepBase 파생 컴포넌트가 붙어있고,
 ///    GoToStep()으로 패널이 SetActive(true)되면 OnEnable → OnStepEnter()가 자동 호출된다.
@@ -167,43 +167,6 @@ public class StepFlowController : MonoBehaviour
         if (target >= stepPanels.Count) target = stepPanels.Count - 1;
 
         GoToStep(target);
-    }
-
-    /// <summary>
-    /// 문제 전체 완료 처리. DB에 문제 풀이 완료를 기록하고 홈 화면으로 전환한다.
-    /// Director 테마에서 마지막 문제(P10) 완료 시 EndingPanel로, 그 외에는 LevelSelectPanel로 복귀한다.
-    /// </summary>
-    public void ProblemEnd()
-    {
-        var ds = DataService.Instance;
-        var user = SessionManager.Instance?.CurrentUser;
-
-        // DB에 문제 완료(Solved) 상태 저장
-        if (ds != null && ds.Progress != null && user != null)
-        {
-            var theme = ProblemSession.CurrentTheme;
-            var index = ProblemSession.CurrentProblemIndex;
-
-            var res = ds.Progress.MarkProblemSolvedForCurrentUser(theme, index);
-            if (!res.Ok)
-            {
-                Debug.LogWarning($"[StepFlow] MarkProblemSolved 실패: {res.Error}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[StepFlow] 문제 완료 저장 실패 - 세션 또는 DataService.Progress 없음");
-        }
-
-        // Director 테마: LevelSelectPanel 또는 EndingPanel로 복귀
-        if (ProblemSession.CurrentTheme == ProblemTheme.Director)
-        {
-            ProblemSession.ReturnTarget = ProblemSession.CurrentProblemIndex >= 10
-                ? HomeReturnTarget.Ending
-                : HomeReturnTarget.LevelSelect;
-        }
-
-        SceneNavigator.Instance.GoTo(ScreenId.HOME);
     }
 
     /// <summary>

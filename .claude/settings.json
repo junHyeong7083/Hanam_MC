@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import json; f=open\\(r''C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\c--Users-user-Git-Hanam-MC\\\\ef7d4984-367d-4136-a6ff-76d6912b22ed\\\\tool-results\\\\toolu_015t8thvhJvCa3mMCTD66QCg.json'',''r'',encoding=''utf-8''\\); data=json.load\\(f\\); text=data[0][''text'']; print\\(text[2000:8000]\\)\")",
+      "Bash(python -c \"import json; f=open\\(r''C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\c--Users-user-Git-Hanam-MC\\\\ef7d4984-367d-4136-a6ff-76d6912b22ed\\\\tool-results\\\\toolu_015t8thvhJvCa3mMCTD66QCg.json'',''r'',encoding=''utf-8''\\); data=json.load\\(f\\); text=data[0][''text'']; print\\(text[8000:16000]\\)\")",
+      "Bash(python -c \"import json; f=open\\(r''C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\c--Users-user-Git-Hanam-MC\\\\ef7d4984-367d-4136-a6ff-76d6912b22ed\\\\tool-results\\\\toolu_015t8thvhJvCa3mMCTD66QCg.json'',''r'',encoding=''utf-8''\\); data=json.load\\(f\\); text=data[0][''text'']; print\\(text[16000:24000]\\)\")",
+      "Bash(python -c \"import json; f=open\\(r''C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\c--Users-user-Git-Hanam-MC\\\\ef7d4984-367d-4136-a6ff-76d6912b22ed\\\\tool-results\\\\toolu_015t8thvhJvCa3mMCTD66QCg.json'',''r'',encoding=''utf-8''\\); data=json.load\\(f\\); text=data[0][''text'']; print\\(text[24000:]\\)\")",
+      "Bash(python -c \"import json; f=open\\(r''C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\c--Users-user-Git-Hanam-MC\\\\ef7d4984-367d-4136-a6ff-76d6912b22ed\\\\tool-results\\\\toolu_015t8thvhJvCa3mMCTD66QCg.json'',''r'',encoding=''utf-8''\\); data=json.load\\(f\\); text=data[0][''text'']; print\\(text[24000:32000]\\)\")",
+      "Bash(python -c \"import json; f=open\\(r''C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\c--Users-user-Git-Hanam-MC\\\\ef7d4984-367d-4136-a6ff-76d6912b22ed\\\\tool-results\\\\toolu_015t8thvhJvCa3mMCTD66QCg.json'',''r'',encoding=''utf-8''\\); data=json.load\\(f\\); text=data[0][''text'']; print\\(text[32000:]\\)\")"
+    ]
+  }
+}

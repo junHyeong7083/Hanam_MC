@@ -24,6 +24,8 @@ using UnityEngine.UI;
 /// </summary>
 public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
 {
+    #region Abstract Properties
+
     [Header("Drop Box 영역")]
     protected abstract UIDropBoxArea DropBoxArea { get; }            // 아이템을 드롭할 수 있는 영역
 
@@ -40,11 +42,17 @@ public abstract class Director_Problem2_Step1_Logic : ProblemStepBase
     [Header("완료 게이트 (Next 버튼용)")]
     protected abstract StepCompletionGate CompletionGate { get; }    // 드롭 완료 시 다음 스텝 진행
 
+    #endregion
+
+    #region Virtual Config
+
     // ===== 드래그 상태 텍스트 (옵션, 자식에서 override 가능) =====
     protected virtual Text DragStateText => null;                    // 드래그 전/후 상태 표시 텍스트
     protected virtual int BeforeDragTextId => 0;                     // 드래그 전 텍스트 ID
     protected virtual int AfterDragTextId => 0;                      // 드래그 후 텍스트 ID
     protected virtual Color AfterDragTextColor => Color.white;       // 드래그 후 텍스트 색상
+
+    #endregion
 
     [Header("Dialogue")]
     [SerializeField] private DialogueSequencer dialogueSequencer;    // 대사 시퀀서 (enter/completed)
